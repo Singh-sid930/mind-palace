@@ -28,6 +28,28 @@ export class Hud {
     this._wireFloo();
     this._graphNodes = null;
     this.$('graph-canvas').addEventListener('click', (e) => this._graphClick(e));
+    this.$('dia-max').addEventListener('click', () => this.closeDiagramMax());
+  }
+
+  // --- diagram maximize ------------------------------------------------------
+  get diagramMaxed() { return this.$('dia-max').style.display === 'flex'; }
+
+  maximizeDiagram() {
+    const svg = this.$('focus-diagram').querySelector('svg');
+    if (!svg) return;
+    const big = svg.cloneNode(true);
+    big.style.maxWidth = '92vw';
+    big.style.maxHeight = '88vh';
+    big.style.width = '92vw';
+    big.style.height = 'auto';
+    const holder = this.$('dia-max-holder');
+    holder.innerHTML = '';
+    holder.appendChild(big);
+    this.$('dia-max').style.display = 'flex';
+  }
+
+  closeDiagramMax() {
+    this.$('dia-max').style.display = 'none';
   }
 
   // --- status line ---------------------------------------------------------
@@ -97,7 +119,11 @@ export class Hud {
         }
         try {
           const { svg } = await mermaid.render('dia-' + Date.now(), record.focus.mermaid);
-          dia.innerHTML = svg;
+          dia.innerHTML = `<button class="dia-zoom" title="maximize">⛶</button>` + svg;
+          // Click anywhere on the diagram (or the button) to maximize.
+          dia.querySelector('.dia-zoom').addEventListener('click', () => this.maximizeDiagram());
+          dia.querySelector('svg').addEventListener('click', () => this.maximizeDiagram());
+          dia.querySelector('svg').style.cursor = 'zoom-in';
         } catch {
           dia.innerHTML = `<pre>${record.focus.mermaid.replace(/</g, '&lt;')}</pre>`;
         }

@@ -8,6 +8,8 @@ import { buildWorld } from './builder.js';
 import { buildExhibits } from './exhibits.js';
 import { Player, EYE } from './player.js';
 import { Hud } from './hud.js';
+import { Companion } from './companion.js';
+import { CompanionChat } from './chat.js';
 
 async function fetchJson(path) {
   const res = await fetch(path);
@@ -61,6 +63,28 @@ async function boot() {
 
   const hud = new Hud({ layout, world, graph, roomsById, onTeleport: teleport });
 
+  // --- Gemma: the companion ghost + her chat ------------------------------
+  const companion = new Companion(scene);
+  const getLocation = () => {
+    const space = spaceAt(layout, camera.position.x, camera.position.z);
+    if (!space) return null;
+    const wing = world.wings.find((w) => w.id === space.wing);
+    const roomId = space.kind === 'room' && space.room ? space.room.id : null;
+    return {
+      room: space.kind === 'room' && space.room ? space.room.name : 'a passage',
+      wing: wing ? wing.name : null,
+      exhibit: target ? { title: target.focus.title, text: target.focus.body } : null,
+      concepts: roomId
+        ? graph.concepts.filter((c) => c.room === roomId)
+            .map((c) => ({ name: c.name, summary: c.summary }))
+        : [],
+    };
+  };
+  const chat = new CompanionChat({
+    getLocation,
+    onThinking: (v) => companion.setThinking(v),
+  });
+
   // --- start overlay / pointer lock ---------------------------------------
   const startEl = document.getElementById('start');
   const beginBtn = document.getElementById('begin');
@@ -72,8 +96,14 @@ async function boot() {
   });
   player.controls.addEventListener('unlock', () => {
     player.enabled = false;
-    // Keep overlay hidden if a HUD panel is open; otherwise show start screen.
-    if (!hud.openPanel) startEl.style.display = 'flex';
+    // Keep overlay hidden while any panel (or the chat) is open.
+    if (!hud.openPanel && !chat.isOpen) startEl.style.display = 'flex';
+  });
+  // Clicking the world re-locks the pointer after closing a panel/chat.
+  renderer.domElement.addEventListener('click', () => {
+    if (!hud.openPanel && !chat.isOpen && !player.controls.isLocked) {
+      player.controls.lock();
+    }
   });
   if (debug) {
     startEl.style.display = 'none';
@@ -108,6 +138,8 @@ async function boot() {
           player.controls.unlock();
         }
       }
+    } else if (e.code === 'KeyT') {
+      if (chat.toggle()) player.controls.unlock(); else player.controls.lock();
     } else if (e.code === 'KeyM') {
       if (hud.toggle('map')) player.controls.unlock(); else player.controls.lock();
     } else if (e.code === 'KeyG') {
@@ -115,8 +147,10 @@ async function boot() {
     } else if (e.code === 'KeyF' && !hud.openPanel) {
       hud.toggle('floo');
       player.controls.unlock();
-    } else if (e.code === 'Escape' && hud.openPanel) {
-      hud.closeAll();
+    } else if (e.code === 'Escape') {
+      if (hud.diagramMaxed) hud.closeDiagramMax();
+      else if (chat.isOpen) chat.close();
+      else if (hud.openPanel) hud.closeAll();
     }
   });
 
@@ -148,6 +182,7 @@ async function boot() {
     const t = clock.elapsedTime;
 
     player.update(dt);
+    companion.update(dt, camera, t);
     for (const fn of updates) fn(t);
 
     // Throttled UI updates.

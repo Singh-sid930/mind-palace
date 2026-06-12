@@ -111,6 +111,49 @@
     position: absolute; inset: 0; background: #e9ffe9; opacity: 0;
     transition: opacity 0.45s ease; pointer-events: none; z-index: 18;
   }
+
+  /* companion chat */
+  #chat-panel {
+    left: 18px; bottom: 56px; width: min(420px, 86vw); padding: 16px 16px 14px;
+  }
+  #chat-log { max-height: 42vh; overflow-y: auto; display: flex;
+              flex-direction: column; gap: 8px; margin-bottom: 10px; }
+  .bubble {
+    max-width: 88%; padding: 9px 14px; border-radius: 14px; font-size: 15px;
+    line-height: 1.45; white-space: pre-wrap;
+  }
+  .bubble.you {
+    align-self: flex-end; background: rgba(212,175,55,0.22);
+    border: 1px solid rgba(212,175,55,0.5); border-bottom-right-radius: 4px;
+  }
+  .bubble.gemma {
+    align-self: flex-start; background: rgba(154,196,255,0.13);
+    border: 1px solid rgba(154,196,255,0.4); border-bottom-left-radius: 4px;
+  }
+  .bubble.pending { animation: ponder 1.2s ease-in-out infinite; }
+  @keyframes ponder { 0%,100% { opacity: 0.4; } 50% { opacity: 1; } }
+  .scroll-link { color: #ffd98a; font-size: 13.5px; }
+  #chat-input {
+    width: 100%; font: inherit; font-size: 15px; padding: 9px 12px;
+    background: rgba(233,223,198,0.08); color: var(--parchment);
+    border: 1px solid rgba(154,196,255,0.5); border-radius: 8px; outline: none;
+  }
+  #chat-panel .hint { margin-top: 8px; }
+
+  /* diagram maximize */
+  .dia-zoom {
+    float: right; background: none; border: 1px solid rgba(154,196,255,0.5);
+    color: #cfe4ff; border-radius: 6px; cursor: pointer; font-size: 15px;
+    padding: 2px 8px; margin-bottom: 6px;
+  }
+  .dia-zoom:hover { background: rgba(154,196,255,0.15); }
+  #dia-max {
+    position: absolute; inset: 0; display: none; align-items: center;
+    justify-content: center; background: rgba(5,4,10,0.93); z-index: 30;
+    cursor: zoom-out;
+  }
+  #dia-max-holder { background: #10151d; border: 1px solid var(--gold);
+                    border-radius: 12px; padding: 18px; }
 </style>
 <script type="importmap">
 {
@@ -131,8 +174,9 @@
   <div id="crosshair"></div>
   <div id="hud-prompt"></div>
   <div id="hud-keys">
-    <kbd>WASD</kbd> walk &nbsp; <kbd>E</kbd> study &nbsp; <kbd>M</kbd> map &nbsp;
-    <kbd>G</kbd> constellation &nbsp; <kbd>F</kbd> floo &nbsp; <kbd>Shift</kbd> run
+    <kbd>WASD</kbd> walk &nbsp; <kbd>E</kbd> study &nbsp; <kbd>T</kbd> talk to Gemma &nbsp;
+    <kbd>M</kbd> map &nbsp; <kbd>G</kbd> constellation &nbsp; <kbd>F</kbd> floo &nbsp;
+    <kbd>Shift</kbd> run
   </div>
 
   <div id="start">
@@ -142,6 +186,7 @@
       <p style="font-size:15px; line-height:1.7">
         Walk with <kbd>W A S D</kbd>, look with the mouse.<br/>
         Press <kbd>E</kbd> to study exhibits and step through portals.<br/>
+        <kbd>T</kbd> talk to Gemma, your ghostly guide.<br/>
         <kbd>M</kbd> map · <kbd>G</kbd> constellation of ideas · <kbd>F</kbd> floo travel
       </p>
       <button id="begin">Enter the Palace</button>
@@ -174,6 +219,14 @@
     <ul id="floo-list"></ul>
     <div class="hint">Enter — travel to first match · Esc — close</div>
   </div>
+
+  <div id="chat-panel" class="panel">
+    <div id="chat-log"></div>
+    <input id="chat-input" placeholder="ask Gemma…" autocomplete="off" />
+    <div class="hint">Enter — send · T or Esc — close · long answers become scrolls</div>
+  </div>
+
+  <div id="dia-max"><div id="dia-max-holder"></div></div>
 
   <div id="flash"></div>
 

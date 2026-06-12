@@ -14,12 +14,24 @@ no assets.
 
 ```bash
 cd mind-palace
-python -m http.server 8777
+python serve.py
 # open http://localhost:8777
 ```
 
-WASD + mouse to walk, **E** study / step through portals, **M** map,
-**G** constellation of ideas, **F** floo travel, **Shift** run.
+WASD + mouse to walk, **E** study / step through portals, **T** talk to Gemma,
+**M** map, **G** constellation of ideas, **F** floo travel, **Shift** run.
+Click a diagram (or its ⛶ button) to maximize it.
+
+## Gemma, the Whispering Sage
+
+A ghost companion drifts at your shoulder, backed by the local Ollama service
+(`gemma3:27b` on the always-on systemd instance at `localhost:11434`; override
+with `OLLAMA_URL` / `OLLAMA_MODEL`). She knows which room you're in, which
+exhibit you're studying, and the concepts anchored there — so "why doesn't
+this collapse?" needs no setup. Answers come as short speech bubbles; anything
+that needs depth is saved as a parchment-styled HTML **scroll** in `scrolls/`
+with a 📜 link in the bubble. `serve.py` never starts Ollama itself — it only
+talks to the existing service.
 
 ## Grow it
 
