@@ -1,0 +1,59 @@
+{
+  "id": "mirror-of-occlusion",
+  "name": "The Hall of Predictive Sight",
+  "wing": "divination",
+  "size": "medium",
+  "order": 1,
+  "connections": ["paris-cauldron"],
+  "exhibits": [
+    {
+      "id": "the-mirror",
+      "type": "artifact",
+      "title": "The Mirror of Occlusion",
+      "prop": "mirror",
+      "scale": 1.4,
+      "text": "A tall, gilt-edged looking glass draped in black velvet. It does not show what stands before it — it shows what WOULD stand in the hidden places, were the occlusion lifted. It restores no pixels; it restores only meaning. This is I-JEPA, the Image Joint-Embedding Predictive Architecture (Assran et al., CVPR 2023): given the visible patches of an image, predict the REPRESENTATIONS of the masked patches, never the patches themselves. Prediction in latent space lets the mirror keep the gist — a wizard here, a phoenix there, the disposition of cloak and posture — and discard the unknowable noise of individual threads."
+    },
+    {
+      "id": "plaque-two-scribes",
+      "type": "plaque",
+      "title": "The Two Scribes",
+      "prop": "pedestal",
+      "text": "Two enchanters charmed this mirror, working in tandem. The CONTEXT SCRIBE (context encoder) is shown only the visible patches, and its quill is sharpened every night by the gradient of its errors. The TARGET SCRIBE (target encoder) sees the world whole, but receives no correction at all — it is an exponential moving average of its twin. Each step it drifts: new target = 0.996 x old target + 0.004 x context encoder. Ninety-nine and six-tenths of itself, four-tenths of its livelier twin. No more. No less. A slow, ghostly echo that only follows, never learns."
+    },
+    {
+      "id": "plaque-latent-regret",
+      "type": "plaque",
+      "title": "Regret Is Measured in Meaning, Not Pixels",
+      "prop": "pedestal",
+      "text": "Between the scribes sits the PREDICTOR — a narrow apparatus, more spectacles than scribe. It takes (1) what the Context Scribe wrote about the visible patches and (2) a small positional note saying 'here is where the occlusion lies', and conjures what the Target Scribe would have written for that hidden place. The mirror's regret is the squared distance between conjuration and truth — representation against representation, never pixel against pixel. Minimize regret, night after night, and the encoder learns what belongs in the world without ever painting it."
+    },
+    {
+      "id": "plaque-no-collapse",
+      "type": "plaque",
+      "title": "Why the Mirror Cannot Go Blank",
+      "prop": "lectern",
+      "text": "A keen student once asked: if each scribe writes only what the other writes, could they not both agree to write NOTHING? A blank page has no regret. This is representation collapse — every input mapped to the same constant point — and it is forbidden here by ASYMMETRY. Only the Context Scribe learns from gradients; the Target Scribe is a delayed EMA shadow that cannot be optimized, and so cannot collude. The collapse is prevented not by negative pairs or by a regularizing penalty, but by the very structure of who is allowed to learn from whom."
+    },
+    {
+      "id": "diagram-ijepa",
+      "type": "diagram",
+      "title": "Anatomy of the Mirror",
+      "caption": "I-JEPA: predict representations of masked regions in latent space. The target encoder is a gradient-free EMA copy (coefficient 0.996) of the context encoder.",
+      "spec": "graph TD\n    IMG[Image, regions occluded] --> CE[Context Encoder - sees visible patches only]\n    CE --> REP[Visible-patch representations]\n    REP --> PR[Predictor]\n    POS[Mask position tokens] --> PR\n    PR --> ZH[Predicted representations of hidden regions]\n    FULL[Image, seen whole] --> TE[Target Encoder - EMA 0.996, no gradients]\n    TE --> ZT[True target representations]\n    ZH -- squared L2 regret in latent space --> ZT\n    CE -. EMA drift each night .-> TE"
+    },
+    {
+      "id": "portrait-bramblestoke",
+      "type": "portrait",
+      "title": "Professor Aurelius Bramblestoke",
+      "subtitle": "Keeper of the Predictive Arts",
+      "text": "We do not record what is in front of us, my dears. We maintain a model, and from that model we fill in what is missing. The brain does this; the mirror does this; and perhaps, one day, you shall too. Mind the asymmetry — it is the whole trick. The Context Scribe is corrected by its mistakes; the Target Scribe only follows, ninety-nine and six-tenths of itself and four-tenths of its twin, every night. Ask the Mirror for pixels and it will disappoint you. Ask it for the SENSE of what belongs in the hidden place, and it will rarely be wrong in spirit."
+    },
+    {
+      "id": "tome-chapter-one",
+      "type": "tome",
+      "title": "Chapter 1: The Mirror of Occlusion",
+      "text": "It was on a damp October evening that Professor Aurelius Bramblestoke first led the new apprentices down the spiral staircase beneath the Divination Tower, into a chamber that the older students called, with some reverence, the Hall of Predictive Sight. At its center stood a tall, gilt-edged looking glass draped in black velvet — the Mirror of Occlusion.\n\n\"You will find,\" said Bramblestoke, drawing back the velvet with a flourish, \"that this mirror does not show you what stands before it. It shows you what *would* stand before it, were the rest of the room not hidden.\" He gestured at a tapestry whose central figures had been deliberately blotted out with squares of black silk. \"Look closely.\"\n\nIn the glass, the missing figures shimmered into being — not perfectly, not as a painter would have rendered them, but as a kind of *meaning*: a wizard here, a phoenix there, the rough disposition of cloak and posture and intent. The pixels of the cloth were not restored. Only the sense of what belonged was returned.\n\n\"The mirror, my dears, learns by hallucination,\" Bramblestoke said. \"Long ago it was charmed by two enchanters who worked in tandem. The first, whom we call the Context Scribe, is shown only the visible patches of the world. The second, the Target Scribe, is a slow, ghostly echo of the first — its quill moves only after the Context Scribe's has settled, and even then only by the smallest fraction. Each evening, when the castle sleeps, the Target Scribe drifts a little closer to the Context Scribe: ninety-nine and six-tenths of itself, and four-tenths of its livelier twin. No more. No less.\"\n\nA Ravenclaw boy raised his hand. \"And the prediction, sir?\"\n\n\"Ah. Between them sits the Predictor — a narrow apparatus, more like a pair of spectacles than a scribe. The Predictor takes what the Context Scribe has written about the visible patches, together with a small note saying *here is where the occlusion lies*, and conjures what the Target Scribe would have written had it been allowed to look at that hidden place. We measure the distance between the conjuration and the truth — not pixel against pixel, but representation against representation. The squared distance is the mirror's regret. We minimize regret, night after night.\"\n\nThe Ravenclaw frowned. \"But sir — if both scribes write only what the other writes, could they not both agree to write *nothing*? A blank page would have no regret at all.\"\n\n\"A keen question,\" said Bramblestoke, looking pleased. \"And the answer lies in the asymmetry. The Context Scribe is corrected by its mistakes — its quill is sharpened each night by the gradient of its errors. The Target Scribe receives no such correction. It is only an echo, a delayed shadow. The two cannot collude into silence, because the Target Scribe cannot collude at all — it only follows. The collapse you fear is forbidden by the very structure of who is allowed to learn from whom [[ref:assran2023]].\"\n\nHe paused before the glass, and his reflection paused with him. \"At the end of long training, the two scribes' quills have nearly the same shape. Yet what they write differs — for the Context Scribe sees only the broken world, and the Target Scribe sees it whole. This is the secret of predictive perception. We do not record what is in front of us. We maintain a model, and from that model we fill in what is missing. The brain does this; the mirror does this; and perhaps, one day, you shall too.\"\n\nThe Ravenclaw boy was silent for a long while, watching the figures in the tapestry shimmer into half-being and out again. Somewhere above them, a bell rang for supper, but no one moved."
+    }
+  ]
+}

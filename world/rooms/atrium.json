@@ -1,0 +1,31 @@
+{
+  "id": "atrium",
+  "name": "The Atrium of Recall",
+  "wing": null,
+  "size": "grand",
+  "palette": "parchment",
+  "order": 1,
+  "exhibits": [
+    {
+      "id": "welcome-plaque",
+      "type": "plaque",
+      "title": "The Palace of Mind",
+      "prop": "pedestal",
+      "text": "Welcome, keeper. Every chamber of this palace holds one piece of true knowledge, dressed in enchantment so that it may be walked through rather than merely read. Wings radiate from this Atrium; doors join ideas that follow one another; glowing portals join ideas that merely rhyme. Nothing here is decoration — every mirror, cauldron and statue is a working metaphor for something real."
+    },
+    {
+      "id": "wayfinding-plaque",
+      "type": "plaque",
+      "title": "How to Walk",
+      "prop": "lectern",
+      "text": "Move with W, A, S, D and look with the mouse. Approach any exhibit and press E to study it closely; press E again or Escape to step back. Press M for the map of the palace, G for the constellation of ideas, and F to travel by Floo to any chamber you know the name of."
+    },
+    {
+      "id": "founder-portrait",
+      "type": "portrait",
+      "title": "Professor Aurelius Bramblestoke",
+      "subtitle": "Keeper of the Predictive Arts",
+      "text": "Ah — you've arrived. The castle grows as you learn, you know. Tonight the Divination Wing stands ready: four chambers on the art of predicting what is hidden. Mind the Mirror; it has a habit of showing students the gist of things. When you have learned something new in the wider world, send word, and the masons will raise another chamber by morning."
+    }
+  ]
+}

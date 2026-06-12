@@ -1,0 +1,12 @@
+{
+  "title": "The Palace of Mind",
+  "subtitle": "A Walkable Chronicle of Knowledge",
+  "hub": "atrium",
+  "wings": [
+    {
+      "id": "divination",
+      "name": "The Divination Wing",
+      "palette": "emerald"
+    }
+  ]
+}

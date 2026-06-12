@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>The Palace of Mind</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root {
+    --parchment: #e9dfc6;
+    --ink: #2a2118;
+    --gold: #d4af37;
+    --panel: rgba(18, 14, 24, 0.92);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #07060c;
+               font-family: Georgia, 'Times New Roman', serif; }
+  #app, #app canvas { position: absolute; inset: 0; }
+
+  /* status line */
+  #hud-top {
+    position: absolute; top: 14px; left: 18px; color: var(--parchment);
+    text-shadow: 0 1px 4px #000; pointer-events: none; z-index: 5;
+  }
+  #hud-title { font-size: 15px; letter-spacing: 0.14em; text-transform: uppercase;
+               opacity: 0.7; }
+  #hud-room { font-size: 21px; margin-top: 2px; font-style: italic; }
+
+  #crosshair {
+    position: absolute; left: 50%; top: 50%; width: 6px; height: 6px;
+    margin: -3px; border-radius: 50%; background: rgba(233,223,198,0.85);
+    box-shadow: 0 0 6px rgba(0,0,0,0.8); pointer-events: none; z-index: 5;
+  }
+  #hud-prompt {
+    position: absolute; left: 50%; bottom: 13%; transform: translateX(-50%);
+    color: var(--parchment); background: var(--panel); border: 1px solid var(--gold);
+    border-radius: 8px; padding: 8px 18px; font-size: 16px; display: none;
+    pointer-events: none; z-index: 5;
+  }
+  #hud-keys {
+    position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%);
+    color: rgba(233,223,198,0.55); font-size: 13px; pointer-events: none; z-index: 5;
+  }
+
+  /* start overlay */
+  #start {
+    position: absolute; inset: 0; display: flex; align-items: center;
+    justify-content: center; background: rgba(5, 4, 10, 0.82); z-index: 20;
+  }
+  .card {
+    max-width: 560px; padding: 38px 44px; background: var(--panel);
+    border: 1px solid var(--gold); border-radius: 14px; color: var(--parchment);
+    text-align: center;
+  }
+  .card h1 { margin: 0 0 6px; font-size: 30px; letter-spacing: 0.04em; }
+  .card .muted, .muted { color: rgba(233,223,198,0.6); font-size: 14px; }
+  .card button {
+    margin-top: 18px; font: inherit; font-size: 17px; padding: 10px 34px;
+    background: var(--gold); color: #1d1812; border: 0; border-radius: 8px;
+    cursor: pointer; letter-spacing: 0.06em;
+  }
+  .card button:hover { filter: brightness(1.1); }
+  kbd {
+    background: rgba(233,223,198,0.12); border: 1px solid rgba(233,223,198,0.3);
+    border-radius: 4px; padding: 1px 7px; font-family: inherit; font-size: 13px;
+  }
+
+  /* generic panel */
+  .panel {
+    position: absolute; z-index: 15; display: none; color: var(--parchment);
+    background: var(--panel); border: 1px solid var(--gold); border-radius: 14px;
+  }
+  #focus-panel {
+    top: 6vh; right: 4vw; width: min(560px, 46vw); max-height: 86vh;
+    padding: 26px 30px; overflow-y: auto;
+  }
+  #focus-title { margin: 0; font-size: 26px; }
+  #focus-subtitle { color: var(--gold); font-style: italic; font-size: 14px;
+                    margin: 4px 0 14px; }
+  #focus-body { white-space: pre-wrap; line-height: 1.55; font-size: 15.5px; }
+  #focus-diagram { margin-top: 16px; background: #10151d; border-radius: 8px;
+                   padding: 10px; }
+  #focus-diagram svg { max-width: 100%; height: auto; }
+  #focus-diagram pre { color: #cfe4ff; font-size: 12px; overflow-x: auto; }
+  .panel .hint { margin-top: 14px; font-size: 12.5px; color: rgba(233,223,198,0.5); }
+
+  #map-panel, #graph-panel {
+    left: 50%; top: 50%; transform: translate(-50%, -50%); padding: 18px;
+  }
+  #map-panel h2, #graph-panel h2, #floo-panel h2 {
+    margin: 0 0 10px; font-size: 18px; text-align: center; letter-spacing: 0.08em;
+  }
+  #map-canvas, #graph-canvas { display: block; background: rgba(7,6,12,0.6);
+                               border-radius: 8px; }
+  #graph-canvas { cursor: pointer; }
+
+  #floo-panel {
+    left: 50%; top: 18vh; transform: translateX(-50%); width: min(420px, 80vw);
+    padding: 22px 26px;
+  }
+  #floo-input {
+    width: 100%; font: inherit; font-size: 17px; padding: 9px 13px;
+    background: rgba(233,223,198,0.08); color: var(--parchment);
+    border: 1px solid rgba(212,175,55,0.6); border-radius: 8px; outline: none;
+  }
+  #floo-list { list-style: none; margin: 12px 0 0; padding: 0; }
+  #floo-list li { padding: 8px 12px; border-radius: 6px; cursor: pointer;
+                  font-size: 16px; }
+  #floo-list li:hover { background: rgba(212,175,55,0.18); }
+
+  #flash {
+    position: absolute; inset: 0; background: #e9ffe9; opacity: 0;
+    transition: opacity 0.45s ease; pointer-events: none; z-index: 18;
+  }
+</style>
+<script type="importmap">
+{
+  "imports": {
+    "three": "./engine/vendor/three.module.js",
+    "three/addons/controls/PointerLockControls.js": "./engine/vendor/PointerLockControls.js"
+  }
+}
+</script>
+</head>
+<body>
+  <div id="app"></div>
+
+  <div id="hud-top">
+    <div id="hud-title"></div>
+    <div id="hud-room"></div>
+  </div>
+  <div id="crosshair"></div>
+  <div id="hud-prompt"></div>
+  <div id="hud-keys">
+    <kbd>WASD</kbd> walk &nbsp; <kbd>E</kbd> study &nbsp; <kbd>M</kbd> map &nbsp;
+    <kbd>G</kbd> constellation &nbsp; <kbd>F</kbd> floo &nbsp; <kbd>Shift</kbd> run
+  </div>
+
+  <div id="start">
+    <div class="card">
+      <h1>The Palace of Mind</h1>
+      <p class="muted">A walkable chronicle of everything you have learned.</p>
+      <p style="font-size:15px; line-height:1.7">
+        Walk with <kbd>W A S D</kbd>, look with the mouse.<br/>
+        Press <kbd>E</kbd> to study exhibits and step through portals.<br/>
+        <kbd>M</kbd> map · <kbd>G</kbd> constellation of ideas · <kbd>F</kbd> floo travel
+      </p>
+      <button id="begin">Enter the Palace</button>
+    </div>
+  </div>
+
+  <div id="focus-panel" class="panel">
+    <h2 id="focus-title"></h2>
+    <div id="focus-subtitle"></div>
+    <div id="focus-body"></div>
+    <div id="focus-diagram"></div>
+    <div class="hint">E or Esc — step back</div>
+  </div>
+
+  <div id="map-panel" class="panel">
+    <h2>The Palace</h2>
+    <canvas id="map-canvas" width="760" height="560"></canvas>
+    <div class="hint">M or Esc — close</div>
+  </div>
+
+  <div id="graph-panel" class="panel">
+    <h2>The Constellation of Ideas</h2>
+    <canvas id="graph-canvas" width="860" height="600"></canvas>
+    <div class="hint">G or Esc — close</div>
+  </div>
+
+  <div id="floo-panel" class="panel">
+    <h2>Floo Network</h2>
+    <input id="floo-input" placeholder="name a chamber…" />
+    <ul id="floo-list"></ul>
+    <div class="hint">Enter — travel to first match · Esc — close</div>
+  </div>
+
+  <div id="flash"></div>
+
+  <script type="module" src="./engine/main.js"></script>
+</body>
+</html>

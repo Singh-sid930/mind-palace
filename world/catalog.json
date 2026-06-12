@@ -1,0 +1,22 @@
+{
+  "_comment": "Single source of truth for what content may reference. Both world.py (validator) and the engine read this. Content models: you may USE these values; you may not ADD to them (leave a TODO in your report instead).",
+  "room_sizes": ["small", "medium", "grand"],
+  "palettes": ["parchment", "emerald", "amber", "crimson", "sapphire", "violet", "obsidian"],
+  "exhibit_types": ["plaque", "tome", "portrait", "artifact", "diagram"],
+  "props": [
+    "pedestal",
+    "lectern",
+    "mirror",
+    "cauldron",
+    "bookshelf",
+    "statue",
+    "banner",
+    "candelabra",
+    "orrery",
+    "crystal_ball",
+    "hourglass",
+    "table",
+    "brazier"
+  ],
+  "edge_relations": ["builds-on", "relates-to", "contrasts-with", "part-of"]
+}

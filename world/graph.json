@@ -1,0 +1,192 @@
+{
+  "concepts": [
+    {
+      "id": "i-jepa",
+      "name": "I-JEPA",
+      "room": "mirror-of-occlusion",
+      "exhibit": "the-mirror",
+      "summary": "Image Joint-Embedding Predictive Architecture (Assran et al., CVPR 2023): self-supervised learning by predicting the representations of masked image regions from visible context, in latent space rather than pixel space, so the model learns semantic gist instead of low-level texture."
+    },
+    {
+      "id": "context-encoder",
+      "name": "Context encoder",
+      "room": "mirror-of-occlusion",
+      "exhibit": "plaque-two-scribes",
+      "summary": "The trained branch of I-JEPA: an encoder that sees only the visible (unmasked) patches and is updated by gradient descent on the prediction loss — the Context Scribe whose quill is sharpened nightly by its errors."
+    },
+    {
+      "id": "ema-target-encoder",
+      "name": "EMA target encoder",
+      "room": "mirror-of-occlusion",
+      "exhibit": "plaque-two-scribes",
+      "summary": "The gradient-free branch of I-JEPA: its weights are an exponential moving average of the context encoder (new target = 0.996 x old target + 0.004 x context). It encodes the full image to produce prediction targets, and because it cannot learn, it cannot collude in collapse."
+    },
+    {
+      "id": "predictor-network",
+      "name": "Predictor network",
+      "room": "mirror-of-occlusion",
+      "exhibit": "plaque-latent-regret",
+      "summary": "A narrow network between the two encoders: given the context encoder's representations of visible patches plus positional mask tokens marking where the occlusion lies, it conjures the target encoder's representation of the hidden region."
+    },
+    {
+      "id": "masked-latent-prediction",
+      "name": "Masked latent prediction",
+      "room": "mirror-of-occlusion",
+      "exhibit": "plaque-latent-regret",
+      "summary": "The I-JEPA objective: minimize the squared distance between predicted and true representations of masked regions — representation against representation, never pixel against pixel. Predicting in latent space returns the sense of what belongs, not the texture."
+    },
+    {
+      "id": "representation-collapse",
+      "name": "Representation collapse",
+      "room": "mirror-of-occlusion",
+      "exhibit": "plaque-no-collapse",
+      "summary": "The failure mode of joint-embedding methods: all inputs mapped to one constant point, giving zero loss and zero information — the blank page with no regret. I-JEPA forbids it by learning asymmetry (EMA target, no gradient); VICReg forbids it with explicit variance and covariance penalties."
+    },
+    {
+      "id": "vicreg",
+      "name": "VICReg",
+      "room": "vicereg-corridor",
+      "exhibit": "three-sisters-statue",
+      "summary": "Variance-Invariance-Covariance Regularization (Bardes, Ponce and LeCun, ICLR 2022): a self-supervised loss of three explicit terms that prevents collapse without negative pairs or asymmetric networks, yielding representations that are semantically tight, globally spread, and dimensionally rich."
+    },
+    {
+      "id": "invariance-term",
+      "name": "Invariance term",
+      "room": "vicereg-corridor",
+      "exhibit": "plaque-three-vows",
+      "summary": "VICReg's first vow: a mean-squared-error term pulling together the embeddings of two augmented views of the same image — two glimpses of the same thing must sound the same note."
+    },
+    {
+      "id": "variance-term",
+      "name": "Variance term",
+      "room": "vicereg-corridor",
+      "exhibit": "plaque-three-vows",
+      "summary": "VICReg's second vow, in open rebellion against the first: a hinge penalty keeps the standard deviation of each embedding dimension, computed across the batch, at no less than one — so the batch never collapses onto a single note."
+    },
+    {
+      "id": "covariance-term",
+      "name": "Covariance term",
+      "room": "vicereg-corridor",
+      "exhibit": "plaque-three-vows",
+      "summary": "VICReg's third and subtlest vow: drive the off-diagonal entries of the embedding covariance matrix toward zero, decorrelating dimensions so the spread won by the variance term is not secretly crowded into a single direction (informational collapse)."
+    },
+    {
+      "id": "vicreg-expander",
+      "name": "Expander h-phi",
+      "room": "vicereg-corridor",
+      "exhibit": "plaque-expander",
+      "summary": "VICReg's projector: expands encoder output into a higher-dimensional space before the loss. It absorbs the invariance pressure so the encoder stays rich, and it turns nonlinear dependencies into linear correlations the covariance term can detect and remove. Discarded after training."
+    },
+    {
+      "id": "projector-head",
+      "name": "Projector head",
+      "room": "projector-shield",
+      "exhibit": "four-monographs",
+      "summary": "The funnel between encoder and self-supervised loss, discarded after training. It concentrates the pretext task's distortion within itself so the encoder beneath retains broadly useful features — a soft buffer, not a hard guard, since gradients still flow through it."
+    },
+    {
+      "id": "simclr",
+      "name": "SimCLR",
+      "room": "projector-shield",
+      "exhibit": "plaque-guillotine",
+      "summary": "Chen et al., ICML 2020: the simple contrastive framework whose authors first observed, almost by accident, that the encoder performs better downstream once the projection head is removed — the first sighting of the projector-head phenomenon, offered without a mathematics of the gradient."
+    },
+    {
+      "id": "guillotine-regularization",
+      "name": "Guillotine Regularization",
+      "room": "projector-shield",
+      "exhibit": "plaque-guillotine",
+      "summary": "Bordes et al., NeurIPS 2023: snip off the head and the body sings on. Severing the projector after training can raise downstream performance by over thirty percentage points, because overfitting to the pretext task is localized in the head while the encoder is spared."
+    },
+    {
+      "id": "gradient-feature-migration",
+      "name": "Gradient feature migration",
+      "room": "projector-shield",
+      "exhibit": "plaque-feature-migration",
+      "summary": "Xue et al., ICLR 2024: the implicit bias of gradient-based training makes pretext-useful features migrate toward the projector's output while downstream-useful features settle in the encoder. The head's non-linearities enable this emergent, non-architectural functional specialization."
+    },
+    {
+      "id": "information-bottleneck",
+      "name": "Information bottleneck view",
+      "room": "projector-shield",
+      "exhibit": "plaque-bottleneck",
+      "summary": "ICLR 2025: the projection head is secretly an information bottleneck — it compresses out information irrelevant to the SSL objective and attenuates the gradient signal reaching the encoder, which sits upstream of the compression and so retains the broader signal."
+    },
+    {
+      "id": "jepa-family",
+      "name": "The JEPA family",
+      "room": "paris-cauldron",
+      "exhibit": "the-paris-cauldron",
+      "summary": "The joint-embedding predictive architecture paradigm — predict in representation space, not pixel space — spanning I-JEPA, V-JEPA 2/2.1, and AMI Labs' world models. As of May 2026 it stands roughly at its GPT-3 moment: deployed, funded, and still awaiting its ChatGPT-equivalent."
+    },
+    {
+      "id": "v-jepa-2",
+      "name": "V-JEPA 2 / 2.1",
+      "room": "paris-cauldron",
+      "exhibit": "plaque-vjepa",
+      "summary": "Meta's video JEPA: pretrained on one million hours of video plus sixty-two hours of robot data, grasping novel objects at 65-80% on a Franka arm. V-JEPA 2.1 added Dense Predictive Loss, Deep Self-Supervision at intermediate layers, and modality-specific tokenizers: +20 points grasping, 10x faster planning; sizes from ViT-B (80M) to ViT-G (2B)."
+    },
+    {
+      "id": "world-action-models",
+      "name": "World Action Models",
+      "room": "paris-cauldron",
+      "exhibit": "plaque-wams",
+      "summary": "The winter-2026 paradigm: one model jointly generates future video AND future action, instead of bolting perception onto action as VLAs do. DreamZero (NVIDIA, 14B, flow matching, 7 Hz), Fast-WAM (video prediction as a training-time representational enrichment, like BERT's masked tokens), MotuBrain (Mixture-of-Transformers, 95.8% on RoboTwin 2.0)."
+    },
+    {
+      "id": "marble-generative-worlds",
+      "name": "Marble / generative 3D worlds",
+      "room": "paris-cauldron",
+      "exhibit": "plaque-new-houses",
+      "summary": "WorldLabs' Marble (Nov 2025): generates persistent, downloadable 3D worlds from text, image, video or sketch, represented as Gaussian Splatting — soft elliptical motes with color, opacity and orientation. Framed as the complement to JEPA: generative models create the worlds in which predictive agents train."
+    },
+    {
+      "id": "jepa-scaling-laws",
+      "name": "Scaling laws (the missing decree)",
+      "room": "paris-cauldron",
+      "exhibit": "portrait-lecturer",
+      "summary": "Language models had the Chinchilla decree (Hoffmann et al., 2022: roughly 20 tokens per parameter), telling the field how to spend its compute. JEPA has no such decree yet — one of the four reasons the paradigm has not exploded commercially despite its technical merits."
+    }
+  ],
+  "edges": [
+    { "from": "context-encoder", "to": "i-jepa", "relation": "part-of" },
+    { "from": "ema-target-encoder", "to": "i-jepa", "relation": "part-of" },
+    { "from": "predictor-network", "to": "i-jepa", "relation": "part-of" },
+    { "from": "masked-latent-prediction", "to": "i-jepa", "relation": "part-of" },
+    { "from": "ema-target-encoder", "to": "context-encoder", "relation": "relates-to" },
+    { "from": "predictor-network", "to": "masked-latent-prediction", "relation": "relates-to" },
+    { "from": "ema-target-encoder", "to": "representation-collapse", "relation": "relates-to" },
+    { "from": "representation-collapse", "to": "masked-latent-prediction", "relation": "relates-to" },
+    { "from": "invariance-term", "to": "vicreg", "relation": "part-of" },
+    { "from": "variance-term", "to": "vicreg", "relation": "part-of" },
+    { "from": "covariance-term", "to": "vicreg", "relation": "part-of" },
+    { "from": "vicreg-expander", "to": "vicreg", "relation": "part-of" },
+    { "from": "invariance-term", "to": "variance-term", "relation": "contrasts-with" },
+    { "from": "variance-term", "to": "covariance-term", "relation": "relates-to" },
+    { "from": "variance-term", "to": "representation-collapse", "relation": "relates-to" },
+    { "from": "covariance-term", "to": "representation-collapse", "relation": "relates-to" },
+    { "from": "vicreg", "to": "ema-target-encoder", "relation": "contrasts-with" },
+    { "from": "vicreg", "to": "i-jepa", "relation": "relates-to" },
+    { "from": "invariance-term", "to": "masked-latent-prediction", "relation": "relates-to" },
+    { "from": "vicreg-expander", "to": "projector-head", "relation": "relates-to" },
+    { "from": "vicreg-expander", "to": "simclr", "relation": "builds-on" },
+    { "from": "projector-head", "to": "simclr", "relation": "builds-on" },
+    { "from": "guillotine-regularization", "to": "simclr", "relation": "builds-on" },
+    { "from": "guillotine-regularization", "to": "projector-head", "relation": "relates-to" },
+    { "from": "gradient-feature-migration", "to": "guillotine-regularization", "relation": "builds-on" },
+    { "from": "gradient-feature-migration", "to": "projector-head", "relation": "relates-to" },
+    { "from": "information-bottleneck", "to": "projector-head", "relation": "relates-to" },
+    { "from": "information-bottleneck", "to": "gradient-feature-migration", "relation": "relates-to" },
+    { "from": "invariance-term", "to": "projector-head", "relation": "relates-to" },
+    { "from": "i-jepa", "to": "jepa-family", "relation": "part-of" },
+    { "from": "v-jepa-2", "to": "jepa-family", "relation": "part-of" },
+    { "from": "v-jepa-2", "to": "i-jepa", "relation": "builds-on" },
+    { "from": "v-jepa-2", "to": "ema-target-encoder", "relation": "builds-on" },
+    { "from": "world-action-models", "to": "jepa-family", "relation": "contrasts-with" },
+    { "from": "world-action-models", "to": "v-jepa-2", "relation": "relates-to" },
+    { "from": "marble-generative-worlds", "to": "jepa-family", "relation": "contrasts-with" },
+    { "from": "marble-generative-worlds", "to": "v-jepa-2", "relation": "relates-to" },
+    { "from": "jepa-scaling-laws", "to": "jepa-family", "relation": "relates-to" },
+    { "from": "vicreg", "to": "jepa-family", "relation": "relates-to" }
+  ]
+}
