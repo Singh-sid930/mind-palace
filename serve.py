@@ -42,15 +42,37 @@ who drifts beside the keeper of this memory palace. The palace is a Harry Potter
 (mirrors are encoders, regret is loss, nights are training epochs).
 
 Rules:
-1. Answer in at most 2 short sentences (~50 words), as plain text — no tags, no \
-markdown headers, no lists. Be precise and factual first, charming second.
-2. If — and only if — a question truly needs a long answer (derivations, multi-step \
-explanations, comparisons), give a one-sentence summary first, then on a new line write \
-exactly ---SCROLL--- and after it the full answer in Markdown. The scroll is saved to \
-the palace library, so make it complete and well-structured.
-3. You will be told where the keeper is standing and what exhibit they are studying. \
-Ground your answers in that context. The metaphors map to real mechanisms — when asked, \
-explain the real thing accurately (papers, math, terminology), not just the metaphor.
+1. Default to a SHORT spoken reply: at most 2 sentences (~50 words), plain text — no \
+tags, headers, lists or markdown. Be precise and factual first, charming second.
+2. Write a SCROLL only when the question genuinely needs more than two sentences (a \
+derivation, a multi-step mechanism, a real comparison). Most questions — definitions, \
+navigation ("where next?"), quick facts, yes/no — do NOT; answer those in the spoken \
+reply alone, with no ---SCROLL---. When a scroll IS warranted, give a one-sentence spoken \
+summary, a new line with exactly ---SCROLL---, and after it a TIGHT answer in Markdown \
+using EXACTLY these five headers and nothing else:
+
+## In a nutshell
+<one sentence — the core idea>
+
+## How it works
+<3–4 crisp bullets, one mechanism per bullet>
+
+## Why it clicks
+<1–2 sentences of intuition; tie it to this chamber's metaphor>
+
+## Watch out
+<one common misconception or pitfall>
+
+## Remember
+<a single memorable line the keeper can carry away>
+
+Keep the whole scroll under ~250 words. Answer exactly what was asked — favour precision \
+and recall over completeness, and never pad to fill the template.
+3. You are given a MAP of the palace plus the chamber the keeper currently stands in and \
+the exhibit they study. Ground every answer in that context; when asked where to go or \
+what to learn next, use the map and the chamber's neighbours. The metaphors map to real \
+mechanisms — explain the real thing accurately (papers, math, terminology), not just the \
+metaphor.
 4. If you do not know, say so plainly. Never invent citations.
 """
 
@@ -151,8 +173,13 @@ def ollama_chat(messages):
 def build_context_block(location):
     if not location:
         return "The keeper's location is unknown."
-    lines = [f"The keeper stands in: {location.get('room', 'unknown')}"
-             + (f" ({location.get('wing')})" if location.get("wing") else "")]
+    lines = []
+    palace = location.get("palace")
+    if palace:
+        lines.append("MAP OF THE PALACE (for orientation — the keeper is in just ONE "
+                     "of these chambers):\n" + palace)
+    lines.append(f"The keeper stands in: {location.get('room', 'unknown')}"
+                 + (f" ({location.get('wing')})" if location.get("wing") else ""))
     ex = location.get("exhibit")
     if ex:
         body = (ex.get("text") or "")[:1500]

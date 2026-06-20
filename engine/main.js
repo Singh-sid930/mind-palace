@@ -6,6 +6,8 @@ import * as THREE from 'three';
 import { solveLayout, spaceAt } from './layout.js';
 import { buildWorld } from './builder.js';
 import { buildExhibits } from './exhibits.js';
+import { buildWayfinding } from './wayfinding.js';
+import { Wisp } from './wisp.js';
 import { Player, EYE } from './player.js';
 import { Hud } from './hud.js';
 import { Companion } from './companion.js';
@@ -28,12 +30,35 @@ async function loadWorldData() {
   return { world, graph, roomsById };
 }
 
+// A compact, data-derived overview of the whole palace for the companion: each
+// wing, its chambers in walking order, and the concepts each chamber holds.
+// Lets Gemma answer "what's next?" and cross-room questions, not just local ones.
+function buildPalaceGist(world, roomsById, graph) {
+  const byRoom = {};
+  for (const c of graph.concepts) (byRoom[c.room] ||= []).push(c.name);
+  const lines = [`"${world.title}" — the chambers, by wing:`];
+  for (const wing of world.wings) {
+    lines.push(`${wing.name}:`);
+    Object.values(roomsById)
+      .filter((r) => r.wing === wing.id)
+      .sort((a, b) => a.order - b.order)
+      .forEach((r) => {
+        const cs = (byRoom[r.id] || []).slice(0, 5).join(', ');
+        lines.push(`  ${r.order}. ${r.name}${cs ? ' — ' + cs : ''}`);
+      });
+  }
+  const hub = roomsById[world.hub];
+  if (hub) lines.push(`Hub: ${hub.name} (where the wings meet).`);
+  return lines.join('\n');
+}
+
 async function boot() {
   const params = new URLSearchParams(location.search);
   const debug = params.has('debug');
 
   const { world, graph, roomsById } = await loadWorldData();
   const layout = solveLayout(world, roomsById);
+  const palaceGist = buildPalaceGist(world, roomsById, graph);
 
   const renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setSize(innerWidth, innerHeight);
@@ -47,6 +72,8 @@ async function boot() {
 
   const { colliders } = buildWorld(scene, layout);
   const { interactables, updates } = buildExhibits(scene, layout, roomsById);
+  buildWayfinding(scene, layout, roomsById, graph);
+  const wisp = new Wisp(scene, layout, roomsById);
 
   const player = new Player(camera, renderer.domElement, colliders);
   player.place(layout.spawn.x, layout.spawn.z, layout.spawn.yaw);
@@ -71,6 +98,7 @@ async function boot() {
     const wing = world.wings.find((w) => w.id === space.wing);
     const roomId = space.kind === 'room' && space.room ? space.room.id : null;
     return {
+      palace: palaceGist,
       room: space.kind === 'room' && space.room ? space.room.name : 'a passage',
       wing: wing ? wing.name : null,
       exhibit: target ? { title: target.focus.title, text: target.focus.body } : null,
@@ -171,6 +199,7 @@ async function boot() {
     },
     pos: () => ({ x: camera.position.x, z: camera.position.z,
                   yaw: camera.rotation.y }),
+    wisp,
     ready: false,
   };
 
@@ -183,6 +212,7 @@ async function boot() {
 
     player.update(dt);
     companion.update(dt, camera, t);
+    wisp.update(dt, camera, t);
     for (const fn of updates) fn(t);
 
     // Throttled UI updates.
@@ -191,6 +221,7 @@ async function boot() {
       acc = 0;
       const space = spaceAt(layout, camera.position.x, camera.position.z);
       hud.setLocation(space);
+      wisp.setRoom(space && space.kind === 'room' && space.room ? space.room.id : null);
       target = findTarget();
       hud.setPrompt(hud.openPanel ? null : target);
       if (hud.openPanel === 'map') {

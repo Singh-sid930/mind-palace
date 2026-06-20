@@ -219,6 +219,159 @@ export function diagramTexture({ title, pal, w = 1024, h = 768 }) {
   return tex;
 }
 
+// Draw a directional glyph for a signpost: a forward/back arrow, a little
+// house (toward the hub), or a double arrow (a lateral, cross-wing link).
+function drawArrow(ctx, dir, x, y, s, color) {
+  ctx.save();
+  ctx.fillStyle = color;
+  ctx.strokeStyle = color;
+  ctx.lineWidth = Math.max(4, s * 0.16);
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  const tri = (pts) => {
+    ctx.beginPath();
+    ctx.moveTo(pts[0][0], pts[0][1]);
+    for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i][0], pts[i][1]);
+    ctx.closePath();
+    ctx.fill();
+  };
+  if (dir === 'fwd' || dir === 'back') {
+    const f = dir === 'fwd' ? 1 : -1;
+    ctx.beginPath();
+    ctx.moveTo(x - f * s * 0.5, y);
+    ctx.lineTo(x + f * s * 0.12, y);
+    ctx.stroke();
+    tri([[x + f * s * 0.5, y], [x + f * s * 0.05, y - s * 0.34],
+         [x + f * s * 0.05, y + s * 0.34]]);
+  } else if (dir === 'home') {
+    ctx.beginPath();
+    ctx.moveTo(x - s * 0.4, y + s * 0.4);
+    ctx.lineTo(x - s * 0.4, y - s * 0.02);
+    ctx.lineTo(x, y - s * 0.42);
+    ctx.lineTo(x + s * 0.4, y - s * 0.02);
+    ctx.lineTo(x + s * 0.4, y + s * 0.4);
+    ctx.closePath();
+    ctx.stroke();
+  } else { // across
+    ctx.beginPath();
+    ctx.moveTo(x - s * 0.32, y);
+    ctx.lineTo(x + s * 0.32, y);
+    ctx.stroke();
+    tri([[x + s * 0.5, y], [x + s * 0.14, y - s * 0.3], [x + s * 0.14, y + s * 0.3]]);
+    tri([[x - s * 0.5, y], [x - s * 0.14, y - s * 0.3], [x - s * 0.14, y + s * 0.3]]);
+  }
+  ctx.restore();
+}
+
+// A carved wooden signpost board: a direction word + arrow up top, the name of
+// the chamber beyond, and a small italic hint about how the two rooms relate.
+export function signTexture({ dir = 'fwd', word = '', dest = '', hint = '',
+                             pal, w = 512, h = 320 }) {
+  const c = makeCanvas(w, h);
+  const ctx = c.getContext('2d');
+
+  // Wood ground with faint vertical grain.
+  ctx.fillStyle = '#4a3320';
+  ctx.fillRect(0, 0, w, h);
+  ctx.strokeStyle = 'rgba(20,12,4,0.25)';
+  ctx.lineWidth = 2;
+  for (let gx = 16; gx < w; gx += 23) {
+    ctx.beginPath();
+    ctx.moveTo(gx + Math.sin(gx) * 3, 0);
+    ctx.lineTo(gx - Math.sin(gx) * 3, h);
+    ctx.stroke();
+  }
+  // Routed dark border.
+  ctx.strokeStyle = '#2a1c0c';
+  ctx.lineWidth = 16;
+  ctx.strokeRect(14, 14, w - 28, h - 28);
+
+  const gold = hexCss(pal.accent);
+
+  // Header: arrow + direction word, carved in gold.
+  drawArrow(ctx, dir, 58, 64, 44, gold);
+  ctx.fillStyle = gold;
+  ctx.textAlign = 'left';
+  ctx.font = `bold 50px ${SERIF}`;
+  ctx.fillText(word.toUpperCase(), 110, 80);
+
+  // Rule beneath the header.
+  ctx.strokeStyle = hexCss(pal.glow);
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.moveTo(40, 108);
+  ctx.lineTo(w - 40, 108);
+  ctx.stroke();
+
+  // Destination chamber name, centered. Font shrinks for long names so the
+  // whole name fits (up to three lines) rather than clipping.
+  ctx.fillStyle = '#efe6cf';
+  ctx.textAlign = 'center';
+  const destSize = dest.length > 30 ? 34 : dest.length > 20 ? 40 : 46;
+  ctx.font = `bold ${destSize}px ${SERIF}`;
+  const lines = wrapText(ctx, dest, w - 80).slice(0, 3);
+  const lineH = destSize * 1.14;
+  const block = lines.length * lineH;
+  const region = (h - 32) - 118; // between the rule and the hint line
+  let y = 118 + (region - block) / 2 + destSize;
+  for (const line of lines) { ctx.fillText(line, w / 2, y); y += lineH; }
+
+  // Relation hint.
+  if (hint) {
+    ctx.fillStyle = 'rgba(239,230,207,0.72)';
+    ctx.font = `italic 28px ${SERIF}`;
+    ctx.fillText(hint, w / 2, h - 32, w - 70);
+  }
+
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.anisotropy = 4;
+  return tex;
+}
+
+// A small floating tooltip pill for the guiding wisp: a gold forward arrow and
+// the name of the chamber it is nudging you toward.
+export function tipTexture({ text, pal, w = 560, h = 140 }) {
+  const c = makeCanvas(w, h);
+  const ctx = c.getContext('2d');
+  ctx.clearRect(0, 0, w, h);
+
+  // Rounded translucent pill with a glowing rim.
+  const x = 8, y = 12, ww = w - 16, hh = h - 24, r = hh / 2;
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + ww, y, x + ww, y + hh, r);
+  ctx.arcTo(x + ww, y + hh, x, y + hh, r);
+  ctx.arcTo(x, y + hh, x, y, r);
+  ctx.arcTo(x, y, x + ww, y, r);
+  ctx.closePath();
+  ctx.fillStyle = 'rgba(12,10,18,0.8)';
+  ctx.fill();
+  ctx.strokeStyle = hexCss(pal.glow);
+  ctx.lineWidth = 4;
+  ctx.stroke();
+
+  drawArrow(ctx, 'fwd', 64, h / 2, 38, hexCss(pal.accent));
+
+  ctx.fillStyle = '#efe6cf';
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'middle';
+  const size = text.length > 22 ? 38 : 46;
+  ctx.font = `bold ${size}px ${SERIF}`;
+  let label = text;
+  while (ctx.measureText(label).width > w - 130 && label.length > 4) {
+    label = label.slice(0, -2);
+  }
+  if (label !== text) label = label.replace(/\s+\S*$/, '') + '…';
+  ctx.fillText(label, 108, h / 2 + 2);
+  ctx.textBaseline = 'alphabetic';
+
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.anisotropy = 4;
+  return tex;
+}
+
 // Floating room-name banner texture.
 export function bannerTexture({ text, pal, w = 1024, h = 256 }) {
   const c = makeCanvas(w, h);
