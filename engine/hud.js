@@ -3,6 +3,7 @@
 // and Floo travel (F). Pure DOM + canvas; styled in index.html.
 
 import { loadMermaid } from './mermaid.js';
+import { spaceAt } from './layout.js';
 
 export class Hud {
   constructor({ layout, world, graph, roomsById, onTeleport }) {
@@ -55,9 +56,15 @@ export class Hud {
     const el = this.$('hud-prompt');
     if (!record) { el.style.display = 'none'; return; }
     el.style.display = 'block';
-    el.textContent = record.kind === 'portal'
-      ? `E — step through to “${record.focus.title}”`
-      : `E — study “${record.focus.title}”`;
+    if (record.kind === 'portal') {
+      el.textContent = `E — step through to “${record.focus.title}”`;
+    } else if (record.kind === 'stair') {
+      el.textContent = `E — take the staircase to “${record.focus.title}”`;
+    } else if (record.kind === 'sign') {
+      el.textContent = `E — ${record.prompt}`;
+    } else {
+      el.textContent = `E — study “${record.focus.title}”`;
+    }
   }
 
   // --- panels --------------------------------------------------------------
@@ -68,13 +75,13 @@ export class Hud {
     this.openPanel = null;
   }
 
-  toggle(name) {
+  toggle(name, player) {
     const open = this.openPanel === name;
     this.closeAll();
     if (!open) {
       this.$(`${name}-panel`).style.display = 'block';
       this.openPanel = name;
-      if (name === 'map') this.drawMap();
+      if (name === 'map') this.drawMap(player);
       if (name === 'graph') this.drawGraph();
       if (name === 'floo') {
         const input = this.$('floo-input');
@@ -127,7 +134,19 @@ export class Hud {
     const W = canvas.width, H = canvas.height;
     ctx.clearRect(0, 0, W, H);
 
-    const rects = this.layout.spaces.map((s) => s.rect);
+    // Show only the floor the player is standing on.
+    const here = player ? spaceAt(this.layout, player.x, player.z) : null;
+    const level = here ? here.level : (this.layout.spaces[0] && this.layout.spaces[0].level);
+    const levelSpaces = this.layout.spaces.filter((s) => s.level === level);
+    if (!levelSpaces.length) return;
+    const onLevel = new Set(levelSpaces.map((s) => s.id));
+    const heading = this.$('map-panel').querySelector('h2');
+    if (heading) {
+      const lv = (this.world.levels || []).find((l) => l.id === level);
+      heading.textContent = lv ? lv.name : 'The Palace';
+    }
+
+    const rects = levelSpaces.map((s) => s.rect);
     const minX = Math.min(...rects.map((r) => r.minX)) - 4;
     const maxX = Math.max(...rects.map((r) => r.maxX)) + 4;
     const minZ = Math.min(...rects.map((r) => r.minZ)) - 4;
@@ -138,7 +157,7 @@ export class Hud {
     const px = (x) => ox + (x - minX) * k;
     const pz = (z) => oz + (z - minZ) * k;
 
-    for (const s of this.layout.spaces) {
+    for (const s of levelSpaces) {
       const r = s.rect;
       ctx.fillStyle = s.kind === 'room' ? 'rgba(233,223,198,0.16)' : 'rgba(233,223,198,0.07)';
       ctx.strokeStyle = 'rgba(212,175,55,0.55)';
@@ -156,6 +175,7 @@ export class Hud {
     ctx.strokeStyle = 'rgba(159,232,185,0.6)';
     ctx.setLineDash([5, 5]);
     for (const p of this.layout.portals) {
+      if (!onLevel.has(p.a) || !onLevel.has(p.b)) continue;
       const A = this.layout.spaceById[p.a].rect, B = this.layout.spaceById[p.b].rect;
       ctx.beginPath();
       ctx.moveTo(px(A.cx), pz(A.cz));

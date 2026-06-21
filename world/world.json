@@ -2,16 +2,30 @@
   "title": "The Palace of Mind",
   "subtitle": "A Walkable Chronicle of Knowledge",
   "hub": "atrium",
+  "levels": [
+    {
+      "id": "ground",
+      "name": "The Ground Floor — World Models",
+      "hub": "atrium"
+    },
+    {
+      "id": "upper",
+      "name": "The Upper Floor — Language Models",
+      "hub": "attention-atrium"
+    }
+  ],
   "wings": [
     {
       "id": "divination",
       "name": "The Divination Wing",
-      "palette": "emerald"
+      "palette": "emerald",
+      "level": "ground"
     },
     {
       "id": "attention",
       "name": "The Wing of Attention",
-      "palette": "sapphire"
+      "palette": "sapphire",
+      "level": "upper"
     }
   ]
 }

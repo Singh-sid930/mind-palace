@@ -1,6 +1,7 @@
 {
   "rooms": [
     "atrium.json",
+    "attention-atrium.json",
     "compass-and-clock.json",
     "council-of-heads.json",
     "forge-of-the-query.json",

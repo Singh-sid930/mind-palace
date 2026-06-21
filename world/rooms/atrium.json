@@ -25,7 +25,14 @@
       "type": "portrait",
       "title": "Professor Aurelius Bramblestoke",
       "subtitle": "Keeper of the Predictive Arts",
-      "text": "Ah — you've arrived. The castle grows as you learn, you know. Tonight the Divination Wing stands ready: four chambers on the art of predicting what is hidden. Mind the Mirror; it has a habit of showing students the gist of things. When you have learned something new in the wider world, send word, and the masons will raise another chamber by morning."
+      "text": "Ah — you've arrived. The castle grows as you learn, you know. This Ground Floor holds the world-model arts — the Divination Wing and its four chambers on predicting what is hidden. Mind the Mirror; it has a habit of showing students the gist of things. And mark the Grand Staircase: it climbs to the Upper Floor, where the language models keep their halls of Attention. When you have learned something new in the wider world, send word, and the masons will raise another chamber by morning."
+    },
+    {
+      "id": "grand-staircase",
+      "type": "stair",
+      "title": "The Grand Staircase",
+      "to": "attention-atrium",
+      "caption": "A sweeping stair that climbs to the Upper Floor — the realm of language models and their halls of Attention. Press E to ascend."
     }
   ]
 }

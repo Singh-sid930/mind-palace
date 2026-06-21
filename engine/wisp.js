@@ -72,8 +72,8 @@ export class Wisp {
     }
 
     this.label = new THREE.Sprite(new THREE.SpriteMaterial({ transparent: true, depthTest: true }));
-    this.label.scale.set(2.0, 0.5, 1);
-    this.label.position.y = 0.5;
+    this.label.scale.set(1.77, 0.62, 1);
+    this.label.position.y = 0.56;
 
     this.body.add(this.core, this.halo, this.light, this.motes, this.label);
     scene.add(this.group);

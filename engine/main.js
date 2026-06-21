@@ -74,7 +74,8 @@ async function boot() {
 
   const { colliders } = buildWorld(scene, layout);
   const { interactables, updates } = buildExhibits(scene, layout, roomsById);
-  buildWayfinding(scene, layout, roomsById, graph);
+  const wayfinding = buildWayfinding(scene, layout, roomsById, graph);
+  for (const [obj, rec] of wayfinding.interactables) interactables.set(obj, rec);
   const wisp = new Wisp(scene, layout, roomsById);
   const diagramPanel = new DiagramPanel(scene);
 
@@ -179,6 +180,10 @@ async function boot() {
       if (target) {
         if (target.kind === 'portal') {
           teleport(target.targetRoom);
+        } else if (target.kind === 'sign') {
+          teleport(target.destRoom);
+        } else if (target.kind === 'stair') {
+          teleport(target.targetRoom);
         } else if (target.focus.mermaid || target.focus.image) {
           // Diagram or image exhibit: float a big panel in the room, keeping the
           // player in control so they can step back and walk around it.
@@ -198,7 +203,8 @@ async function boot() {
       if (chat.toggle()) player.controls.unlock(); else player.controls.lock();
     } else if (e.code === 'KeyM') {
       if (diagramPanel.isOpen) closeDiagramStage();
-      if (hud.toggle('map')) player.controls.unlock(); else player.controls.lock();
+      const pl = { x: camera.position.x, z: camera.position.z, yaw: camera.rotation.y };
+      if (hud.toggle('map', pl)) player.controls.unlock(); else player.controls.lock();
     } else if (e.code === 'KeyG') {
       if (diagramPanel.isOpen) closeDiagramStage();
       if (hud.toggle('graph')) player.controls.unlock(); else player.controls.lock();
@@ -238,12 +244,26 @@ async function boot() {
                   yaw: camera.rotation.y }),
     wisp,
     diagramPanel,
-    studyDiagram: (roomId, type = 'diagram') => {
+    layout,
+    signs: wayfinding.signs,
+    stairs2: () => {
+      const seen = {}; const out = [];
+      for (const [o, r] of interactables) {
+        if (r.kind === 'stair' && !seen[r.targetRoom]) {
+          seen[r.targetRoom] = true;
+          const p = new THREE.Vector3();
+          o.getWorldPosition(p);
+          out.push({ x: p.x, z: p.z, to: r.targetRoom });
+        }
+      }
+      return out;
+    },
+    studyDiagram: (roomId, type = 'diagram', noTeleport = false) => {
       const room = roomsById[roomId];
       const ex = room && room.exhibits.find((e) => e.type === type);
       if (!ex) return false;
       const sp = layout.spaceById[roomId];
-      teleport(roomId);
+      if (!noTeleport) teleport(roomId);
       const opts = { camera, rect: sp ? sp.rect : null,
                      pal: palette(sp ? sp.paletteName : 'parchment') };
       if (ex.type === 'image') diagramPanel.showImage(ex.image, opts);

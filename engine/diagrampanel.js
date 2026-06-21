@@ -44,8 +44,11 @@ export class DiagramPanel {
   }
 
   _spawn(texture, w, h, { camera, rect, pal }) {
-    // Fit within max bounds, preserving aspect.
-    let worldW = MAX_W, worldH = MAX_W * h / w;
+    // Fit within max bounds AND the room, preserving aspect, so the whole panel
+    // stays inside the walls whichever way it ends up facing.
+    let maxW = MAX_W;
+    if (rect) maxW = Math.max(1.6, Math.min(MAX_W, Math.min(rect.w, rect.d) - 2.4));
+    let worldW = maxW, worldH = maxW * h / w;
     if (worldH > MAX_H) { worldH = MAX_H; worldW = MAX_H * w / h; }
 
     const group = new THREE.Group();
@@ -67,11 +70,12 @@ export class DiagramPanel {
     camera.getWorldDirection(fwd); fwd.y = 0;
     if (fwd.lengthSq() < 1e-6) fwd.set(0, 0, -1);
     fwd.normalize();
-    let px = camera.position.x + fwd.x * 3.4;
-    let pz = camera.position.z + fwd.z * 3.4;
+    let px = camera.position.x + fwd.x * 3.2;
+    let pz = camera.position.z + fwd.z * 3.2;
     if (rect) {
-      px = clamp(px, rect.minX + 1.0, rect.maxX - 1.0);
-      pz = clamp(pz, rect.minZ + 1.0, rect.maxZ - 1.0);
+      const m = 0.45 + worldW / 2; // keep the panel's edges clear of the walls
+      px = clamp(px, rect.minX + m, rect.maxX - m);
+      pz = clamp(pz, rect.minZ + m, rect.maxZ - m);
     }
     const baseY = Math.max(worldH / 2 + 0.3, 1.7);
     group.position.set(px, baseY, pz);

@@ -31,54 +31,73 @@ function rect(cx, cz, w, d) {
 }
 
 export function solveLayout(world, roomsById) {
-  if (world.wings.length > 4) {
-    console.warn('Layout v1 supports 4 wings; extras overlap. TODO: ring layout.');
-  }
+  // Each level is laid out around its own hub, in its own far-apart region of
+  // the plane (reached by staircase, not on foot). One level → behaves as before.
+  const LEVEL_GAP = 400;
+  const levels = (world.levels && world.levels.length)
+    ? world.levels
+    : [{ id: null, hub: world.hub }];
+  const hasLevels = !!(world.levels && world.levels.length);
+  const wingLevelOf = (w) => (hasLevels ? (w.level || world.levels[0].id) : null);
 
   const spaces = [];
-  const hubRoom = roomsById[world.hub];
-  const hubSize = ROOM_SIZE[hubRoom.size];
-  spaces.push({
-    id: world.hub, kind: 'room', room: hubRoom, wing: null,
-    rect: rect(0, 0, hubSize, hubSize),
-    h: ROOM_HEIGHT[hubRoom.size],
-    paletteName: hubRoom.palette || 'parchment',
-  });
+  let spawn = null;
 
-  world.wings.forEach((wing, i) => {
-    const dir = DIRS[i % 4];
-    const members = Object.values(roomsById)
-      .filter((r) => r.wing === wing.id)
-      .sort((a, b) => a.order - b.order);
-
-    let cursor = hubSize / 2; // distance from origin along dir to last far edge
-    members.forEach((room, k) => {
-      const size = ROOM_SIZE[room.size];
-      // Corridor between previous space and this room.
-      const cMid = cursor + CORRIDOR_LEN / 2;
-      const isX = dir.x !== 0;
-      spaces.push({
-        id: `${wing.id}-corridor-${k + 1}`, kind: 'corridor', room: null,
-        wing: wing.id,
-        rect: isX
-          ? rect(dir.x * cMid, 0, CORRIDOR_LEN, CORRIDOR_W)
-          : rect(0, dir.z * cMid, CORRIDOR_W, CORRIDOR_LEN),
-        h: CORRIDOR_H,
-        paletteName: room.palette || wing.palette,
-      });
-      cursor += CORRIDOR_LEN;
-      // The room itself.
-      const rMid = cursor + size / 2;
-      spaces.push({
-        id: room.id, kind: 'room', room, wing: wing.id,
-        rect: isX
-          ? rect(dir.x * rMid, 0, size, size)
-          : rect(0, dir.z * rMid, size, size),
-        h: ROOM_HEIGHT[room.size],
-        paletteName: room.palette || wing.palette,
-      });
-      cursor += size;
+  levels.forEach((level, li) => {
+    const ox = li * LEVEL_GAP;
+    const hubRoom = roomsById[level.hub];
+    const hubSize = ROOM_SIZE[hubRoom.size];
+    spaces.push({
+      id: level.hub, kind: 'room', room: hubRoom, wing: null, level: level.id,
+      rect: rect(ox, 0, hubSize, hubSize),
+      h: ROOM_HEIGHT[hubRoom.size],
+      paletteName: hubRoom.palette || 'parchment',
     });
+
+    const levelWings = world.wings.filter((w) => wingLevelOf(w) === level.id);
+    if (levelWings.length > 4) {
+      console.warn(`Level '${level.id}': >4 wings overlap. TODO: ring layout.`);
+    }
+    levelWings.forEach((wing, i) => {
+      const dir = DIRS[i % 4];
+      const members = Object.values(roomsById)
+        .filter((r) => r.wing === wing.id)
+        .sort((a, b) => a.order - b.order);
+
+      let cursor = hubSize / 2; // distance from the hub along dir to last far edge
+      members.forEach((room, k) => {
+        const size = ROOM_SIZE[room.size];
+        // Corridor between previous space and this room.
+        const cMid = cursor + CORRIDOR_LEN / 2;
+        const isX = dir.x !== 0;
+        spaces.push({
+          id: `${wing.id}-corridor-${k + 1}`, kind: 'corridor', room: null,
+          wing: wing.id, level: level.id,
+          rect: isX
+            ? rect(ox + dir.x * cMid, 0, CORRIDOR_LEN, CORRIDOR_W)
+            : rect(ox, dir.z * cMid, CORRIDOR_W, CORRIDOR_LEN),
+          h: CORRIDOR_H,
+          paletteName: room.palette || wing.palette,
+        });
+        cursor += CORRIDOR_LEN;
+        // The room itself.
+        const rMid = cursor + size / 2;
+        spaces.push({
+          id: room.id, kind: 'room', room, wing: wing.id, level: level.id,
+          rect: isX
+            ? rect(ox + dir.x * rMid, 0, size, size)
+            : rect(ox, dir.z * rMid, size, size),
+          h: ROOM_HEIGHT[room.size],
+          paletteName: room.palette || wing.palette,
+        });
+        cursor += size;
+      });
+    });
+
+    if (level.hub === world.hub) {
+      const firstDir = DIRS[0];
+      spawn = { x: ox, z: 0, yaw: Math.atan2(-firstDir.x, -firstDir.z) };
+    }
   });
 
   // --- Doors: every pair of spaces sharing an edge gets a doorway. ---------
@@ -154,10 +173,9 @@ export function solveLayout(world, roomsById) {
     }
   }
 
-  const firstDir = DIRS[0];
   return {
     spaces, spaceById, doors, doorsBySpace, portals, roomNeighbors,
-    spawn: { x: 0, z: 0, yaw: Math.atan2(-firstDir.x, -firstDir.z) },
+    spawn: spawn || { x: 0, z: 0, yaw: Math.atan2(-DIRS[0].x, -DIRS[0].z) },
   };
 }
 

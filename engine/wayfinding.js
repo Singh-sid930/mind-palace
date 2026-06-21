@@ -85,30 +85,34 @@ function relationHint(best) {
 // caller rotates the group so it faces into the room.
 function buildSignpost(pal, tex) {
   const g = new THREE.Group();
-  const post = new THREE.Mesh(new THREE.CylinderGeometry(0.055, 0.075, 1.9, 8), lam(DARKWOOD));
-  post.position.y = 0.95;
-  const cap = new THREE.Mesh(new THREE.SphereGeometry(0.085, 10, 8), lam(METAL));
-  cap.position.y = 1.92;
+  const post = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.08, 2.2, 8), lam(DARKWOOD));
+  post.position.y = 1.1;
+  const cap = new THREE.Mesh(new THREE.SphereGeometry(0.095, 10, 8), lam(METAL));
+  cap.position.y = 2.22;
 
   const board = new THREE.Group();
-  board.position.y = 1.45;
+  board.position.y = 1.55;
   const frame = new THREE.Mesh(
-    new THREE.BoxGeometry(1.26, 0.84, 0.07),
-    new THREE.MeshLambertMaterial({ color: pal.accent, emissive: pal.glow, emissiveIntensity: 0.15 })
+    new THREE.BoxGeometry(1.66, 1.06, 0.08),
+    new THREE.MeshLambertMaterial({ color: pal.accent, emissive: pal.glow, emissiveIntensity: 0.2 })
   );
   const face = new THREE.Mesh(
-    new THREE.PlaneGeometry(1.12, 0.7),
+    new THREE.PlaneGeometry(1.5, 0.94),
     new THREE.MeshBasicMaterial({ map: tex })
   );
-  face.position.z = 0.045;
+  face.position.z = 0.05;
   board.add(frame, face);
 
   g.add(post, cap, board);
   return g;
 }
 
+const TRAVEL_VERB = { home: 'return to', back: 'go back to', across: 'cross to', fwd: 'go to' };
+
 export function buildWayfinding(scene, layout, roomsById, graph) {
   const group = new THREE.Group();
+  const interactables = new Map(); // sign mesh -> { kind:'sign', destRoom, prompt }
+  const signs = [];                // metadata, for debugging / tooling
   const conceptRoom = {};
   for (const c of graph.concepts) conceptRoom[c.id] = c.room;
 
@@ -153,9 +157,14 @@ export function buildWayfinding(scene, layout, roomsById, graph) {
       sign.position.set(px, 0, pz);
       sign.rotation.y = yaw;
       group.add(sign);
+
+      const record = { kind: 'sign', destRoom: destId,
+                       prompt: `${TRAVEL_VERB[dir] || 'go to'} “${dest.name}”` };
+      sign.traverse((o) => interactables.set(o, record));
+      signs.push({ x: px, z: pz, yaw, destRoom: destId, prompt: record.prompt });
     }
   }
 
   scene.add(group);
-  return group;
+  return { group, interactables, signs };
 }

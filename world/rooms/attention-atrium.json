@@ -1,0 +1,31 @@
+{
+  "id": "attention-atrium",
+  "name": "The Atrium of Attention",
+  "wing": null,
+  "size": "grand",
+  "palette": "sapphire",
+  "order": 1,
+  "exhibits": [
+    {
+      "id": "upper-welcome",
+      "type": "plaque",
+      "title": "The Upper Floor",
+      "prop": "pedestal",
+      "text": "Welcome to the Upper Floor, keeper — the realm of language models. Where the Ground Floor studies world models that predict what is hidden, this floor studies the mechanism that lets a model decide what to listen to: attention. From this atrium opens the Wing of Attention, six chambers that build the transformer from a single dot product up to RoPE and Flash. Descend the staircase whenever you wish to return to the world-model halls below."
+    },
+    {
+      "id": "how-to-attend",
+      "type": "plaque",
+      "title": "How to Walk This Floor",
+      "prop": "lectern",
+      "text": "Move with W, A, S, D and look with the mouse. Approach any exhibit and press E to study it; diagrams and figures unfold large in the room around you. Follow the signposts at each doorway — press E on one to travel onward — and read the wisp's nudge when you pause. Press M for this floor's map, G for the constellation of ideas across both floors, and F to travel by Floo to any chamber you know by name."
+    },
+    {
+      "id": "descending-staircase",
+      "type": "stair",
+      "title": "The Descending Staircase",
+      "to": "atrium",
+      "caption": "The stair winds back down to the Ground Floor — the Atrium of Recall and the world-model wings. Press E to descend."
+    }
+  ]
+}

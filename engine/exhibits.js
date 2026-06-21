@@ -160,6 +160,18 @@ function buildExhibit(ex, slot, pal, isCenter) {
     panel.position.y = 1.95;
     g.add(panel);
     hit = panel;
+  } else if (ex.type === 'stair') {
+    const made = makeProp('stair', pal, ex.scale || 1);
+    update = made.update || null;
+    g.add(made.group);
+    // Solid invisible hit volume over the stepped geometry (steps ascend +z).
+    const hitBox = new THREE.Mesh(
+      new THREE.BoxGeometry(1.7, 2.6, 3.0),
+      new THREE.MeshBasicMaterial({ visible: false })
+    );
+    hitBox.position.set(0, 1.3, 1.3);
+    g.add(hitBox);
+    hit = hitBox;
   }
 
   return { group: g, update, hit };
@@ -232,7 +244,17 @@ export function buildExhibits(scene, layout, roomsById) {
       const made = buildExhibit(ex, slot, pal, slot.x === space.rect.cx && slot.z === space.rect.cz);
       group.add(made.group);
       if (made.update) updates.push(made.update);
-      register(made.hit, {
+      register(made.hit, ex.type === 'stair' ? {
+        kind: 'stair',
+        roomId: room.id,
+        targetRoom: ex.to,
+        focus: {
+          title: roomsById[ex.to] ? roomsById[ex.to].name : ex.to,
+          subtitle: 'Staircase',
+          body: ex.caption || '',
+          mermaid: null, image: null,
+        },
+      } : {
         kind: 'exhibit',
         roomId: room.id,
         focus: {

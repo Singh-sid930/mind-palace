@@ -338,10 +338,45 @@ function brazier(pal) {
   return { group: g, update };
 }
 
+function stair(pal) {
+  const g = new THREE.Group();
+  const steps = 7, stepH = 0.22, stepD = 0.36, stepW = 1.5;
+  for (let i = 0; i < steps; i++) {
+    const s = new THREE.Mesh(new THREE.BoxGeometry(stepW, stepH, stepD), lam(STONE));
+    s.position.set(0, stepH / 2 + i * stepH, i * stepD);
+    g.add(s);
+    const lip = new THREE.Mesh(new THREE.BoxGeometry(stepW, 0.03, 0.05), lam(pal.trim));
+    lip.position.set(0, stepH + i * stepH, i * stepD + stepD / 2);
+    g.add(lip);
+  }
+  const topY = steps * stepH, topZ = steps * stepD;
+  // A luminous archway at the top: the passage to another floor.
+  const arch = new THREE.Mesh(
+    new THREE.TorusGeometry(0.85, 0.07, 10, 24, Math.PI),
+    new THREE.MeshLambertMaterial({ color: pal.accent, emissive: pal.glow, emissiveIntensity: 0.6 })
+  );
+  arch.position.set(0, topY + 0.95, topZ);
+  g.add(arch);
+  const veil = new THREE.Mesh(
+    new THREE.PlaneGeometry(1.6, 1.9),
+    new THREE.MeshBasicMaterial({ color: pal.glow, transparent: true, opacity: 0.16, side: THREE.DoubleSide })
+  );
+  veil.position.set(0, topY + 0.95, topZ);
+  g.add(veil);
+  const light = new THREE.PointLight(pal.glow, 2.2, 7, 1.7);
+  light.position.set(0, topY + 1.0, topZ - 0.4);
+  g.add(light);
+  const update = (t) => {
+    veil.material.opacity = 0.12 + 0.06 * Math.sin(t * 1.6);
+    light.intensity = 1.9 + 0.5 * Math.sin(t * 2.0);
+  };
+  return { group: g, update };
+}
+
 const BUILDERS = {
   pedestal, lectern, mirror, cauldron, bookshelf, statue,
   banner: bannerProp, candelabra, orrery, crystal_ball: crystalBall,
-  hourglass, table, brazier,
+  hourglass, table, brazier, stair,
 };
 
 export function makeProp(name, pal, scale = 1) {

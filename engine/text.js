@@ -267,8 +267,12 @@ function drawArrow(ctx, dir, x, y, s, color) {
 // the chamber beyond, and a small italic hint about how the two rooms relate.
 export function signTexture({ dir = 'fwd', word = '', dest = '', hint = '',
                              pal, w = 512, h = 320 }) {
-  const c = makeCanvas(w, h);
+  // Render at 2x for crisp text when the board is read across a room, while
+  // keeping all drawing in the logical w×h coordinate space.
+  const SS = 2;
+  const c = makeCanvas(w * SS, h * SS);
   const ctx = c.getContext('2d');
+  ctx.scale(SS, SS);
 
   // Wood ground with faint vertical grain.
   ctx.fillStyle = '#4a3320';
@@ -330,14 +334,16 @@ export function signTexture({ dir = 'fwd', word = '', dest = '', hint = '',
 }
 
 // A small floating tooltip pill for the guiding wisp: a gold forward arrow and
-// the name of the chamber it is nudging you toward.
-export function tipTexture({ text, pal, w = 560, h = 140 }) {
-  const c = makeCanvas(w, h);
+// the full name of the chamber it is nudging you toward (wrapped, never clipped).
+export function tipTexture({ text, pal, w = 560, h = 196 }) {
+  const SS = 2;
+  const c = makeCanvas(w * SS, h * SS);
   const ctx = c.getContext('2d');
+  ctx.scale(SS, SS);
   ctx.clearRect(0, 0, w, h);
 
   // Rounded translucent pill with a glowing rim.
-  const x = 8, y = 12, ww = w - 16, hh = h - 24, r = hh / 2;
+  const x = 8, y = 10, ww = w - 16, hh = h - 20, r = 34;
   ctx.beginPath();
   ctx.moveTo(x + r, y);
   ctx.arcTo(x + ww, y, x + ww, y + hh, r);
@@ -345,25 +351,31 @@ export function tipTexture({ text, pal, w = 560, h = 140 }) {
   ctx.arcTo(x, y + hh, x, y, r);
   ctx.arcTo(x, y, x + ww, y, r);
   ctx.closePath();
-  ctx.fillStyle = 'rgba(12,10,18,0.8)';
+  ctx.fillStyle = 'rgba(12,10,18,0.82)';
   ctx.fill();
   ctx.strokeStyle = hexCss(pal.glow);
   ctx.lineWidth = 4;
   ctx.stroke();
 
-  drawArrow(ctx, 'fwd', 64, h / 2, 38, hexCss(pal.accent));
+  drawArrow(ctx, 'fwd', 60, h / 2, 40, hexCss(pal.accent));
 
+  // Destination name, shrunk to fit at most two lines — no ellipsis.
   ctx.fillStyle = '#efe6cf';
   ctx.textAlign = 'left';
-  ctx.textBaseline = 'middle';
-  const size = text.length > 22 ? 38 : 46;
+  const textX = 104, maxW = w - textX - 28;
+  let size = 46;
   ctx.font = `bold ${size}px ${SERIF}`;
-  let label = text;
-  while (ctx.measureText(label).width > w - 130 && label.length > 4) {
-    label = label.slice(0, -2);
+  let lines = wrapText(ctx, text, maxW);
+  while (lines.length > 2 && size > 30) {
+    size -= 4;
+    ctx.font = `bold ${size}px ${SERIF}`;
+    lines = wrapText(ctx, text, maxW);
   }
-  if (label !== text) label = label.replace(/\s+\S*$/, '') + '…';
-  ctx.fillText(label, 108, h / 2 + 2);
+  lines = lines.slice(0, 2);
+  const lineH = size * 1.16;
+  let ty = h / 2 - ((lines.length - 1) * lineH) / 2;
+  ctx.textBaseline = 'middle';
+  for (const line of lines) { ctx.fillText(line, textX, ty); ty += lineH; }
   ctx.textBaseline = 'alphabetic';
 
   const tex = new THREE.CanvasTexture(c);

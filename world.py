@@ -105,20 +105,30 @@ def validate(data):
     if hub not in room_ids:
         errors.append(f"world.json: hub room '{hub}' has no file in world/rooms/")
 
+    # Each level has its own hub room (with wing: null); the spawn hub is one of them.
+    levels = world.get("levels", [])
+    level_ids = {lvl["id"] for lvl in levels}
+    level_hubs = {lvl["hub"] for lvl in levels} | {hub}
+    for lvl in levels:
+        if lvl["hub"] not in room_ids:
+            errors.append(f"world.json: level '{lvl['id']}' hub '{lvl['hub']}' has no room file")
+
     for w in world["wings"]:
         if w["palette"] not in palettes:
             errors.append(f"world.json: wing '{w['id']}' palette '{w['palette']}' not in catalog")
+        if w.get("level") and w["level"] not in level_ids:
+            errors.append(f"world.json: wing '{w['id']}' level '{w['level']}' not declared in levels")
 
     seen_orders = {}
     for stem, (room, path) in rooms.items():
         label = f"world/rooms/{path.name}"
         wing = room["wing"]
 
-        if stem == hub:
+        if stem in level_hubs:
             if wing is not None:
                 errors.append(f"{label}: hub room must have wing: null")
         elif wing is None:
-            errors.append(f"{label}: only the hub room may have wing: null")
+            errors.append(f"{label}: only a hub room may have wing: null")
         elif wing not in wing_ids:
             errors.append(f"{label}: wing '{wing}' not declared in world.json")
 
@@ -147,6 +157,8 @@ def validate(data):
             ex_ids.add(ex["id"])
             if ex["type"] == "artifact" and ex.get("prop") not in props:
                 errors.append(f"{label}: exhibit '{ex['id']}' prop '{ex.get('prop')}' not in catalog")
+            if ex["type"] == "stair" and ex.get("to") not in room_ids:
+                errors.append(f"{label}: stair '{ex['id']}' to '{ex.get('to')}' is not an existing room")
 
     # Wing chains must start at order 1 and have no gaps.
     by_wing = {}
@@ -188,15 +200,19 @@ def validate(data):
 def summary(data):
     world, graph, rooms = data["world"], data["graph"], data["rooms"]
     print(f"{world['title']} — {world.get('subtitle', '')}")
-    print(f"hub: {world['hub']}")
-    for w in world["wings"]:
-        members = sorted(
-            ((r["order"], r["id"], r["name"]) for r, _ in rooms.values() if r["wing"] == w["id"])
-        )
-        print(f"\n  {w['name']} [{w['id']}] palette={w['palette']} — {len(members)} room(s)")
-        for order, rid, name in members:
-            n_ex = len(rooms[rid][0]["exhibits"])
-            print(f"    {order}. {name} ({rid}) — {n_ex} exhibits")
+    levels = world.get("levels") or [{"id": None, "name": "(single level)", "hub": world["hub"]}]
+    for lvl in levels:
+        print(f"\n== {lvl['name']} [{lvl['id']}] · hub: {lvl['hub']} ==")
+        for w in world["wings"]:
+            if w.get("level") != lvl["id"]:
+                continue
+            members = sorted(
+                ((r["order"], r["id"], r["name"]) for r, _ in rooms.values() if r["wing"] == w["id"])
+            )
+            print(f"  {w['name']} [{w['id']}] palette={w['palette']} — {len(members)} room(s)")
+            for order, rid, name in members:
+                n_ex = len(rooms[rid][0]["exhibits"])
+                print(f"    {order}. {name} ({rid}) — {n_ex} exhibits")
     print(f"\n  concepts: {len(graph['concepts'])}, edges: {len(graph['edges'])}")
 
 
