@@ -146,6 +146,188 @@
       "room": "paris-cauldron",
       "exhibit": "portrait-lecturer",
       "summary": "Language models had the Chinchilla decree (Hoffmann et al., 2022: roughly 20 tokens per parameter), telling the field how to spend its compute. JEPA has no such decree yet — one of the four reasons the paradigm has not exploded commercially despite its technical merits."
+    },
+    {
+      "id": "scaled-dot-product-attention",
+      "name": "Scaled dot-product attention",
+      "room": "forge-of-the-query",
+      "exhibit": "the-weighted-gift",
+      "summary": "The atomic operation of attention: Attention(Q,K,V) = softmax(QK^T / sqrt(d_k)) . V. Score every query against every key by dot product, scale by sqrt(d_k), soften to a probability distribution with softmax, then return the weighted blend of values. Score, scale, soften, blend."
+    },
+    {
+      "id": "dot-product-similarity",
+      "name": "Dot-product similarity",
+      "room": "forge-of-the-query",
+      "exhibit": "orb-of-likeness",
+      "summary": "Attention's measure of alignment: the dot product of a query and a key. For q=[1,0,2,1], the key [0,0,1,1] scores 3 while [1,1,0,0] scores 1, so the query leans toward the former. A larger dot product means greater likeness."
+    },
+    {
+      "id": "softmax-attention",
+      "name": "Softmax (normalise + sharpen)",
+      "room": "forge-of-the-query",
+      "exhibit": "the-sharpening",
+      "summary": "Softmax turns raw scores into attention weights, doing two jobs at once: it exponentiates (always positive, amplifying gaps so the winner wins by more) and normalises (weights sum to one). 'Normalise + sharpen': equal scores give near-uniform attention, large gaps give near one-hot. Preceded by scaling by sqrt(d_k) to keep gradients alive."
+    },
+    {
+      "id": "qkv-projections",
+      "name": "Q, K, V projections",
+      "room": "forge-of-the-query",
+      "exhibit": "three-cloaks",
+      "summary": "Q, K and V are three learned linear projections of the same input X (shape n x d_model): Q=X.Wq, K=X.Wk, V=X.Wv. The model learns what to ask, what to advertise, and what to give. Constraint: d_q = d_k always (the dot product demands it); d_v may differ."
+    },
+    {
+      "id": "attention-quadratic-cost",
+      "name": "The (n,n) score matrix — O(n²)",
+      "room": "forge-of-the-query",
+      "exhibit": "ledger-of-queries",
+      "summary": "The score matrix Q.K^T has shape (n, n) — every token's score to every token — making self-attention O(n^2) in sequence length. This (n,n) object is what later gets masked, cached, and (in Flash attention) never materialised."
+    },
+    {
+      "id": "multi-head-attention",
+      "name": "Multi-head attention",
+      "room": "council-of-heads",
+      "exhibit": "round-table",
+      "summary": "Run h attention operations in parallel, each in its own d_k = d_model/h subspace with its own Wq,Wk,Wv, then concatenate and mix with Wo: MultiHead = Concat(head_1..head_h).Wo. One head captures one notion of relevance; many heads capture many. d_model must be divisible by h."
+    },
+    {
+      "id": "output-projection-wo",
+      "name": "Output projection Wo",
+      "room": "council-of-heads",
+      "exhibit": "the-weaver-wo",
+      "summary": "The (d_model x d_model) matrix Wo applied after concatenating heads. Concatenation alone keeps head subspaces isolated; Wo makes every output dimension a blend of all heads, weaving their separate insights into one representation."
+    },
+    {
+      "id": "head-redundancy",
+      "name": "Head specialisation and redundancy",
+      "room": "council-of-heads",
+      "exhibit": "why-heads-differ",
+      "summary": "Heads specialise without any explicit diversity loss — difference emerges from random init, gradient pressure through Wo, and distinct subspaces. Yet trained heads end up partly redundant (20-40% are often prunable), which is exactly what motivates sharing keys and values in MQA and GQA."
+    },
+    {
+      "id": "grouped-query-attention",
+      "name": "Grouped-query attention (GQA)",
+      "room": "council-of-heads",
+      "exhibit": "shared-libraries",
+      "summary": "GQA shares one key/value pair across each GROUP of query heads: h query heads split into g groups. It interpolates between MHA (g=h, a KV pair per head) and MQA (g=1, one shared pair). LLaMA 2 70B uses g=8. An architecture choice made before training, shrinking the KV cache."
+    },
+    {
+      "id": "multi-query-attention",
+      "name": "Multi-query attention (MQA)",
+      "room": "council-of-heads",
+      "exhibit": "shared-libraries",
+      "summary": "MQA keeps h independent query heads but a SINGLE shared Wk, Wv across all of them — eight researchers, one library — collapsing the KV cache up to 8-fold. It is the g=1 extreme of grouped-query attention, decided before training, not a post-hoc optimisation."
+    },
+    {
+      "id": "causal-masking",
+      "name": "Causal masking",
+      "room": "veil-of-the-future",
+      "exhibit": "veiled-glass",
+      "summary": "In a decoder, a token must not attend to the future. Before softmax, the upper triangle of the (n,n) score matrix is set to -inf; since e^(-inf)=0, those positions get zero weight. This single change turns bidirectional attention into autoregressive generation. In code use a large negative number, and watch for NaNs from leaks."
+    },
+    {
+      "id": "encoder-vs-decoder",
+      "name": "Encoder vs decoder",
+      "room": "veil-of-the-future",
+      "exhibit": "two-halves-of-2017",
+      "summary": "Names for which half of the 2017 Transformer a model keeps. Encoder = self-attention with NO mask (bidirectional, e.g. BERT). Decoder = self-attention with a causal mask (e.g. GPT, LLaMA). Decoder-only won the scaling race, but encoder-decoder lives on in T5, BART, and Whisper."
+    },
+    {
+      "id": "self-attention",
+      "name": "Self-attention",
+      "room": "veil-of-the-future",
+      "exhibit": "reads-the-sentence",
+      "summary": "Q, K and V all drawn from the same sequence — the tokens attend to one another. For 'The cat sat on the mat' the score matrix is (6,6); processing 'sat' should attend to its subject 'cat'. Different heads read the same sentence differently (syntactic, positional, determiner)."
+    },
+    {
+      "id": "cross-attention",
+      "name": "Cross-attention",
+      "room": "the-two-gazes",
+      "exhibit": "janus-sentinel",
+      "summary": "Attention where Q comes from one source and K, V from another — e.g. a text decoder querying image-encoder patches. The score matrix Q.K^T is (n_text, n_patches), not square. Output gives each text token visual information from the patches it attended to."
+    },
+    {
+      "id": "qkv-source-principle",
+      "name": "K and V come from where you look",
+      "room": "the-two-gazes",
+      "exhibit": "cross-attention-wiring",
+      "summary": "The unifying rule of attention: K and V always come from whatever you are looking INTO. Look into yourself -> self-attention; look into another modality -> cross-attention. The arithmetic is identical; only the source of keys and values changes."
+    },
+    {
+      "id": "attention-maps",
+      "name": "Attention maps & head patterns",
+      "room": "the-two-gazes",
+      "exhibit": "cross-attention-figure",
+      "summary": "The (n,n) softmax weight matrix IS the attention map; plotted as a heatmap (rows=queries, cols=keys, brightness=weight) it reveals learned head patterns: previous-token, first-token, subject-verb, induction, uniform (prunable), and diagonal self-attention heads."
+    },
+    {
+      "id": "vit-patch-attention",
+      "name": "ViT patch attention",
+      "room": "the-two-gazes",
+      "exhibit": "vit-attention-figure",
+      "summary": "A Vision Transformer splits an image into patches (14x14 = 196) and attends over them, giving a (196,196) matrix. Take one query's 196 weights, reshape to 14x14, and overlay on the image; different heads attend to different regions (an object, an edge, the whole scene)."
+    },
+    {
+      "id": "modern-vlm-concat",
+      "name": "Modern VLMs skip cross-attention",
+      "room": "the-two-gazes",
+      "exhibit": "where-you-look",
+      "summary": "Most modern VLMs (SmolVLM, LLaVA, PaliGemma, Qwen-VL) skip explicit cross-attention: they project image patches into the LM's embedding space, concatenate them with text tokens, and let self-attention mix the modalities. Simpler and decoder-agnostic, but image tokens consume KV-cache and context budget."
+    },
+    {
+      "id": "kv-cache",
+      "name": "KV cache",
+      "room": "library-of-keys",
+      "exhibit": "endless-stacks",
+      "summary": "At inference a decoder generates one token at a time; recomputing all past keys and values each step is wasteful. The KV cache stores every past token's K and V, so each new step computes only the new query, scores it against all cached keys, and blends the cached values. Grows by one entry per step per layer (per group in GQA)."
+    },
+    {
+      "id": "query-not-cached",
+      "name": "Why Q is not cached",
+      "room": "library-of-keys",
+      "exhibit": "why-asker-not-kept",
+      "summary": "Only K and V are cached, never Q. The query is the asker: it asks once and moves on, so caching it would only ever reuse its last row. Keys and values are the label and content that every future query must still consult. Unlike an RNN, each new query has direct access to all past K,V — nothing is compressed."
+    },
+    {
+      "id": "transformer-block",
+      "name": "The Transformer block",
+      "room": "library-of-keys",
+      "exhibit": "two-rhythms",
+      "summary": "The repeating unit: LayerNorm -> Multi-Head Attention -> +residual -> LayerNorm -> MLP -> +residual. Attention is inter-token mixing ('who to listen to', like spatial conv); the MLP is per-token processing ('what to do with it', like 1x1 conv). Residuals are the gradient highway; input shape equals output shape, so blocks stack (L=32 for 7B, L=96 for GPT-4 class)."
+    },
+    {
+      "id": "flash-attention",
+      "name": "Flash attention",
+      "room": "library-of-keys",
+      "exhibit": "flash-antechamber",
+      "summary": "An exact (not approximate) attention that never materialises the (n,n) score matrix in slow HBM. It tiles Q and K into fast on-chip SRAM and keeps a running softmax (running max m, running sum l, correcting by e^(m_old-m_new)), cutting memory from O(n^2) to O(n) while producing identical output."
+    },
+    {
+      "id": "token-embedding-lm-head",
+      "name": "Embedding & lm_head",
+      "room": "library-of-keys",
+      "exhibit": "the-bookends",
+      "summary": "The two learned layers bracketing a Transformer: the token embedding (vocab_size x d_model lookup, a sparse gather of the used rows) and the lm_head / W_vocab (d_model -> vocab logits, a full matmul). Often tied (W_vocab = embedding^T). Rare tokens, looked up seldom, receive fewer gradient updates."
+    },
+    {
+      "id": "positional-encoding",
+      "name": "Positional encoding",
+      "room": "compass-and-clock",
+      "exhibit": "orrery-of-positions",
+      "summary": "Bare attention is permutation-equivariant — it sees content, not order — so position must be injected. Two fixed, precomputed families do it: sinusoidal encodings ADD a position signal to embeddings, while RoPE ROTATES queries and keys; both use frequencies freq_i = 1/10000^(2i/d)."
+    },
+    {
+      "id": "sinusoidal-pe",
+      "name": "Sinusoidal positional encoding",
+      "room": "compass-and-clock",
+      "exhibit": "sinusoidal-clock",
+      "summary": "Fixed sin/cos position vectors added to token embeddings before the Q,K,V projections. Each dimension pair gets its own frequency freq_i = 1/10000^(2i/d) — fast hands and slow hands, like a clock — so every position has a unique code. Encodes ABSOLUTE position; a learned-table variant cannot extrapolate past its training length."
+    },
+    {
+      "id": "rope",
+      "name": "RoPE (rotary position embedding)",
+      "room": "compass-and-clock",
+      "exhibit": "rope-rotation",
+      "summary": "Rotary Position Embedding rotates Q and K (not V) by an angle m.theta proportional to position, after projection. Because a dot product of vectors rotated by m.theta and n.theta depends only on (m-n).theta (via cos(A-B)), RoPE encodes RELATIVE distance and preserves length. Favoured by modern long-context models."
     }
   ],
   "edges": [
@@ -187,6 +369,45 @@
     { "from": "marble-generative-worlds", "to": "jepa-family", "relation": "contrasts-with" },
     { "from": "marble-generative-worlds", "to": "v-jepa-2", "relation": "relates-to" },
     { "from": "jepa-scaling-laws", "to": "jepa-family", "relation": "relates-to" },
-    { "from": "vicreg", "to": "jepa-family", "relation": "relates-to" }
+    { "from": "vicreg", "to": "jepa-family", "relation": "relates-to" },
+
+    { "from": "dot-product-similarity", "to": "scaled-dot-product-attention", "relation": "part-of" },
+    { "from": "softmax-attention", "to": "scaled-dot-product-attention", "relation": "part-of" },
+    { "from": "qkv-projections", "to": "scaled-dot-product-attention", "relation": "part-of" },
+    { "from": "attention-quadratic-cost", "to": "scaled-dot-product-attention", "relation": "relates-to" },
+    { "from": "multi-head-attention", "to": "scaled-dot-product-attention", "relation": "builds-on" },
+    { "from": "output-projection-wo", "to": "multi-head-attention", "relation": "part-of" },
+    { "from": "head-redundancy", "to": "multi-head-attention", "relation": "relates-to" },
+    { "from": "grouped-query-attention", "to": "multi-head-attention", "relation": "builds-on" },
+    { "from": "multi-query-attention", "to": "grouped-query-attention", "relation": "builds-on" },
+    { "from": "multi-query-attention", "to": "multi-head-attention", "relation": "contrasts-with" },
+    { "from": "head-redundancy", "to": "grouped-query-attention", "relation": "relates-to" },
+    { "from": "grouped-query-attention", "to": "kv-cache", "relation": "relates-to" },
+    { "from": "causal-masking", "to": "scaled-dot-product-attention", "relation": "builds-on" },
+    { "from": "encoder-vs-decoder", "to": "causal-masking", "relation": "relates-to" },
+    { "from": "self-attention", "to": "scaled-dot-product-attention", "relation": "relates-to" },
+    { "from": "self-attention", "to": "multi-head-attention", "relation": "relates-to" },
+    { "from": "cross-attention", "to": "self-attention", "relation": "contrasts-with" },
+    { "from": "cross-attention", "to": "scaled-dot-product-attention", "relation": "builds-on" },
+    { "from": "qkv-source-principle", "to": "cross-attention", "relation": "relates-to" },
+    { "from": "qkv-source-principle", "to": "self-attention", "relation": "relates-to" },
+    { "from": "attention-maps", "to": "self-attention", "relation": "relates-to" },
+    { "from": "vit-patch-attention", "to": "attention-maps", "relation": "part-of" },
+    { "from": "vit-patch-attention", "to": "self-attention", "relation": "relates-to" },
+    { "from": "modern-vlm-concat", "to": "cross-attention", "relation": "contrasts-with" },
+    { "from": "kv-cache", "to": "causal-masking", "relation": "builds-on" },
+    { "from": "query-not-cached", "to": "kv-cache", "relation": "part-of" },
+    { "from": "transformer-block", "to": "multi-head-attention", "relation": "builds-on" },
+    { "from": "transformer-block", "to": "scaled-dot-product-attention", "relation": "relates-to" },
+    { "from": "flash-attention", "to": "scaled-dot-product-attention", "relation": "relates-to" },
+    { "from": "flash-attention", "to": "kv-cache", "relation": "relates-to" },
+    { "from": "token-embedding-lm-head", "to": "transformer-block", "relation": "part-of" },
+    { "from": "positional-encoding", "to": "scaled-dot-product-attention", "relation": "relates-to" },
+    { "from": "sinusoidal-pe", "to": "positional-encoding", "relation": "part-of" },
+    { "from": "rope", "to": "positional-encoding", "relation": "part-of" },
+    { "from": "rope", "to": "sinusoidal-pe", "relation": "builds-on" },
+    { "from": "rope", "to": "sinusoidal-pe", "relation": "contrasts-with" },
+    { "from": "vit-patch-attention", "to": "i-jepa", "relation": "relates-to" },
+    { "from": "transformer-block", "to": "jepa-family", "relation": "relates-to" }
   ]
 }

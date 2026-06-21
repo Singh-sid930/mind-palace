@@ -1,9 +1,15 @@
 {
   "rooms": [
     "atrium.json",
+    "compass-and-clock.json",
+    "council-of-heads.json",
+    "forge-of-the-query.json",
+    "library-of-keys.json",
     "mirror-of-occlusion.json",
     "paris-cauldron.json",
     "projector-shield.json",
+    "the-two-gazes.json",
+    "veil-of-the-future.json",
     "vicereg-corridor.json"
   ]
 }

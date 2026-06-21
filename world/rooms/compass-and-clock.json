@@ -1,0 +1,45 @@
+{
+  "id": "compass-and-clock",
+  "name": "The Compass and the Clock",
+  "wing": "attention",
+  "size": "medium",
+  "order": 6,
+  "exhibits": [
+    {
+      "id": "orrery-of-positions",
+      "type": "artifact",
+      "title": "The Orrery of Positions",
+      "prop": "orrery",
+      "scale": 1.3,
+      "text": "An orrery whose rings spin at different rates — fast inner hands, slow outer ones — for position itself must be told to attention, which is otherwise blind to it. Bare attention is permutation-equivariant: it only measures content similarity, so 'The cat sat' and 'sat The cat' would yield identical results. Order carries meaning, and meaning must be encoded. Two great schemes hang here. The sinusoidal clock ADDS a position signal to the embedding; RoPE ROTATES the query and key by an angle proportional to position. Both are fixed (not learned), both use the same family of frequencies, both precomputed — and both let the model finally know not just WHAT each token says but WHERE it stands."
+    },
+    {
+      "id": "sinusoidal-clock",
+      "type": "plaque",
+      "prop": "pedestal",
+      "title": "The Sinusoidal Clock",
+      "text": "Build it from need. We want a bounded function giving a different value at each position: sin and cos. But sin(pos) alone makes every dimension identical, wasting capacity — so give each dimension PAIR its own frequency: freq_i = 1 / 10000^(2i/d_model), where i indexes the pair. For d_model = 4: pair i=0 has freq 1 (a fast second-hand, changing rapidly with position), pair i=1 has freq 0.01 (a slow hour-hand, barely moving). Like a clock, fast and slow hands together pinpoint a unique time. At position 1: dim0 sin(1)=0.84, dim1 cos(1)=0.54, dim2 sin(0.01)=0.01, dim3 cos(0.01)=1.00. These vectors are ADDED to the token embeddings BEFORE the Q, K, V projections. Limitation: this encodes ABSOLUTE position ('I am at 5'), not relative distance. A learned variant (GPT-2, BERT) swaps the formula for a trainable table, but then positions beyond the training length simply do not exist."
+    },
+    {
+      "id": "rope-rotation",
+      "type": "plaque",
+      "prop": "lectern",
+      "title": "RoPE — Rotation Carries Distance",
+      "text": "Rotary Position Embedding encodes WHERE by rotating. A vector [3, 1] rotated by an angle preserves its length but changes its direction. Tie the angle to position: a token at position m is rotated by m.theta. The magic is in the score. If q at position m is rotated by m.theta and k at position n by n.theta, their dot product depends only on (m - n).theta — the RELATIVE distance — because cos(A)cos(B) + sin(A)sin(B) = cos(A - B), so the absolute positions cancel. Extend to high dimensions exactly as the clock did: pair up dimensions, give each pair its own frequency, rotate each pair independently (a block-diagonal rotation). A traced example with d_k = 4 gives a dot product of 12.265, and shifting BOTH positions by 5 — same relative distance — gives the very same number. RoPE touches only Q and K, never V, because only Q and K meet in the score."
+    },
+    {
+      "id": "clock-vs-rope",
+      "type": "plaque",
+      "prop": "pedestal",
+      "title": "Clock vs Rotation",
+      "text": "Two ways to teach position, side by side. SINUSOIDAL: adds to the embedding, acts BEFORE the projections, encodes ABSOLUTE position. RoPE: rotates Q and K, acts AFTER the projections, encodes RELATIVE distance through a trigonometric identity. What they share: neither is learned, both draw on the same 1/10000^(2i/d) frequency family, both are precomputed. RoPE's relative, length-preserving nature is why modern long-context models (LLaMA, and kin) prefer it — distance, not absolute address, is usually what attention truly needs to know."
+    },
+    {
+      "id": "position-frequencies-diagram",
+      "type": "diagram",
+      "title": "One Frequency per Dimension Pair",
+      "spec": "graph TD\n  P[token position m] --> F0[pair 0: freq 1 — fast hand]\n  P --> F1[pair 1: freq 0.01 — slow hand]\n  F0 --> E[sinusoidal: ADD to embedding, before projections]\n  F1 --> E\n  F0 --> R[RoPE: ROTATE q,k by m·θ, after projections]\n  F1 --> R\n  E --> ABS[encodes absolute position]\n  R --> REL[dot product encodes relative distance]",
+      "caption": "Same frequencies, two destinations: added as a signal, or applied as a rotation."
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "id": "library-of-keys",
+  "name": "The Library of Keys",
+  "wing": "attention",
+  "size": "grand",
+  "order": 5,
+  "exhibits": [
+    {
+      "id": "endless-stacks",
+      "type": "artifact",
+      "title": "The Endless Stacks",
+      "prop": "bookshelf",
+      "scale": 1.4,
+      "text": "An ever-growing library where the books are never reshelved. The query is the question you walk in with, the key is the label on each book's spine, the value is the content within. At training time the whole library is read at once — all Q, K, V computed together, the full (n, n) score matrix formed in parallel, no cache needed. But at inference the model writes one word at a time, and re-reading every past book each step would be madness. So it keeps a KV CACHE: as each token is produced, its key and value are shelved forever. To generate the next word it computes only the new query, scores it against every shelved key, and blends the shelved values. The library only grows; it is never re-derived."
+    },
+    {
+      "id": "why-asker-not-kept",
+      "type": "plaque",
+      "prop": "pedestal",
+      "title": "Why the Asker Is Not Kept",
+      "text": "Generating 'The cat sat on': after prefilling 'The cat', the caches hold K=[k_The, k_cat], V=[v_The, v_cat]. To decode 'sat', compute only q_sat, k_sat, v_sat; shelve the new key and value; score q_sat against all three keys -> weights like [0.12, 0.55, 0.33]; blend -> one vector -> MLP -> vocabulary -> next word. Notice Q is NOT cached. We could keep a Q-cache and multiply it by the keys, but we would only ever use its last row — every earlier row recomputes an answer already spoken. The query is the ASKER: it asks once and moves on. The key and value are the LABEL and the CONTENT: they must remain for every future asker. This is no RNN hoping the past is squeezed into one state — every new query has DIRECT access to every past key and value. Nothing is compressed away."
+    },
+    {
+      "id": "two-rhythms",
+      "type": "plaque",
+      "prop": "lectern",
+      "title": "The Two Rhythms — The Transformer Block",
+      "text": "A whole Transformer is this room repeated: talk, then think, L times. ATTENTION is inter-token — 'who should I listen to?' — like the spatial mixing of a convolution, tokens looking at other tokens. The MLP is intra-token — 'what do I do with what I heard?' — like a 1x1 conv, each token processed alone (d -> 4d -> GELU -> d). The pre-LayerNorm block: x -> LayerNorm -> Multi-Head Attention -> + residual -> LayerNorm -> MLP -> + residual. Residual connections are the information highway (as in ResNet): each layer learns only a delta, and gradients flow straight through. LayerNorm keeps activations sane. Input shape equals output shape, (n, d_model), which is why blocks stack cleanly — L = 32 for a 7B model, L = 96 for a GPT-4-class one."
+    },
+    {
+      "id": "flash-antechamber",
+      "type": "plaque",
+      "prop": "pedestal",
+      "title": "Flash in the Antechamber",
+      "text": "The cost is not only compute but MEMORY TRAFFIC. Eager attention writes the full (n, n) score matrix into the GPU's large-but-slow HBM — at n = 128K that is ~32 GB for ONE head of ONE layer — and makes three slow round trips. Flash Attention never forms that matrix. It works in tiles: load a block of Q and K into the tiny, fast on-chip SRAM (~20 MB), compute partial scores, update a running softmax (a running max m and running sum l, correcting old partials by e^(m_old - m_new)), accumulate the output, then discard the block. Memory drops from O(n^2) to O(n) and the math is IDENTICAL — a traced example gives [5.62, 3.30] whether computed eagerly or in two tiles. If Flash and eager ever disagree, it is a bug, not a feature."
+    },
+    {
+      "id": "the-bookends",
+      "type": "plaque",
+      "prop": "lectern",
+      "title": "The Bookends — Embedding and lm_head",
+      "text": "Two learned layers bracket every Transformer. The token embedding turns a vocabulary index into a d_model vector: a table of shape (vocab_size, d_model), but only the n looked-up rows are touched per forward pass (a sparse gather). At the far end, the lm_head / W_vocab projects d_model back to vocab_size logits, always a full matrix multiply. Many models TIE them, setting W_vocab equal to the transpose of the embedding table. A quiet consequence: during training only the rows that were looked up receive gradient, so rare tokens get fewer updates and end up with poorer embeddings."
+    },
+    {
+      "id": "decode-loop-diagram",
+      "type": "diagram",
+      "title": "The Decode Loop with KV Cache",
+      "spec": "graph TD\n  N[new token] --> Q[compute q, k, v for it]\n  Q --> A[append k,v to KV cache]\n  A --> SC[scores = q · K_cacheᵀ → 1×t]\n  SC --> SM[softmax → weights]\n  SM --> O[blend V_cache → one vector]\n  O --> MLP[MLP]\n  MLP --> LM[lm_head → next token]\n  LM --> N",
+      "caption": "Q is fresh each step; K and V only ever grow. One loop, one token at a time."
+    }
+  ]
+}

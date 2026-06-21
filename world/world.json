@@ -7,6 +7,11 @@
       "id": "divination",
       "name": "The Divination Wing",
       "palette": "emerald"
+    },
+    {
+      "id": "attention",
+      "name": "The Wing of Attention",
+      "palette": "sapphire"
     }
   ]
 }
