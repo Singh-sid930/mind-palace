@@ -144,6 +144,22 @@ function buildExhibit(ex, slot, pal, isCenter) {
     panel.position.y = 1.9;
     g.add(panel);
     hit = panel;
+  } else if (ex.type === 'image') {
+    // A framed picture on the wall; the real image loads asynchronously and the
+    // frame rescales to its aspect. Press E to study it large in world space.
+    const tex = new THREE.TextureLoader().load(ex.image, (t) => {
+      const ar = (t.image.width || 1) / (t.image.height || 1);
+      const W = ar >= 1 ? 1.95 : 1.95 * ar;
+      const H = ar >= 1 ? 1.95 / ar : 1.95;
+      const face = panel.children[1], frame = panel.children[0];
+      face.geometry.dispose(); face.geometry = new THREE.PlaneGeometry(W, H);
+      frame.geometry.dispose(); frame.geometry = new THREE.BoxGeometry(W + 0.16, H + 0.16, 0.07);
+    });
+    tex.colorSpace = THREE.SRGBColorSpace;
+    const panel = framedPanel({ tex, w: 1.6, h: 1.2, pal, glowFrame: true });
+    panel.position.y = 1.95;
+    g.add(panel);
+    hit = panel;
   }
 
   return { group: g, update, hit };
@@ -224,6 +240,7 @@ export function buildExhibits(scene, layout, roomsById) {
           subtitle: ex.subtitle || typeLabel(ex.type),
           body: ex.text || ex.caption || '',
           mermaid: ex.type === 'diagram' ? ex.spec : null,
+          image: ex.type === 'image' ? ex.image : null,
         },
       });
     }
@@ -257,5 +274,5 @@ export function buildExhibits(scene, layout, roomsById) {
 
 function typeLabel(type) {
   return { plaque: 'Plaque', tome: 'Tome — full text', portrait: 'Portrait',
-           artifact: 'Artifact', diagram: 'Diagram' }[type] || '';
+           artifact: 'Artifact', diagram: 'Diagram', image: 'Figure' }[type] || '';
 }

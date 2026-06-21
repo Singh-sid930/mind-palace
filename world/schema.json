@@ -16,7 +16,7 @@
       "required": ["id", "type", "title"],
       "properties": {
         "id": { "$ref": "#/definitions/kebabId" },
-        "type": { "enum": ["plaque", "tome", "portrait", "artifact", "diagram"] },
+        "type": { "enum": ["plaque", "tome", "portrait", "artifact", "diagram", "image"] },
         "title": { "$ref": "#/definitions/shortText" }
       },
       "allOf": [
@@ -64,6 +64,16 @@
             "required": ["spec"],
             "properties": {
               "spec": { "type": "string", "minLength": 1, "maxLength": 4000 },
+              "caption": { "$ref": "#/definitions/bodyText" }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "type": { "const": "image" } } },
+          "then": {
+            "required": ["image"],
+            "properties": {
+              "image": { "type": "string", "minLength": 1, "maxLength": 200 },
               "caption": { "$ref": "#/definitions/bodyText" }
             }
           }

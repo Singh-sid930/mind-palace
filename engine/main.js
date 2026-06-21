@@ -8,6 +8,8 @@ import { buildWorld } from './builder.js';
 import { buildExhibits } from './exhibits.js';
 import { buildWayfinding } from './wayfinding.js';
 import { Wisp } from './wisp.js';
+import { DiagramPanel } from './diagrampanel.js';
+import { palette } from './palettes.js';
 import { Player, EYE } from './player.js';
 import { Hud } from './hud.js';
 import { Companion } from './companion.js';
@@ -74,6 +76,20 @@ async function boot() {
   const { interactables, updates } = buildExhibits(scene, layout, roomsById);
   buildWayfinding(scene, layout, roomsById, graph);
   const wisp = new Wisp(scene, layout, roomsById);
+  const diagramPanel = new DiagramPanel(scene);
+
+  // Read-only card shown alongside the floating diagram (pointer stays locked).
+  const studyCard = document.getElementById('study-card');
+  const showStudyCard = (focus) => {
+    document.getElementById('study-title').textContent = focus.title;
+    document.getElementById('study-subtitle').textContent = focus.subtitle || '';
+    const body = document.getElementById('study-body');
+    body.textContent = focus.body || '';
+    body.scrollTop = 0;
+    studyCard.style.display = 'block';
+  };
+  const hideStudyCard = () => { studyCard.style.display = 'none'; };
+  const closeDiagramStage = () => { diagramPanel.hide(); hideStudyCard(); };
 
   const player = new Player(camera, renderer.domElement, colliders);
   player.place(layout.spawn.x, layout.spawn.z, layout.spawn.yaw);
@@ -124,8 +140,8 @@ async function boot() {
   });
   player.controls.addEventListener('unlock', () => {
     player.enabled = false;
-    // Keep overlay hidden while any panel (or the chat) is open.
-    if (!hud.openPanel && !chat.isOpen) startEl.style.display = 'flex';
+    // Keep overlay hidden while any panel, the chat, or a floating diagram is open.
+    if (!hud.openPanel && !chat.isOpen && !diagramPanel.isOpen) startEl.style.display = 'flex';
   });
   // Clicking the world re-locks the pointer after closing a panel/chat.
   renderer.domElement.addEventListener('click', () => {
@@ -158,29 +174,50 @@ async function boot() {
 
   document.addEventListener('keydown', (e) => {
     if (e.code === 'KeyE') {
+      if (diagramPanel.isOpen) { closeDiagramStage(); return; }
       if (hud.openPanel === 'focus') { hud.closeAll(); player.controls.lock(); return; }
       if (target) {
-        if (target.kind === 'portal') teleport(target.targetRoom);
-        else {
+        if (target.kind === 'portal') {
+          teleport(target.targetRoom);
+        } else if (target.focus.mermaid || target.focus.image) {
+          // Diagram or image exhibit: float a big panel in the room, keeping the
+          // player in control so they can step back and walk around it.
+          const sp = spaceAt(layout, camera.position.x, camera.position.z);
+          const opts = { camera, rect: sp ? sp.rect : null,
+                         pal: palette(sp ? sp.paletteName : 'parchment') };
+          if (target.focus.mermaid) diagramPanel.show(target.focus.mermaid, opts);
+          else diagramPanel.showImage(target.focus.image, opts);
+          showStudyCard(target.focus);
+        } else {
           hud.showFocus(target);
           player.controls.unlock();
         }
       }
     } else if (e.code === 'KeyT') {
+      if (diagramPanel.isOpen) closeDiagramStage();
       if (chat.toggle()) player.controls.unlock(); else player.controls.lock();
     } else if (e.code === 'KeyM') {
+      if (diagramPanel.isOpen) closeDiagramStage();
       if (hud.toggle('map')) player.controls.unlock(); else player.controls.lock();
     } else if (e.code === 'KeyG') {
+      if (diagramPanel.isOpen) closeDiagramStage();
       if (hud.toggle('graph')) player.controls.unlock(); else player.controls.lock();
     } else if (e.code === 'KeyF' && !hud.openPanel) {
+      if (diagramPanel.isOpen) closeDiagramStage();
       hud.toggle('floo');
       player.controls.unlock();
     } else if (e.code === 'Escape') {
       if (hud.diagramMaxed) hud.closeDiagramMax();
+      else if (diagramPanel.isOpen) closeDiagramStage();
       else if (chat.isOpen) chat.close();
       else if (hud.openPanel) hud.closeAll();
     }
   });
+
+  // Scroll the read-only study card with the wheel while the pointer is locked.
+  addEventListener('wheel', (e) => {
+    if (diagramPanel.isOpen) document.getElementById('study-body').scrollTop += e.deltaY;
+  }, { passive: true });
 
   // Teleport flash.
   const flashEl = document.getElementById('flash');
@@ -200,6 +237,20 @@ async function boot() {
     pos: () => ({ x: camera.position.x, z: camera.position.z,
                   yaw: camera.rotation.y }),
     wisp,
+    diagramPanel,
+    studyDiagram: (roomId, type = 'diagram') => {
+      const room = roomsById[roomId];
+      const ex = room && room.exhibits.find((e) => e.type === type);
+      if (!ex) return false;
+      const sp = layout.spaceById[roomId];
+      teleport(roomId);
+      const opts = { camera, rect: sp ? sp.rect : null,
+                     pal: palette(sp ? sp.paletteName : 'parchment') };
+      if (ex.type === 'image') diagramPanel.showImage(ex.image, opts);
+      else diagramPanel.show(ex.spec, opts);
+      showStudyCard({ title: ex.title, subtitle: ex.type, body: ex.text || ex.caption || '' });
+      return true;
+    },
     ready: false,
   };
 
@@ -213,6 +264,7 @@ async function boot() {
     player.update(dt);
     companion.update(dt, camera, t);
     wisp.update(dt, camera, t);
+    diagramPanel.update(dt, t);
     for (const fn of updates) fn(t);
 
     // Throttled UI updates.
@@ -223,7 +275,7 @@ async function boot() {
       hud.setLocation(space);
       wisp.setRoom(space && space.kind === 'room' && space.room ? space.room.id : null);
       target = findTarget();
-      hud.setPrompt(hud.openPanel ? null : target);
+      hud.setPrompt(hud.openPanel || diagramPanel.isOpen ? null : target);
       if (hud.openPanel === 'map') {
         hud.drawMap({ x: camera.position.x, z: camera.position.z, yaw: camera.rotation.y });
       }

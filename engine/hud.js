@@ -2,18 +2,7 @@
 // Mermaid rendering), the palace map (M), the knowledge constellation (G)
 // and Floo travel (F). Pure DOM + canvas; styled in index.html.
 
-let mermaidPromise = null;
-function loadMermaid() {
-  if (!mermaidPromise) {
-    mermaidPromise = import('https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs')
-      .then((m) => {
-        m.default.initialize({ startOnLoad: false, theme: 'dark', darkMode: true });
-        return m.default;
-      })
-      .catch(() => null);
-  }
-  return mermaidPromise;
-}
+import { loadMermaid } from './mermaid.js';
 
 export class Hud {
   constructor({ layout, world, graph, roomsById, onTeleport }) {

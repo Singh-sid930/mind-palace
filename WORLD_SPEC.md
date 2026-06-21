@@ -68,6 +68,7 @@ roughly the order a visitor walking the room will meet them.
 | `portrait` | `text` (≤16000), optional `subtitle` | framed talking portrait | a character voice explaining or debating the idea |
 | `artifact` | `prop`, `text` (≤16000), optional `scale` (0.5–2) | a 3D prop from the catalog on a plinth | the room's central metaphor object |
 | `diagram` | `spec` (Mermaid, ≤4000), optional `caption` | framed diagram panel | structure: flows, architectures, relationships |
+| `image` | `image` (path under repo, ≤200), optional `caption` | framed picture on the wall, studied large in world space | real figures/plots/screenshots (put files in `world/assets/`) |
 
 Other hard limits: ≤8 exhibits and ≤8 `connections` per room, `order` ≤32, room and
 exhibit ids are yours to invent (kebab-case, stable).
