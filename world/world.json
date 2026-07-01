@@ -1,17 +1,19 @@
 {
   "title": "The Palace of Mind",
   "subtitle": "A Walkable Chronicle of Knowledge",
-  "hub": "atrium",
+  "hub": "attention-atrium",
   "levels": [
     {
-      "id": "ground",
-      "name": "The Ground Floor — World Models",
-      "hub": "atrium"
+      "id": "attention",
+      "name": "The Ground Floor — Attention & Transformers",
+      "hub": "attention-atrium",
+      "tier": 0
     },
     {
-      "id": "upper",
-      "name": "The Upper Floor — Language Models",
-      "hub": "attention-atrium"
+      "id": "world-models",
+      "name": "The Upper Floor — World Models",
+      "hub": "atrium",
+      "tier": 1
     }
   ],
   "wings": [
@@ -19,13 +21,13 @@
       "id": "divination",
       "name": "The Divination Wing",
       "palette": "emerald",
-      "level": "ground"
+      "level": "world-models"
     },
     {
       "id": "attention",
       "name": "The Wing of Attention",
       "palette": "sapphire",
-      "level": "upper"
+      "level": "attention"
     }
   ]
 }

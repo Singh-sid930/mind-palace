@@ -40,6 +40,20 @@
       "title": "Applying the Causal Mask",
       "spec": "graph TD\n  S[scores Q·Kᵀ, shape n×n] --> M[set upper triangle = −∞]\n  M --> SM[softmax row-wise]\n  SM[\"softmax → e^(−∞)=0\"] --> W[weights: each token sees only ≤ itself]\n  W --> O[· V → causal output]",
       "caption": "One masking step is the whole difference between an encoder and a decoder."
+    },
+    {
+      "id": "fig-causal-mask",
+      "type": "image",
+      "title": "The causal mask in three stages",
+      "image": "world/assets/causal-mask.png",
+      "caption": "The single change that turns bidirectional attention into autoregressive generation, read left to right. (a) A 4x4 raw score matrix Q.K^T, every query scoring every key. (b) The strict upper triangle is set to minus infinity before the softmax, forbidding each token from looking at the future. (c) Softmax then turns those entries to exactly zero, since e^(-inf)=0, leaving a lower-triangular weight matrix whose rows each sum to one over only the positions they are allowed to see — the room's exact values: q1=[1.000, 0, 0, 0]; q2=[0.047, 0.953, 0, 0]; q3=[0.665, 0.090, 0.245, 0]; q4=[0.083, 0.224, 0.083, 0.610]. Token 1 may look only at itself; token 4 may look at everything before it. The veil enforces the arrow of time. (In code the mask is a large negative number like -1e9, not literal infinity — and if NaNs bloom in your weights, suspect a masked value leaking through, or a whole row masked to -inf so softmax divides by zero.)"
+    },
+    {
+      "id": "fig-encoder-vs-decoder",
+      "type": "image",
+      "title": "One mask apart: encoder vs decoder attention",
+      "image": "world/assets/encoder-vs-decoder.png",
+      "caption": "Two self-attention patterns for the same 6-token sentence, 'The cat sat on the mat'. The ENCODER (left) is fully bidirectional: every token attends to every token, the whole 6x6 grid filled — this is BERT, encoder-only. The DECODER (right) wears the causal mask: only the lower triangle survives, so each token sees only itself and the past — this is GPT, LLaMA, Claude. 'Encoder-only' and 'decoder-only' simply name which half of the original 2017 Transformer a model keeps; the only structural difference between these two pictures is that one masked triangle. Decoder-only won the scaling race, but the encoder-decoder pairing never died — it still powers summarisation (T5, BART), speech-to-text (Whisper), and many multimodal models."
     }
   ]
 }

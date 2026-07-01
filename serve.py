@@ -195,6 +195,11 @@ class Handler(SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=str(ROOT), **kwargs)
 
+    def end_headers(self):
+        # The palace is actively edited; never let browsers cache stale modules.
+        self.send_header("Cache-Control", "no-store, must-revalidate")
+        super().end_headers()
+
     def log_message(self, fmt, *args):
         if "/api/" in (args[0] if args else ""):
             super().log_message(fmt, *args)

@@ -5,11 +5,45 @@
 import * as THREE from 'three';
 import { palette } from './palettes.js';
 import { bannerTexture } from './text.js';
+import { STAIR_PIT } from './layout.js';
 
 const WALL_T = 0.32;
+const EPS = 0.01;
 
 function lambert(color, extra = {}) {
   return new THREE.MeshLambertMaterial({ color, ...extra });
+}
+
+// One floor slab (a box) spanning [x0,x1] × [z0,z1] with its top at y = 0.
+function floorSlab(x0, x1, z0, z1, mat) {
+  const w = x1 - x0, d = z1 - z0;
+  const m = new THREE.Mesh(new THREE.BoxGeometry(w, 0.2, d), mat);
+  m.position.set((x0 + x1) / 2, -0.1, (z0 + z1) / 2);
+  return m;
+}
+
+// A stairwell pit sunk into the floor: the dark shaft walls + a bottom landing.
+// The descending steps themselves come from the stair prop (placed by exhibits).
+function buildPit(pit, group, colliders) {
+  const depth = STAIR_PIT.depth;
+  const dark = lambert(0x161a22);
+  const w = pit.maxX - pit.minX, d = pit.maxZ - pit.minZ;
+  // Bottom landing.
+  const floorBottom = new THREE.Mesh(new THREE.BoxGeometry(w, 0.2, d), lambert(0x20262f));
+  floorBottom.position.set((pit.minX + pit.maxX) / 2, -depth - 0.1, (pit.minZ + pit.maxZ) / 2);
+  group.add(floorBottom);
+  // Four shaft walls from y = 0 down to the landing.
+  const wallY = -depth / 2, t = 0.16;
+  const make = (cx, cz, ww, dd) => {
+    const m = new THREE.Mesh(new THREE.BoxGeometry(ww, depth, dd), dark);
+    m.position.set(cx, wallY, cz);
+    group.add(m);
+    colliders.push(new THREE.Box3().setFromObject(m));
+  };
+  make((pit.minX + pit.maxX) / 2, pit.minZ + t / 2, w, t);
+  make((pit.minX + pit.maxX) / 2, pit.maxZ - t / 2, w, t);
+  make(pit.minX + t / 2, (pit.minZ + pit.maxZ) / 2, t, d);
+  make(pit.maxX - t / 2, (pit.minZ + pit.maxZ) / 2, t, d);
 }
 
 // One wall side runs lo..hi at fixed coordinate `at`. Doors split it into
@@ -53,13 +87,38 @@ function buildSpace(space, layout, group, colliders) {
   const pal = palette(space.paletteName);
   const { rect, h } = space;
 
-  // Floor.
-  const floor = new THREE.Mesh(
-    new THREE.BoxGeometry(rect.w, 0.2, rect.d),
-    lambert(pal.floor)
-  );
-  floor.position.set(rect.cx, -0.1, rect.cz);
-  group.add(floor);
+  // Floor. If a descending staircase sinks a pit into this room, cut the slab
+  // into strips around the pit (and build the shaft) so the steps are visible.
+  const pits = (layout.stairs || [])
+    .filter((st) => st.roomId === space.id && st.dir === 'down' && st.pit)
+    .map((st) => st.pit);
+  if (pits.length) {
+    const floorMat = lambert(pal.floor);
+    let strips = [{ x0: rect.minX, x1: rect.maxX, z0: rect.minZ, z1: rect.maxZ }];
+    for (const pit of pits) {
+      const next = [];
+      for (const s of strips) {
+        // Strips of `s` that fall outside `pit` (left / right / near / far).
+        const ix0 = Math.max(s.x0, pit.minX), ix1 = Math.min(s.x1, pit.maxX);
+        const iz0 = Math.max(s.z0, pit.minZ), iz1 = Math.min(s.z1, pit.maxZ);
+        if (ix1 - ix0 <= EPS || iz1 - iz0 <= EPS) { next.push(s); continue; } // no overlap
+        if (s.x0 < ix0 - EPS) next.push({ x0: s.x0, x1: ix0, z0: s.z0, z1: s.z1 });
+        if (s.x1 > ix1 + EPS) next.push({ x0: ix1, x1: s.x1, z0: s.z0, z1: s.z1 });
+        if (s.z0 < iz0 - EPS) next.push({ x0: ix0, x1: ix1, z0: s.z0, z1: iz0 });
+        if (s.z1 > iz1 + EPS) next.push({ x0: ix0, x1: ix1, z0: iz1, z1: s.z1 });
+      }
+      strips = next;
+    }
+    for (const s of strips) group.add(floorSlab(s.x0, s.x1, s.z0, s.z1, floorMat));
+    for (const pit of pits) buildPit(pit, group, colliders);
+  } else {
+    const floor = new THREE.Mesh(
+      new THREE.BoxGeometry(rect.w, 0.2, rect.d),
+      lambert(pal.floor)
+    );
+    floor.position.set(rect.cx, -0.1, rect.cz);
+    group.add(floor);
+  }
 
   // Trim rug / inlay for rooms: a slightly lighter inset rectangle.
   if (space.kind === 'room') {

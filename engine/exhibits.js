@@ -4,30 +4,32 @@
 
 import * as THREE from 'three';
 import { palette } from './palettes.js';
+import { STAIR_PIT } from './layout.js';
 import { makeProp } from './props.js';
-import { textPanelTexture, portraitTexture, diagramTexture } from './text.js';
+import { textPanelTexture, portraitTexture, diagramTexture, bannerTexture } from './text.js';
 
 const lam = (color, extra = {}) => new THREE.MeshLambertMaterial({ color, ...extra });
 
 // Usable wall slots for a space: inset points along each wall, skipping
 // doorways and corners, facing into the room.
-function wallSlots(space, doors) {
+function wallSlots(space, doors, excludeSides = null) {
   const { rect } = space;
   const inset = 0.85, cornerPad = 1.5, spacing = 2.7;
   const slots = [];
 
   const sides = [
-    { axis: 'z', at: rect.minZ, coord: 'x', lo: rect.minX, hi: rect.maxX, yaw: 0,
+    { key: 'minZ', axis: 'z', at: rect.minZ, coord: 'x', lo: rect.minX, hi: rect.maxX, yaw: 0,
       px: (v) => [v, rect.minZ + inset] },
-    { axis: 'x', at: rect.maxX, coord: 'z', lo: rect.minZ, hi: rect.maxZ, yaw: -Math.PI / 2,
+    { key: 'maxX', axis: 'x', at: rect.maxX, coord: 'z', lo: rect.minZ, hi: rect.maxZ, yaw: -Math.PI / 2,
       px: (v) => [rect.maxX - inset, v] },
-    { axis: 'z', at: rect.maxZ, coord: 'x', lo: rect.minX, hi: rect.maxX, yaw: Math.PI,
+    { key: 'maxZ', axis: 'z', at: rect.maxZ, coord: 'x', lo: rect.minX, hi: rect.maxX, yaw: Math.PI,
       px: (v) => [v, rect.maxZ - inset] },
-    { axis: 'x', at: rect.minX, coord: 'z', lo: rect.minZ, hi: rect.maxZ, yaw: Math.PI / 2,
+    { key: 'minX', axis: 'x', at: rect.minX, coord: 'z', lo: rect.minZ, hi: rect.maxZ, yaw: Math.PI / 2,
       px: (v) => [rect.minX + inset, v] },
   ];
 
   for (const side of sides) {
+    if (excludeSides && excludeSides.has(side.key)) continue;
     const blocked = doors
       .filter((d) => d.axis === side.axis && Math.abs((side.axis === 'x' ? d.x : d.z) - side.at) < 0.05)
       .map((d) => {
@@ -79,7 +81,7 @@ function openBook(pal) {
 
 // Build one exhibit at a slot (or center). Returns { group, update?, hit }
 // where `hit` is the mesh registered for interaction raycasts.
-function buildExhibit(ex, slot, pal, isCenter) {
+function buildExhibit(ex, slot, pal, isCenter, roomsById, stairInfo) {
   const g = new THREE.Group();
   g.position.set(slot.x, 0, slot.z);
   g.rotation.y = slot.yaw;
@@ -161,15 +163,31 @@ function buildExhibit(ex, slot, pal, isCenter) {
     g.add(panel);
     hit = panel;
   } else if (ex.type === 'stair') {
-    const made = makeProp('stair', pal, ex.scale || 1);
+    const down = !!(stairInfo && stairInfo.dir === 'down');
+    const made = makeProp('stair', pal, ex.scale || 1, { down, depth: STAIR_PIT.depth });
     update = made.update || null;
     g.add(made.group);
-    // Solid invisible hit volume over the stepped geometry (steps ascend +z).
+    // A destination signboard mounted above the arch (or above the pit mouth).
+    const destName = (roomsById && roomsById[ex.to] && roomsById[ex.to].name)
+      || ex.caption || (down ? 'Downstairs' : 'Upstairs');
+    const sa = made.signAnchor || { x: 0, y: 3.4, z: 0 };
+    // Cool navy banner with a sapphire border — matches the portal, stays legible.
+    const signPal = { ...pal, trim: 0x14233a, accent: 0x6ea8ff };
+    const signTex = bannerTexture({ text: destName, pal: signPal, w: 1024, h: 200 });
+    const signW = 2.6, signH = signW * (200 / 1024);
+    const board = new THREE.Mesh(
+      new THREE.PlaneGeometry(signW, signH),
+      new THREE.MeshBasicMaterial({ map: signTex, transparent: true, side: THREE.DoubleSide })
+    );
+    board.position.set(sa.x, sa.y, sa.z);
+    made.group.add(board);
+    // Invisible hit volume: over the ascending flight, or over the pit mouth.
     const hitBox = new THREE.Mesh(
-      new THREE.BoxGeometry(1.7, 2.6, 3.0),
+      down ? new THREE.BoxGeometry(2.4, 2.6, STAIR_PIT.run)
+           : new THREE.BoxGeometry(1.9, 3.6, 3.4),
       new THREE.MeshBasicMaterial({ visible: false })
     );
-    hitBox.position.set(0, 1.3, 1.3);
+    hitBox.position.set(0, down ? 0.6 : 1.5, down ? (STAIR_PIT.run / 2 - 0.85) : 0.2);
     g.add(hitBox);
     hit = hitBox;
   }
@@ -226,14 +244,22 @@ export function buildExhibits(scene, layout, roomsById) {
     const room = space.room;
     const pal = palette(space.paletteName);
     const doors = layout.doorsBySpace.get(space.id) || [];
-    const slots = wallSlots(space, doors);
+    // Staircases get authoritative wall placements from the layout; reserve
+    // their walls so other exhibits never land on top of them.
+    const roomStairs = (layout.stairs || []).filter((st) => st.roomId === space.id);
+    const stairByExhibit = Object.fromEntries(roomStairs.map((st) => [st.exhibitId, st]));
+    const excludeSides = new Set(roomStairs.map((st) => st.side));
+    const slots = wallSlots(space, doors, excludeSides);
     let slotIdx = 0;
     const takeSlot = () => slots[Math.min(slotIdx++, slots.length - 1)];
 
     let centerTaken = false;
     for (const ex of room.exhibits) {
       let slot;
-      if (ex.type === 'artifact' && !centerTaken) {
+      const stairInfo = stairByExhibit[ex.id] || null;
+      if (stairInfo) {
+        slot = { x: stairInfo.x, z: stairInfo.z, yaw: stairInfo.yaw };
+      } else if (ex.type === 'artifact' && !centerTaken) {
         centerTaken = true;
         // Center artifact faces back along the wing toward the hub.
         const yaw = Math.atan2(-space.rect.cx, -space.rect.cz) + Math.PI;
@@ -241,13 +267,14 @@ export function buildExhibits(scene, layout, roomsById) {
       } else {
         slot = takeSlot();
       }
-      const made = buildExhibit(ex, slot, pal, slot.x === space.rect.cx && slot.z === space.rect.cz);
+      const made = buildExhibit(ex, slot, pal, slot.x === space.rect.cx && slot.z === space.rect.cz, roomsById, stairInfo);
       group.add(made.group);
       if (made.update) updates.push(made.update);
       register(made.hit, ex.type === 'stair' ? {
         kind: 'stair',
         roomId: room.id,
         targetRoom: ex.to,
+        dir: stairInfo ? stairInfo.dir : 'up',
         focus: {
           title: roomsById[ex.to] ? roomsById[ex.to].name : ex.to,
           subtitle: 'Staircase',

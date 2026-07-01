@@ -4,7 +4,9 @@
   "wing": "attention",
   "size": "grand",
   "order": 4,
-  "connections": ["mirror-of-occlusion"],
+  "connections": [
+    "mirror-of-occlusion"
+  ],
   "exhibits": [
     {
       "id": "janus-sentinel",
@@ -41,6 +43,13 @@
       "prop": "lectern",
       "title": "Modern VLMs Skip the Bridge",
       "text": "Curiously, most modern vision-language models — SmolVLM, LLaVA, PaliGemma, Qwen-VL — use NO explicit cross-attention. Instead they project image patches into the language model's embedding space, CONCATENATE them with the text tokens, and let ordinary self-attention do the cross-modal mixing within one sequence. The trade: a far simpler architecture that works with any off-the-shelf decoder LM, paid for by image tokens consuming KV-cache and sequence-length budget. Cross-attention is not gone — it is just folded back into self-attention, the gaze turned inward over a sequence that now contains both worlds."
+    },
+    {
+      "id": "fig-attention-shapes",
+      "type": "image",
+      "title": "The shape of the score matrix: square vs rectangular",
+      "image": "world/assets/attention-shapes.png",
+      "caption": "Two gazes, two shapes, drawn to the same scale. On the left, self-attention's score matrix Q.K^T is a perfect 6x6 SQUARE — because Q, K, and V are all drawn from the same n tokens, queries and keys share one length, giving (n, n). On the right, cross-attention is a 5x4 RECTANGLE: the queries come from the text decoder (n_text rows) while the keys and values come from the image encoder (n_patches columns), so the matrix is (n_text, n_patches) and need not be square at all — here 5 text tokens looking into 4 image patches. The cell size is identical in both panels, so the difference you see is the real difference in shape. And the law beneath both, carved on the Sentinel's plinth: K and V always come from whatever you look INTO. Look into yourself and the matrix squares up; look into another source and it stretches to fit."
     }
   ]
 }

@@ -7,25 +7,32 @@
   "order": 1,
   "exhibits": [
     {
-      "id": "upper-welcome",
+      "id": "founder-portrait",
+      "type": "portrait",
+      "title": "Professor Aurelius Bramblestoke",
+      "subtitle": "Keeper of the Predictive Arts",
+      "text": "Ah — you've arrived. Welcome to the Palace of Mind, keeper. The castle grows as you learn, and it grows UPWARD from its foundations: descend toward the groundwork an idea rests upon, climb toward what is built from it. You stand on the Ground Floor, among the halls of Attention — the mechanism every higher art borrows. The Wing of Attention opens from here, and the Grand Staircase climbs to the world models that put attention to work. Mind the signposts at each door; they remember where every idea leads. And when you learn something new in the wider world, send word — the masons will raise another chamber by morning."
+    },
+    {
+      "id": "ground-welcome",
       "type": "plaque",
-      "title": "The Upper Floor",
+      "title": "The Ground Floor — Attention",
       "prop": "pedestal",
-      "text": "Welcome to the Upper Floor, keeper — the realm of language models. Where the Ground Floor studies world models that predict what is hidden, this floor studies the mechanism that lets a model decide what to listen to: attention. From this atrium opens the Wing of Attention, six chambers that build the transformer from a single dot product up to RoPE and Flash. Descend the staircase whenever you wish to return to the world-model halls below."
+      "text": "This is the realm of Attention — the mechanism that lets a model decide what to listen to. From this atrium opens the Wing of Attention: six chambers that build the transformer from a single dot product through multi-head attention, the KV cache and Flash, on to positional schemes like RoPE. Everything on the floors above borrows from what is taught here, which is why Attention sits at the palace's ground. Follow the signposts from doorway to doorway, in order, and the whole machine assembles itself around you."
     },
     {
       "id": "how-to-attend",
       "type": "plaque",
-      "title": "How to Walk This Floor",
+      "title": "How to Walk This Palace",
       "prop": "lectern",
-      "text": "Move with W, A, S, D and look with the mouse. Approach any exhibit and press E to study it; diagrams and figures unfold large in the room around you. Follow the signposts at each doorway — press E on one to travel onward — and read the wisp's nudge when you pause. Press M for this floor's map, G for the constellation of ideas across both floors, and F to travel by Floo to any chamber you know by name."
+      "text": "Move with W, A, S, D and look with the mouse. Approach any exhibit and press E to study it; diagrams and figures unfold large in the room around you. Follow the signposts at each doorway — press E on one to travel onward — and read the wisp's nudge when you pause. Press M for this floor's map, G for the constellation of ideas across all floors, and F to travel by Floo to any chamber you know by name. Staircases mark the lineage: up to what builds on this floor, down to its foundations."
     },
     {
-      "id": "descending-staircase",
+      "id": "ascending-staircase",
       "type": "stair",
-      "title": "The Descending Staircase",
+      "title": "The Grand Staircase",
       "to": "atrium",
-      "caption": "The stair winds back down to the Ground Floor — the Atrium of Recall and the world-model wings. Press E to descend."
+      "caption": "A sweeping stair that climbs to the Upper Floor — the realm of world models, which build their predictions atop the attention you learn here. Press E to ascend."
     }
   ]
 }

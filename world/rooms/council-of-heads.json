@@ -40,6 +40,20 @@
       "title": "Split · Attend · Concat · Project",
       "spec": "graph TD\n  X[token embedding] --> SP[split into h heads]\n  SP --> H1[head 1: own Wq,Wk,Wv]\n  SP --> H2[head 2: own Wq,Wk,Wv]\n  SP --> Hh[head h: ...]\n  H1 --> C[concat → d_model]\n  H2 --> C\n  Hh --> C\n  C --> WO[· Wo: mix all heads]\n  WO --> Y[output, shape n × d_model]",
       "caption": "Heads attend in parallel, then Wo weaves their findings into one."
+    },
+    {
+      "id": "fig-kv-sharing",
+      "type": "image",
+      "title": "Shared libraries: the KV-cache from MHA to GQA to MQA",
+      "image": "world/assets/kv-sharing.png",
+      "caption": "How much memory does each token cost to remember? With head dimension d_k = 64 and h = 8 query heads, the KV-cache per token is exactly g x 2 x d_k. Multi-Head Attention (MHA, g=8) gives every head its own key and value: 8 x 2 x 64 = 1024 values per token. Grouped-Query Attention shares one K,V across a group of query heads: g=4 halves it to 512, g=2 to 256. Multi-Query Attention (MQA, g=1) lets all eight queries read from a single shared library: 128 values, an 8-fold collapse. The schematic on the right shows the same idea structurally — in MHA each Q head owns a K,V pair; in GQA g=2 the eight queries fan into two K,V groups; in MQA all eight share one. MHA and MQA are simply the two extremes of GQA. This is an architectural choice fixed BEFORE training, so the model learns with shared keys and values from day one; LLaMA 2 70B is the rare exception, using full MHA (g=8)."
+    },
+    {
+      "id": "fig-multihead-flow",
+      "type": "image",
+      "title": "Multi-head attention: split, attend, concat, project",
+      "image": "world/assets/multihead-flow.png",
+      "caption": "The whole rite of the council in one sweep. A token's embedding of width d_model is split across h heads. Each head receives its own learned Wq, Wk, Wv and runs the full scaled-dot-product attention inside its own d_k = d_model/h subspace — all heads attending in parallel, each chasing a different notion of relevance. Their outputs are concatenated back to width d_model, stacked side by side but not yet speaking to one another. The weaver Wo then mixes everything: every output dimension becomes a blend of ALL heads, so dimensions that were separate finally interact, and the result has shape n x d_model. One constraint governs the geometry: d_model must be divisible by h, because h heads of width d_k must rebuild d_model exactly (512/8 = 64 works; 512/7 does not)."
     }
   ]
 }

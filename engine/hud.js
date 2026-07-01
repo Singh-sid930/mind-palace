@@ -59,7 +59,8 @@ export class Hud {
     if (record.kind === 'portal') {
       el.textContent = `E — step through to “${record.focus.title}”`;
     } else if (record.kind === 'stair') {
-      el.textContent = `E — take the staircase to “${record.focus.title}”`;
+      const verb = record.dir === 'down' ? 'descend to' : record.dir === 'up' ? 'ascend to' : 'take the staircase to';
+      el.textContent = `E — ${verb} “${record.focus.title}”`;
     } else if (record.kind === 'sign') {
       el.textContent = `E — ${record.prompt}`;
     } else {

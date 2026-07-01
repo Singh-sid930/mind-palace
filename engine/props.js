@@ -5,6 +5,7 @@
 // configure scale, never geometry.
 
 import * as THREE from 'three';
+import { STAIR_PIT } from './layout.js';
 
 const lam = (color, extra = {}) => new THREE.MeshLambertMaterial({ color, ...extra });
 const WOOD = 0x4a3320;
@@ -338,39 +339,174 @@ function brazier(pal) {
   return { group: g, update };
 }
 
-function stair(pal) {
+// A descending stairwell that sinks into a floor pit (the builder cuts the hole
+// and shafts the walls). Steps drop from the room floor down to a sunken arch at
+// the wall; a glowing rim, down-chevrons and a hanging sign mark the mouth.
+function descendingStair(pal, opts = {}) {
   const g = new THREE.Group();
-  const steps = 7, stepH = 0.22, stepD = 0.36, stepW = 1.5;
-  for (let i = 0; i < steps; i++) {
-    const s = new THREE.Mesh(new THREE.BoxGeometry(stepW, stepH, stepD), lam(STONE));
-    s.position.set(0, stepH / 2 + i * stepH, i * stepD);
-    g.add(s);
-    const lip = new THREE.Mesh(new THREE.BoxGeometry(stepW, 0.03, 0.05), lam(pal.trim));
-    lip.position.set(0, stepH + i * stepH, i * stepD + stepD / 2);
+  const GLOW = 0x6ea8ff, EDGE = 0xcfe6ff;
+  const depth = opts.depth || STAIR_PIT.depth;
+  const N = 7, INSET = 0.85;
+  const zWall = -INSET;                    // local z of the wall behind the well
+  const zNear = STAIR_PIT.run - INSET;     // local z of the pit's room-side edge
+  const run = zNear - zWall;               // == STAIR_PIT.run
+  const sd = run / N, sh = depth / N, stepW = STAIR_PIT.width - 0.5;
+  for (let i = 0; i < N; i++) {
+    const yTop = -(i + 1) * sh;            // each tread sits lower, descending to the wall
+    const zc = zNear - (i + 0.5) * sd;
+    const t = new THREE.Mesh(new THREE.BoxGeometry(stepW, sh, sd), lam(STONE));
+    t.position.set(0, yTop - sh / 2, zc);
+    g.add(t);
+    const lip = new THREE.Mesh(
+      new THREE.BoxGeometry(stepW, 0.04, 0.06),
+      new THREE.MeshLambertMaterial({ color: EDGE, emissive: GLOW, emissiveIntensity: 0.7 })
+    );
+    lip.position.set(0, yTop, zc + sd / 2);
     g.add(lip);
   }
-  const topY = steps * stepH, topZ = steps * stepD;
-  // A luminous archway at the top: the passage to another floor.
+  // Sunken archway at the bottom of the well, against the wall.
+  const archY = -depth + 1.0;
   const arch = new THREE.Mesh(
-    new THREE.TorusGeometry(0.85, 0.07, 10, 24, Math.PI),
-    new THREE.MeshLambertMaterial({ color: pal.accent, emissive: pal.glow, emissiveIntensity: 0.6 })
+    new THREE.TorusGeometry(0.85, 0.09, 12, 26, Math.PI),
+    new THREE.MeshLambertMaterial({ color: EDGE, emissive: GLOW, emissiveIntensity: 1.0 })
   );
-  arch.position.set(0, topY + 0.95, topZ);
+  arch.position.set(0, archY, zWall + 0.18);
   g.add(arch);
+  for (const sgn of [-1, 1]) {
+    const jamb = new THREE.Mesh(
+      new THREE.BoxGeometry(0.1, 1.0, 0.1),
+      new THREE.MeshLambertMaterial({ color: EDGE, emissive: GLOW, emissiveIntensity: 0.7 })
+    );
+    jamb.position.set(sgn * 0.85, archY - 0.5, zWall + 0.18);
+    g.add(jamb);
+  }
   const veil = new THREE.Mesh(
-    new THREE.PlaneGeometry(1.6, 1.9),
-    new THREE.MeshBasicMaterial({ color: pal.glow, transparent: true, opacity: 0.16, side: THREE.DoubleSide })
+    new THREE.PlaneGeometry(1.6, 1.8),
+    new THREE.MeshBasicMaterial({ color: GLOW, transparent: true, opacity: 0.4, side: THREE.DoubleSide })
   );
-  veil.position.set(0, topY + 0.95, topZ);
+  veil.position.set(0, archY - 0.05, zWall + 0.15);
   g.add(veil);
-  const light = new THREE.PointLight(pal.glow, 2.2, 7, 1.7);
-  light.position.set(0, topY + 1.0, topZ - 0.4);
+  // Glowing rim around the pit mouth at floor level — frames the opening.
+  const rim = new THREE.Mesh(
+    new THREE.BoxGeometry(stepW + 0.5, 0.06, 0.12),
+    new THREE.MeshLambertMaterial({ color: EDGE, emissive: GLOW, emissiveIntensity: 0.55 })
+  );
+  rim.position.set(0, 0.04, zNear);
+  g.add(rim);
+  // Down-pointing chevrons hovering above the mouth — a "descend" beacon.
+  const chev = new THREE.Group();
+  for (let i = 0; i < 2; i++) {
+    for (const sgn of [-1, 1]) {
+      const bar = new THREE.Mesh(
+        new THREE.BoxGeometry(0.5, 0.09, 0.07),
+        new THREE.MeshBasicMaterial({ color: GLOW })
+      );
+      bar.position.set(sgn * 0.22, 1.5 - i * 0.34, zNear - 0.1);
+      bar.rotation.z = -sgn * 0.7;          // inverted vs the ascending chevron → points down
+      chev.add(bar);
+    }
+  }
+  g.add(chev);
+  const light = new THREE.PointLight(GLOW, 0.7, 5, 2.0);
+  light.position.set(0, -depth + 1.2, zWall + 0.6);
   g.add(light);
   const update = (t) => {
-    veil.material.opacity = 0.12 + 0.06 * Math.sin(t * 1.6);
-    light.intensity = 1.9 + 0.5 * Math.sin(t * 2.0);
+    veil.material.opacity = 0.4 + 0.1 * Math.sin(t * 1.6);
+    chev.position.y = Math.sin(t * 2.2) * 0.07 - 0.05;
+    light.intensity = 0.6 + 0.2 * Math.sin(t * 2.0);
   };
-  return { group: g, update };
+  // The sign hangs above the mouth, facing into the room.
+  const signAnchor = { x: 0, y: 2.3, z: zNear - 0.05 };
+  return { group: g, update, signAnchor };
+}
+
+function stair(pal, opts = {}) {
+  if (opts.down) return descendingStair(pal, opts);
+  const g = new THREE.Group();
+  const steps = 8, stepH = 0.22, stepD = 0.36, stepW = 1.9;
+  const zTop = -0.4;        // the top step sits near the wall (local -z = wall)
+  const topY = steps * stepH;
+  // The portal wears a fixed COOL palette regardless of the room, so the arch,
+  // veil and signboard pop against warm halls instead of dissolving into them.
+  const GLOW = 0x6ea8ff;    // sapphire glow
+  const EDGE = 0xcfe6ff;    // pale-blue tread/arch edges
+  for (let i = 0; i < steps; i++) {
+    // i = 0 is the TOP step (near the wall, tallest); the flight DESCENDS into
+    // the room toward +z, so the keeper climbs up out of the hall to the arch.
+    const topH = (steps - i) * stepH;     // tread surface height
+    const z = zTop + i * stepD;
+    const s = new THREE.Mesh(new THREE.BoxGeometry(stepW, topH, stepD), lam(STONE));
+    s.position.set(0, topH / 2, z);
+    g.add(s);
+    // Glowing tread edge on the room-facing lip — the whole flight reads as lit.
+    const lip = new THREE.Mesh(
+      new THREE.BoxGeometry(stepW, 0.04, 0.06),
+      new THREE.MeshLambertMaterial({ color: EDGE, emissive: GLOW, emissiveIntensity: 0.7 })
+    );
+    lip.position.set(0, topH, z + stepD / 2);
+    g.add(lip);
+  }
+  // A luminous archway at the top of the flight. It sits level with the top step
+  // (just in front of the wall) — pushing it back any further hides it behind the
+  // wall, which occludes the whole portal.
+  const archZ = zTop + 0.05;
+  const arch = new THREE.Mesh(
+    new THREE.TorusGeometry(1.0, 0.1, 12, 28, Math.PI),
+    new THREE.MeshLambertMaterial({ color: EDGE, emissive: GLOW, emissiveIntensity: 1.0 })
+  );
+  arch.position.set(0, topY + 1.05, archZ);
+  g.add(arch);
+  // Two slender jambs so the archway reads as a doorway, not a floating ring.
+  for (const sgn of [-1, 1]) {
+    const jamb = new THREE.Mesh(
+      new THREE.BoxGeometry(0.12, topY + 1.1, 0.12),
+      new THREE.MeshLambertMaterial({ color: EDGE, emissive: GLOW, emissiveIntensity: 0.7 })
+    );
+    jamb.position.set(sgn * 1.0, (topY + 1.05) / 2, archZ);
+    g.add(jamb);
+  }
+  const veil = new THREE.Mesh(
+    new THREE.PlaneGeometry(1.9, 2.1),
+    new THREE.MeshBasicMaterial({ color: GLOW, transparent: true, opacity: 0.42, side: THREE.DoubleSide })
+  );
+  veil.position.set(0, (topY + 1.05) / 2 + 0.5, archZ);
+  g.add(veil);
+  // Upward chevrons above the arch — a clear "go up" beacon.
+  const chev = new THREE.Group();
+  for (let i = 0; i < 2; i++) {
+    for (const sgn of [-1, 1]) {
+      const bar = new THREE.Mesh(
+        new THREE.BoxGeometry(0.5, 0.09, 0.07),
+        new THREE.MeshBasicMaterial({ color: GLOW })
+      );
+      bar.position.set(sgn * 0.22, topY + 2.95 + i * 0.34, archZ);
+      bar.rotation.z = sgn * 0.7;
+      chev.add(bar);
+    }
+  }
+  g.add(chev);
+  // A faint pillar of light rising from the arch — visible across the hall.
+  const shaft = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.4, 0.7, 3.0, 16, 1, true),
+    new THREE.MeshBasicMaterial({ color: GLOW, transparent: true, opacity: 0.05,
+                                  side: THREE.DoubleSide, depthWrite: false })
+  );
+  shaft.position.set(0, topY + 2.4, archZ);
+  g.add(shaft);
+  // A soft point light placed WELL in front of the arch so it lights the steps,
+  // not the wall behind (lighting the wall would wash out the arch and sign).
+  const light = new THREE.PointLight(GLOW, 0.5, 4, 2.0);
+  light.position.set(0, topY + 0.6, archZ + 1.6);
+  g.add(light);
+  const update = (t) => {
+    veil.material.opacity = 0.4 + 0.1 * Math.sin(t * 1.6);
+    shaft.material.opacity = 0.04 + 0.025 * Math.sin(t * 1.2);
+    chev.position.y = Math.sin(t * 2.2) * 0.07;
+    light.intensity = 0.45 + 0.15 * Math.sin(t * 2.0);
+  };
+  // Where a destination signboard mounts: as a lintel just above the arch crown.
+  const signAnchor = { x: 0, y: topY + 2.35, z: archZ + 0.05 };
+  return { group: g, update, signAnchor };
 }
 
 const BUILDERS = {
@@ -379,9 +515,9 @@ const BUILDERS = {
   hourglass, table, brazier, stair,
 };
 
-export function makeProp(name, pal, scale = 1) {
+export function makeProp(name, pal, scale = 1, opts = {}) {
   const builder = BUILDERS[name] || pedestal;
-  const made = builder(pal);
+  const made = builder(pal, opts);
   made.group.scale.setScalar(scale);
   return made;
 }

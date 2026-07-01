@@ -46,6 +46,20 @@
       "type": "tome",
       "title": "The Ledger of Many Queries",
       "text": "One query was a warm-up; the real machine asks all questions at once. Stack three queries into a matrix Q (3x4):\n  q1 = [1, 0, 2, 1]\n  q2 = [0, 1, 0, 1]\n  q3 = [2, 0, 1, 0]\nand two keys into K (2x4). Then Q.K^T is a (3x4)x(4x2) = (3x2) matrix of every query-key score:\n  [[1, 3],\n   [1, 1],\n   [2, 1]]\nThe first row is exactly the single-query result [1, 3] — proof the matrix form does the same thing for everyone simultaneously. Scaling (divide by 2) and softmax are applied independently to EACH ROW, so every query gets its own probability distribution:\n  Row 1: [0.27, 0.73] — leans to v2\n  Row 2: [0.50, 0.50] — a tie, equal attention, the model unsure\n  Row 3: [0.62, 0.38] — leans to v1\nMultiplying the (3x2) weights by V (2x4) gives the output (3x4):\n  Row 1: [2.7, 0, 0, 7.3]\n  Row 2: [5.0, 0, 0, 5.0]\n  Row 3: [6.2, 0, 0, 3.8]\n\nThe full equation is unchanged: Attention(Q, K, V) = softmax(Q.K^T / sqrt(d_k)) . V.\n\nThe dimensional trace is worth memorising, because debugging attention is mostly shape arithmetic:\n  Q: (n, d_k), K: (n, d_k), V: (n, d_v)\n  K^T            -> (d_k, n)\n  Q.K^T          -> (n, n)        <- every token's score to every token\n  / sqrt(d_k)    -> (n, n)\n  softmax        -> (n, n)        row-wise\n  . V            -> (n, d_v)\nThat (n, n) score matrix is the heart of the cost: self-attention is O(n^2) in sequence length. It is also the object we will later mask (the Veil), cache (the Library), and refuse to materialise (the Antechamber of Lightning)."
+    },
+    {
+      "id": "fig-attention-worked-example",
+      "type": "image",
+      "title": "The atomic act of attention, worked end to end",
+      "image": "world/assets/attention-worked-example.png",
+      "caption": "The whole atomic rite of attention, carried out on the Forge's own numbers. Top row: (a) the query q=[1,0,2,1] is scored against the two keys — q.k1=1, q.k2=3 — then each score is divided by sqrt(d_k)=sqrt(4)=2 to give [0.5, 1.5]; (b) softmax turns those scaled scores into attention weights [0.27, 0.73], which sum to one — q leans toward k2; (c) the output is the weighted blend 0.27*v1 + 0.73*v2 = [2.7, 0, 0, 7.3], mostly v2 because the query was most alike to k2. The bottom row shows the matrix form, all three queries at once: Q.K^T gives the score grid [[1,3],[1,1],[2,1]]; softmax is applied independently to each row, giving [0.27,0.73] (leans v2), [0.50,0.50] (a tie, the model unsure), and [0.62,0.38] (leans v1); multiplying by V yields [2.7,0,0,7.3], [5.0,0,0,5.0], [6.2,0,0,3.8]. Row 1 is exactly the single-query example above — proof the matrix form does the same thing for everyone simultaneously. Score, scale, soften, blend."
+    },
+    {
+      "id": "fig-softmax-sharpening",
+      "type": "image",
+      "title": "Softmax = normalise + sharpen, and why we divide by sqrt(d_k)",
+      "image": "world/assets/softmax-sharpening.png",
+      "caption": "Softmax does two jobs at once: it normalises (the weights always sum to one) and it sharpens (e^x amplifies gaps, so the winner wins by more). Take the SAME score gap and scale it up. (a) softmax([0.5,1.5]) = [0.27, 0.73] is gentle and near-uniform; softmax([1,3]) = [0.12, 0.88] is sharper; softmax([2,6]) = [0.02, 0.98] is nearly one-hot. (b) The same story as entropy, the spread of the distribution: 0.84 bits, then 0.53, then 0.13, collapsing toward zero as the scores grow (1 bit is the maximum for a two-way tie). This is exactly why we divide by sqrt(d_k). In high dimensions raw dot-product scores grow vast; left unscaled, softmax spikes to a near one-hot distribution where almost all weights are ~0, its gradient vanishes, and learning stalls. The sqrt(d_k) scaling keeps scores small so the distribution stays soft and differentiable — equal scores give near-uniform attention (unsure), large gaps give near one-hot (certain). The sharpening lets attention FOCUS; the scaling keeps it trainable."
     }
   ]
 }

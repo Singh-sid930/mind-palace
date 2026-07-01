@@ -40,6 +40,20 @@
       "title": "One Frequency per Dimension Pair",
       "spec": "graph TD\n  P[token position m] --> F0[pair 0: freq 1 — fast hand]\n  P --> F1[pair 1: freq 0.01 — slow hand]\n  F0 --> E[sinusoidal: ADD to embedding, before projections]\n  F1 --> E\n  F0 --> R[RoPE: ROTATE q,k by m·θ, after projections]\n  F1 --> R\n  E --> ABS[encodes absolute position]\n  R --> REL[dot product encodes relative distance]",
       "caption": "Same frequencies, two destinations: added as a signal, or applied as a rotation."
+    },
+    {
+      "id": "fig-sinusoidal-pe",
+      "type": "image",
+      "title": "The sinusoidal clock: a position signal of many frequencies",
+      "image": "world/assets/sinusoidal-pe.png",
+      "caption": "The clock made visible. (a) A heatmap of the sinusoidal positional encoding PE[pos, dim] for a 64-dimensional model across positions 0-63: each row is one embedding dimension, each column one position. Even dimensions hold sin(pos*freq_i), odd dimensions cos(pos*freq_i), with one frequency per dimension PAIR: freq_i = 1 / 10000^(2i/d). Low dimensions oscillate fast; high dimensions barely move, giving the smooth diagonal banding. (b) The same idea as curves: dimension 0 is a fast 'second-hand' (freq 1), dimension 8 a 'minute-hand' (freq 0.1), dimension 40 a slow 'hour-hand' (freq ~0.0006). Like a real clock, fast and slow hands together pinpoint a unique position. This vector is ADDED to the token embedding BEFORE the Q, K, V projections, and it encodes ABSOLUTE position — 'I am at 5' — not distance."
+    },
+    {
+      "id": "fig-rope-rotation",
+      "type": "image",
+      "title": "RoPE: rotation that carries relative distance",
+      "image": "world/assets/rope-rotation.png",
+      "caption": "Position by turning, not adding. (a) A query vector q = [3, 1] is rotated by an angle m*theta that grows with its position m; the tip rides a circle, so rotation changes direction but PRESERVES length. (b) The payoff is in the attention score. When q at position m is rotated by m*theta and k at position n by n*theta, their dot product collapses to a function of the RELATIVE offset (m - n) alone — here a clean cosine of m - n. The absolute positions cancel through the identity cos(A)cos(B) + sin(A)sin(B) = cos(A - B). High dimensions are handled exactly as the clock did: pair up dimensions, give each pair its own frequency, rotate each pair independently. RoPE is applied AFTER the projection and touches only Q and K — never V — because only Q and K meet in the score, and what attention usually needs is distance, not absolute address."
     }
   ]
 }

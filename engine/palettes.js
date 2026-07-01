@@ -20,8 +20,8 @@ export const PALETTES = {
     glow: 0xff9a7a, fog: 0x1d0c0c, light: 0xffb09a,
   },
   sapphire: {
-    floor: 0x1f2c4a, wall: 0x32456e, trim: 0x131c30, accent: 0x8c8b86,
-    glow: 0x9ac4ff, fog: 0x0b1120, light: 0xa9c8ff,
+    floor: 0x44598a, wall: 0x6480b4, trim: 0x2c3d63, accent: 0xb6c2d6,
+    glow: 0x9ac4ff, fog: 0x16223c, light: 0xd2e0ff,
   },
   violet: {
     floor: 0x32234a, wall: 0x4c3a6e, trim: 0x1e1430, accent: 0xb08428,

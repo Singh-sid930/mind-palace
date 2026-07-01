@@ -10,6 +10,9 @@
 
 export const ROOM_SIZE = { small: 9, medium: 13, grand: 19 };
 export const ROOM_HEIGHT = { small: 4.6, medium: 5.0, grand: 6.6 };
+// A descending staircase sinks a stairwell pit into its room's floor. These
+// dimensions are shared by the floor-hole cutter (builder) and the prop (props).
+export const STAIR_PIT = { depth: 2.4, width: 2.6, run: 3.0 };
 const CORRIDOR_LEN = 7;
 const CORRIDOR_W = 3.4;
 const CORRIDOR_H = 3.4;
@@ -39,6 +42,10 @@ export function solveLayout(world, roomsById) {
     : [{ id: null, hub: world.hub }];
   const hasLevels = !!(world.levels && world.levels.length);
   const wingLevelOf = (w) => (hasLevels ? (w.level || world.levels[0].id) : null);
+  // Each level carries a signed tier (elevation): foundations are negative,
+  // ground is 0, derived floors are positive. Stairs read tiers to know up/down.
+  const resolvedLevels = levels.map((l) => ({ ...l, tier: Number.isFinite(l.tier) ? l.tier : 0 }));
+  const levelById = Object.fromEntries(resolvedLevels.map((l) => [l.id, l]));
 
   const spaces = [];
   let spawn = null;
@@ -173,8 +180,58 @@ export function solveLayout(world, roomsById) {
     }
   }
 
+  // --- Staircases: directional, each placed on a free wall of its room. ------
+  // Authoritative placement lives here so the floor-hole cutter (builder) and
+  // the prop placer (exhibits) agree. A stair "descends" when its destination
+  // floor has a lower tier than the floor it stands on.
+  const tierOfRoom = (roomId) => {
+    const sp = spaceById[roomId];
+    const lv = sp ? levelById[sp.level] : null;
+    return lv && Number.isFinite(lv.tier) ? lv.tier : 0;
+  };
+  const SIDE_YAW = { minZ: 0, maxZ: Math.PI, minX: Math.PI / 2, maxX: -Math.PI / 2 };
+  const INSET = 0.85;
+  const stairs = [];
+  for (const s of spaces) {
+    if (s.kind !== 'room' || !s.room) continue;
+    const stairExs = (s.room.exhibits || []).filter((e) => e.type === 'stair');
+    if (!stairExs.length) continue;
+    const r = s.rect;
+    const sideDoors = doorsBySpace.get(s.id) || [];
+    const hasDoor = (side) => {
+      if (side === 'minZ' || side === 'maxZ') {
+        const at = side === 'minZ' ? r.minZ : r.maxZ;
+        return sideDoors.some((d) => d.axis === 'z' && Math.abs(d.z - at) < 0.05);
+      }
+      const at = side === 'minX' ? r.minX : r.maxX;
+      return sideDoors.some((d) => d.axis === 'x' && Math.abs(d.x - at) < 0.05);
+    };
+    const free = ['minZ', 'maxZ', 'minX', 'maxX'].filter((sd) => !hasDoor(sd));
+    stairExs.forEach((ex, i) => {
+      const side = free[i % free.length] || 'minZ';
+      let x, z;
+      if (side === 'minZ') { x = r.cx; z = r.minZ + INSET; }
+      else if (side === 'maxZ') { x = r.cx; z = r.maxZ - INSET; }
+      else if (side === 'minX') { x = r.minX + INSET; z = r.cz; }
+      else { x = r.maxX - INSET; z = r.cz; }
+      const dir = tierOfRoom(ex.to) < tierOfRoom(s.id) ? 'down' : 'up';
+      // For a descending stair, the pit footprint hugs the wall and runs inward.
+      let pit = null;
+      if (dir === 'down') {
+        const hw = STAIR_PIT.width / 2, run = STAIR_PIT.run;
+        if (side === 'minZ') pit = { minX: r.cx - hw, maxX: r.cx + hw, minZ: r.minZ, maxZ: r.minZ + run };
+        else if (side === 'maxZ') pit = { minX: r.cx - hw, maxX: r.cx + hw, minZ: r.maxZ - run, maxZ: r.maxZ };
+        else if (side === 'minX') pit = { minX: r.minX, maxX: r.minX + run, minZ: r.cz - hw, maxZ: r.cz + hw };
+        else pit = { minX: r.maxX - run, maxX: r.maxX, minZ: r.cz - hw, maxZ: r.cz + hw };
+      }
+      stairs.push({ roomId: s.id, exhibitId: ex.id, to: ex.to, side, x, z,
+                    yaw: SIDE_YAW[side], dir, level: s.level, pit });
+    });
+  }
+
   return {
     spaces, spaceById, doors, doorsBySpace, portals, roomNeighbors,
+    levels: resolvedLevels, levelById, stairs, tierOfRoom,
     spawn: spawn || { x: 0, z: 0, yaw: Math.atan2(-DIRS[0].x, -DIRS[0].z) },
   };
 }

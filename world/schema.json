@@ -136,7 +136,8 @@
             "properties": {
               "id": { "$ref": "#/definitions/kebabId" },
               "name": { "$ref": "#/definitions/shortText" },
-              "hub": { "$ref": "#/definitions/kebabId" }
+              "hub": { "$ref": "#/definitions/kebabId" },
+              "tier": { "type": "integer", "minimum": -8, "maximum": 8 }
             }
           }
         },

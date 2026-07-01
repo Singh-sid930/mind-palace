@@ -9,30 +9,23 @@
     {
       "id": "welcome-plaque",
       "type": "plaque",
-      "title": "The Palace of Mind",
+      "title": "The Upper Floor — World Models",
       "prop": "pedestal",
-      "text": "Welcome, keeper. Every chamber of this palace holds one piece of true knowledge, dressed in enchantment so that it may be walked through rather than merely read. Wings radiate from this Atrium; doors join ideas that follow one another; glowing portals join ideas that merely rhyme. Nothing here is decoration — every mirror, cauldron and statue is a working metaphor for something real."
+      "text": "You have climbed to the Upper Floor: the realm of world models, the predictive arts. Here the Divination Wing studies how a model learns to predict what is hidden — I-JEPA's latent prophecy, VICReg's three laws against collapse, the projector's guillotine, and the wider JEPA realm. These arts stand a floor above Attention for good reason: their encoders are built from the very mechanism kept downstairs. Nothing here is decoration — every mirror, cauldron and statue is a working metaphor for something real."
     },
     {
       "id": "wayfinding-plaque",
       "type": "plaque",
       "title": "How to Walk",
       "prop": "lectern",
-      "text": "Move with W, A, S, D and look with the mouse. Approach any exhibit and press E to study it closely; press E again or Escape to step back. Press M for the map of the palace, G for the constellation of ideas, and F to travel by Floo to any chamber you know the name of."
+      "text": "Move with W, A, S, D and look with the mouse. Approach any exhibit and press E to study it closely; press E again or Escape to step back. Press M for the map of this floor, G for the constellation of ideas, and F to travel by Floo to any chamber you know the name of. The Descending Staircase returns you to the Ground Floor — the Atrium of Attention these world models are built upon."
     },
     {
-      "id": "founder-portrait",
-      "type": "portrait",
-      "title": "Professor Aurelius Bramblestoke",
-      "subtitle": "Keeper of the Predictive Arts",
-      "text": "Ah — you've arrived. The castle grows as you learn, you know. This Ground Floor holds the world-model arts — the Divination Wing and its four chambers on predicting what is hidden. Mind the Mirror; it has a habit of showing students the gist of things. And mark the Grand Staircase: it climbs to the Upper Floor, where the language models keep their halls of Attention. When you have learned something new in the wider world, send word, and the masons will raise another chamber by morning."
-    },
-    {
-      "id": "grand-staircase",
+      "id": "descending-staircase",
       "type": "stair",
-      "title": "The Grand Staircase",
+      "title": "The Descending Staircase",
       "to": "attention-atrium",
-      "caption": "A sweeping stair that climbs to the Upper Floor — the realm of language models and their halls of Attention. Press E to ascend."
+      "caption": "A stairwell sinking back down to the Ground Floor — the Atrium of Attention and the mechanism these world models are built upon. Press E to descend."
     }
   ]
 }

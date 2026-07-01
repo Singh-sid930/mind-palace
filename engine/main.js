@@ -235,6 +235,8 @@ async function boot() {
   // --- debug / screenshot API ----------------------------------------------
   window.__palace = {
     rooms: () => Object.keys(roomsById),
+    scene,
+    THREE,
     teleport,
     pose: (x, z, yawDeg, pitchDeg = 0) => {
       player.place(x, z, (yawDeg * Math.PI) / 180);

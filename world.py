@@ -201,8 +201,9 @@ def summary(data):
     world, graph, rooms = data["world"], data["graph"], data["rooms"]
     print(f"{world['title']} — {world.get('subtitle', '')}")
     levels = world.get("levels") or [{"id": None, "name": "(single level)", "hub": world["hub"]}]
+    levels = sorted(levels, key=lambda l: l.get("tier", 0), reverse=True)
     for lvl in levels:
-        print(f"\n== {lvl['name']} [{lvl['id']}] · hub: {lvl['hub']} ==")
+        print(f"\n== {lvl['name']} [{lvl['id']}] · tier {lvl.get('tier', 0)} · hub: {lvl['hub']} ==")
         for w in world["wings"]:
             if w.get("level") != lvl["id"]:
                 continue

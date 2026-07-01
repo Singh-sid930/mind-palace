@@ -47,6 +47,20 @@
       "title": "The Decode Loop with KV Cache",
       "spec": "graph TD\n  N[new token] --> Q[compute q, k, v for it]\n  Q --> A[append k,v to KV cache]\n  A --> SC[scores = q · K_cacheᵀ → 1×t]\n  SC --> SM[softmax → weights]\n  SM --> O[blend V_cache → one vector]\n  O --> MLP[MLP]\n  MLP --> LM[lm_head → next token]\n  LM --> N",
       "caption": "Q is fresh each step; K and V only ever grow. One loop, one token at a time."
+    },
+    {
+      "id": "fig-kv-cache-growth",
+      "type": "image",
+      "title": "The KV cache at inference: the library only grows",
+      "image": "world/assets/kv-cache-growth.png",
+      "caption": "Two readings of the same truth: the cache only grows. Left, the staircase — generating 'The cat sat on the mat', the number of cached (K, V) vectors rises by exactly one per decode step. The prompt 'The cat' is read in one PREFILL pass (two vectors shelved at once); thereafter each DECODE step shelves one more. Right, the rhythm of a single decode step producing 'sat': the new token's q, k, v are computed FRESH; k_sat and v_sat are appended to the caches (shelved forever); q_sat is scored against every cached key (q . K_cache^T), softmaxed to weights like [.12 .55 .33], then used to blend the cached values into one vector that flows through the MLP and lm_head to the next token. Note what is NOT kept: Q. The query is the asker — it asks once and moves on, so caching it would only ever reuse its last row. Keys and values are the label and the content every future asker must still consult. Unlike an RNN, each new query has direct access to all past K and V; nothing is compressed away."
+    },
+    {
+      "id": "fig-flash-attention",
+      "type": "image",
+      "title": "Flash attention: the same answer in O(n) memory",
+      "image": "world/assets/flash-attention.png",
+      "caption": "The cost of attention is memory traffic, not only arithmetic. Left, on a log-log scale: eager attention materialises the full (n, n) score matrix in the GPU's large-but-slow HBM, so its memory rises as O(n^2) — about 32 GB for a single head at n = 128K. Flash attention never forms that matrix; its footprint is O(n), a near-flat line. Right, how: blocks of Q and K,V are loaded into the tiny, fast on-chip SRAM (~20 MB); for each tile a partial score S = QK^T is computed, folded into a running softmax (a running max m, a running sum l, and the output O, rescaling old partials by e^(m_old - m_new)), then discarded. The (n, n) matrix is never stored anywhere. Crucially the result is IDENTICAL to eager attention — exact, not approximate. If Flash and eager ever disagree, it is a bug, not a feature."
     }
   ]
 }
