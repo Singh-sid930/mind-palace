@@ -1,8 +1,10 @@
 {
-  "_comment": "Single source of truth for what content may reference. Both world.py (validator) and the engine read this. Content models: you may USE these values; you may not ADD to them (leave a TODO in your report instead).",
+  "_comment": "Single source of truth for every enum content may reference. world.py injects these into schema.json at validate time, so extending the world (new palette, prop, exhibit type...) means editing THIS file plus the code that renders it — never the schema. Content models: you may USE these values; you may not ADD to them (leave a TODO in your report instead).",
   "room_sizes": ["small", "medium", "grand"],
   "palettes": ["parchment", "emerald", "amber", "crimson", "sapphire", "violet", "obsidian"],
-  "exhibit_types": ["plaque", "tome", "portrait", "artifact", "diagram"],
+  "exhibit_types": ["plaque", "tome", "portrait", "artifact", "diagram", "image"],
+  "passage_types": ["stair", "archway"],
+  "plaque_props": ["pedestal", "lectern"],
   "props": [
     "pedestal",
     "lectern",
@@ -16,7 +18,16 @@
     "crystal_ball",
     "hourglass",
     "table",
-    "brazier"
+    "brazier",
+    "attention_beams",
+    "similarity_dial",
+    "frequency_wheel",
+    "error_scales",
+    "variance_balance",
+    "dissolving_cloud",
+    "reforming_cloud",
+    "patch_shuttle",
+    "guidance_arrows"
   ],
   "edge_relations": ["builds-on", "relates-to", "contrasts-with", "part-of"]
 }

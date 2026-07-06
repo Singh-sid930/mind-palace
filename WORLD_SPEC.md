@@ -11,10 +11,11 @@ of the underlying knowledge is mandatory.
 
 ## The one workflow
 
-1. Read this file, `world/catalog.json`, and `world/graph.json`.
-2. Skim 1–2 existing files in `world/rooms/` as style references.
+1. Read this file and `world/catalog.json`.
+2. Skim 1–2 existing files in `world/rooms/` and `world/graph/` as style references.
 3. Write or edit room JSON file(s) in `world/rooms/` (one file per room, filename `<room-id>.json`).
-4. Register every new concept in `world/graph.json` and connect it with edges.
+4. Register every new concept in that room's graph fragment `world/graph/<room-id>.json`
+   and connect it with edges (create the fragment if the room is new).
 5. Run `python world.py validate` from the project root. Fix every error. Repeat until it prints `WORLD OK`.
 6. In your final report, list rooms added/changed and any TODOs (e.g. a prop you wished existed).
 
@@ -22,10 +23,21 @@ A change is **not done** until `python world.py validate` passes.
 
 ## How space works (so you don't think about it)
 
-- The palace has one **hub** (the Atrium) and up to 8 **wings** radiating from it.
-- A room belongs to a wing and has an integer `order` (1, 2, 3, …). The engine lays the
-  wing out as a chain of chambers: order 1 attaches to the hub, order 2 attaches to
-  order 1, and so on. Consecutive rooms get real doorways.
+- The palace is a stack of **levels** (floors) declared in `world/world.json`. Each level
+  has its own hub room and a signed `tier`: vertical position encodes *knowledge lineage*
+  (mathematical foundations below, what builds on them above).
+- Each level holds at most **4 wings** radiating from its hub (the validator enforces
+  this). To grow beyond that, add a new level — levels are unbounded.
+- Levels connect through **passages** declared in `world.json`: typed `stair` (across
+  tiers) or `archway` (lateral, between sibling wings), optionally carrying a `gate`
+  whose `prereqs` (concept ids) summon the Gatekeeper quiz-ghost. Passages are palace
+  architecture — coordinate with the palace author before adding one.
+- A room belongs to a wing and has an integer `order` (1, 2, 3, …). The engine grows the
+  wing as a branching "fishbone": a spine of chambers advances outward from the hub in
+  walking order (and bends once mid-way), while every other room buds off to alternating
+  sides as a side-chamber. Connected rooms get corridors and real doorways. You never
+  see or set this — just give each room its `order`; a wing always ends on its
+  highest-order room, so put the climactic chamber last.
 - `connections` lists other rooms this one is conceptually linked to. If a connection is
   *not* the natural physical neighbor, the engine renders it as a **glowing portal**
   (instant travel). Cross-wing links are always portals. Declaring a connection on one
@@ -73,16 +85,27 @@ roughly the order a visitor walking the room will meet them.
 Other hard limits: ≤8 exhibits and ≤8 `connections` per room, `order` ≤32, room and
 exhibit ids are yours to invent (kebab-case, stable).
 
-`prop` must come from `props` in `world/catalog.json`. Current catalog:
+`prop` must come from `props` in `world/catalog.json`. Furniture:
 pedestal, lectern, mirror, cauldron, bookshelf, statue, banner, candelabra,
-orrery, crystal_ball, hourglass, table, brazier.
+orrery, crystal_ball, hourglass, table, brazier. **Kinetic concept props**
+(animated mechanisms — pick one only when its motion matches the room's
+concept): attention_beams (softmax weights flowing to orbiting keys),
+similarity_dial (sweeping angle + live cosine bar), frequency_wheel (nested
+hands at doubling speeds), error_scales (balance settling as loss shrinks),
+variance_balance (two columns trading under a fixed budget cap),
+dissolving_cloud (figure melting into noise), reforming_cloud (noise
+gathering into a figure), patch_shuttle (image cut into a token thread and
+rewoven), guidance_arrows (u + w·(c−u) extrapolating as w sweeps).
 
 `diagram.spec` is standard Mermaid (`graph TD`, `graph LR`, `sequenceDiagram`).
 Keep diagrams ≤ ~12 nodes; they render on an in-world panel.
 
-## Knowledge graph — `world/graph.json`
+## Knowledge graph — `world/graph/<room-id>.json`
 
-The graph is the palace's ground truth of *what is known and how it connects*.
+The graph is the palace's ground truth of *what is known and how it connects*. It is
+authored as **one fragment per room** so many rooms can be written in parallel without
+ever touching a shared file. A fragment holds the concepts anchored in that room plus
+the edges those concepts originate:
 
 ```json
 {
@@ -96,12 +119,19 @@ The graph is the palace's ground truth of *what is known and how it connects*.
 }
 ```
 
-- Every room you add should anchor ≥1 concept; every concept's `room` must exist.
-  `exhibit` is optional — include it when one exhibit *is* that concept; several
-  concepts may point at the same exhibit; omit it for room-level concepts.
+- Every concept's `room` must equal the fragment's filename; edges may point at
+  concepts in *any* fragment (cross-room edges are the point).
+- Every room you add should anchor ≥1 concept. `exhibit` is optional — include it when
+  one exhibit *is* that concept; several concepts may point at the same exhibit; omit
+  it for room-level concepts.
 - `relation` ∈ `builds-on`, `relates-to`, `contrasts-with`, `part-of` (see catalog).
-- Edges power the in-game constellation map and portal suggestions. Be generous with
-  them — connection is the point of the palace.
+- Edges power the in-game constellation map, the wayfinding signposts and the
+  Gatekeeper's quizzes. Be generous with them — connection is the point of the palace.
+- Concept `summary` doubles as the Gatekeeper's quiz source: for foundation-floor
+  concepts, lead with the pure mathematics and leave any ML framing to a trailing
+  "(Upstairs: …)" parenthetical.
+- `world/graph.json` (the merged graph the engine loads) is **generated** by a clean
+  validate — never edit it by hand.
 
 ## Style guide
 
@@ -122,5 +152,6 @@ The graph is the palace's ground truth of *what is known and how it connects*.
 3. Never reuse or change an existing `id`. Never renumber existing `order`s.
 4. Never delete existing content unless explicitly asked.
 5. Always finish with a clean `python world.py validate`. A successful validate also
-   regenerates `world/rooms/index.json` (the engine's load manifest) — that file
-   changing is expected; include it in your change list, never edit it by hand.
+   regenerates the engine's load artifacts — `world/rooms/index.json` and the merged
+   `world/graph.json` — those files changing is expected; include them in your change
+   list, never edit them by hand.

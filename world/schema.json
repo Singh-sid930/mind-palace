@@ -1,6 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Mind Palace world schemas",
+  "description": "Structural rules only. Fields marked 'catalog:' get their enum injected from world/catalog.json by world.py at validate time — the catalog is the single source of truth for legal values.",
   "definitions": {
     "kebabId": {
       "type": "string",
@@ -16,7 +17,7 @@
       "required": ["id", "type", "title"],
       "properties": {
         "id": { "$ref": "#/definitions/kebabId" },
-        "type": { "enum": ["plaque", "tome", "portrait", "artifact", "diagram", "image", "stair"] },
+        "type": { "type": "string", "description": "catalog: exhibit_types" },
         "title": { "$ref": "#/definitions/shortText" }
       },
       "allOf": [
@@ -26,7 +27,7 @@
             "required": ["text"],
             "properties": {
               "text": { "$ref": "#/definitions/bodyText" },
-              "prop": { "enum": ["pedestal", "lectern"] }
+              "prop": { "type": "string", "description": "catalog: plaque_props" }
             }
           }
         },
@@ -77,18 +78,38 @@
               "caption": { "$ref": "#/definitions/bodyText" }
             }
           }
-        },
-        {
-          "if": { "properties": { "type": { "const": "stair" } } },
-          "then": {
-            "required": ["to"],
-            "properties": {
-              "to": { "$ref": "#/definitions/kebabId" },
-              "caption": { "$ref": "#/definitions/bodyText" }
-            }
-          }
         }
       ]
+    },
+
+    "passage": {
+      "type": "object",
+      "required": ["id", "type", "between"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "$ref": "#/definitions/kebabId" },
+        "type": { "type": "string", "description": "catalog: passage_types" },
+        "between": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "items": { "$ref": "#/definitions/kebabId" }
+        },
+        "gate": {
+          "type": "object",
+          "required": ["at", "prereqs"],
+          "additionalProperties": false,
+          "properties": {
+            "at": { "$ref": "#/definitions/kebabId" },
+            "prereqs": {
+              "type": "array",
+              "minItems": 1,
+              "items": { "$ref": "#/definitions/kebabId" }
+            },
+            "persona": { "$ref": "#/definitions/bodyText" }
+          }
+        }
+      }
     },
 
     "room": {
@@ -101,7 +122,7 @@
         "wing": {
           "oneOf": [{ "$ref": "#/definitions/kebabId" }, { "type": "null" }]
         },
-        "size": { "enum": ["small", "medium", "grand"] },
+        "size": { "type": "string", "description": "catalog: room_sizes" },
         "palette": { "type": "string" },
         "order": { "type": "integer", "minimum": 1, "maximum": 32 },
         "connections": {
@@ -140,6 +161,11 @@
               "tier": { "type": "integer", "minimum": -8, "maximum": 8 }
             }
           }
+        },
+        "passages": {
+          "type": "array",
+          "maxItems": 32,
+          "items": { "$ref": "#/definitions/passage" }
         },
         "wings": {
           "type": "array",

@@ -1,0 +1,22 @@
+{
+  "concepts": [
+    {
+      "id": "classifier-free-guidance",
+      "name": "Classifier-free guidance (CFG)",
+      "room": "the-guidance-forge",
+      "summary": "Make prompts stick: train with ~10% prompt dropout so one net learns conditioned + unconditioned denoising, then at sampling extrapolate eps_guided = eps_uncond + w*(eps_cond - eps_uncond), w~7.5. The subtraction, done in noise space, isolates the prompt's influence."
+    }
+  ],
+  "edges": [
+    {
+      "from": "classifier-free-guidance",
+      "to": "diffusion-cross-attention",
+      "relation": "builds-on"
+    },
+    {
+      "from": "classifier-free-guidance",
+      "to": "noise-predictor",
+      "relation": "builds-on"
+    }
+  ]
+}

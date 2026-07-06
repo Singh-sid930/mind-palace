@@ -1,0 +1,31 @@
+{
+  "id": "undercroft",
+  "name": "The Undercroft of Arithmancy",
+  "wing": null,
+  "size": "grand",
+  "palette": "violet",
+  "order": 1,
+  "exhibits": [
+    {
+      "id": "septima-vector",
+      "type": "portrait",
+      "title": "Professor Septima Vector",
+      "subtitle": "Mistress of Arithmancy",
+      "text": "Welcome to the bedrock, keeper. You have begun where every art in this palace secretly begins — in the Undercroft, among the mathematics the higher floors quietly stand upon. Up there they speak of attention and diffusion as if they were magic; down here you learn the numbers that make the magic lawful. The Wing of Arithmancy holds five chambers: chance and the bell curve, the ledger of variance, the loom of similarity, the wheel of frequencies, and the scales of error. Learn a thing here and you will meet it again three floors up, wearing a costume. When you are ready, the staircases rise: to the Ground Floor of Attention, and — once its wing is raised — to Diffusion. Climb only when the mathematics beneath you feels solid; the Gatekeeper may ask."
+    },
+    {
+      "id": "undercroft-welcome",
+      "type": "plaque",
+      "prop": "pedestal",
+      "title": "The Undercroft — Foundations",
+      "text": "This is the lowest floor, and therefore the deepest. The palace grows UPWARD from here: each floor above is built from what lies below. Descending means moving toward foundations — probability, variance, similarity, frequency, error — the pure mathematics that deep learning is assembled from. The chambers of this wing were quarried from two learning journeys above (Attention and Diffusion): wherever a piece of core mathematics was needed up there, its true home is down here. Read a chamber, then follow how it is USED on the floors above — the same equation, dressed as a mechanism."
+    },
+    {
+      "id": "how-to-walk",
+      "type": "plaque",
+      "prop": "lectern",
+      "title": "How to Walk the Palace",
+      "text": "Move with W, A, S, D and look with the mouse. Approach any exhibit and press E to study it; diagrams and figures unfold large in the room around you. Follow the signposts at each doorway (press E to travel), and read the wisp's nudge when you pause. Press M for this floor's map, G for the constellation of ideas across every floor, and F to travel by Floo to any chamber you know by name. Staircases mark the lineage — up toward what is built, down toward foundations — and an archway joins wings that are siblings. A Gatekeeper ghost may quiz you before a stair rises; you may always answer, skip, or simply walk on."
+    }
+  ]
+}

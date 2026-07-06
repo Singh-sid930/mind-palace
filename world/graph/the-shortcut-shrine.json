@@ -1,0 +1,22 @@
+{
+  "concepts": [
+    {
+      "id": "alpha-bar-shortcut",
+      "name": "The jump-to-any-step shortcut",
+      "room": "the-shortcut-shrine",
+      "summary": "x_t = sqrt(alpha_bar_t)*x_0 + sqrt(1-alpha_bar_t)*eps, where alpha_bar_t is the running product of alpha=1-beta. Jump to any noise level in one draw (sum of Gaussians), which is why training needs no forward-chain loop."
+    }
+  ],
+  "edges": [
+    {
+      "from": "alpha-bar-shortcut",
+      "to": "forward-process",
+      "relation": "builds-on"
+    },
+    {
+      "from": "alpha-bar-shortcut",
+      "to": "sum-of-gaussians",
+      "relation": "builds-on"
+    }
+  ]
+}

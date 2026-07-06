@@ -1,0 +1,52 @@
+{
+  "id": "loom-of-similarity",
+  "name": "The Loom of Similarity",
+  "wing": "math",
+  "size": "medium",
+  "order": 3,
+  "exhibits": [
+    {
+      "id": "the-loom",
+      "type": "artifact",
+      "title": "The Loom of Similarity",
+      "prop": "similarity_dial",
+      "scale": 1.3,
+      "text": "A loom that measures how nearly two threads run in the same direction. Give it two vectors \u2014 two lists of numbers, or two arrows in space \u2014 and it returns a single number saying how aligned they are. Its shuttle is the DOT PRODUCT: for vectors u and v, u\u00b7v = \u03a3 u\u1d62\u00b7v\u1d62 \u2014 multiply matching components, then sum. That is all it is; no machinery, just arithmetic on two lists. The geometry is where the meaning lives: u\u00b7v = |u|\u00b7|v|\u00b7cos(\u03b8), the two lengths times the cosine of the angle between the arrows. So the number is large and positive when the arrows point the same way, zero when they are perpendicular, and negative when they oppose. This is the most natural way to ask 'how similar are these two vectors?' \u2014 and because a single scalar of agreement is such a useful thing, this one operation is a building block you will meet again and again once you leave this cellar. Learn the measure here, purely; you will recognise it instantly wherever alignment must be scored. The dial above enacts it without pause: the gold arrow holds still, the blue arrow sweeps, and the bar beneath stretches with their agreement \u2014 longest and warm when they point together, vanishing at a right angle, cold when they oppose. That bar is u\u00b7v, alive."
+    },
+    {
+      "id": "the-dot-product",
+      "type": "plaque",
+      "prop": "pedestal",
+      "title": "The Dot Product",
+      "text": "u\u00b7v = u\u2081v\u2081 + u\u2082v\u2082 + ... + u_d v_d. A worked thread: u = [1, 2], v = [3, 1] gives 1\u00b73 + 2\u00b71 = 5. Two readings of that same number: (1) an ALIGNMENT score \u2014 how much of one arrow lies along the other; (2) |u|\u00b7|v|\u00b7cos(\u03b8), the lengths times the cosine of the angle between them. Because it collapses two whole vectors into one scalar of 'agreement', it is the natural measure of similarity, and it costs only d multiplies and an add. One property to file away for later: the raw dot product grows with the dimension d \u2014 more terms in the sum means a larger typical magnitude \u2014 so wherever dot products are compared across different sizes, you will often see them divided by \u221ad to keep them on a steady scale. Pure bookkeeping, but it explains a coefficient you will meet upstairs."
+    },
+    {
+      "id": "softmax",
+      "type": "plaque",
+      "prop": "lectern",
+      "title": "Softmax \u2014 Scores into Weights",
+      "text": "Suppose you hold a handful of raw scores \u2014 any real numbers, some negative \u2014 and you want to turn them into WEIGHTS: all positive, and summing to 1, so they can act as proportions. SOFTMAX does exactly that. For scores s\u2081..s_n, weight_i = e^(s_i) / \u03a3_j e^(s_j): exponentiate each (which makes everything positive and stretches the gaps between them), then divide by the total (which makes them sum to one). A gentle example: scores [2, 1, 0] become e\u00b2 , e\u00b9 , e\u2070 = 7.39, 2.72, 1.00, and dividing by their sum 11.11 gives [0.66, 0.24, 0.09]. The largest score claims the most weight, but the others are not silenced. A temperature \u2014 dividing every score by some number before exponentiating \u2014 tunes the sharpness: divide by a large number and the weights flatten toward equal, by a small one and they spike toward a single winner. It is the standard way to turn 'scores' into a soft, differentiable choice."
+    },
+    {
+      "id": "similarity-diagram",
+      "type": "diagram",
+      "title": "From Scores to a Blend",
+      "spec": "graph LR\n  U[vector u] --> D[dot product u\u00b7v]\n  V[vector v] --> D\n  D --> S[score = alignment]\n  S --> SM[softmax \u2192 weights sum to 1]\n  SM --> W[weighted blend of items]",
+      "caption": "Dot product scores alignment; softmax turns a row of scores into positive weights that blend things in proportion."
+    },
+    {
+      "id": "alignment-into-weights",
+      "type": "image",
+      "title": "From Alignment to Weights",
+      "image": "world/assets/dot-product-softmax.png",
+      "caption": "The left panel shows the dot product as pure geometry: a fixed arrow u, and three partners v swung to different angles. When v points nearly with u the score u dot v is large and positive; near a right angle it falls toward zero; past ninety degrees it turns negative. The number is |u| times |v| times the cosine of the angle between them \u2014 alignment, read as a single scalar. The right panels take a row of raw scores and softmax them into positive weights that sum to 1: the largest score claims the most, but none is silenced. The lower panel holds the scores fixed and turns the temperature knob \u2014 a small temperature sharpens the weights toward a single winner, a large one flattens them toward equal shares."
+    },
+    {
+      "id": "where-this-leads",
+      "type": "plaque",
+      "prop": "lectern",
+      "title": "Where This Leads \u2191",
+      "text": "You need no machine learning to own the dot product and softmax \u2014 but together they are the engine of ATTENTION, one floor up. There the two vectors are renamed 'query' and 'key' (each a learned projection of a token), and their dot product IS the relevance score of one token for another; stack every query against every key and you get the (n, n) matrix QK\u1d40, the beating heart of every transformer. The \u221ad division you met here is exactly attention's 'scaled' step, keeping those scores stable. And softmax is attention's second half: it turns each row of scores into weights that blend the values. When you climb to the Atrium of Attention, you will find you already know its arithmetic \u2014 only the costume is new."
+    }
+  ]
+}

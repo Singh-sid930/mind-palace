@@ -98,15 +98,25 @@
                 max-height: 36vh; overflow: hidden; }
   #study-card .hint { margin-top: 12px; font-size: 12px; color: rgba(233,223,198,0.5); }
 
-  #map-panel, #graph-panel {
+  #map-panel {
     left: 50%; top: 50%; transform: translate(-50%, -50%); padding: 18px;
   }
-  #map-panel h2, #graph-panel h2, #floo-panel h2 {
+  #map-panel h2, #floo-panel h2 {
     margin: 0 0 10px; font-size: 18px; text-align: center; letter-spacing: 0.08em;
   }
-  #map-canvas, #graph-canvas { display: block; background: rgba(7,6,12,0.6);
-                               border-radius: 8px; }
-  #graph-canvas { cursor: pointer; }
+  #map-canvas { display: block; background: rgba(7,6,12,0.6); border-radius: 8px; }
+
+  /* 3D constellation hint + edge legend (the view itself is WebGL) */
+  #constellation-hint {
+    position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
+    display: none; z-index: 16; text-align: center; color: var(--parchment);
+    background: var(--panel); border: 1px solid var(--gold); border-radius: 10px;
+    padding: 10px 22px; font-size: 14px; pointer-events: none;
+  }
+  #constellation-hint .legend { margin-top: 6px; font-size: 12.5px; }
+  #constellation-hint .legend span { margin: 0 8px; }
+  .rel-builds { color: #ffc46b; } .rel-part { color: #9fe8b9; }
+  .rel-relates { color: #9ac4ff; } .rel-contrasts { color: #ff9a7a; }
 
   #floo-panel {
     left: 50%; top: 18vh; transform: translateX(-50%); width: min(420px, 80vw);
@@ -144,6 +154,11 @@
   .bubble.gemma {
     align-self: flex-start; background: rgba(154,196,255,0.13);
     border: 1px solid rgba(154,196,255,0.4); border-bottom-left-radius: 4px;
+  }
+  .bubble.gate {
+    align-self: flex-start; background: rgba(191,224,255,0.12);
+    border: 1px solid rgba(191,224,255,0.55); border-bottom-left-radius: 4px;
+    color: #dcebff; font-style: italic;
   }
   .bubble.pending { animation: ponder 1.2s ease-in-out infinite; }
   @keyframes ponder { 0%,100% { opacity: 0.4; } 50% { opacity: 1; } }
@@ -222,10 +237,15 @@
     <div class="hint">M or Esc — close</div>
   </div>
 
-  <div id="graph-panel" class="panel">
-    <h2>The Constellation of Ideas</h2>
-    <canvas id="graph-canvas" width="860" height="600"></canvas>
-    <div class="hint">G or Esc — close</div>
+  <div id="constellation-hint">
+    drag — orbit &nbsp;·&nbsp; scroll — zoom &nbsp;·&nbsp; click a star — travel
+    &nbsp;·&nbsp; <kbd>G</kbd> / <kbd>Esc</kbd> — return to the palace
+    <div class="legend">
+      <span class="rel-builds">— builds on</span>
+      <span class="rel-part">— part of</span>
+      <span class="rel-relates">— relates to</span>
+      <span class="rel-contrasts">— contrasts with</span>
+    </div>
   </div>
 
   <div id="floo-panel" class="panel">

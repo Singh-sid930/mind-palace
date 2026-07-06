@@ -1,12 +1,24 @@
 {
   "title": "The Palace of Mind",
   "subtitle": "A Walkable Chronicle of Knowledge",
-  "hub": "attention-atrium",
+  "hub": "undercroft",
   "levels": [
+    {
+      "id": "foundations",
+      "name": "The Undercroft — Mathematical Foundations",
+      "hub": "undercroft",
+      "tier": -1
+    },
     {
       "id": "attention",
       "name": "The Ground Floor — Attention & Transformers",
       "hub": "attention-atrium",
+      "tier": 0
+    },
+    {
+      "id": "diffusion",
+      "name": "The Ground Floor — Diffusion",
+      "hub": "diffusion-atrium",
       "tier": 0
     },
     {
@@ -18,16 +30,81 @@
   ],
   "wings": [
     {
-      "id": "divination",
-      "name": "The Divination Wing",
-      "palette": "emerald",
-      "level": "world-models"
+      "id": "math",
+      "name": "The Wing of Arithmancy",
+      "palette": "violet",
+      "level": "foundations"
     },
     {
       "id": "attention",
       "name": "The Wing of Attention",
       "palette": "sapphire",
       "level": "attention"
+    },
+    {
+      "id": "diffusion",
+      "name": "The Wing of Diffusion",
+      "palette": "amber",
+      "level": "diffusion"
+    },
+    {
+      "id": "divination",
+      "name": "The Divination Wing",
+      "palette": "emerald",
+      "level": "world-models"
+    },
+    {
+      "id": "dit",
+      "name": "The Wing of the Reforged Transformer",
+      "palette": "crimson",
+      "level": "world-models"
+    }
+  ],
+  "passages": [
+    {
+      "id": "found-attn",
+      "type": "stair",
+      "between": ["undercroft", "attention-atrium"],
+      "gate": {
+        "at": "undercroft",
+        "prereqs": ["dot-product-math", "softmax-math", "sinusoid"],
+        "persona": "You keep the stair to the halls of Attention; you care that a keeper knows the measure of similarity and the ladder of frequencies before they meet queries and keys."
+      }
+    },
+    {
+      "id": "found-diff",
+      "type": "stair",
+      "between": ["undercroft", "diffusion-atrium"],
+      "gate": {
+        "at": "undercroft",
+        "prereqs": ["gaussian-normal", "variance-preservation", "mse-loss"],
+        "persona": "You keep the stair to the halls of Diffusion; you care that a keeper knows the bell curve, why variance is preserved, and the squared loss before they try to noise and denoise."
+      }
+    },
+    {
+      "id": "attn-world",
+      "type": "stair",
+      "between": ["attention-atrium", "atrium"],
+      "gate": {
+        "at": "attention-atrium",
+        "prereqs": ["self-attention", "transformer-block", "cross-attention"],
+        "persona": "You keep the stair to the Upper Floor of world models and the reforged transformer; you care that a keeper truly holds self-attention, the transformer block, and cross-attention."
+      }
+    },
+    {
+      "id": "diff-world",
+      "type": "stair",
+      "between": ["diffusion-atrium", "atrium"],
+      "gate": {
+        "at": "diffusion-atrium",
+        "prereqs": ["noise-predictor", "reverse-sampling", "latent-diffusion"],
+        "persona": "You keep the stair to the Upper Floor; you care that a keeper understands the noise predictor, the backward walk, and latent diffusion before they climb to where these arts are reforged."
+      }
+    },
+    {
+      "id": "attn-diff",
+      "type": "archway",
+      "between": ["the-two-gazes", "the-unet-cathedral"]
     }
   ]
 }

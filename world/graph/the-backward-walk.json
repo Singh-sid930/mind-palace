@@ -1,0 +1,27 @@
+{
+  "concepts": [
+    {
+      "id": "reverse-sampling",
+      "name": "Sampling: the backward walk",
+      "room": "the-backward-walk",
+      "summary": "Start from pure noise, walk t=T->0 in small steps: predict eps, estimate x_0, re-noise only to level t-1, plus a small random kick. Small steps because the x_0 estimate is rough at high noise; the kick keeps samples sharp and diverse."
+    }
+  ],
+  "edges": [
+    {
+      "from": "reverse-sampling",
+      "to": "noise-predictor",
+      "relation": "builds-on"
+    },
+    {
+      "from": "reverse-sampling",
+      "to": "alpha-bar-shortcut",
+      "relation": "builds-on"
+    },
+    {
+      "from": "reverse-sampling",
+      "to": "gaussian-normal",
+      "relation": "builds-on"
+    }
+  ]
+}

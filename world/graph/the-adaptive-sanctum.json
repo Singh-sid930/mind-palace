@@ -1,0 +1,32 @@
+{
+  "concepts": [
+    {
+      "id": "adaln-zero",
+      "name": "adaLN-Zero conditioning",
+      "room": "the-adaptive-sanctum",
+      "summary": "How a DiT block injects timestep t and class/text c: sum t_embed+c_embed, pass through a small MLP to GENERATE the LayerNorm scale/shift (gamma,beta) plus a residual gate alpha per sub-layer. The alpha gates start at ZERO so each block begins as identity, stabilizing deep-transformer training."
+    }
+  ],
+  "edges": [
+    {
+      "from": "adaln-zero",
+      "to": "transformer-block",
+      "relation": "builds-on"
+    },
+    {
+      "from": "adaln-zero",
+      "to": "sinusoid",
+      "relation": "builds-on"
+    },
+    {
+      "from": "adaln-zero",
+      "to": "classifier-free-guidance",
+      "relation": "relates-to"
+    },
+    {
+      "from": "adaln-zero",
+      "to": "diffusion-cross-attention",
+      "relation": "contrasts-with"
+    }
+  ]
+}

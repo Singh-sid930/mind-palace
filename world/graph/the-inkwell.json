@@ -1,0 +1,33 @@
+{
+  "concepts": [
+    {
+      "id": "diffusion-core",
+      "name": "Diffusion in one sentence",
+      "room": "the-inkwell",
+      "summary": "Generate data by REVERSING a gradual noising process. Destroying structure (adding noise) is easy and fixed; reconstructing it from noise is the hard, learned part \u2014 done in many tiny denoising steps."
+    },
+    {
+      "id": "forward-process",
+      "name": "The forward process (DDPM)",
+      "room": "the-inkwell",
+      "summary": "x_t = sqrt(1-beta_t)*x_{t-1} + sqrt(beta_t)*eps_t: shrink the signal a little, inject a little noise. Designed to be variance-preserving so the endpoint is always N(0,1). Fixed, no learning (Ho et al., 2020)."
+    }
+  ],
+  "edges": [
+    {
+      "from": "forward-process",
+      "to": "diffusion-core",
+      "relation": "part-of"
+    },
+    {
+      "from": "forward-process",
+      "to": "variance-preservation",
+      "relation": "builds-on"
+    },
+    {
+      "from": "forward-process",
+      "to": "gaussian-normal",
+      "relation": "builds-on"
+    }
+  ]
+}

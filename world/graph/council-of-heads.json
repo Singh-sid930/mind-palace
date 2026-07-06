@@ -1,0 +1,81 @@
+{
+  "concepts": [
+    {
+      "id": "multi-head-attention",
+      "name": "Multi-head attention",
+      "room": "council-of-heads",
+      "exhibit": "round-table",
+      "summary": "Run h attention operations in parallel, each in its own d_k = d_model/h subspace with its own Wq,Wk,Wv, then concatenate and mix with Wo: MultiHead = Concat(head_1..head_h).Wo. One head captures one notion of relevance; many heads capture many. d_model must be divisible by h."
+    },
+    {
+      "id": "output-projection-wo",
+      "name": "Output projection Wo",
+      "room": "council-of-heads",
+      "exhibit": "the-weaver-wo",
+      "summary": "The (d_model x d_model) matrix Wo applied after concatenating heads. Concatenation alone keeps head subspaces isolated; Wo makes every output dimension a blend of all heads, weaving their separate insights into one representation."
+    },
+    {
+      "id": "head-redundancy",
+      "name": "Head specialisation and redundancy",
+      "room": "council-of-heads",
+      "exhibit": "why-heads-differ",
+      "summary": "Heads specialise without any explicit diversity loss \u2014 difference emerges from random init, gradient pressure through Wo, and distinct subspaces. Yet trained heads end up partly redundant (20-40% are often prunable), which is exactly what motivates sharing keys and values in MQA and GQA."
+    },
+    {
+      "id": "grouped-query-attention",
+      "name": "Grouped-query attention (GQA)",
+      "room": "council-of-heads",
+      "exhibit": "shared-libraries",
+      "summary": "GQA shares one key/value pair across each GROUP of query heads: h query heads split into g groups. It interpolates between MHA (g=h, a KV pair per head) and MQA (g=1, one shared pair). LLaMA 2 70B uses g=8. An architecture choice made before training, shrinking the KV cache."
+    },
+    {
+      "id": "multi-query-attention",
+      "name": "Multi-query attention (MQA)",
+      "room": "council-of-heads",
+      "exhibit": "shared-libraries",
+      "summary": "MQA keeps h independent query heads but a SINGLE shared Wk, Wv across all of them \u2014 eight researchers, one library \u2014 collapsing the KV cache up to 8-fold. It is the g=1 extreme of grouped-query attention, decided before training, not a post-hoc optimisation."
+    }
+  ],
+  "edges": [
+    {
+      "from": "multi-head-attention",
+      "to": "scaled-dot-product-attention",
+      "relation": "builds-on"
+    },
+    {
+      "from": "output-projection-wo",
+      "to": "multi-head-attention",
+      "relation": "part-of"
+    },
+    {
+      "from": "head-redundancy",
+      "to": "multi-head-attention",
+      "relation": "relates-to"
+    },
+    {
+      "from": "grouped-query-attention",
+      "to": "multi-head-attention",
+      "relation": "builds-on"
+    },
+    {
+      "from": "multi-query-attention",
+      "to": "grouped-query-attention",
+      "relation": "builds-on"
+    },
+    {
+      "from": "multi-query-attention",
+      "to": "multi-head-attention",
+      "relation": "contrasts-with"
+    },
+    {
+      "from": "head-redundancy",
+      "to": "grouped-query-attention",
+      "relation": "relates-to"
+    },
+    {
+      "from": "grouped-query-attention",
+      "to": "kv-cache",
+      "relation": "relates-to"
+    }
+  ]
+}

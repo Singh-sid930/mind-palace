@@ -1,0 +1,37 @@
+{
+  "concepts": [
+    {
+      "id": "sinusoid",
+      "name": "Sinusoids & frequencies",
+      "room": "wheel-of-frequencies",
+      "exhibit": "the-wheel",
+      "summary": "sin and cos at a ladder of frequencies freq_i=1/10000^(2i/d) \u2014 fast and slow hands that together pinpoint an index as a unique fingerprint. Pure trigonometry. (Upstairs: positional encoding and diffusion's timestep embedding.)"
+    },
+    {
+      "id": "rotation-length",
+      "name": "Rotation preserves length",
+      "room": "wheel-of-frequencies",
+      "exhibit": "rotation-length",
+      "summary": "Rotating a vector changes its direction but not its length (sin^2+cos^2=1). The whole idea of RoPE: inject 'where' by rotating queries and keys without distorting 'what'."
+    },
+    {
+      "id": "angle-addition",
+      "name": "The angle-addition identity",
+      "room": "wheel-of-frequencies",
+      "exhibit": "angle-addition",
+      "summary": "cos(A)cos(B)+sin(A)sin(B)=cos(A-B): the dot product of two rotated vectors depends only on the difference of angles. This is why RoPE's rotations yield a RELATIVE sense of position."
+    }
+  ],
+  "edges": [
+    {
+      "from": "rotation-length",
+      "to": "sinusoid",
+      "relation": "relates-to"
+    },
+    {
+      "from": "angle-addition",
+      "to": "sinusoid",
+      "relation": "relates-to"
+    }
+  ]
+}

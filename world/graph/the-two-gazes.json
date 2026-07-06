@@ -1,0 +1,86 @@
+{
+  "concepts": [
+    {
+      "id": "cross-attention",
+      "name": "Cross-attention",
+      "room": "the-two-gazes",
+      "exhibit": "janus-sentinel",
+      "summary": "Attention where Q comes from one source and K, V from another \u2014 e.g. a text decoder querying image-encoder patches. The score matrix Q.K^T is (n_text, n_patches), not square. Output gives each text token visual information from the patches it attended to."
+    },
+    {
+      "id": "qkv-source-principle",
+      "name": "K and V come from where you look",
+      "room": "the-two-gazes",
+      "exhibit": "cross-attention-wiring",
+      "summary": "The unifying rule of attention: K and V always come from whatever you are looking INTO. Look into yourself -> self-attention; look into another modality -> cross-attention. The arithmetic is identical; only the source of keys and values changes."
+    },
+    {
+      "id": "attention-maps",
+      "name": "Attention maps & head patterns",
+      "room": "the-two-gazes",
+      "exhibit": "cross-attention-figure",
+      "summary": "The (n,n) softmax weight matrix IS the attention map; plotted as a heatmap (rows=queries, cols=keys, brightness=weight) it reveals learned head patterns: previous-token, first-token, subject-verb, induction, uniform (prunable), and diagonal self-attention heads."
+    },
+    {
+      "id": "vit-patch-attention",
+      "name": "ViT patch attention",
+      "room": "the-two-gazes",
+      "exhibit": "vit-attention-figure",
+      "summary": "A Vision Transformer splits an image into patches (14x14 = 196) and attends over them, giving a (196,196) matrix. Take one query's 196 weights, reshape to 14x14, and overlay on the image; different heads attend to different regions (an object, an edge, the whole scene)."
+    },
+    {
+      "id": "modern-vlm-concat",
+      "name": "Modern VLMs skip cross-attention",
+      "room": "the-two-gazes",
+      "exhibit": "where-you-look",
+      "summary": "Most modern VLMs (SmolVLM, LLaVA, PaliGemma, Qwen-VL) skip explicit cross-attention: they project image patches into the LM's embedding space, concatenate them with text tokens, and let self-attention mix the modalities. Simpler and decoder-agnostic, but image tokens consume KV-cache and context budget."
+    }
+  ],
+  "edges": [
+    {
+      "from": "cross-attention",
+      "to": "self-attention",
+      "relation": "contrasts-with"
+    },
+    {
+      "from": "cross-attention",
+      "to": "scaled-dot-product-attention",
+      "relation": "builds-on"
+    },
+    {
+      "from": "qkv-source-principle",
+      "to": "cross-attention",
+      "relation": "relates-to"
+    },
+    {
+      "from": "qkv-source-principle",
+      "to": "self-attention",
+      "relation": "relates-to"
+    },
+    {
+      "from": "attention-maps",
+      "to": "self-attention",
+      "relation": "relates-to"
+    },
+    {
+      "from": "vit-patch-attention",
+      "to": "attention-maps",
+      "relation": "part-of"
+    },
+    {
+      "from": "vit-patch-attention",
+      "to": "self-attention",
+      "relation": "relates-to"
+    },
+    {
+      "from": "modern-vlm-concat",
+      "to": "cross-attention",
+      "relation": "contrasts-with"
+    },
+    {
+      "from": "vit-patch-attention",
+      "to": "i-jepa",
+      "relation": "relates-to"
+    }
+  ]
+}

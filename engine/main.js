@@ -4,9 +4,7 @@
 
 import * as THREE from 'three';
 import { solveLayout, spaceAt } from './layout.js';
-import { buildWorld } from './builder.js';
-import { buildExhibits } from './exhibits.js';
-import { buildWayfinding } from './wayfinding.js';
+import { LevelManager } from './levels.js';
 import { Wisp } from './wisp.js';
 import { DiagramPanel } from './diagrampanel.js';
 import { palette } from './palettes.js';
@@ -14,6 +12,8 @@ import { Player, EYE } from './player.js';
 import { Hud } from './hud.js';
 import { Companion } from './companion.js';
 import { CompanionChat } from './chat.js';
+import { Constellation } from './constellation.js';
+import { installDebugApi } from './debug.js';
 
 async function fetchJson(path) {
   const res = await fetch(path);
@@ -61,6 +61,7 @@ async function boot() {
   const { world, graph, roomsById } = await loadWorldData();
   const layout = solveLayout(world, roomsById);
   const palaceGist = buildPalaceGist(world, roomsById, graph);
+  const conceptsById = Object.fromEntries(graph.concepts.map((c) => [c.id, c]));
 
   const renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setSize(innerWidth, innerHeight);
@@ -72,10 +73,12 @@ async function boot() {
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(72, innerWidth / innerHeight, 0.1, 500);
 
-  const { colliders } = buildWorld(scene, layout);
-  const { interactables, updates } = buildExhibits(scene, layout, roomsById);
-  const wayfinding = buildWayfinding(scene, layout, roomsById, graph);
-  for (const [obj, rec] of wayfinding.interactables) interactables.set(obj, rec);
+  // Floors build lazily: only the spawn level exists now; stairs/floo/teleport
+  // build others on first visit. These three are LIVE references — the manager
+  // swaps their contents when the keeper changes floors.
+  const levels = new LevelManager(scene, layout, roomsById, graph);
+  levels.activateFor(world.hub);
+  const { colliders, interactables, updates, dome } = levels;
   const wisp = new Wisp(scene, layout, roomsById);
   const diagramPanel = new DiagramPanel(scene);
 
@@ -98,6 +101,7 @@ async function boot() {
   const teleport = (roomId) => {
     const space = layout.spaceById[roomId];
     if (!space) return;
+    levels.activateFor(roomId); // build the destination floor if needed
     // Land between the south wall and the center artifact, facing it.
     const r = space.rect;
     const back = Math.min(r.d / 2 - 1.4, Math.max(3.4, r.d * 0.32));
@@ -106,6 +110,16 @@ async function boot() {
   };
 
   const hud = new Hud({ layout, world, graph, roomsById, onTeleport: teleport });
+
+  // The 3D Constellation of Ideas (G): floors as star-layers, click to travel.
+  const constellation = new Constellation({
+    dom: renderer.domElement, layout, world, graph, roomsById,
+    onTravel: (roomId) => {
+      constellation.close();
+      teleport(roomId);
+      player.controls.lock();
+    },
+  });
 
   // --- Gemma: the companion ghost + her chat ------------------------------
   const companion = new Companion(scene);
@@ -142,11 +156,13 @@ async function boot() {
   player.controls.addEventListener('unlock', () => {
     player.enabled = false;
     // Keep overlay hidden while any panel, the chat, or a floating diagram is open.
-    if (!hud.openPanel && !chat.isOpen && !diagramPanel.isOpen) startEl.style.display = 'flex';
+    if (!hud.openPanel && !chat.isOpen && !diagramPanel.isOpen && !constellation.isOpen) {
+      startEl.style.display = 'flex';
+    }
   });
   // Clicking the world re-locks the pointer after closing a panel/chat.
   renderer.domElement.addEventListener('click', () => {
-    if (!hud.openPanel && !chat.isOpen && !player.controls.isLocked) {
+    if (!hud.openPanel && !chat.isOpen && !constellation.isOpen && !player.controls.isLocked) {
       player.controls.lock();
     }
   });
@@ -182,7 +198,7 @@ async function boot() {
           teleport(target.targetRoom);
         } else if (target.kind === 'sign') {
           teleport(target.destRoom);
-        } else if (target.kind === 'stair') {
+        } else if (target.kind === 'stair' || target.kind === 'archway') {
           teleport(target.targetRoom);
         } else if (target.focus.mermaid || target.focus.image) {
           // Diagram or image exhibit: float a big panel in the room, keeping the
@@ -207,13 +223,18 @@ async function boot() {
       if (hud.toggle('map', pl)) player.controls.unlock(); else player.controls.lock();
     } else if (e.code === 'KeyG') {
       if (diagramPanel.isOpen) closeDiagramStage();
-      if (hud.toggle('graph')) player.controls.unlock(); else player.controls.lock();
+      hud.closeAll();
+      const sp = spaceAt(layout, camera.position.x, camera.position.z);
+      const here = sp && sp.kind === 'room' && sp.room ? sp.room.id : null;
+      if (constellation.toggle(here)) player.controls.unlock();
+      else player.controls.lock();
     } else if (e.code === 'KeyF' && !hud.openPanel) {
       if (diagramPanel.isOpen) closeDiagramStage();
       hud.toggle('floo');
       player.controls.unlock();
     } else if (e.code === 'Escape') {
       if (hud.diagramMaxed) hud.closeDiagramMax();
+      else if (constellation.isOpen) constellation.close();
       else if (diagramPanel.isOpen) closeDiagramStage();
       else if (chat.isOpen) chat.close();
       else if (hud.openPanel) hud.closeAll();
@@ -232,49 +253,11 @@ async function boot() {
     setTimeout(() => { flashEl.style.opacity = '0'; }, 60);
   }
 
-  // --- debug / screenshot API ----------------------------------------------
-  window.__palace = {
-    rooms: () => Object.keys(roomsById),
-    scene,
-    THREE,
-    teleport,
-    pose: (x, z, yawDeg, pitchDeg = 0) => {
-      player.place(x, z, (yawDeg * Math.PI) / 180);
-      camera.rotation.x = (pitchDeg * Math.PI) / 180;
-    },
-    pos: () => ({ x: camera.position.x, z: camera.position.z,
-                  yaw: camera.rotation.y }),
-    wisp,
-    diagramPanel,
-    layout,
-    signs: wayfinding.signs,
-    stairs2: () => {
-      const seen = {}; const out = [];
-      for (const [o, r] of interactables) {
-        if (r.kind === 'stair' && !seen[r.targetRoom]) {
-          seen[r.targetRoom] = true;
-          const p = new THREE.Vector3();
-          o.getWorldPosition(p);
-          out.push({ x: p.x, z: p.z, to: r.targetRoom });
-        }
-      }
-      return out;
-    },
-    studyDiagram: (roomId, type = 'diagram', noTeleport = false) => {
-      const room = roomsById[roomId];
-      const ex = room && room.exhibits.find((e) => e.type === type);
-      if (!ex) return false;
-      const sp = layout.spaceById[roomId];
-      if (!noTeleport) teleport(roomId);
-      const opts = { camera, rect: sp ? sp.rect : null,
-                     pal: palette(sp ? sp.paletteName : 'parchment') };
-      if (ex.type === 'image') diagramPanel.showImage(ex.image, opts);
-      else diagramPanel.show(ex.spec, opts);
-      showStudyCard({ title: ex.title, subtitle: ex.type, body: ex.text || ex.caption || '' });
-      return true;
-    },
-    ready: false,
-  };
+  // --- debug / screenshot API (window.__palace) -----------------------------
+  const debugApi = installDebugApi({
+    scene, camera, player, layout, roomsById, interactables, levels,
+    wisp, diagramPanel, teleport, palette, showStudyCard,
+  });
 
   // --- main loop ------------------------------------------------------------
   const clock = new THREE.Clock();
@@ -283,7 +266,16 @@ async function boot() {
     const dt = Math.min(clock.getDelta(), 0.05);
     const t = clock.elapsedTime;
 
+    // While the constellation is open, the astral view replaces the palace.
+    if (constellation.isOpen) {
+      constellation.update(dt, t);
+      renderer.render(constellation.scene, constellation.camera);
+      debugApi.ready = true;
+      return;
+    }
+
     player.update(dt);
+    dome.position.set(camera.position.x, 0, camera.position.z);
     companion.update(dt, camera, t);
     wisp.update(dt, camera, t);
     diagramPanel.update(dt, t);
@@ -297,6 +289,16 @@ async function boot() {
       hud.setLocation(space);
       wisp.setRoom(space && space.kind === 'room' && space.room ? space.room.id : null);
       target = findTarget();
+      // A gated passage summons the Gatekeeper: resolve its prerequisite
+      // concepts and hand them to the chat so pressing T opens a quiz.
+      const gate = target && (target.kind === 'stair' || target.kind === 'archway') && target.gate
+        ? target.gate : null;
+      chat.setGate(gate ? {
+        dest: target.focus.title,
+        persona: gate.persona || '',
+        prereqs: (gate.prereqs || []).map((id) => conceptsById[id]).filter(Boolean)
+          .map((c) => ({ name: c.name, summary: c.summary })),
+      } : null);
       hud.setPrompt(hud.openPanel || diagramPanel.isOpen ? null : target);
       if (hud.openPanel === 'map') {
         hud.drawMap({ x: camera.position.x, z: camera.position.z, yaw: camera.rotation.y });
@@ -304,12 +306,14 @@ async function boot() {
     }
 
     renderer.render(scene, camera);
-    window.__palace.ready = true;
+    debugApi.ready = true;
   });
 
   addEventListener('resize', () => {
     camera.aspect = innerWidth / innerHeight;
     camera.updateProjectionMatrix();
+    constellation.camera.aspect = innerWidth / innerHeight;
+    constellation.camera.updateProjectionMatrix();
     renderer.setSize(innerWidth, innerHeight);
   });
 }

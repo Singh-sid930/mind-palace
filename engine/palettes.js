@@ -12,20 +12,20 @@ export const PALETTES = {
     glow: 0x9fe8b9, fog: 0x101f17, light: 0xcfe9c9,
   },
   amber: {
-    floor: 0x5c4123, wall: 0x8a6a3c, trim: 0x3e2b15, accent: 0xc78f3a,
-    glow: 0xffc46b, fog: 0x231708, light: 0xffc878,
+    floor: 0x7a5836, wall: 0xa8834a, trim: 0x4e3618, accent: 0xe0a94e,
+    glow: 0xffc46b, fog: 0x2c1e0c, light: 0xffd28a,
   },
   crimson: {
-    floor: 0x4a2020, wall: 0x6e3030, trim: 0x2e1212, accent: 0xb08428,
-    glow: 0xff9a7a, fog: 0x1d0c0c, light: 0xffb09a,
+    floor: 0x6e3535, wall: 0x9a4a4a, trim: 0x3e1c1c, accent: 0xe0a860,
+    glow: 0xff9a7a, fog: 0x2a1010, light: 0xffc0aa,
   },
   sapphire: {
     floor: 0x44598a, wall: 0x6480b4, trim: 0x2c3d63, accent: 0xb6c2d6,
     glow: 0x9ac4ff, fog: 0x16223c, light: 0xd2e0ff,
   },
   violet: {
-    floor: 0x32234a, wall: 0x4c3a6e, trim: 0x1e1430, accent: 0xb08428,
-    glow: 0xd2a8ff, fog: 0x140d20, light: 0xd8baff,
+    floor: 0x4a3570, wall: 0x6e569e, trim: 0x2c1f47, accent: 0xd8c27a,
+    glow: 0xd2a8ff, fog: 0x1d1330, light: 0xe4d2ff,
   },
   obsidian: {
     floor: 0x1c1c20, wall: 0x2c2c32, trim: 0x101012, accent: 0x8c8b86,

@@ -1,0 +1,76 @@
+{
+  "concepts": [
+    {
+      "id": "scaled-dot-product-attention",
+      "name": "Scaled dot-product attention",
+      "room": "forge-of-the-query",
+      "exhibit": "the-weighted-gift",
+      "summary": "The atomic operation of attention: Attention(Q,K,V) = softmax(QK^T / sqrt(d_k)) . V. Score every query against every key by dot product, scale by sqrt(d_k), soften to a probability distribution with softmax, then return the weighted blend of values. Score, scale, soften, blend."
+    },
+    {
+      "id": "dot-product-similarity",
+      "name": "Dot-product similarity",
+      "room": "forge-of-the-query",
+      "exhibit": "orb-of-likeness",
+      "summary": "Attention's measure of alignment: the dot product of a query and a key. For q=[1,0,2,1], the key [0,0,1,1] scores 3 while [1,1,0,0] scores 1, so the query leans toward the former. A larger dot product means greater likeness."
+    },
+    {
+      "id": "softmax-attention",
+      "name": "Softmax (normalise + sharpen)",
+      "room": "forge-of-the-query",
+      "exhibit": "the-sharpening",
+      "summary": "Softmax turns raw scores into attention weights, doing two jobs at once: it exponentiates (always positive, amplifying gaps so the winner wins by more) and normalises (weights sum to one). 'Normalise + sharpen': equal scores give near-uniform attention, large gaps give near one-hot. Preceded by scaling by sqrt(d_k) to keep gradients alive."
+    },
+    {
+      "id": "qkv-projections",
+      "name": "Q, K, V projections",
+      "room": "forge-of-the-query",
+      "exhibit": "three-cloaks",
+      "summary": "Q, K and V are three learned linear projections of the same input X (shape n x d_model): Q=X.Wq, K=X.Wk, V=X.Wv. The model learns what to ask, what to advertise, and what to give. Constraint: d_q = d_k always (the dot product demands it); d_v may differ."
+    },
+    {
+      "id": "attention-quadratic-cost",
+      "name": "The (n,n) score matrix \u2014 O(n\u00b2)",
+      "room": "forge-of-the-query",
+      "exhibit": "ledger-of-queries",
+      "summary": "The score matrix Q.K^T has shape (n, n) \u2014 every token's score to every token \u2014 making self-attention O(n^2) in sequence length. This (n,n) object is what later gets masked, cached, and (in Flash attention) never materialised."
+    }
+  ],
+  "edges": [
+    {
+      "from": "dot-product-similarity",
+      "to": "scaled-dot-product-attention",
+      "relation": "part-of"
+    },
+    {
+      "from": "softmax-attention",
+      "to": "scaled-dot-product-attention",
+      "relation": "part-of"
+    },
+    {
+      "from": "qkv-projections",
+      "to": "scaled-dot-product-attention",
+      "relation": "part-of"
+    },
+    {
+      "from": "attention-quadratic-cost",
+      "to": "scaled-dot-product-attention",
+      "relation": "relates-to"
+    },
+    {
+      "from": "dot-product-similarity",
+      "to": "dot-product-math",
+      "relation": "builds-on"
+    },
+    {
+      "from": "softmax-attention",
+      "to": "softmax-math",
+      "relation": "builds-on"
+    },
+    {
+      "from": "scaled-dot-product-attention",
+      "to": "dot-product-math",
+      "relation": "builds-on"
+    }
+  ]
+}

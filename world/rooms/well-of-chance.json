@@ -1,0 +1,52 @@
+{
+  "id": "well-of-chance",
+  "name": "The Well of Chance",
+  "wing": "math",
+  "size": "medium",
+  "order": 1,
+  "exhibits": [
+    {
+      "id": "the-well",
+      "type": "artifact",
+      "title": "The Well of Chance",
+      "prop": "crystal_ball",
+      "scale": 1.3,
+      "text": "A well whose surface never settles the same way twice, yet whose ripples always follow one shape: the bell. This is the GAUSSIAN, or normal distribution — pure probability, no machinery required to understand it. Draw a single number from it and the number clusters around a center and spreads by a fixed, typical amount; most draws land near the center, fewer far away, in the familiar bell silhouette. The most important one is the STANDARD normal, written N(0,1): center 0, spread 1. Draw from it and you usually get something near 0, occasionally near plus or minus 1, only rarely beyond plus or minus 3. It is the natural way to speak of 'a random nudge of ordinary size'. Two facts about this well will serve you for the rest of your life, and both are ordinary mathematics: first, you can make ANY Gaussian from the standard one by scale-and-shift — take a standard draw and stretch it, then move its center. Second, if you add together independent draws from Gaussians, the total is itself a Gaussian. Master those here as arithmetic; they are the reason the bell turns up in so many disguises elsewhere."
+    },
+    {
+      "id": "mean-and-variance",
+      "type": "plaque",
+      "prop": "pedestal",
+      "title": "Mean and Variance",
+      "text": "Two numbers describe a Gaussian completely. The MEAN mu is where the bell is centered — its balance point. The VARIANCE sigma-squared is how wide it spreads; its square root sigma (the standard deviation) is measured in the same units as the data itself. The standard normal N(0,1) simply fixes mu = 0 and sigma-squared = 1. Two moves you will make constantly: to STANDARDIZE any Gaussian, subtract its mean and divide by its spread, z = (x - mu) / sigma, which turns N(mu, sigma-squared) into N(0,1); to go the other way and SAMPLE N(mu, sigma-squared), draw a standard number eps from N(0,1) and compute x = mu + sigma * eps. That single move — take a standard draw, scale it, shift it — is worth remembering on its own: a great deal of mathematics is just 'a center plus a standard amount of noise'."
+    },
+    {
+      "id": "bell-is-endpoint",
+      "type": "plaque",
+      "prop": "lectern",
+      "title": "Why the Bell Is Everywhere",
+      "text": "The Gaussian is not an arbitrary choice of curve; it is where sums of independent randomness inevitably go. Add up many small independent shocks — whatever odd shape each one has on its own — and the total looks Gaussian. This is the Central Limit Theorem, and it is why noise in the wild, from measurement error to the jitter of crowds, is so often bell-shaped. The Gaussian also has a tidy closure property worth carrying with you: the SUM OF TWO INDEPENDENT GAUSSIANS IS ANOTHER GAUSSIAN, and you simply ADD their variances to get the new spread. So several separate random nudges, added up, are indistinguishable from one single nudge of the combined size. Keep that fact close; it is the quiet trick behind many formulas that otherwise look like they should need a loop."
+    },
+    {
+      "id": "gaussian-diagram",
+      "type": "diagram",
+      "title": "The Standard Normal N(0,1)",
+      "spec": "graph TD\n  D[draw ε ~ N(0,1)] --> C[center 0, spread 1]\n  C --> U[scale + shift: x = μ + σ·ε → any Gaussian]\n  I1[independent Gaussian A] --> S[sum]\n  I2[independent Gaussian B] --> S\n  S --> G[one Gaussian, variances added]",
+      "caption": "One standard well: rescale a draw to make any Gaussian; add independent draws and the bell survives, spreads adding."
+    },
+    {
+      "id": "anatomy-of-the-bell",
+      "type": "image",
+      "title": "Anatomy of the Bell",
+      "image": "world/assets/gaussian-anatomy.png",
+      "caption": "Read the well in two panels. On the left, the standard bell N(0,1): its balance point is the mean mu = 0, and its width is one standard deviation sigma. The nested bands tell you where draws land — about 68% within one sigma of center, 95% within two, 99.7% within three — which is why a value past three sigma is rare. On the right, two independent bells added: A with spread 0.6 and B with spread 0.8. Their sum is again a bell, and its variance is 0.6-squared plus 0.8-squared, which is exactly 1 — so its spread is 1.0. The spreads do not simply add; their SQUARES do. Two separate nudges, combined, are indistinguishable from one nudge of the pooled size."
+    },
+    {
+      "id": "where-this-leads",
+      "type": "plaque",
+      "prop": "lectern",
+      "title": "Where This Leads ↑",
+      "text": "You need none of the following to master the bell here — it waits for you on the floors above. UP IN DIFFUSION: this exact well is the noise. Every corruption of an image is a scoop of N(0,1), and the standard normal is the fixed ENDPOINT every picture dissolves into — which is what lets generation begin from pure static. 'Scale-and-shift a standard draw' is literally the forward step x_t = √ᾱ·x₀ + √(1−ᾱ)·ε, and 'the sum of independent Gaussians is one Gaussian' is why a whole chain of noising steps collapses into a single jump. When you climb the stair to the Atrium of Diffusion, you will recognise this well wearing a new name."
+    }
+  ]
+}

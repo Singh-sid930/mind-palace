@@ -1,0 +1,37 @@
+{
+  "concepts": [
+    {
+      "id": "gaussian-normal",
+      "name": "The Gaussian N(0,1)",
+      "room": "well-of-chance",
+      "exhibit": "the-well",
+      "summary": "The normal distribution \u2014 the bell curve. The standard normal N(0,1) has mean 0 and variance 1; draws cluster near 0. Make any Gaussian by scale-and-shift (x = mu + sigma*eps); the sum of independent Gaussians is again Gaussian, variances adding. Pure probability. (Upstairs it becomes diffusion's noise and its fixed N(0,1) endpoint.)"
+    },
+    {
+      "id": "mean-and-variance",
+      "name": "Mean and variance",
+      "room": "well-of-chance",
+      "exhibit": "mean-and-variance",
+      "summary": "A Gaussian is fixed by its mean mu (center) and variance sigma-squared (spread). Standardize with z=(x-mu)/sigma; sample with x=mu+sigma*eps from a standard draw. That scale-and-shift is the skeleton of the diffusion forward step."
+    },
+    {
+      "id": "sum-of-gaussians",
+      "name": "Sum of Gaussians",
+      "room": "well-of-chance",
+      "exhibit": "bell-is-endpoint",
+      "summary": "The sum of two independent Gaussians is another Gaussian with variances added. This closure property is why a whole chain of noising steps collapses into one jump formula, and (via the Central Limit Theorem) why summed randomness is so often bell-shaped."
+    }
+  ],
+  "edges": [
+    {
+      "from": "mean-and-variance",
+      "to": "gaussian-normal",
+      "relation": "part-of"
+    },
+    {
+      "from": "sum-of-gaussians",
+      "to": "gaussian-normal",
+      "relation": "part-of"
+    }
+  ]
+}

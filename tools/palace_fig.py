@@ -28,6 +28,8 @@ WING = {
     "sapphire": {"accent": "#9ac4ff", "warm": "#e6c069", "cool": "#7fa8e0"},
     "amber":    {"accent": "#ffc46b", "warm": "#ffb04a", "cool": "#d9a14e"},
     "parchment":{"accent": "#e0c98a", "warm": "#d9b25a", "cool": "#c9b079"},
+    "violet":   {"accent": "#d2a8ff", "warm": "#d8c27a", "cool": "#a88fe0"},
+    "crimson":  {"accent": "#ff9a7a", "warm": "#e0a860", "cool": "#d97f6b"},
 }
 
 # Diverging/sequential colormaps that read well on the dark ground.

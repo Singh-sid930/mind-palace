@@ -1,0 +1,81 @@
+{
+  "concepts": [
+    {
+      "id": "jepa-family",
+      "name": "The JEPA family",
+      "room": "paris-cauldron",
+      "exhibit": "the-paris-cauldron",
+      "summary": "The joint-embedding predictive architecture paradigm \u2014 predict in representation space, not pixel space \u2014 spanning I-JEPA, V-JEPA 2/2.1, and AMI Labs' world models. As of May 2026 it stands roughly at its GPT-3 moment: deployed, funded, and still awaiting its ChatGPT-equivalent."
+    },
+    {
+      "id": "v-jepa-2",
+      "name": "V-JEPA 2 / 2.1",
+      "room": "paris-cauldron",
+      "exhibit": "plaque-vjepa",
+      "summary": "Meta's video JEPA: pretrained on one million hours of video plus sixty-two hours of robot data, grasping novel objects at 65-80% on a Franka arm. V-JEPA 2.1 added Dense Predictive Loss, Deep Self-Supervision at intermediate layers, and modality-specific tokenizers: +20 points grasping, 10x faster planning; sizes from ViT-B (80M) to ViT-G (2B)."
+    },
+    {
+      "id": "world-action-models",
+      "name": "World Action Models",
+      "room": "paris-cauldron",
+      "exhibit": "plaque-wams",
+      "summary": "The winter-2026 paradigm: one model jointly generates future video AND future action, instead of bolting perception onto action as VLAs do. DreamZero (NVIDIA, 14B, flow matching, 7 Hz), Fast-WAM (video prediction as a training-time representational enrichment, like BERT's masked tokens), MotuBrain (Mixture-of-Transformers, 95.8% on RoboTwin 2.0)."
+    },
+    {
+      "id": "marble-generative-worlds",
+      "name": "Marble / generative 3D worlds",
+      "room": "paris-cauldron",
+      "exhibit": "plaque-new-houses",
+      "summary": "WorldLabs' Marble (Nov 2025): generates persistent, downloadable 3D worlds from text, image, video or sketch, represented as Gaussian Splatting \u2014 soft elliptical motes with color, opacity and orientation. Framed as the complement to JEPA: generative models create the worlds in which predictive agents train."
+    },
+    {
+      "id": "jepa-scaling-laws",
+      "name": "Scaling laws (the missing decree)",
+      "room": "paris-cauldron",
+      "exhibit": "portrait-lecturer",
+      "summary": "Language models had the Chinchilla decree (Hoffmann et al., 2022: roughly 20 tokens per parameter), telling the field how to spend its compute. JEPA has no such decree yet \u2014 one of the four reasons the paradigm has not exploded commercially despite its technical merits."
+    }
+  ],
+  "edges": [
+    {
+      "from": "v-jepa-2",
+      "to": "jepa-family",
+      "relation": "part-of"
+    },
+    {
+      "from": "v-jepa-2",
+      "to": "i-jepa",
+      "relation": "builds-on"
+    },
+    {
+      "from": "v-jepa-2",
+      "to": "ema-target-encoder",
+      "relation": "builds-on"
+    },
+    {
+      "from": "world-action-models",
+      "to": "jepa-family",
+      "relation": "contrasts-with"
+    },
+    {
+      "from": "world-action-models",
+      "to": "v-jepa-2",
+      "relation": "relates-to"
+    },
+    {
+      "from": "marble-generative-worlds",
+      "to": "jepa-family",
+      "relation": "contrasts-with"
+    },
+    {
+      "from": "marble-generative-worlds",
+      "to": "v-jepa-2",
+      "relation": "relates-to"
+    },
+    {
+      "from": "jepa-scaling-laws",
+      "to": "jepa-family",
+      "relation": "relates-to"
+    }
+  ]
+}

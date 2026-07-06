@@ -1,6 +1,6 @@
 // All 2D UI: start screen, interaction prompt, focus panel (with lazy-loaded
-// Mermaid rendering), the palace map (M), the knowledge constellation (G)
-// and Floo travel (F). Pure DOM + canvas; styled in index.html.
+// Mermaid rendering), the palace map (M) and Floo travel (F). Pure DOM +
+// canvas; styled in index.html. (The constellation is 3D — constellation.js.)
 
 import { loadMermaid } from './mermaid.js';
 import { spaceAt } from './layout.js';
@@ -16,8 +16,6 @@ export class Hud {
     this.$ = (id) => document.getElementById(id);
     this.$('hud-title').textContent = world.title;
     this._wireFloo();
-    this._graphNodes = null;
-    this.$('graph-canvas').addEventListener('click', (e) => this._graphClick(e));
     this.$('dia-max').addEventListener('click', () => this.closeDiagramMax());
   }
 
@@ -60,7 +58,11 @@ export class Hud {
       el.textContent = `E — step through to “${record.focus.title}”`;
     } else if (record.kind === 'stair') {
       const verb = record.dir === 'down' ? 'descend to' : record.dir === 'up' ? 'ascend to' : 'take the staircase to';
-      el.textContent = `E — ${verb} “${record.focus.title}”`;
+      el.textContent = `E — ${verb} “${record.focus.title}”`
+        + (record.gate ? '   ·   T — the Gatekeeper will test you' : '');
+    } else if (record.kind === 'archway') {
+      el.textContent = `E — step through to “${record.focus.title}”`
+        + (record.gate ? '   ·   T — the Gatekeeper will test you' : '');
     } else if (record.kind === 'sign') {
       el.textContent = `E — ${record.prompt}`;
     } else {
@@ -70,7 +72,7 @@ export class Hud {
 
   // --- panels --------------------------------------------------------------
   closeAll() {
-    for (const id of ['focus-panel', 'map-panel', 'graph-panel', 'floo-panel']) {
+    for (const id of ['focus-panel', 'map-panel', 'floo-panel']) {
       this.$(id).style.display = 'none';
     }
     this.openPanel = null;
@@ -83,7 +85,6 @@ export class Hud {
       this.$(`${name}-panel`).style.display = 'block';
       this.openPanel = name;
       if (name === 'map') this.drawMap(player);
-      if (name === 'graph') this.drawGraph();
       if (name === 'floo') {
         const input = this.$('floo-input');
         input.value = '';
@@ -199,85 +200,6 @@ export class Hud {
       ctx.lineTo(px(player.x + Math.sin(player.yaw + Math.PI) * 2.4),
                  pz(player.z + Math.cos(player.yaw + Math.PI) * 2.4));
       ctx.stroke();
-    }
-  }
-
-  // --- constellation -------------------------------------------------------
-  drawGraph() {
-    const canvas = this.$('graph-canvas');
-    const ctx = canvas.getContext('2d');
-    const W = canvas.width, H = canvas.height;
-    ctx.clearRect(0, 0, W, H);
-
-    const rooms = [...new Set(this.graph.concepts.map((c) => c.room))];
-    const roomPos = new Map();
-    const cx = W / 2, cy = H / 2, R = Math.min(W, H) * 0.33;
-    rooms.forEach((rid, i) => {
-      const a = (i / Math.max(rooms.length, 1)) * Math.PI * 2 - Math.PI / 2;
-      roomPos.set(rid, { x: cx + Math.cos(a) * R, y: cy + Math.sin(a) * R });
-    });
-
-    const nodes = new Map();
-    const byRoom = new Map();
-    for (const c of this.graph.concepts) {
-      if (!byRoom.has(c.room)) byRoom.set(c.room, []);
-      byRoom.get(c.room).push(c);
-    }
-    for (const [rid, list] of byRoom) {
-      const base = roomPos.get(rid);
-      list.forEach((c, i) => {
-        const a = (i / list.length) * Math.PI * 2;
-        const r = list.length === 1 ? 0 : 52;
-        nodes.set(c.id, {
-          x: base.x + Math.cos(a) * r, y: base.y + Math.sin(a) * r, concept: c,
-        });
-      });
-    }
-
-    const REL_COLOR = {
-      'builds-on': 'rgba(255,196,107,0.7)',
-      'part-of': 'rgba(159,232,185,0.6)',
-      'relates-to': 'rgba(154,196,255,0.55)',
-      'contrasts-with': 'rgba(255,154,122,0.7)',
-    };
-    for (const e of this.graph.edges) {
-      const A = nodes.get(e.from), B = nodes.get(e.to);
-      if (!A || !B) continue;
-      ctx.strokeStyle = REL_COLOR[e.relation] || 'rgba(255,255,255,0.4)';
-      ctx.lineWidth = 1.6;
-      ctx.beginPath();
-      ctx.moveTo(A.x, A.y);
-      ctx.lineTo(B.x, B.y);
-      ctx.stroke();
-    }
-    for (const [, n] of nodes) {
-      ctx.fillStyle = 'rgba(154,196,255,0.25)';
-      ctx.beginPath(); ctx.arc(n.x, n.y, 14, 0, Math.PI * 2); ctx.fill();
-      ctx.fillStyle = '#cfe4ff';
-      ctx.beginPath(); ctx.arc(n.x, n.y, 6, 0, Math.PI * 2); ctx.fill();
-      ctx.fillStyle = '#e9dfc6';
-      ctx.font = '13px Georgia, serif';
-      ctx.textAlign = 'center';
-      ctx.fillText(n.concept.name, n.x, n.y - 18);
-    }
-    ctx.fillStyle = 'rgba(233,223,198,0.55)';
-    ctx.font = 'italic 13px Georgia, serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('click a star to travel to its chamber', cx, H - 16);
-    this._graphNodes = nodes;
-  }
-
-  _graphClick(e) {
-    if (!this._graphNodes) return;
-    const rect = e.target.getBoundingClientRect();
-    const x = (e.clientX - rect.left) * (e.target.width / rect.width);
-    const y = (e.clientY - rect.top) * (e.target.height / rect.height);
-    for (const [, n] of this._graphNodes) {
-      if ((n.x - x) ** 2 + (n.y - y) ** 2 < 18 ** 2) {
-        this.closeAll();
-        this.onTeleport(n.concept.room);
-        return;
-      }
     }
   }
 

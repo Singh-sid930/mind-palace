@@ -1,0 +1,30 @@
+{
+  "concepts": [
+    {
+      "id": "mse-loss",
+      "name": "Mean squared error",
+      "room": "scales-of-error",
+      "exhibit": "why-squared",
+      "summary": "Loss = average of squared differences between prediction and target (the squared L2 distance). Squaring removes sign, punishes big errors most, and gives a smooth slope for gradient descent. (Upstairs: diffusion trains on MSE between true and predicted noise; I-JEPA and VICReg use it too.)"
+    },
+    {
+      "id": "gradient-descent",
+      "name": "Gradient descent",
+      "room": "scales-of-error",
+      "exhibit": "gradient-descent",
+      "summary": "Reduce a loss by stepping weights opposite the gradient (steepest ascent): new = old - lr*grad. Backpropagation computes the gradient efficiently. The patient engine training every network in the palace."
+    }
+  ],
+  "edges": [
+    {
+      "from": "gradient-descent",
+      "to": "mse-loss",
+      "relation": "relates-to"
+    },
+    {
+      "from": "mse-loss",
+      "to": "gaussian-normal",
+      "relation": "relates-to"
+    }
+  ]
+}

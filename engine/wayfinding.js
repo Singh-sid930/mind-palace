@@ -11,11 +11,7 @@
 import * as THREE from 'three';
 import { palette } from './palettes.js';
 import { signTexture } from './text.js';
-
-const lam = (color, extra = {}) => new THREE.MeshLambertMaterial({ color, ...extra });
-const WOOD = 0x4a3320;
-const DARKWOOD = 0x33220f;
-const METAL = 0xb08428;
+import { lam, DARKWOOD, METAL } from './common.js';
 
 const REL_PRIORITY = { 'builds-on': 3, 'part-of': 2, 'contrasts-with': 1, 'relates-to': 0 };
 
@@ -109,7 +105,7 @@ function buildSignpost(pal, tex) {
 
 const TRAVEL_VERB = { home: 'return to', back: 'go back to', across: 'cross to', fwd: 'go to' };
 
-export function buildWayfinding(scene, layout, roomsById, graph) {
+export function buildWayfinding(scene, layout, roomsById, graph, levelId = null) {
   const group = new THREE.Group();
   const interactables = new Map(); // sign mesh -> { kind:'sign', destRoom, prompt }
   const signs = [];                // metadata, for debugging / tooling
@@ -122,6 +118,7 @@ export function buildWayfinding(scene, layout, roomsById, graph) {
 
   for (const space of layout.spaces) {
     if (space.kind !== 'room' || !space.room) continue;
+    if (levelId != null && space.level !== levelId) continue;
     const here = space.room;
     const pal = palette(space.paletteName);
 

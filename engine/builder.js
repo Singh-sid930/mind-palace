@@ -6,13 +6,10 @@ import * as THREE from 'three';
 import { palette } from './palettes.js';
 import { bannerTexture } from './text.js';
 import { STAIR_PIT } from './layout.js';
+import { lam as lambert } from './common.js';
 
 const WALL_T = 0.32;
 const EPS = 0.01;
-
-function lambert(color, extra = {}) {
-  return new THREE.MeshLambertMaterial({ color, ...extra });
-}
 
 // One floor slab (a box) spanning [x0,x1] × [z0,z1] with its top at y = 0.
 function floorSlab(x0, x1, z0, z1, mat) {
@@ -83,15 +80,42 @@ function buildWallSide({ group, colliders, axis, at, lo, hi, h, doors, mat, inse
   }
 }
 
-function buildSpace(space, layout, group, colliders) {
+// Ambient drifting motes: one Points cloud per room, swirling slowly in the
+// lamplight. A single draw call and two transform writes per frame per room.
+function buildMotes(space, group, pal, updates) {
+  const { rect, h } = space;
+  const N = 36;
+  let seed = (rect.cx * 31 + rect.cz * 7) >>> 0 || 5;
+  const rand = () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 0xffffffff; };
+  const pos = new Float32Array(N * 3);
+  for (let i = 0; i < N; i++) {
+    pos.set([(rand() - 0.5) * (rect.w - 2), 0.6 + rand() * (h - 1.4),
+             (rand() - 0.5) * (rect.d - 2)], i * 3);
+  }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  const pts = new THREE.Points(geo, new THREE.PointsMaterial({
+    color: pal.glow, size: 0.03, transparent: true, opacity: 0.35,
+    blending: THREE.AdditiveBlending, depthWrite: false,
+  }));
+  pts.position.set(rect.cx, 0, rect.cz);
+  const phase = rand() * Math.PI * 2;
+  group.add(pts);
+  updates.push((t) => {
+    pts.rotation.y = t * 0.04 + phase;
+    pts.position.y = Math.sin(t * 0.25 + phase) * 0.12;
+  });
+}
+
+function buildSpace(space, layout, group, colliders, updates) {
   const pal = palette(space.paletteName);
   const { rect, h } = space;
 
   // Floor. If a descending staircase sinks a pit into this room, cut the slab
   // into strips around the pit (and build the shaft) so the steps are visible.
-  const pits = (layout.stairs || [])
-    .filter((st) => st.roomId === space.id && st.dir === 'down' && st.pit)
-    .map((st) => st.pit);
+  const pits = (layout.mouths || [])
+    .filter((m) => m.roomId === space.id && m.dir === 'down' && m.pit)
+    .map((m) => m.pit);
   if (pits.length) {
     const floorMat = lambert(pal.floor);
     let strips = [{ x0: rect.minX, x1: rect.maxX, z0: rect.minZ, z1: rect.maxZ }];
@@ -184,6 +208,7 @@ function buildSpace(space, layout, group, colliders) {
       sprite.position.set(rect.cx, h + 1.1, rect.cz);
       group.add(sprite);
     }
+    buildMotes(space, group, pal, updates);
   } else {
     // Dim corridor glow so passages read as inviting, not black.
     const light = new THREE.PointLight(pal.glow, 2.2, 9, 1.8);
@@ -216,29 +241,43 @@ function buildSky(scene) {
     new THREE.MeshBasicMaterial({ map: tex, side: THREE.BackSide, fog: false })
   );
   scene.add(dome);
+  return dome;
 }
 
-export function buildWorld(scene, layout) {
-  const group = new THREE.Group();
-  const colliders = [];
-
+// Built once per boot: background, fog, ambient light, star dome, ground.
+export function buildEnvironment(scene) {
   scene.background = new THREE.Color(0x07060c);
   scene.fog = new THREE.Fog(0x0b0916, 14, 64);
   scene.add(new THREE.AmbientLight(0xfff2dd, 0.5));
   scene.add(new THREE.HemisphereLight(0x303a55, 0x2a2118, 0.65));
 
-  buildSky(scene);
-  for (const space of layout.spaces) buildSpace(space, layout, group, colliders);
+  // The star dome recenters on the player each frame (main.js) so every level
+  // sits under the same sky, wherever the packing placed it.
+  const dome = buildSky(scene);
 
-  // A faint outer ground plane far below fog so gaps never show void.
+  // A faint ground plane far below fog so gaps never show void. It follows
+  // nobody: at 4000 m square it underlies any number of packed levels.
   const ground = new THREE.Mesh(
-    new THREE.PlaneGeometry(800, 800),
+    new THREE.PlaneGeometry(4000, 4000),
     new THREE.MeshBasicMaterial({ color: 0x07060c })
   );
   ground.rotation.x = -Math.PI / 2;
   ground.position.y = -0.35;
-  group.add(ground);
+  scene.add(ground);
 
+  return { dome };
+}
+
+// Built per level, on first visit (see levels.js): floors, walls, pits,
+// pillars, lights and name banners for that level's spaces only.
+export function buildLevel(scene, layout, levelId) {
+  const group = new THREE.Group();
+  const colliders = [];
+  const updates = [];
+  for (const space of layout.spaces) {
+    if (space.level !== levelId) continue;
+    buildSpace(space, layout, group, colliders, updates);
+  }
   scene.add(group);
-  return { group, colliders };
+  return { group, colliders, updates };
 }

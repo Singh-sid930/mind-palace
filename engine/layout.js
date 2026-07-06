@@ -33,10 +33,115 @@ function rect(cx, cz, w, d) {
            minZ: cz - d / 2, maxZ: cz + d / 2 };
 }
 
+// --- Branching-wing helpers (see growWing) --------------------------------
+// Center of a rect's face in cardinal direction h (h is one of DIRS).
+function faceCenter(r, h) {
+  if (h.x === 1) return { x: r.maxX, z: r.cz };
+  if (h.x === -1) return { x: r.minX, z: r.cz };
+  if (h.z === 1) return { x: r.cx, z: r.maxZ };
+  return { x: r.cx, z: r.minZ };
+}
+// A corridor rect of length `len` sprouting from prevRect's `h` face.
+function corridorFrom(prevRect, h, len) {
+  const f = faceCenter(prevRect, h);
+  return h.x !== 0
+    ? rect(f.x + h.x * len / 2, f.z, len, CORRIDOR_W)
+    : rect(f.x, f.z + h.z * len / 2, CORRIDOR_W, len);
+}
+// A room of side `size` past the far end of `corridor`, centered on the axis.
+function roomPast(corridor, h, size) {
+  const f = faceCenter(corridor, h);
+  return h.x !== 0
+    ? rect(f.x + h.x * size / 2, f.z, size, size)
+    : rect(f.x, f.z + h.z * size / 2, size, size);
+}
+// Left/right unit turns off heading h.
+const turnL = (h) => ({ x: -h.z, z: h.x });
+const turnR = (h) => ({ x: h.z, z: -h.x });
+const sameDir = (a, b) => a.x === b.x && a.z === b.z;
+// Axis-aligned overlap test with a margin (keeps unconnected rooms apart so no
+// accidental doorways form between them, and leaves wall gaps).
+function rectsClash(a, b, pad) {
+  return a.minX < b.maxX + pad && a.maxX > b.minX - pad &&
+         a.minZ < b.maxZ + pad && a.maxZ > b.minZ - pad;
+}
+// Attach a corridor+room to prevRect, trying candidate headings in order and
+// pushing the room progressively farther out until it clears everything already
+// placed (except prevRect, which it is meant to touch). Deterministic: no RNG.
+function attach(prevRect, headings, baseLen, size, placed, pad) {
+  for (let grow = 0; grow < 20; grow++) {
+    const len = baseLen + grow * 3;
+    for (const h of headings) {
+      const corridor = corridorFrom(prevRect, h, len);
+      const room = roomPast(corridor, h, size);
+      const clash = placed.some((p) => p !== prevRect &&
+        (rectsClash(corridor, p, pad) || rectsClash(room, p, pad)));
+      if (!clash) return { h, corridor, room };
+    }
+  }
+  const h = headings[0];
+  const corridor = corridorFrom(prevRect, h, baseLen);
+  return { h, corridor, room: roomPast(corridor, h, size) };
+}
+
+// Lay a wing out as a bending "fishbone": a spine that advances outward (and
+// turns once, mid-way) with side-chambers budding off alternating sides. Purely
+// a function of room order + count, so the same data always yields the same
+// castle. Pushes {corridor, room} spaces into `out` and their rects into
+// `placed` (shared across wings so they never overlap).
+function growWing(wing, members, hubRect, dir, levelId, out, placed) {
+  const N = members.length;
+  const CORRIDOR = 7, BUD_CORRIDOR = 4, PAD = 1.3;
+  // Even-indexed rooms (2nd, 4th, …) bud off the spine; the last room always
+  // stays on the spine so a wing ends at its climax chamber, not a side room.
+  const isBud = (k) => k % 2 === 1 && k !== N - 1;
+  const numSpine = members.filter((_, k) => !isBud(k)).length;
+  const bendAt = numSpine >= 3 ? Math.floor(numSpine / 2) : -1; // turn mid-spine
+
+  let heading = dir;
+  let prevSpine = hubRect;
+  let spineIdx = 0;
+  let budCount = 0;
+  members.forEach((room, k) => {
+    const size = ROOM_SIZE[room.size];
+    const paletteName = room.palette || wing.palette;
+    if (isBud(k)) {
+      // Chamber off the current spine segment, alternating side.
+      const first = budCount % 2 === 0 ? turnL(heading) : turnR(heading);
+      const second = sameDir(first, turnL(heading)) ? turnR(heading) : turnL(heading);
+      budCount++;
+      const { corridor, room: rrect } = attach(prevSpine, [first, second], BUD_CORRIDOR, size, placed, PAD);
+      out.push({ id: `${wing.id}-corridor-${k + 1}`, kind: 'corridor', room: null,
+                 wing: wing.id, level: levelId, rect: corridor, h: CORRIDOR_H, paletteName });
+      out.push({ id: room.id, kind: 'room', room, wing: wing.id, level: levelId,
+                 rect: rrect, h: ROOM_HEIGHT[room.size], paletteName });
+      placed.push(corridor, rrect);
+    } else {
+      // Spine step: go straight, but at the bend prefer a turn. Never backward.
+      const back = { x: -heading.x, z: -heading.z };
+      const order = spineIdx === bendAt
+        ? [turnL(heading), heading, turnR(heading)]
+        : [heading, turnL(heading), turnR(heading)];
+      const cands = order.filter((c) => !sameDir(c, back));
+      const { h, corridor, room: rrect } = attach(prevSpine, cands, CORRIDOR, size, placed, PAD);
+      out.push({ id: `${wing.id}-corridor-${k + 1}`, kind: 'corridor', room: null,
+                 wing: wing.id, level: levelId, rect: corridor, h: CORRIDOR_H, paletteName });
+      out.push({ id: room.id, kind: 'room', room, wing: wing.id, level: levelId,
+                 rect: rrect, h: ROOM_HEIGHT[room.size], paletteName });
+      placed.push(corridor, rrect);
+      heading = h;
+      prevSpine = rrect;
+      spineIdx++;
+    }
+  });
+}
+
 export function solveLayout(world, roomsById) {
-  // Each level is laid out around its own hub, in its own far-apart region of
-  // the plane (reached by staircase, not on foot). One level → behaves as before.
-  const LEVEL_GAP = 400;
+  // Each level is laid out around its own hub, then packed left-to-right along
+  // +x with a fixed pad between bounding boxes (reached by staircase, not on
+  // foot). The pad only has to defeat the fog (far = 64) so floors never see
+  // each other; packing by extent means any number of levels of any size fit.
+  const LEVEL_PAD = 140;
   const levels = (world.levels && world.levels.length)
     ? world.levels
     : [{ id: null, hub: world.hub }];
@@ -49,14 +154,18 @@ export function solveLayout(world, roomsById) {
 
   const spaces = [];
   let spawn = null;
+  let cursorX = 0;
 
-  levels.forEach((level, li) => {
-    const ox = li * LEVEL_GAP;
+  levels.forEach((level) => {
+    // Lay the level out around its own local origin first; shift it into its
+    // packed region once its extent is known.
+    const levelSpaces = [];
     const hubRoom = roomsById[level.hub];
     const hubSize = ROOM_SIZE[hubRoom.size];
-    spaces.push({
+    const hubRect = rect(0, 0, hubSize, hubSize);
+    levelSpaces.push({
       id: level.hub, kind: 'room', room: hubRoom, wing: null, level: level.id,
-      rect: rect(ox, 0, hubSize, hubSize),
+      rect: hubRect,
       h: ROOM_HEIGHT[hubRoom.size],
       paletteName: hubRoom.palette || 'parchment',
     });
@@ -65,41 +174,26 @@ export function solveLayout(world, roomsById) {
     if (levelWings.length > 4) {
       console.warn(`Level '${level.id}': >4 wings overlap. TODO: ring layout.`);
     }
+    // Each wing grows as a branching fishbone in its own cardinal sector; the
+    // shared `placed` list keeps wings (and their side-chambers) from colliding.
+    const placed = [hubRect];
     levelWings.forEach((wing, i) => {
       const dir = DIRS[i % 4];
       const members = Object.values(roomsById)
         .filter((r) => r.wing === wing.id)
         .sort((a, b) => a.order - b.order);
-
-      let cursor = hubSize / 2; // distance from the hub along dir to last far edge
-      members.forEach((room, k) => {
-        const size = ROOM_SIZE[room.size];
-        // Corridor between previous space and this room.
-        const cMid = cursor + CORRIDOR_LEN / 2;
-        const isX = dir.x !== 0;
-        spaces.push({
-          id: `${wing.id}-corridor-${k + 1}`, kind: 'corridor', room: null,
-          wing: wing.id, level: level.id,
-          rect: isX
-            ? rect(ox + dir.x * cMid, 0, CORRIDOR_LEN, CORRIDOR_W)
-            : rect(ox, dir.z * cMid, CORRIDOR_W, CORRIDOR_LEN),
-          h: CORRIDOR_H,
-          paletteName: room.palette || wing.palette,
-        });
-        cursor += CORRIDOR_LEN;
-        // The room itself.
-        const rMid = cursor + size / 2;
-        spaces.push({
-          id: room.id, kind: 'room', room, wing: wing.id, level: level.id,
-          rect: isX
-            ? rect(ox + dir.x * rMid, 0, size, size)
-            : rect(ox, dir.z * rMid, size, size),
-          h: ROOM_HEIGHT[room.size],
-          paletteName: room.palette || wing.palette,
-        });
-        cursor += size;
-      });
+      growWing(wing, members, hubRect, dir, level.id, levelSpaces, placed);
     });
+
+    // Pack: shift the whole level so its west edge starts at cursorX.
+    const minX = Math.min(...levelSpaces.map((s) => s.rect.minX));
+    const maxX = Math.max(...levelSpaces.map((s) => s.rect.maxX));
+    const ox = cursorX - minX;
+    for (const s of levelSpaces) {
+      s.rect = rect(s.rect.cx + ox, s.rect.cz, s.rect.w, s.rect.d);
+      spaces.push(s);
+    }
+    cursorX += (maxX - minX) + LEVEL_PAD;
 
     if (level.hub === world.hub) {
       const firstDir = DIRS[0];
@@ -180,10 +274,11 @@ export function solveLayout(world, roomsById) {
     }
   }
 
-  // --- Staircases: directional, each placed on a free wall of its room. ------
-  // Authoritative placement lives here so the floor-hole cutter (builder) and
-  // the prop placer (exhibits) agree. A stair "descends" when its destination
-  // floor has a lower tier than the floor it stands on.
+  // --- Passages: typed links between rooms (see world.passages). -------------
+  // Each passage expands into a "mouth" in each of its two end rooms, placed on
+  // a free wall. This one structure is authoritative for the floor-hole cutter
+  // (builder), the prop placer (exhibits) and the gatekeeper ghost. A stair
+  // "descends" when the destination tier is lower; an archway is lateral.
   const tierOfRoom = (roomId) => {
     const sp = spaceById[roomId];
     const lv = sp ? levelById[sp.level] : null;
@@ -191,13 +286,31 @@ export function solveLayout(world, roomsById) {
   };
   const SIDE_YAW = { minZ: 0, maxZ: Math.PI, minX: Math.PI / 2, maxX: -Math.PI / 2 };
   const INSET = 0.85;
-  const stairs = [];
-  for (const s of spaces) {
-    if (s.kind !== 'room' || !s.room) continue;
-    const stairExs = (s.room.exhibits || []).filter((e) => e.type === 'stair');
-    if (!stairExs.length) continue;
-    const r = s.rect;
-    const sideDoors = doorsBySpace.get(s.id) || [];
+
+  // First pass: turn each passage into two raw mouths (one per end room).
+  const rawMouths = [];
+  for (const psg of world.passages || []) {
+    const [aId, bId] = psg.between || [];
+    if (!spaceById[aId] || !spaceById[bId]) continue;   // skip refs not yet built
+    for (const [self, other] of [[aId, bId], [bId, aId]]) {
+      const dir = psg.type === 'archway'
+        ? 'lateral'
+        : (tierOfRoom(other) < tierOfRoom(self) ? 'down' : 'up');
+      rawMouths.push({
+        passageId: psg.id, type: psg.type, kind: psg.type === 'archway' ? 'archway' : 'stair',
+        roomId: self, to: other, dir,
+        gate: psg.gate && psg.gate.at === self ? psg.gate : null,
+      });
+    }
+  }
+
+  // Second pass: assign each room's mouths to distinct free walls + geometry.
+  const mouths = [];
+  const byRoom = {};
+  for (const m of rawMouths) (byRoom[m.roomId] || (byRoom[m.roomId] = [])).push(m);
+  for (const roomId of Object.keys(byRoom)) {
+    const r = spaceById[roomId].rect;
+    const sideDoors = doorsBySpace.get(roomId) || [];
     const hasDoor = (side) => {
       if (side === 'minZ' || side === 'maxZ') {
         const at = side === 'minZ' ? r.minZ : r.maxZ;
@@ -207,31 +320,28 @@ export function solveLayout(world, roomsById) {
       return sideDoors.some((d) => d.axis === 'x' && Math.abs(d.x - at) < 0.05);
     };
     const free = ['minZ', 'maxZ', 'minX', 'maxX'].filter((sd) => !hasDoor(sd));
-    stairExs.forEach((ex, i) => {
+    byRoom[roomId].forEach((m, i) => {
       const side = free[i % free.length] || 'minZ';
       let x, z;
       if (side === 'minZ') { x = r.cx; z = r.minZ + INSET; }
       else if (side === 'maxZ') { x = r.cx; z = r.maxZ - INSET; }
       else if (side === 'minX') { x = r.minX + INSET; z = r.cz; }
       else { x = r.maxX - INSET; z = r.cz; }
-      const dir = tierOfRoom(ex.to) < tierOfRoom(s.id) ? 'down' : 'up';
-      // For a descending stair, the pit footprint hugs the wall and runs inward.
       let pit = null;
-      if (dir === 'down') {
+      if (m.kind === 'stair' && m.dir === 'down') {
         const hw = STAIR_PIT.width / 2, run = STAIR_PIT.run;
         if (side === 'minZ') pit = { minX: r.cx - hw, maxX: r.cx + hw, minZ: r.minZ, maxZ: r.minZ + run };
         else if (side === 'maxZ') pit = { minX: r.cx - hw, maxX: r.cx + hw, minZ: r.maxZ - run, maxZ: r.maxZ };
         else if (side === 'minX') pit = { minX: r.minX, maxX: r.minX + run, minZ: r.cz - hw, maxZ: r.cz + hw };
         else pit = { minX: r.maxX - run, maxX: r.maxX, minZ: r.cz - hw, maxZ: r.cz + hw };
       }
-      stairs.push({ roomId: s.id, exhibitId: ex.id, to: ex.to, side, x, z,
-                    yaw: SIDE_YAW[side], dir, level: s.level, pit });
+      mouths.push({ ...m, side, x, z, yaw: SIDE_YAW[side], level: spaceById[roomId].level, pit });
     });
   }
 
   return {
     spaces, spaceById, doors, doorsBySpace, portals, roomNeighbors,
-    levels: resolvedLevels, levelById, stairs, tierOfRoom,
+    levels: resolvedLevels, levelById, mouths, tierOfRoom,
     spawn: spawn || { x: 0, z: 0, yaw: Math.atan2(-DIRS[0].x, -DIRS[0].z) },
   };
 }

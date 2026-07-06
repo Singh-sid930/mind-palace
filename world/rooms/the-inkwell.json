@@ -1,0 +1,52 @@
+{
+  "id": "the-inkwell",
+  "name": "The Inkwell",
+  "wing": "diffusion",
+  "size": "medium",
+  "order": 1,
+  "exhibits": [
+    {
+      "id": "the-inkwell-cauldron",
+      "type": "artifact",
+      "title": "The Inkwell \u2014 Where a Droplet Learns to Vanish",
+      "prop": "dissolving_cloud",
+      "scale": 1.3,
+      "text": "A cauldron of still, clear water. Let one drop of black ink fall in. It blooms, threads, and spreads until the whole basin is an even grey \u2014 and no swirl of the wrist will ever gather it back into a droplet. That one-way ruin is the whole secret. DIFFUSION MODELS GENERATE DATA BY REVERSING A GRADUAL NOISING PROCESS. Destroying structure is easy: add a little noise, again and again, until a clean image becomes pure static. That forward march is FIXED \u2014 no learning, no cleverness, just ink meeting water. The miracle is the return trip: un-mixing the grey back toward a droplet, one tiny step at a time. That reverse path is the ONLY part a neural network learns, and it is hard precisely because forward was so easy.\n\nWhy bother ruining the data at all? Because we need a place to start when we later want to CREATE. If every clean thing, however different, drifts to the SAME grey endpoint \u2014 a fixed, boring cloud of pure randomness \u2014 then generation can begin from that cloud and walk the learned reverse path back to something new. This room forges only the forward march: how to noise a single number so precisely that it always lands on that same endpoint.\n\nStart small. Let the clean datum be a single scalar, x\u2080 = 5.0. The NAIVE recipe just piles on Gaussian noise each step: x\u2081 = 5.0 + 0.3 = 5.3, x\u2082 = 5.3 \u2212 0.8 = 4.5, x\u2083 = 4.5 + 0.5 = 5.0 (noise draws 0.3, \u22120.8, 0.5). It looks reasonable, and it is quietly broken in two ways. FIRST, the original signal never leaves \u2014 the 5.0 sits there forever with fuzz heaped on top; the ink refuses to forget the droplet. SECOND, the spread grows without bound \u2014 add independent noise long enough and the values explode. Neither failure lands on a fixed, tame endpoint, so neither is any use for later generation.\n\nThe cure has three parts at every step: SHRINK the existing signal a touch, INJECT a little fresh noise, and \u2014 the subtle one \u2014 keep the total spread from exploding OR fading. That last constraint is not decoration. It is the reason the real forward equation wears the exact coefficients it does, and it is settled in the basement chamber called THE LEDGER OF VARIANCE. The fixed grey endpoint it steers toward \u2014 the standard normal N(0,1), the same cloud for every input \u2014 is enshrined in THE WELL OF CHANCE. Read on: the next plaques hand you the true equation and the concrete hand-arithmetic that makes it real."
+    },
+    {
+      "id": "ink-in-water",
+      "type": "plaque",
+      "prop": "lectern",
+      "title": "The Drop of Ink \u2014 Forward Is Free, Reverse Is Earned",
+      "text": "Hold the two directions apart, because everything hinges on their asymmetry. FORWARD: clean image \u2192 \u2026 \u2192 pure noise. It happens on its own, like ink diffusing through water until the basin is uniform. It is a fixed procedure with nothing to learn \u2014 you could do it with a dice cup. REVERSE: pure noise \u2192 \u2026 \u2192 clean image. This is the un-mixing, gathering the grey back into a droplet, and nothing in nature does it for free. It is the 'miracle' the model approximates, and \u2014 crucially \u2014 it is approximated in TINY STEPS. No single leap from static to portrait; instead a long ladder of small, learnable denoisings, each one only slightly less ruined than the last. Because each step is small, the reverse of each step is a mild, tractable thing a network can learn. That is why we noise GRADUALLY rather than all at once: many gentle steps forward buy us many gentle, learnable steps back."
+    },
+    {
+      "id": "ddpm-forward-equation",
+      "type": "plaque",
+      "prop": "pedestal",
+      "title": "The Real Forward Equation (DDPM) \u2014 With the Hand Numbers",
+      "text": "DDPM \u2014 Denoising Diffusion Probabilistic Models (Ho, Jain, Abbeel, 2020) \u2014 is the paper that made diffusion practical and seeded Stable Diffusion, DALL\u00b7E 2, and the rest. Its single forward step repairs both flaws of naive addition at once:\n\n  x_t = \u221a(1 \u2212 \u03b2\u209c)\u00b7x_{t\u22121} + \u221a\u03b2\u209c\u00b7\u03b5\u209c\n         \u2514\u2500 shrink signal \u2500\u2518   \u2514\u2500 add noise \u2500\u2518\n\nwhere \u03b5\u209c ~ N(0,1) is a fresh standard-normal draw and \u03b2\u209c is the NOISE SCHEDULE \u2014 a small number, e.g. 0.1. The first term gently pulls the old signal toward zero (so the original 5.0 finally fades); the second sprinkles in new randomness (so the ink keeps spreading). Now the concrete computation, with x\u2080 = 5.0, \u03b2 = 0.1, \u03b5\u2081 = 0.3:\n\n  \u221a0.9 = 0.949,   \u221a0.1 = 0.316\n  x\u2081 = 0.949 \u00d7 5.0 + 0.316 \u00d7 0.3\n     = 4.746 + 0.095\n     = 4.841\n\nOne step of true noising nudges 5.0 down to 4.841: mostly shrunk signal, a whisper of noise. Repeat with a schedule of \u03b2\u209c and the signal steadily dissolves toward the fixed cloud. But WHY those two particular square roots, and not any other shrink-and-inject pair? That question is the crux \u2014 turn to the diagram, then descend to The Ledger of Variance for the proof."
+    },
+    {
+      "id": "the-crux-variance-preservation",
+      "type": "plaque",
+      "prop": "lectern",
+      "title": "THE CRUX \u2014 Why \u221a(1\u2212\u03b2) and \u221a\u03b2 (Variance Preservation)",
+      "text": "This is the aha. The square-root coefficients are not aesthetic \u2014 they are engineered so the total spread stays PINNED at 1 forever. Two variance rules, tallied in full in the basement chamber THE LEDGER OF VARIANCE, do the work. RULE 1 (scaling): Var(c\u00b7X) = c\u00b2\u00b7Var(X) \u2014 a constant comes out SQUARED. RULE 2 (adding independents): Var(A + B) = Var(A) + Var(B), because signal and fresh noise are independent so no cross term survives. Apply them to x_t = \u221a(1 \u2212 \u03b2\u209c)\u00b7x_{t\u22121} + \u221a\u03b2\u209c\u00b7\u03b5\u209c:\n\n  Term A = \u221a(1\u2212\u03b2\u209c)\u00b7x_{t\u22121}:  Var(A) = (1 \u2212 \u03b2\u209c)\u00b7Var(x_{t\u22121})\n  Term B = \u221a\u03b2\u209c\u00b7\u03b5\u209c:            Var(B) = \u03b2\u209c\u00b71 = \u03b2\u209c\n  Var(x_t) = (1 \u2212 \u03b2\u209c)\u00b7Var(x_{t\u22121}) + \u03b2\u209c\n\nStart from Var(x_{t\u22121}) = 1:\n\n  Var(x_t) = (1 \u2212 \u03b2\u209c)\u00b71 + \u03b2\u209c = 1 \u2212 \u03b2\u209c + \u03b2\u209c = 1\n\nThe \u03b2\u209c cancels EXACTLY. Squaring the two square roots gives (1 \u2212 \u03b2\u209c) and \u03b2\u209c, and those sum to one \u2014 that, and only that, is why the pairing is \u221a(1\u2212\u03b2) with \u221a\u03b2. Without it the values would explode or fade and the endpoint would drift. WITH it, the process converges to the same fixed standard normal N(0,1) for every input \u2014 the endpoint enshrined in THE WELL OF CHANCE \u2014 which is precisely the clean random cloud that generation later starts from."
+    },
+    {
+      "id": "variance-preservation-diagram",
+      "type": "diagram",
+      "title": "One Forward Step \u2014 Signal Shrinks, Noise Enters, Variance Holds at 1",
+      "spec": "graph TD\n  X[x_{t-1}  Var=1] --> A[shrink: \u221a(1-\u03b2)\u00b7x]\n  E[\u03b5 ~ N(0,1)] --> B[inject: \u221a\u03b2\u00b7\u03b5]\n  A -->|Rule 1: square coeff| VA[(1-\u03b2)\u00b7Var]\n  B -->|Rule 1: square coeff| VB[\u03b2\u00b71]\n  VA -->|Rule 2: add independents| S[Var = 1-\u03b2 + \u03b2]\n  VB -->|Rule 2: add independents| S\n  S --> R[= 1  variance preserved]\n  A --> XT[x_t]\n  B --> XT",
+      "caption": "Concrete: x\u2080=5.0, \u03b2=0.1, \u03b5\u2081=0.3 \u2192 x\u2081 = 0.949\u00d75.0 + 0.316\u00d70.3 = 4.841. The coefficients squared, (1\u2212\u03b2) and \u03b2, sum to 1, so \u03b2\u209c cancels and the spread never leaves 1 \u2014 steering every input toward the same N(0,1) endpoint."
+    },
+    {
+      "id": "inkwell-forward-figure",
+      "type": "image",
+      "title": "The Droplet Dissolves \u2014 Structure Melts, Variance Holds at 1",
+      "image": "world/assets/inkwell-forward-march.png",
+      "caption": "Watch the ink bloom into grey. Each top panel is the distribution of x_t as the forward march noises it: the two-peaked data of x\u2080 softens, its modes slide inward, and by t\u2248600 it is indistinguishable from the standard normal every input drifts toward (dashed grey). The secret is beneath. Because the coefficients are \u221a\u1fb1_t and \u221a(1\u2212\u1fb1_t), the total spread stays pinned at Var = 1 forever (panel a) \u2014 while a na\u00efve pile-on of independent noise would explode without bound. Panel b shows the droplet being forgotten: the signal centres \u00b1\u221a\u1fb1_t\u00b7m collapse to 0 while the \u00b11 band of spread never budges. Every clean thing, however different, lands on the same fixed grey cloud."
+    }
+  ]
+}

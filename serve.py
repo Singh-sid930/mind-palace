@@ -76,6 +76,41 @@ metaphor.
 4. If you do not know, say so plainly. Never invent citations.
 """
 
+GATEKEEPER_PROMPT = """You are the Gatekeeper — a stern but fair spectral examiner who guards \
+the staircases and archways of this memory palace. {persona} You do not chat idly; you TEST. \
+A keeper stands before the way to "{dest}", and you must judge whether they hold the \
+prerequisite ideas below before they climb.
+
+Rules:
+1. Ask exactly ONE focused question at a time, drawn from the prerequisites. Keep each turn \
+SHORT — 2 to 4 sentences, plain text, in character (grave, a touch dry). No lists, no markdown.
+2. When they answer, judge briefly (right / partly / not quite), correct any real error in one \
+line, then probe deeper or move to the next prerequisite.
+3. You CANNOT truly bar the way. If the keeper asks to pass, grows impatient, or is plainly \
+unprepared, warn them once in a single sentence and let them go — the passage is always theirs \
+to take (they need only press E). Never pretend to lock the stair.
+4. Be accurate and specific about the real mathematics and mechanisms; never invent facts. If \
+they answer everything well, grant passage warmly.
+5. Test each prerequisite as a FOUNDATION in its own right. Ask about the plain mathematics — \
+bare vectors, numbers, probability, plain functions — and do NOT assume the keeper has already \
+met its downstream disguise (do not open with jargon like "query" and "key" or "noise \
+schedule"). You may name where an idea leads as motivation ("you will meet this again as..."), \
+but passage is earned by grasping the underlying mathematics itself, in pure terms.
+
+The prerequisites for passage to "{dest}":
+{prereqs}"""
+
+
+def build_gatekeeper_system(gate):
+    prereqs = gate.get("prereqs") or []
+    lines = "\n".join(
+        f"- {p.get('name')}: {p.get('summary','')[:280]}" for p in prereqs
+    ) or "- (general readiness)"
+    persona = (gate.get("persona") or "").strip()
+    return GATEKEEPER_PROMPT.format(
+        persona=persona, dest=gate.get("dest", "the floor above"), prereqs=lines
+    )
+
 
 def _markdown_to_html(md):
     """Tiny Markdown renderer for scrolls (headers, code, bold/italic, lists)."""
@@ -234,13 +269,17 @@ class Handler(SimpleHTTPRequestHandler):
             message = (req.get("message") or "").strip()[:4000]
             history = req.get("history") or []
             location = req.get("location")
+            gate = req.get("gate")
             if not message:
                 self._json(400, {"error": "empty message"})
                 return
 
-            messages = [{"role": "system",
-                         "content": SYSTEM_PROMPT + "\n\n--- Current context ---\n"
-                                    + build_context_block(location)}]
+            if gate:
+                system_content = build_gatekeeper_system(gate)
+            else:
+                system_content = (SYSTEM_PROMPT + "\n\n--- Current context ---\n"
+                                  + build_context_block(location))
+            messages = [{"role": "system", "content": system_content}]
             for turn in history[-12:]:
                 if turn.get("role") in ("user", "assistant") and turn.get("content"):
                     messages.append({"role": turn["role"],

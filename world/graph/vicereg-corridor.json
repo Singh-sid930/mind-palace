@@ -1,0 +1,131 @@
+{
+  "concepts": [
+    {
+      "id": "vicreg",
+      "name": "VICReg",
+      "room": "vicereg-corridor",
+      "exhibit": "three-sisters-statue",
+      "summary": "Variance-Invariance-Covariance Regularization (Bardes, Ponce and LeCun, ICLR 2022): a self-supervised loss of three explicit terms that prevents collapse without negative pairs or asymmetric networks, yielding representations that are semantically tight, globally spread, and dimensionally rich."
+    },
+    {
+      "id": "invariance-term",
+      "name": "Invariance term",
+      "room": "vicereg-corridor",
+      "exhibit": "plaque-three-vows",
+      "summary": "VICReg's first vow: a mean-squared-error term pulling together the embeddings of two augmented views of the same image \u2014 two glimpses of the same thing must sound the same note."
+    },
+    {
+      "id": "variance-term",
+      "name": "Variance term",
+      "room": "vicereg-corridor",
+      "exhibit": "plaque-three-vows",
+      "summary": "VICReg's second vow, in open rebellion against the first: a hinge penalty keeps the standard deviation of each embedding dimension, computed across the batch, at no less than one \u2014 so the batch never collapses onto a single note."
+    },
+    {
+      "id": "covariance-term",
+      "name": "Covariance term",
+      "room": "vicereg-corridor",
+      "exhibit": "plaque-three-vows",
+      "summary": "VICReg's third and subtlest vow: drive the off-diagonal entries of the embedding covariance matrix toward zero, decorrelating dimensions so the spread won by the variance term is not secretly crowded into a single direction (informational collapse)."
+    },
+    {
+      "id": "vicreg-expander",
+      "name": "Expander h-phi",
+      "room": "vicereg-corridor",
+      "exhibit": "plaque-expander",
+      "summary": "VICReg's projector: expands encoder output into a higher-dimensional space before the loss. It absorbs the invariance pressure so the encoder stays rich, and it turns nonlinear dependencies into linear correlations the covariance term can detect and remove. Discarded after training."
+    }
+  ],
+  "edges": [
+    {
+      "from": "invariance-term",
+      "to": "vicreg",
+      "relation": "part-of"
+    },
+    {
+      "from": "variance-term",
+      "to": "vicreg",
+      "relation": "part-of"
+    },
+    {
+      "from": "covariance-term",
+      "to": "vicreg",
+      "relation": "part-of"
+    },
+    {
+      "from": "vicreg-expander",
+      "to": "vicreg",
+      "relation": "part-of"
+    },
+    {
+      "from": "invariance-term",
+      "to": "variance-term",
+      "relation": "contrasts-with"
+    },
+    {
+      "from": "variance-term",
+      "to": "covariance-term",
+      "relation": "relates-to"
+    },
+    {
+      "from": "variance-term",
+      "to": "representation-collapse",
+      "relation": "relates-to"
+    },
+    {
+      "from": "covariance-term",
+      "to": "representation-collapse",
+      "relation": "relates-to"
+    },
+    {
+      "from": "vicreg",
+      "to": "ema-target-encoder",
+      "relation": "contrasts-with"
+    },
+    {
+      "from": "vicreg",
+      "to": "i-jepa",
+      "relation": "relates-to"
+    },
+    {
+      "from": "invariance-term",
+      "to": "masked-latent-prediction",
+      "relation": "relates-to"
+    },
+    {
+      "from": "vicreg-expander",
+      "to": "projector-head",
+      "relation": "relates-to"
+    },
+    {
+      "from": "vicreg-expander",
+      "to": "simclr",
+      "relation": "builds-on"
+    },
+    {
+      "from": "invariance-term",
+      "to": "projector-head",
+      "relation": "relates-to"
+    },
+    {
+      "from": "vicreg",
+      "to": "jepa-family",
+      "relation": "relates-to"
+    },
+    {
+      "from": "invariance-term",
+      "to": "mse-loss",
+      "relation": "builds-on"
+    },
+    {
+      "from": "variance-term",
+      "to": "variance-rules",
+      "relation": "builds-on"
+    },
+    {
+      "from": "covariance-term",
+      "to": "covariance",
+      "relation": "builds-on"
+    }
+  ]
+}

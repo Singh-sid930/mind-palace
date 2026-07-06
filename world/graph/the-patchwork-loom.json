@@ -1,0 +1,22 @@
+{
+  "concepts": [
+    {
+      "id": "patchify",
+      "name": "Patchify",
+      "room": "the-patchwork-loom",
+      "summary": "Turn a latent grid into a token sequence for a transformer: a 32x32x4 latent with patch 2x2 gives 16x16=256 patches, each flattened (16 values) and projected to d_model \u2014 exactly ViT/SmolVLM tokenization. Unpatchify mirrors it at the end. Positional embeddings are added because a transformer sees tokens as an unordered set."
+    }
+  ],
+  "edges": [
+    {
+      "from": "patchify",
+      "to": "vit-patch-attention",
+      "relation": "builds-on"
+    },
+    {
+      "from": "patchify",
+      "to": "positional-encoding",
+      "relation": "builds-on"
+    }
+  ]
+}

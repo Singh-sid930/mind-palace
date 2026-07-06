@@ -18,14 +18,7 @@
       "type": "plaque",
       "title": "How to Walk",
       "prop": "lectern",
-      "text": "Move with W, A, S, D and look with the mouse. Approach any exhibit and press E to study it closely; press E again or Escape to step back. Press M for the map of this floor, G for the constellation of ideas, and F to travel by Floo to any chamber you know the name of. The Descending Staircase returns you to the Ground Floor — the Atrium of Attention these world models are built upon."
-    },
-    {
-      "id": "descending-staircase",
-      "type": "stair",
-      "title": "The Descending Staircase",
-      "to": "attention-atrium",
-      "caption": "A stairwell sinking back down to the Ground Floor — the Atrium of Attention and the mechanism these world models are built upon. Press E to descend."
+      "text": "Move with W, A, S, D and look with the mouse. Approach any exhibit and press E to study it closely; press E again or Escape to step back. Press M for the map of this floor, G for the constellation of ideas, and F to travel by Floo to any chamber you know the name of. The staircase down returns you to the Ground Floor — the Atrium of Attention these world models are built upon."
     }
   ]
 }

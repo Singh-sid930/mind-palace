@@ -1,0 +1,98 @@
+{
+  "concepts": [
+    {
+      "id": "i-jepa",
+      "name": "I-JEPA",
+      "room": "mirror-of-occlusion",
+      "exhibit": "the-mirror",
+      "summary": "Image Joint-Embedding Predictive Architecture (Assran et al., CVPR 2023): self-supervised learning by predicting the representations of masked image regions from visible context, in latent space rather than pixel space, so the model learns semantic gist instead of low-level texture."
+    },
+    {
+      "id": "context-encoder",
+      "name": "Context encoder",
+      "room": "mirror-of-occlusion",
+      "exhibit": "plaque-two-scribes",
+      "summary": "The trained branch of I-JEPA: an encoder that sees only the visible (unmasked) patches and is updated by gradient descent on the prediction loss \u2014 the Context Scribe whose quill is sharpened nightly by its errors."
+    },
+    {
+      "id": "ema-target-encoder",
+      "name": "EMA target encoder",
+      "room": "mirror-of-occlusion",
+      "exhibit": "plaque-two-scribes",
+      "summary": "The gradient-free branch of I-JEPA: its weights are an exponential moving average of the context encoder (new target = 0.996 x old target + 0.004 x context). It encodes the full image to produce prediction targets, and because it cannot learn, it cannot collude in collapse."
+    },
+    {
+      "id": "predictor-network",
+      "name": "Predictor network",
+      "room": "mirror-of-occlusion",
+      "exhibit": "plaque-latent-regret",
+      "summary": "A narrow network between the two encoders: given the context encoder's representations of visible patches plus positional mask tokens marking where the occlusion lies, it conjures the target encoder's representation of the hidden region."
+    },
+    {
+      "id": "masked-latent-prediction",
+      "name": "Masked latent prediction",
+      "room": "mirror-of-occlusion",
+      "exhibit": "plaque-latent-regret",
+      "summary": "The I-JEPA objective: minimize the squared distance between predicted and true representations of masked regions \u2014 representation against representation, never pixel against pixel. Predicting in latent space returns the sense of what belongs, not the texture."
+    },
+    {
+      "id": "representation-collapse",
+      "name": "Representation collapse",
+      "room": "mirror-of-occlusion",
+      "exhibit": "plaque-no-collapse",
+      "summary": "The failure mode of joint-embedding methods: all inputs mapped to one constant point, giving zero loss and zero information \u2014 the blank page with no regret. I-JEPA forbids it by learning asymmetry (EMA target, no gradient); VICReg forbids it with explicit variance and covariance penalties."
+    }
+  ],
+  "edges": [
+    {
+      "from": "context-encoder",
+      "to": "i-jepa",
+      "relation": "part-of"
+    },
+    {
+      "from": "ema-target-encoder",
+      "to": "i-jepa",
+      "relation": "part-of"
+    },
+    {
+      "from": "predictor-network",
+      "to": "i-jepa",
+      "relation": "part-of"
+    },
+    {
+      "from": "masked-latent-prediction",
+      "to": "i-jepa",
+      "relation": "part-of"
+    },
+    {
+      "from": "ema-target-encoder",
+      "to": "context-encoder",
+      "relation": "relates-to"
+    },
+    {
+      "from": "predictor-network",
+      "to": "masked-latent-prediction",
+      "relation": "relates-to"
+    },
+    {
+      "from": "ema-target-encoder",
+      "to": "representation-collapse",
+      "relation": "relates-to"
+    },
+    {
+      "from": "representation-collapse",
+      "to": "masked-latent-prediction",
+      "relation": "relates-to"
+    },
+    {
+      "from": "i-jepa",
+      "to": "jepa-family",
+      "relation": "part-of"
+    },
+    {
+      "from": "masked-latent-prediction",
+      "to": "mse-loss",
+      "relation": "builds-on"
+    }
+  ]
+}

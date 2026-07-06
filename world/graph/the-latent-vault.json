@@ -1,0 +1,38 @@
+{
+  "concepts": [
+    {
+      "id": "latent-diffusion",
+      "name": "Latent diffusion",
+      "room": "the-latent-vault",
+      "summary": "Run the entire diffusion in a compressed VAE latent (e.g. 512x512x3 -> 64x64x4, ~48x smaller) instead of pixels. The U-Net denoises latents; the VAE handles fine pixel detail. THE reason Stable Diffusion fits on consumer GPUs."
+    },
+    {
+      "id": "vae-compression",
+      "name": "VAE compression & attention cost",
+      "room": "the-latent-vault",
+      "summary": "A separately-trained VAE encodes images to a small latent and decodes back. In latent space, attention still runs over SPATIAL positions only (channels are NOT squared), and only at low-resolution levels (the attention_resolutions config)."
+    }
+  ],
+  "edges": [
+    {
+      "from": "latent-diffusion",
+      "to": "unet",
+      "relation": "builds-on"
+    },
+    {
+      "from": "vae-compression",
+      "to": "latent-diffusion",
+      "relation": "part-of"
+    },
+    {
+      "from": "vae-compression",
+      "to": "masked-latent-prediction",
+      "relation": "relates-to"
+    },
+    {
+      "from": "vae-compression",
+      "to": "information-bottleneck",
+      "relation": "relates-to"
+    }
+  ]
+}

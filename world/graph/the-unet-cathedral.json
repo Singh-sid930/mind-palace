@@ -1,0 +1,65 @@
+{
+  "concepts": [
+    {
+      "id": "unet",
+      "name": "The U-Net denoiser",
+      "room": "the-unet-cathedral",
+      "summary": "The network that maps a noisy image (H,W,C) to predicted noise of the same shape: an encoder that shrinks spatial + grows channels, a bottleneck, and a decoder that grows back \u2014 same-shape-in-out with multi-scale understanding."
+    },
+    {
+      "id": "skip-connections",
+      "name": "Skip connections",
+      "room": "the-unet-cathedral",
+      "summary": "Each U-Net encoder level hands its high-resolution detail straight to the matching decoder level. Downsampling knows WHAT but loses WHERE; skips restore the where, so the output is sharp instead of blurry."
+    },
+    {
+      "id": "unet-self-attention",
+      "name": "Self-attention in the U-Net",
+      "room": "the-unet-cathedral",
+      "summary": "At low resolutions the feature map is flattened to a sequence of spatial positions and given the exact (n,n) self-attention from the transformer \u2014 global mixing, shape-preserving. Only at low res because attention is O(n^2)."
+    },
+    {
+      "id": "diffusion-cross-attention",
+      "name": "Cross-attention for text",
+      "room": "the-unet-cathedral",
+      "summary": "Text conditioning: Q from image positions, K and V from the prompt's text tokens; scores (n_image, n_text). Each image position asks which words are relevant to it \u2014 the same image-text cross-attention as the Two Gazes, here steering the picture."
+    }
+  ],
+  "edges": [
+    {
+      "from": "unet",
+      "to": "noise-predictor",
+      "relation": "builds-on"
+    },
+    {
+      "from": "skip-connections",
+      "to": "unet",
+      "relation": "part-of"
+    },
+    {
+      "from": "unet-self-attention",
+      "to": "unet",
+      "relation": "part-of"
+    },
+    {
+      "from": "unet-self-attention",
+      "to": "self-attention",
+      "relation": "builds-on"
+    },
+    {
+      "from": "unet-self-attention",
+      "to": "sinusoid",
+      "relation": "builds-on"
+    },
+    {
+      "from": "diffusion-cross-attention",
+      "to": "unet",
+      "relation": "part-of"
+    },
+    {
+      "from": "diffusion-cross-attention",
+      "to": "cross-attention",
+      "relation": "builds-on"
+    }
+  ]
+}

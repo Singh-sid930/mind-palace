@@ -1,0 +1,76 @@
+{
+  "concepts": [
+    {
+      "id": "projector-head",
+      "name": "Projector head",
+      "room": "projector-shield",
+      "exhibit": "four-monographs",
+      "summary": "The funnel between encoder and self-supervised loss, discarded after training. It concentrates the pretext task's distortion within itself so the encoder beneath retains broadly useful features \u2014 a soft buffer, not a hard guard, since gradients still flow through it."
+    },
+    {
+      "id": "simclr",
+      "name": "SimCLR",
+      "room": "projector-shield",
+      "exhibit": "plaque-guillotine",
+      "summary": "Chen et al., ICML 2020: the simple contrastive framework whose authors first observed, almost by accident, that the encoder performs better downstream once the projection head is removed \u2014 the first sighting of the projector-head phenomenon, offered without a mathematics of the gradient."
+    },
+    {
+      "id": "guillotine-regularization",
+      "name": "Guillotine Regularization",
+      "room": "projector-shield",
+      "exhibit": "plaque-guillotine",
+      "summary": "Bordes et al., NeurIPS 2023: snip off the head and the body sings on. Severing the projector after training can raise downstream performance by over thirty percentage points, because overfitting to the pretext task is localized in the head while the encoder is spared."
+    },
+    {
+      "id": "gradient-feature-migration",
+      "name": "Gradient feature migration",
+      "room": "projector-shield",
+      "exhibit": "plaque-feature-migration",
+      "summary": "Xue et al., ICLR 2024: the implicit bias of gradient-based training makes pretext-useful features migrate toward the projector's output while downstream-useful features settle in the encoder. The head's non-linearities enable this emergent, non-architectural functional specialization."
+    },
+    {
+      "id": "information-bottleneck",
+      "name": "Information bottleneck view",
+      "room": "projector-shield",
+      "exhibit": "plaque-bottleneck",
+      "summary": "ICLR 2025: the projection head is secretly an information bottleneck \u2014 it compresses out information irrelevant to the SSL objective and attenuates the gradient signal reaching the encoder, which sits upstream of the compression and so retains the broader signal."
+    }
+  ],
+  "edges": [
+    {
+      "from": "projector-head",
+      "to": "simclr",
+      "relation": "builds-on"
+    },
+    {
+      "from": "guillotine-regularization",
+      "to": "simclr",
+      "relation": "builds-on"
+    },
+    {
+      "from": "guillotine-regularization",
+      "to": "projector-head",
+      "relation": "relates-to"
+    },
+    {
+      "from": "gradient-feature-migration",
+      "to": "guillotine-regularization",
+      "relation": "builds-on"
+    },
+    {
+      "from": "gradient-feature-migration",
+      "to": "projector-head",
+      "relation": "relates-to"
+    },
+    {
+      "from": "information-bottleneck",
+      "to": "projector-head",
+      "relation": "relates-to"
+    },
+    {
+      "from": "information-bottleneck",
+      "to": "gradient-feature-migration",
+      "relation": "relates-to"
+    }
+  ]
+}

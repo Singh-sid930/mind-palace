@@ -4,11 +4,10 @@
 
 import * as THREE from 'three';
 import { palette } from './palettes.js';
-import { STAIR_PIT } from './layout.js';
 import { makeProp } from './props.js';
-import { textPanelTexture, portraitTexture, diagramTexture, bannerTexture } from './text.js';
-
-const lam = (color, extra = {}) => new THREE.MeshLambertMaterial({ color, ...extra });
+import { buildMouth } from './passages.js';
+import { lam } from './common.js';
+import { textPanelTexture, portraitTexture, diagramTexture } from './text.js';
 
 // Usable wall slots for a space: inset points along each wall, skipping
 // doorways and corners, facing into the room.
@@ -81,7 +80,7 @@ function openBook(pal) {
 
 // Build one exhibit at a slot (or center). Returns { group, update?, hit }
 // where `hit` is the mesh registered for interaction raycasts.
-function buildExhibit(ex, slot, pal, isCenter, roomsById, stairInfo) {
+function buildExhibit(ex, slot, pal, isCenter, roomsById) {
   const g = new THREE.Group();
   g.position.set(slot.x, 0, slot.z);
   g.rotation.y = slot.yaw;
@@ -162,34 +161,6 @@ function buildExhibit(ex, slot, pal, isCenter, roomsById, stairInfo) {
     panel.position.y = 1.95;
     g.add(panel);
     hit = panel;
-  } else if (ex.type === 'stair') {
-    const down = !!(stairInfo && stairInfo.dir === 'down');
-    const made = makeProp('stair', pal, ex.scale || 1, { down, depth: STAIR_PIT.depth });
-    update = made.update || null;
-    g.add(made.group);
-    // A destination signboard mounted above the arch (or above the pit mouth).
-    const destName = (roomsById && roomsById[ex.to] && roomsById[ex.to].name)
-      || ex.caption || (down ? 'Downstairs' : 'Upstairs');
-    const sa = made.signAnchor || { x: 0, y: 3.4, z: 0 };
-    // Cool navy banner with a sapphire border — matches the portal, stays legible.
-    const signPal = { ...pal, trim: 0x14233a, accent: 0x6ea8ff };
-    const signTex = bannerTexture({ text: destName, pal: signPal, w: 1024, h: 200 });
-    const signW = 2.6, signH = signW * (200 / 1024);
-    const board = new THREE.Mesh(
-      new THREE.PlaneGeometry(signW, signH),
-      new THREE.MeshBasicMaterial({ map: signTex, transparent: true, side: THREE.DoubleSide })
-    );
-    board.position.set(sa.x, sa.y, sa.z);
-    made.group.add(board);
-    // Invisible hit volume: over the ascending flight, or over the pit mouth.
-    const hitBox = new THREE.Mesh(
-      down ? new THREE.BoxGeometry(2.4, 2.6, STAIR_PIT.run)
-           : new THREE.BoxGeometry(1.9, 3.6, 3.4),
-      new THREE.MeshBasicMaterial({ visible: false })
-    );
-    hitBox.position.set(0, down ? 0.6 : 1.5, down ? (STAIR_PIT.run / 2 - 0.85) : 0.2);
-    g.add(hitBox);
-    hit = hitBox;
   }
 
   return { group: g, update, hit };
@@ -225,30 +196,29 @@ function buildPortal(targetRoomName, slot, pal) {
   return { group: g, update, hit: film };
 }
 
-// Build all exhibits + portals. Returns { interactables, updates }.
+// Build all exhibits + portals for one level (levelId; null = everything).
+// Returns { group, interactables, updates }.
 // interactables: hit-object -> { kind, exhibit/room info, focus payload }.
-export function buildExhibits(scene, layout, roomsById) {
+export function buildExhibits(scene, layout, roomsById, levelId = null) {
   const group = new THREE.Group();
   const interactables = new Map();
   const updates = [];
 
   const register = (hit, record) => {
-    hit.traverse
-      ? hit.traverse((o) => interactables.set(o, record))
-      : interactables.set(hit, record);
     interactables.set(hit, record);
+    if (hit.traverse) hit.traverse((o) => interactables.set(o, record));
   };
 
   for (const space of layout.spaces) {
     if (space.kind !== 'room' || !space.room) continue;
+    if (levelId != null && space.level !== levelId) continue;
     const room = space.room;
     const pal = palette(space.paletteName);
     const doors = layout.doorsBySpace.get(space.id) || [];
-    // Staircases get authoritative wall placements from the layout; reserve
-    // their walls so other exhibits never land on top of them.
-    const roomStairs = (layout.stairs || []).filter((st) => st.roomId === space.id);
-    const stairByExhibit = Object.fromEntries(roomStairs.map((st) => [st.exhibitId, st]));
-    const excludeSides = new Set(roomStairs.map((st) => st.side));
+    // Passage mouths (stairs/archways) get authoritative wall placements from
+    // the layout; reserve their walls so exhibits never land on top of them.
+    const roomMouths = (layout.mouths || []).filter((m) => m.roomId === space.id);
+    const excludeSides = new Set(roomMouths.map((m) => m.side));
     const slots = wallSlots(space, doors, excludeSides);
     let slotIdx = 0;
     const takeSlot = () => slots[Math.min(slotIdx++, slots.length - 1)];
@@ -256,32 +226,29 @@ export function buildExhibits(scene, layout, roomsById) {
     let centerTaken = false;
     for (const ex of room.exhibits) {
       let slot;
-      const stairInfo = stairByExhibit[ex.id] || null;
-      if (stairInfo) {
-        slot = { x: stairInfo.x, z: stairInfo.z, yaw: stairInfo.yaw };
-      } else if (ex.type === 'artifact' && !centerTaken) {
+      if (ex.type === 'artifact' && !centerTaken) {
         centerTaken = true;
-        // Center artifact faces back along the wing toward the hub.
-        const yaw = Math.atan2(-space.rect.cx, -space.rect.cz) + Math.PI;
+        // Center artifact faces the room's entrance: the door nearest the
+        // level hub. Face-on matters for the kinetic mechanisms (dials,
+        // wheels, arrows) whose motion reads in a vertical plane.
+        const hubSpace = layout.spaceById[(layout.levelById[space.level] || {}).hub];
+        const hx = hubSpace ? hubSpace.rect.cx : 0, hz = hubSpace ? hubSpace.rect.cz : 0;
+        let best = null, bestD = Infinity;
+        for (const d of doors) {
+          const dd = (d.x - hx) ** 2 + (d.z - hz) ** 2;
+          if (dd < bestD) { bestD = dd; best = d; }
+        }
+        const yaw = best
+          ? Math.atan2(best.x - space.rect.cx, best.z - space.rect.cz)
+          : 0;
         slot = { x: space.rect.cx, z: space.rect.cz, yaw };
       } else {
         slot = takeSlot();
       }
-      const made = buildExhibit(ex, slot, pal, slot.x === space.rect.cx && slot.z === space.rect.cz, roomsById, stairInfo);
+      const made = buildExhibit(ex, slot, pal, slot.x === space.rect.cx && slot.z === space.rect.cz, roomsById);
       group.add(made.group);
       if (made.update) updates.push(made.update);
-      register(made.hit, ex.type === 'stair' ? {
-        kind: 'stair',
-        roomId: room.id,
-        targetRoom: ex.to,
-        dir: stairInfo ? stairInfo.dir : 'up',
-        focus: {
-          title: roomsById[ex.to] ? roomsById[ex.to].name : ex.to,
-          subtitle: 'Staircase',
-          body: ex.caption || '',
-          mermaid: null, image: null,
-        },
-      } : {
+      register(made.hit, {
         kind: 'exhibit',
         roomId: room.id,
         focus: {
@@ -292,6 +259,14 @@ export function buildExhibits(scene, layout, roomsById) {
           image: ex.type === 'image' ? ex.image : null,
         },
       });
+    }
+
+    // Passage mouths: staircases and archways declared in world.passages.
+    for (const mouth of roomMouths) {
+      const made = buildMouth(mouth, pal, roomsById);
+      group.add(made.group);
+      if (made.update) updates.push(made.update);
+      register(made.hit, made.record);
     }
 
     // Portals out of this room.
@@ -318,7 +293,7 @@ export function buildExhibits(scene, layout, roomsById) {
   }
 
   scene.add(group);
-  return { interactables, updates };
+  return { group, interactables, updates };
 }
 
 function typeLabel(type) {

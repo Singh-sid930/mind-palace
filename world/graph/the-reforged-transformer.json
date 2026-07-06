@@ -1,0 +1,58 @@
+{
+  "concepts": [
+    {
+      "id": "dit",
+      "name": "DiT (Diffusion Transformer)",
+      "room": "the-reforged-transformer",
+      "summary": "Replace the U-Net denoiser with a plain transformer: patchify the latent to tokens, add positions, run N transformer blocks conditioned by adaLN-Zero, unpatchify back to (H,W,C) predicted noise. The transformer machinery of the Attention wing, dropped unchanged into the Diffusion framework."
+    },
+    {
+      "id": "dit-vs-unet",
+      "name": "DiT vs U-Net",
+      "room": "the-reforged-transformer",
+      "summary": "Two interchangeable denoisers for the SAME diffusion framework (forward, reverse, CFG, latent all unchanged). U-Net: conv + low-res attention + skips + up/down sampling. DiT: patchify + plain transformer blocks + unpatchify, positions instead of conv, adaLN-Zero conditioning. DiT scales more predictably (LLM scaling laws) so large models (Sora, SD3, PixArt) migrate to it."
+    }
+  ],
+  "edges": [
+    {
+      "from": "dit",
+      "to": "transformer-block",
+      "relation": "builds-on"
+    },
+    {
+      "from": "dit",
+      "to": "self-attention",
+      "relation": "builds-on"
+    },
+    {
+      "from": "dit",
+      "to": "patchify",
+      "relation": "builds-on"
+    },
+    {
+      "from": "dit",
+      "to": "adaln-zero",
+      "relation": "builds-on"
+    },
+    {
+      "from": "dit",
+      "to": "noise-predictor",
+      "relation": "builds-on"
+    },
+    {
+      "from": "dit",
+      "to": "latent-diffusion",
+      "relation": "builds-on"
+    },
+    {
+      "from": "dit-vs-unet",
+      "to": "dit",
+      "relation": "part-of"
+    },
+    {
+      "from": "dit-vs-unet",
+      "to": "unet",
+      "relation": "contrasts-with"
+    }
+  ]
+}

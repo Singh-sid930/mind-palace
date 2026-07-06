@@ -1,0 +1,52 @@
+{
+  "id": "the-guidance-forge",
+  "name": "The Guidance Forge",
+  "wing": "diffusion",
+  "size": "medium",
+  "order": 7,
+  "exhibits": [
+    {
+      "id": "the-twin-flame-brazier",
+      "type": "artifact",
+      "title": "The Twin Flames, Read as Arrows",
+      "prop": "guidance_arrows",
+      "scale": 1.3,
+      "text": "Two pulls forged from one coal hang in the air as arrows: the dim blue arrow of the unprompted guess (\u03b5_uncond), the warm arrow of the prompted one (\u03b5_cond) \u2014 and the smith's golden verdict stretching far past both as the guidance w sweeps from 1 toward 7.5, then easing home. That golden reach is \u03b5_uncond + w\u00b7(\u03b5_cond \u2212 \u03b5_uncond), extrapolation itself set in motion. Plain cross-attention conditioning listens to the prompt only loosely, so the smith reads the fire twice each step and extrapolates between the readings. This is CLASSIFIER-FREE GUIDANCE (CFG), the near-universal way to make a prompt stick.\n\nOne network, two skills. During training the prompt is randomly DROPPED about 10% of the time \u2014 replaced with null / empty \u2205 \u2014 so the very same weights learn two ordinary modes: denoise WITH the prompt, and denoise WITHOUT it. Nothing exotic: both modes are trained by the plain squared noise loss carried up from the basement Scales of Error, Loss = \u2016\u03b5 \u2212 net(x_t, t, c)\u2016\u00b2, where c is the prompt on conditioned steps and \u2205 on dropped steps. The model never sees any subtraction; it only ever learns to remove noise.\n\nAt sampling the smith strikes the coal twice per step and reads two noise predictions:\n  \u03b5_cond   = net(x_t, t, prompt)   \u2014 noise, given the prompt\n  \u03b5_uncond = net(x_t, t, \u2205)        \u2014 noise, given nothing\nThen extrapolates along the difference:\n  \u03b5_guided = \u03b5_uncond + w \u00b7 (\u03b5_cond \u2212 \u03b5_uncond)\nThe guidance scale w sets how hard we push. w = 0 ignores the prompt entirely (pure \u03b5_uncond); w = 1 is normal conditioning (exactly \u03b5_cond); w \u2248 7.5, the typical setting, pushes HARD \u2014 this is EXTRAPOLATION beyond \u03b5_cond, not interpolation between the two.\n\nA concrete striking of the flames. Say \u03b5_uncond = 0.20 and \u03b5_cond = 0.30, so the prompt DIRECTION is \u03b5_cond \u2212 \u03b5_uncond = 0.10. With w = 7.5:\n  \u03b5_guided = 0.20 + 7.5 \u00d7 0.10 = 0.95\n\u2014 hurled far past \u03b5_cond's own 0.30. We do not settle for where the prompt pointed; we sprint in that direction.\n\nThe subtraction is done by US, at sampling time, OUTSIDE the network, and it is applied EVERY step \u2014 so the prompt re-steers the whole noise\u2192image trajectory, not merely its final touch."
+    },
+    {
+      "id": "why-free-of-a-classifier",
+      "type": "plaque",
+      "prop": "pedestal",
+      "title": "Free OF a Classifier, Not Free of Guidance",
+      "text": "The name confuses everyone once. The predecessor was CLASSIFIER GUIDANCE: it steered the denoiser toward a target class using the gradient of a SEPARATE external image classifier \u2014 and that classifier had to be specially trained to survive noise, evaluated at every noise level of the reverse process. Expensive, brittle, and limited to fixed classes. Classifier-FREE guidance reaches the same steering with NO such classifier, using only the model's own conditioned-versus-unconditioned difference. So 'free' means free OF a classifier, not free of guidance \u2014 guidance is very much present, and if anything stronger. Bonus: because the condition is just text fed to cross-attention, CFG steers by any free-form prompt, not a fixed list of labels. This is now near-universal: every Stable Diffusion, Midjourney, DALL\u00b7E, Imagen, and the video models all lean on it."
+    },
+    {
+      "id": "the-two-appraisers",
+      "type": "plaque",
+      "prop": "lectern",
+      "title": "Why the Subtraction Means Anything",
+      "text": "It first seems strange that subtracting two noise guesses should isolate 'the prompt.' Here is why it works. \u03b5_uncond drifts toward a generic, average image; \u03b5_cond drifts toward a prompt-matching one. Both point 'toward less noise,' but toward DIFFERENT clean images \u2014 so their shared remove-the-noise component largely cancels, and what remains, \u03b5_cond \u2212 \u03b5_uncond, is the prompt-specific part. Picture two appraisers valuing a house: one told nothing, one told 'it has a pool.' Neither was ever trained to price a pool, yet their DIFFERENCE \u2248 the pool's worth. The subtraction isolates exactly what changed between the two conditions. The catch the learner chased to the bottom: this subtraction happens purely in NOISE-PREDICTION space \u2014 image-shaped tensors, not text. Cross-attention's whole job is to convert the text prompt into a DISPLACEMENT of that image-shaped noise prediction. By the time we subtract, both endpoints are already image-shaped, so the subtraction is guaranteed VALID (same shape) and MEANINGFUL (training made both endpoints sensible denoising directions); differencing them simply reads back the displacement the prompt baked in."
+    },
+    {
+      "id": "the-price-of-two-flames",
+      "type": "plaque",
+      "prop": "pedestal",
+      "title": "The Price of Burning Twice",
+      "text": "Twin flames cost twin fuel. The dominant price is 2\u00d7 inference: two forward passes every single step, one conditioned and one unconditioned. Push w too high and the image OVERCOOKS \u2014 oversaturated colours, blown-out contrast, and reduced diversity, because we keep extrapolating past where the model was ever trained to land. w \u2248 7.5 is the usual balance between adherence and sanity. The 2\u00d7 overhead is the target of much recent work that tries to distill the guidance behaviour into a single pass. Even so, the trade is almost always worth it: for a modest doubling of compute you get dramatically tighter obedience to the prompt, which is why the Guidance Forge burns in nearly every diffusion model alive."
+    },
+    {
+      "id": "guidance-flow-diagram",
+      "type": "diagram",
+      "title": "One Step of Classifier-Free Guidance",
+      "spec": "graph TD\n  X[x_t, t] --> C[net with prompt \u2192 \u03b5_cond]\n  X --> U[net with \u2205 \u2192 \u03b5_uncond]\n  C --> D[direction = \u03b5_cond \u2212 \u03b5_uncond]\n  U --> D\n  D --> G[\u00d7 w  ~7.5]\n  U --> A[\u03b5_uncond + w\u00b7direction]\n  G --> A\n  A --> E[\u03b5_guided \u2192 denoise step]",
+      "caption": "Two passes per step from ONE network; we do the subtraction and the extrapolation, outside the model, every step. 0.20 + 7.5\u00d70.10 = 0.95."
+    },
+    {
+      "id": "guidance-vector-arithmetic",
+      "type": "image",
+      "title": "Two Flames, Then the Extrapolation Beyond",
+      "image": "world/assets/guidance-forge-cfg.png",
+      "caption": "Classifier-free guidance as vector arithmetic, struck in the Forge's own numbers. First, in noise-prediction space: the two flames from one coal \u2014 eps_uncond (toward a generic image) and eps_cond (toward the prompt) \u2014 nearly coincide, since both point 'toward less noise'; their DIFFERENCE, eps_cond minus eps_uncond, is the prompt direction. The guided prediction slides along that direction: w=0 sits at eps_uncond, w=1 lands exactly on eps_cond, and w=3 and w=7.5 are hurled far past it \u2014 extrapolation, not a blend. Second, the scalar striking: with eps_uncond=0.20 and eps_cond=0.30, eps_guided = 0.20 + w*0.10, giving 0.20, 0.30, 0.50 and 0.95 at the four scales. Third, the price of pushing: adherence to the prompt rises with w, but push too hard and the image overcooks \u2014 oversaturated colour, blown contrast, lost diversity \u2014 so w~7.5 is the usual balance. The whole rite costs 2x inference: a conditioned and an unconditioned pass every single step."
+    }
+  ]
+}

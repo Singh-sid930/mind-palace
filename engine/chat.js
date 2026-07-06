@@ -9,6 +9,8 @@ export class CompanionChat {
     this.history = [];
     this.busy = false;
     this.healthChecked = false;
+    this.gateCtx = null;      // set by main when near a gated passage
+    this._primedFor = null;   // which gate the Gatekeeper has already greeted
 
     this.panel = document.getElementById('chat-panel');
     this.log = document.getElementById('chat-log');
@@ -28,11 +30,31 @@ export class CompanionChat {
 
   open() {
     this.panel.style.display = 'block';
+    this.input.placeholder = this.gateCtx ? 'answer the Gatekeeper…' : 'ask Gemma…';
     setTimeout(() => this.input.focus(), 0);
     if (!this.healthChecked) {
       this.healthChecked = true;
       this._checkHealth();
     }
+    // If the keeper opened the chat at a gated passage, the Gatekeeper greets
+    // and poses its first question (once per gate approached).
+    if (this.gateCtx && this._primedFor !== this.gateCtx.dest) {
+      this._primedFor = this.gateCtx.dest;
+      this._startGate();
+    }
+  }
+
+  setGate(ctx) {
+    // ctx: { dest, persona, prereqs:[{name,summary}] } or null.
+    this.gateCtx = ctx;
+    if (!ctx) this._primedFor = null;
+    if (this.isOpen) this.input.placeholder = ctx ? 'answer the Gatekeeper…' : 'ask Gemma…';
+  }
+
+  _startGate() {
+    this._bubble('gate', `✦ A Gatekeeper bars the way to “${this.gateCtx.dest}.” It will test you — answer, or press E to pass regardless.`);
+    // Prime the model to greet and ask its first question (not shown as "you").
+    this.send('(I approach your gate, seeking passage. Test my readiness.)', { silent: true });
   }
 
   close() {
@@ -56,7 +78,7 @@ export class CompanionChat {
         this._bubble('gemma',
           `(Gemma stirs, but her voice is missing — model “${res.model}” ` +
           'is not available in Ollama.)');
-      } else if (this.history.length === 0) {
+      } else if (this.history.length === 0 && !this.gateCtx) {
         this._bubble('gemma',
           'Hello, keeper. Ask me anything about what you see — press T anytime.');
       }
@@ -83,12 +105,13 @@ export class CompanionChat {
     return div;
   }
 
-  async send() {
-    const message = this.input.value.trim();
+  async send(overrideText = null, opts = {}) {
+    const message = overrideText != null ? overrideText : this.input.value.trim();
     if (!message || this.busy) return;
-    this.input.value = '';
-    this._bubble('you', message);
-    const pending = this._bubble('gemma', '…');
+    if (overrideText == null) this.input.value = '';
+    const who = this.gateCtx ? 'gate' : 'gemma';
+    if (!opts.silent) this._bubble('you', message);
+    const pending = this._bubble(who, '…');
     pending.classList.add('pending');
 
     this.busy = true;
@@ -101,20 +124,21 @@ export class CompanionChat {
           message,
           history: this.history.slice(-12),
           location: this.getLocation(),
+          gate: this.gateCtx || null,
         }),
       });
       const data = await res.json();
       pending.remove();
       if (data.error) {
-        this._bubble('gemma', `(Something went wrong: ${data.error})`);
+        this._bubble(who, `(Something went wrong: ${data.error})`);
       } else {
-        this._bubble('gemma', data.bubble, data.scroll_url);
+        this._bubble(who, data.bubble, data.scroll_url);
         this.history.push({ role: 'user', content: message });
         this.history.push({ role: 'assistant', content: data.bubble });
       }
     } catch (e) {
       pending.remove();
-      this._bubble('gemma', `(The connection to the palace server failed: ${e.message})`);
+      this._bubble(who, `(The connection to the palace server failed: ${e.message})`);
     } finally {
       this.busy = false;
       this.onThinking(false);

@@ -1,0 +1,42 @@
+{
+  "concepts": [
+    {
+      "id": "variance-rules",
+      "name": "The two variance rules",
+      "room": "ledger-of-variance",
+      "exhibit": "two-rules",
+      "summary": "Var(c*X)=c^2*Var(X) (a constant comes out squared) and Var(A+B)=Var(A)+Var(B) for independent A,B (covariance term vanishes). The deliberate tools behind every noise schedule."
+    },
+    {
+      "id": "variance-preservation",
+      "name": "Variance-preserving mixture",
+      "room": "ledger-of-variance",
+      "exhibit": "variance-preservation",
+      "summary": "A mixture sqrt(a)*X + sqrt(1-a)*E of two unit-variance, independent parts keeps variance exactly 1, because the squared weights a and (1-a) sum to 1. Pure algebra from the two variance rules. (Upstairs it is diffusion's forward step, with a = 1-beta.)"
+    },
+    {
+      "id": "covariance",
+      "name": "Covariance",
+      "room": "ledger-of-variance",
+      "exhibit": "covariance-collapse",
+      "summary": "How two quantities move together \u2014 the missing 2*Cov(A,B) term in the sum rule when variables are dependent. Upstairs it becomes VICReg's decorrelation law: drive feature covariances to zero so dimensions carry independent information."
+    }
+  ],
+  "edges": [
+    {
+      "from": "variance-preservation",
+      "to": "variance-rules",
+      "relation": "builds-on"
+    },
+    {
+      "from": "covariance",
+      "to": "variance-rules",
+      "relation": "relates-to"
+    },
+    {
+      "from": "covariance",
+      "to": "dot-product-math",
+      "relation": "relates-to"
+    }
+  ]
+}

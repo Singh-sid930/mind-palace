@@ -1,0 +1,72 @@
+{
+  "concepts": [
+    {
+      "id": "positional-encoding",
+      "name": "Positional encoding",
+      "room": "compass-and-clock",
+      "exhibit": "orrery-of-positions",
+      "summary": "Bare attention is permutation-equivariant \u2014 it sees content, not order \u2014 so position must be injected. Two fixed, precomputed families do it: sinusoidal encodings ADD a position signal to embeddings, while RoPE ROTATES queries and keys; both use frequencies freq_i = 1/10000^(2i/d)."
+    },
+    {
+      "id": "sinusoidal-pe",
+      "name": "Sinusoidal positional encoding",
+      "room": "compass-and-clock",
+      "exhibit": "sinusoidal-clock",
+      "summary": "Fixed sin/cos position vectors added to token embeddings before the Q,K,V projections. Each dimension pair gets its own frequency freq_i = 1/10000^(2i/d) \u2014 fast hands and slow hands, like a clock \u2014 so every position has a unique code. Encodes ABSOLUTE position; a learned-table variant cannot extrapolate past its training length."
+    },
+    {
+      "id": "rope",
+      "name": "RoPE (rotary position embedding)",
+      "room": "compass-and-clock",
+      "exhibit": "rope-rotation",
+      "summary": "Rotary Position Embedding rotates Q and K (not V) by an angle m.theta proportional to position, after projection. Because a dot product of vectors rotated by m.theta and n.theta depends only on (m-n).theta (via cos(A-B)), RoPE encodes RELATIVE distance and preserves length. Favoured by modern long-context models."
+    }
+  ],
+  "edges": [
+    {
+      "from": "positional-encoding",
+      "to": "scaled-dot-product-attention",
+      "relation": "relates-to"
+    },
+    {
+      "from": "sinusoidal-pe",
+      "to": "positional-encoding",
+      "relation": "part-of"
+    },
+    {
+      "from": "rope",
+      "to": "positional-encoding",
+      "relation": "part-of"
+    },
+    {
+      "from": "rope",
+      "to": "sinusoidal-pe",
+      "relation": "builds-on"
+    },
+    {
+      "from": "rope",
+      "to": "sinusoidal-pe",
+      "relation": "contrasts-with"
+    },
+    {
+      "from": "positional-encoding",
+      "to": "sinusoid",
+      "relation": "builds-on"
+    },
+    {
+      "from": "sinusoidal-pe",
+      "to": "sinusoid",
+      "relation": "builds-on"
+    },
+    {
+      "from": "rope",
+      "to": "rotation-length",
+      "relation": "builds-on"
+    },
+    {
+      "from": "rope",
+      "to": "angle-addition",
+      "relation": "builds-on"
+    }
+  ]
+}

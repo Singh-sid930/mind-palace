@@ -1,0 +1,52 @@
+{
+  "concepts": [
+    {
+      "id": "causal-masking",
+      "name": "Causal masking",
+      "room": "veil-of-the-future",
+      "exhibit": "veiled-glass",
+      "summary": "In a decoder, a token must not attend to the future. Before softmax, the upper triangle of the (n,n) score matrix is set to -inf; since e^(-inf)=0, those positions get zero weight. This single change turns bidirectional attention into autoregressive generation. In code use a large negative number, and watch for NaNs from leaks."
+    },
+    {
+      "id": "encoder-vs-decoder",
+      "name": "Encoder vs decoder",
+      "room": "veil-of-the-future",
+      "exhibit": "two-halves-of-2017",
+      "summary": "Names for which half of the 2017 Transformer a model keeps. Encoder = self-attention with NO mask (bidirectional, e.g. BERT). Decoder = self-attention with a causal mask (e.g. GPT, LLaMA). Decoder-only won the scaling race, but encoder-decoder lives on in T5, BART, and Whisper."
+    },
+    {
+      "id": "self-attention",
+      "name": "Self-attention",
+      "room": "veil-of-the-future",
+      "exhibit": "reads-the-sentence",
+      "summary": "Q, K and V all drawn from the same sequence \u2014 the tokens attend to one another. For 'The cat sat on the mat' the score matrix is (6,6); processing 'sat' should attend to its subject 'cat'. Different heads read the same sentence differently (syntactic, positional, determiner)."
+    }
+  ],
+  "edges": [
+    {
+      "from": "causal-masking",
+      "to": "scaled-dot-product-attention",
+      "relation": "builds-on"
+    },
+    {
+      "from": "encoder-vs-decoder",
+      "to": "causal-masking",
+      "relation": "relates-to"
+    },
+    {
+      "from": "self-attention",
+      "to": "scaled-dot-product-attention",
+      "relation": "relates-to"
+    },
+    {
+      "from": "self-attention",
+      "to": "multi-head-attention",
+      "relation": "relates-to"
+    },
+    {
+      "from": "encoder-vs-decoder",
+      "to": "cross-attention",
+      "relation": "relates-to"
+    }
+  ]
+}

@@ -1,0 +1,59 @@
+{
+  "id": "ledger-of-variance",
+  "name": "The Ledger of Variance",
+  "wing": "math",
+  "size": "medium",
+  "order": 2,
+  "exhibits": [
+    {
+      "id": "the-ledger",
+      "type": "artifact",
+      "title": "The Ledger of Variance",
+      "prop": "variance_balance",
+      "scale": 1.2,
+      "text": "A living ledger of two glowing columns where spread \u2014 not value \u2014 is tallied: gold for the surviving signal, blue for the admitted static, forever trading height beneath a cream cap that never moves \u2014 however the mixing knob wanders, the total is exactly one. VARIANCE measures how far a random quantity typically strays from its mean; it is the currency of noise, and this ledger tracks how it flows when you scale and combine random quantities. Two bookkeeping rules govern every entry. RULE ONE (scaling): multiply a random quantity by a constant c and its variance is multiplied by c SQUARED \u2014 Var(c\u00b7X) = c\u00b2\u00b7Var(X). The square is the whole point: halving a signal quarters its spread, because variance is built from squared deviations. RULE TWO (adding independents): the variance of a sum of INDEPENDENT quantities is the sum of their variances \u2014 Var(A + B) = Var(A) + Var(B) \u2014 with no cross term, because independence makes their covariance vanish. These two lines are pure algebra, provable in a few strokes, and together they let you predict the spread of any recipe that scales some quantities and adds them. Keep both open; almost every 'why does the noise stay under control?' question is answered by reading them off this ledger."
+    },
+    {
+      "id": "two-rules",
+      "type": "plaque",
+      "prop": "pedestal",
+      "title": "The Two Rules of Variance",
+      "text": "Rule one \u2014 SCALING: Var(c\u00b7X) = c\u00b2\u00b7Var(X). A constant pulled out of a variance comes out SQUARED. Rule two \u2014 ADDITION (independent A, B): Var(A + B) = Var(A) + Var(B). For quantities that are NOT independent a covariance term appears, Var(A+B) = Var(A) + Var(B) + 2\u00b7Cov(A,B); independence sets Cov = 0 and it drops away. A small consequence worth memorising, because it shows up whenever a square root sits in front of something: if you scale a unit-variance quantity by \u221aa, its variance becomes exactly a. So a square-root coefficient in a formula is very often a signal that someone wanted its SQUARE \u2014 a clean variance \u2014 on this ledger."
+    },
+    {
+      "id": "variance-preservation",
+      "type": "plaque",
+      "prop": "lectern",
+      "title": "The Variance-Preserving Mixture",
+      "text": "Here is a small, self-contained lemma that the two rules make almost obvious \u2014 and it is quietly powerful. Take a quantity X with variance 1, and some independent noise E, also with variance 1. Blend them with square-root weights: Y = \u221aa\u00b7X + \u221a(1\u2212a)\u00b7E, for any fraction a between 0 and 1. What is the spread of Y? By Rule one the first term contributes a\u00b71, the second contributes (1\u2212a)\u00b71; by Rule two (they are independent) these add: Var(Y) = a + (1\u2212a) = 1. The a CANCELS. No matter how you slide the blend from all-signal to all-noise, the variance stays pinned at exactly 1. The square-root coefficients exist precisely so that their squares, a and (1\u2212a), are mixing weights that sum to one. This 'variance-preserving mixture' is a tool you can reach for any time you want to fade between two things without letting the total spread drift."
+    },
+    {
+      "id": "covariance-collapse",
+      "type": "plaque",
+      "prop": "pedestal",
+      "title": "Covariance",
+      "text": "COVARIANCE is the missing term from Rule two: it measures how two quantities move TOGETHER. Positive if they tend to rise and fall in step, negative if one rises as the other falls, zero if knowing one tells you nothing about the other. Gather several quantities and their pairwise covariances form a symmetric COVARIANCE MATRIX \u2014 variances down the diagonal, covariances off it. Two readings matter. First, independence (or merely being uncorrelated) makes the off-diagonal entries zero, which is exactly why independent noises simply add their variances. Second, near-zero off-diagonals mean a set of quantities carry INDEPENDENT information rather than echoing one another \u2014 a property you often want to insist on, so that spread is not secretly crowded into one direction."
+    },
+    {
+      "id": "variance-diagram",
+      "type": "diagram",
+      "title": "Why the Mixture Keeps Variance 1",
+      "spec": "graph TD\n  S[signal \u221aa\u00b7X, Var X = 1] -->|Rule 1: \u00d7\u00b2| A[a\u00b71]\n  N[noise \u221a(1-a)\u00b7E, Var E = 1] -->|Rule 1: \u00d7\u00b2| B[(1-a)\u00b71]\n  A -->|Rule 2: add| T[Var = a + (1-a)]\n  B -->|Rule 2: add| T\n  T --> R[= 1 \u00b7 variance preserved]",
+      "caption": "Square-root weights, squared, become the mixing fractions a and 1\u2212a; they sum to 1, so the blend keeps variance 1."
+    },
+    {
+      "id": "the-variance-budget",
+      "type": "image",
+      "title": "The Variance Budget",
+      "image": "world/assets/variance-preserving-mixture.png",
+      "caption": "Watch the ledger balance itself. Blend a signal x and independent noise epsilon, each of variance 1, as y = root(1 minus beta) times x plus root(beta) times epsilon. On the left, the two stacked shares are the SQUARES of those weights: the signal contributes (1 minus beta), the noise contributes beta. Slide the knob beta from 0 to 1 and the two shares trade off \u2014 but their sum is always the dashed line at 1. The total variance never drifts. On the right, actual clouds drawn at five settings of beta: the mixture morphs from all-signal to all-noise, yet the ring of measured spread stays the same size at every step, std about 1. The square-root coefficients exist precisely so their squares are mixing fractions that sum to one."
+    },
+    {
+      "id": "where-this-leads",
+      "type": "plaque",
+      "prop": "lectern",
+      "title": "Where This Leads \u2191",
+      "text": "None of this needs a neural network \u2014 but two floors lean on it hard. UP IN DIFFUSION: the forward noising step x_t = \u221a(1\u2212\u03b2\u209c)\u00b7x_{t\u22121} + \u221a\u03b2\u209c\u00b7\u03b5\u209c is exactly the variance-preserving mixture with a = 1\u2212\u03b2\u209c. Because the squares (1\u2212\u03b2\u209c) and \u03b2\u209c sum to 1, the data's variance stays pinned at 1 for all time, so the noising always ends at a clean, standard-normal blur \u2014 the crux that makes generation possible. UP IN WORLD MODELS: the method called VICReg fights 'collapse' with this very ledger \u2014 it keeps each feature's VARIANCE above a floor (so signals stay alive) and drives the off-diagonal COVARIANCES toward zero (so features stay independent). Same two rules, higher floors."
+    }
+  ]
+}

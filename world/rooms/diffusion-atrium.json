@@ -1,0 +1,31 @@
+{
+  "id": "diffusion-atrium",
+  "name": "The Atrium of Diffusion",
+  "wing": null,
+  "size": "grand",
+  "palette": "amber",
+  "order": 1,
+  "exhibits": [
+    {
+      "id": "marina-vaelor",
+      "type": "portrait",
+      "title": "Professor Marina Vaelor",
+      "subtitle": "Mistress of the Diffusive Arts",
+      "text": "Welcome to the second of the ground-floor halls, keeper. If Attention is one pillar of modern generation, Diffusion is the other — and the two are siblings, not parent and child, which is why an archway joins our wings rather than a stair. Here we practice a strange alchemy: destroy an image utterly, into featureless noise, and then teach a spirit to walk that destruction backward, step by patient step, until a picture condenses out of the static. The Wing of Diffusion climbs from a single noised number to Stable Diffusion itself — the forward process, the jump-to-any-step shortcut, the noise-predicting oracle, the backward walk, the U-Net, latent space, and guidance. You will find your Arithmancy everywhere down here, wearing new clothes: the Well of Chance is our noise, the Ledger of Variance our schedule, the Scales of Error our only loss. Cross the archway to Attention when you wish; ascend the stair to see how these arts are reforged above."
+    },
+    {
+      "id": "diffusion-welcome",
+      "type": "plaque",
+      "prop": "pedestal",
+      "title": "The Wing of Diffusion",
+      "text": "Diffusion models generate by REVERSING a gradual noising process. Destroying structure is easy — just add noise, again and again, until nothing is left but a standard-normal blur. Rebuilding structure from that blur is the hard, learnable miracle, and it is done not in one leap but in hundreds of tiny denoising steps. This wing builds the whole machine from first principles: how the forward noising is designed so its endpoint is always the same pure noise, why a network is trained to predict NOISE rather than the image, how sampling walks back from static to picture, and how text prompts and clever architecture (U-Net, latent space, guidance) turn the idea into Stable Diffusion. Follow the chambers in order; each rests on the one before."
+    },
+    {
+      "id": "diffusion-how",
+      "type": "plaque",
+      "prop": "lectern",
+      "title": "Two Ground-Floor Siblings",
+      "text": "This hall sits at the same depth as the Atrium of Attention — both are fundamental, and neither is built from the other. That equal footing is why they are joined TWO ways. First, directly: an archway between the wings lets you step sideways from one to the other, for they share machinery (cross-attention, positional encoding, the transformer block). Second, indirectly and upward: both wings feed the same chamber a floor above, where the Diffusion Transformer (DiT) is reforged from BOTH attention and diffusion at once. Down the stair lie the mathematical foundations both arts rest upon. Look for the Gatekeeper before you climb — the arts above assume you have these in hand."
+    }
+  ]
+}

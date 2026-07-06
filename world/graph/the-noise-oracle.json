@@ -1,0 +1,49 @@
+{
+  "concepts": [
+    {
+      "id": "noise-predictor",
+      "name": "The network is a noise predictor",
+      "room": "the-noise-oracle",
+      "summary": "The learning problem: input (x_t, t), output eps_predicted \u2014 the network predicts the NOISE that was added, not the clean image. Everything else in diffusion is algebra around this one prediction."
+    },
+    {
+      "id": "prediction-equivalence",
+      "name": "eps-prediction = x0-prediction",
+      "room": "the-noise-oracle",
+      "summary": "The forward equation solves three ways, so predicting the noise eps and predicting the clean image x_0 are mathematically equivalent given (x_t,t). Different models pick different targets (eps, x0, v) for numerical stability."
+    },
+    {
+      "id": "diffusion-training-loop",
+      "name": "The training loop",
+      "room": "the-noise-oracle",
+      "summary": "Sample x_0; pick random t; draw eps~N(0,1); build x_t; minimize ||eps - net(x_t,t)||^2. The eps drawn to corrupt IS the label \u2014 the corruption process hands you the answer key for free."
+    }
+  ],
+  "edges": [
+    {
+      "from": "noise-predictor",
+      "to": "forward-process",
+      "relation": "builds-on"
+    },
+    {
+      "from": "prediction-equivalence",
+      "to": "noise-predictor",
+      "relation": "part-of"
+    },
+    {
+      "from": "diffusion-training-loop",
+      "to": "noise-predictor",
+      "relation": "builds-on"
+    },
+    {
+      "from": "diffusion-training-loop",
+      "to": "mse-loss",
+      "relation": "builds-on"
+    },
+    {
+      "from": "diffusion-training-loop",
+      "to": "gradient-descent",
+      "relation": "builds-on"
+    }
+  ]
+}

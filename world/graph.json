@@ -1,151 +1,60 @@
 {
   "concepts": [
     {
-      "id": "i-jepa",
-      "name": "I-JEPA",
-      "room": "mirror-of-occlusion",
-      "exhibit": "the-mirror",
-      "summary": "Image Joint-Embedding Predictive Architecture (Assran et al., CVPR 2023): self-supervised learning by predicting the representations of masked image regions from visible context, in latent space rather than pixel space, so the model learns semantic gist instead of low-level texture."
+      "id": "positional-encoding",
+      "name": "Positional encoding",
+      "room": "compass-and-clock",
+      "exhibit": "orrery-of-positions",
+      "summary": "Bare attention is permutation-equivariant \u2014 it sees content, not order \u2014 so position must be injected. Two fixed, precomputed families do it: sinusoidal encodings ADD a position signal to embeddings, while RoPE ROTATES queries and keys; both use frequencies freq_i = 1/10000^(2i/d)."
     },
     {
-      "id": "context-encoder",
-      "name": "Context encoder",
-      "room": "mirror-of-occlusion",
-      "exhibit": "plaque-two-scribes",
-      "summary": "The trained branch of I-JEPA: an encoder that sees only the visible (unmasked) patches and is updated by gradient descent on the prediction loss — the Context Scribe whose quill is sharpened nightly by its errors."
+      "id": "sinusoidal-pe",
+      "name": "Sinusoidal positional encoding",
+      "room": "compass-and-clock",
+      "exhibit": "sinusoidal-clock",
+      "summary": "Fixed sin/cos position vectors added to token embeddings before the Q,K,V projections. Each dimension pair gets its own frequency freq_i = 1/10000^(2i/d) \u2014 fast hands and slow hands, like a clock \u2014 so every position has a unique code. Encodes ABSOLUTE position; a learned-table variant cannot extrapolate past its training length."
     },
     {
-      "id": "ema-target-encoder",
-      "name": "EMA target encoder",
-      "room": "mirror-of-occlusion",
-      "exhibit": "plaque-two-scribes",
-      "summary": "The gradient-free branch of I-JEPA: its weights are an exponential moving average of the context encoder (new target = 0.996 x old target + 0.004 x context). It encodes the full image to produce prediction targets, and because it cannot learn, it cannot collude in collapse."
+      "id": "rope",
+      "name": "RoPE (rotary position embedding)",
+      "room": "compass-and-clock",
+      "exhibit": "rope-rotation",
+      "summary": "Rotary Position Embedding rotates Q and K (not V) by an angle m.theta proportional to position, after projection. Because a dot product of vectors rotated by m.theta and n.theta depends only on (m-n).theta (via cos(A-B)), RoPE encodes RELATIVE distance and preserves length. Favoured by modern long-context models."
     },
     {
-      "id": "predictor-network",
-      "name": "Predictor network",
-      "room": "mirror-of-occlusion",
-      "exhibit": "plaque-latent-regret",
-      "summary": "A narrow network between the two encoders: given the context encoder's representations of visible patches plus positional mask tokens marking where the occlusion lies, it conjures the target encoder's representation of the hidden region."
+      "id": "multi-head-attention",
+      "name": "Multi-head attention",
+      "room": "council-of-heads",
+      "exhibit": "round-table",
+      "summary": "Run h attention operations in parallel, each in its own d_k = d_model/h subspace with its own Wq,Wk,Wv, then concatenate and mix with Wo: MultiHead = Concat(head_1..head_h).Wo. One head captures one notion of relevance; many heads capture many. d_model must be divisible by h."
     },
     {
-      "id": "masked-latent-prediction",
-      "name": "Masked latent prediction",
-      "room": "mirror-of-occlusion",
-      "exhibit": "plaque-latent-regret",
-      "summary": "The I-JEPA objective: minimize the squared distance between predicted and true representations of masked regions — representation against representation, never pixel against pixel. Predicting in latent space returns the sense of what belongs, not the texture."
+      "id": "output-projection-wo",
+      "name": "Output projection Wo",
+      "room": "council-of-heads",
+      "exhibit": "the-weaver-wo",
+      "summary": "The (d_model x d_model) matrix Wo applied after concatenating heads. Concatenation alone keeps head subspaces isolated; Wo makes every output dimension a blend of all heads, weaving their separate insights into one representation."
     },
     {
-      "id": "representation-collapse",
-      "name": "Representation collapse",
-      "room": "mirror-of-occlusion",
-      "exhibit": "plaque-no-collapse",
-      "summary": "The failure mode of joint-embedding methods: all inputs mapped to one constant point, giving zero loss and zero information — the blank page with no regret. I-JEPA forbids it by learning asymmetry (EMA target, no gradient); VICReg forbids it with explicit variance and covariance penalties."
+      "id": "head-redundancy",
+      "name": "Head specialisation and redundancy",
+      "room": "council-of-heads",
+      "exhibit": "why-heads-differ",
+      "summary": "Heads specialise without any explicit diversity loss \u2014 difference emerges from random init, gradient pressure through Wo, and distinct subspaces. Yet trained heads end up partly redundant (20-40% are often prunable), which is exactly what motivates sharing keys and values in MQA and GQA."
     },
     {
-      "id": "vicreg",
-      "name": "VICReg",
-      "room": "vicereg-corridor",
-      "exhibit": "three-sisters-statue",
-      "summary": "Variance-Invariance-Covariance Regularization (Bardes, Ponce and LeCun, ICLR 2022): a self-supervised loss of three explicit terms that prevents collapse without negative pairs or asymmetric networks, yielding representations that are semantically tight, globally spread, and dimensionally rich."
+      "id": "grouped-query-attention",
+      "name": "Grouped-query attention (GQA)",
+      "room": "council-of-heads",
+      "exhibit": "shared-libraries",
+      "summary": "GQA shares one key/value pair across each GROUP of query heads: h query heads split into g groups. It interpolates between MHA (g=h, a KV pair per head) and MQA (g=1, one shared pair). LLaMA 2 70B uses g=8. An architecture choice made before training, shrinking the KV cache."
     },
     {
-      "id": "invariance-term",
-      "name": "Invariance term",
-      "room": "vicereg-corridor",
-      "exhibit": "plaque-three-vows",
-      "summary": "VICReg's first vow: a mean-squared-error term pulling together the embeddings of two augmented views of the same image — two glimpses of the same thing must sound the same note."
-    },
-    {
-      "id": "variance-term",
-      "name": "Variance term",
-      "room": "vicereg-corridor",
-      "exhibit": "plaque-three-vows",
-      "summary": "VICReg's second vow, in open rebellion against the first: a hinge penalty keeps the standard deviation of each embedding dimension, computed across the batch, at no less than one — so the batch never collapses onto a single note."
-    },
-    {
-      "id": "covariance-term",
-      "name": "Covariance term",
-      "room": "vicereg-corridor",
-      "exhibit": "plaque-three-vows",
-      "summary": "VICReg's third and subtlest vow: drive the off-diagonal entries of the embedding covariance matrix toward zero, decorrelating dimensions so the spread won by the variance term is not secretly crowded into a single direction (informational collapse)."
-    },
-    {
-      "id": "vicreg-expander",
-      "name": "Expander h-phi",
-      "room": "vicereg-corridor",
-      "exhibit": "plaque-expander",
-      "summary": "VICReg's projector: expands encoder output into a higher-dimensional space before the loss. It absorbs the invariance pressure so the encoder stays rich, and it turns nonlinear dependencies into linear correlations the covariance term can detect and remove. Discarded after training."
-    },
-    {
-      "id": "projector-head",
-      "name": "Projector head",
-      "room": "projector-shield",
-      "exhibit": "four-monographs",
-      "summary": "The funnel between encoder and self-supervised loss, discarded after training. It concentrates the pretext task's distortion within itself so the encoder beneath retains broadly useful features — a soft buffer, not a hard guard, since gradients still flow through it."
-    },
-    {
-      "id": "simclr",
-      "name": "SimCLR",
-      "room": "projector-shield",
-      "exhibit": "plaque-guillotine",
-      "summary": "Chen et al., ICML 2020: the simple contrastive framework whose authors first observed, almost by accident, that the encoder performs better downstream once the projection head is removed — the first sighting of the projector-head phenomenon, offered without a mathematics of the gradient."
-    },
-    {
-      "id": "guillotine-regularization",
-      "name": "Guillotine Regularization",
-      "room": "projector-shield",
-      "exhibit": "plaque-guillotine",
-      "summary": "Bordes et al., NeurIPS 2023: snip off the head and the body sings on. Severing the projector after training can raise downstream performance by over thirty percentage points, because overfitting to the pretext task is localized in the head while the encoder is spared."
-    },
-    {
-      "id": "gradient-feature-migration",
-      "name": "Gradient feature migration",
-      "room": "projector-shield",
-      "exhibit": "plaque-feature-migration",
-      "summary": "Xue et al., ICLR 2024: the implicit bias of gradient-based training makes pretext-useful features migrate toward the projector's output while downstream-useful features settle in the encoder. The head's non-linearities enable this emergent, non-architectural functional specialization."
-    },
-    {
-      "id": "information-bottleneck",
-      "name": "Information bottleneck view",
-      "room": "projector-shield",
-      "exhibit": "plaque-bottleneck",
-      "summary": "ICLR 2025: the projection head is secretly an information bottleneck — it compresses out information irrelevant to the SSL objective and attenuates the gradient signal reaching the encoder, which sits upstream of the compression and so retains the broader signal."
-    },
-    {
-      "id": "jepa-family",
-      "name": "The JEPA family",
-      "room": "paris-cauldron",
-      "exhibit": "the-paris-cauldron",
-      "summary": "The joint-embedding predictive architecture paradigm — predict in representation space, not pixel space — spanning I-JEPA, V-JEPA 2/2.1, and AMI Labs' world models. As of May 2026 it stands roughly at its GPT-3 moment: deployed, funded, and still awaiting its ChatGPT-equivalent."
-    },
-    {
-      "id": "v-jepa-2",
-      "name": "V-JEPA 2 / 2.1",
-      "room": "paris-cauldron",
-      "exhibit": "plaque-vjepa",
-      "summary": "Meta's video JEPA: pretrained on one million hours of video plus sixty-two hours of robot data, grasping novel objects at 65-80% on a Franka arm. V-JEPA 2.1 added Dense Predictive Loss, Deep Self-Supervision at intermediate layers, and modality-specific tokenizers: +20 points grasping, 10x faster planning; sizes from ViT-B (80M) to ViT-G (2B)."
-    },
-    {
-      "id": "world-action-models",
-      "name": "World Action Models",
-      "room": "paris-cauldron",
-      "exhibit": "plaque-wams",
-      "summary": "The winter-2026 paradigm: one model jointly generates future video AND future action, instead of bolting perception onto action as VLAs do. DreamZero (NVIDIA, 14B, flow matching, 7 Hz), Fast-WAM (video prediction as a training-time representational enrichment, like BERT's masked tokens), MotuBrain (Mixture-of-Transformers, 95.8% on RoboTwin 2.0)."
-    },
-    {
-      "id": "marble-generative-worlds",
-      "name": "Marble / generative 3D worlds",
-      "room": "paris-cauldron",
-      "exhibit": "plaque-new-houses",
-      "summary": "WorldLabs' Marble (Nov 2025): generates persistent, downloadable 3D worlds from text, image, video or sketch, represented as Gaussian Splatting — soft elliptical motes with color, opacity and orientation. Framed as the complement to JEPA: generative models create the worlds in which predictive agents train."
-    },
-    {
-      "id": "jepa-scaling-laws",
-      "name": "Scaling laws (the missing decree)",
-      "room": "paris-cauldron",
-      "exhibit": "portrait-lecturer",
-      "summary": "Language models had the Chinchilla decree (Hoffmann et al., 2022: roughly 20 tokens per parameter), telling the field how to spend its compute. JEPA has no such decree yet — one of the four reasons the paradigm has not exploded commercially despite its technical merits."
+      "id": "multi-query-attention",
+      "name": "Multi-query attention (MQA)",
+      "room": "council-of-heads",
+      "exhibit": "shared-libraries",
+      "summary": "MQA keeps h independent query heads but a SINGLE shared Wk, Wv across all of them \u2014 eight researchers, one library \u2014 collapsing the KV cache up to 8-fold. It is the g=1 extreme of grouped-query attention, decided before training, not a post-hoc optimisation."
     },
     {
       "id": "scaled-dot-product-attention",
@@ -177,73 +86,297 @@
     },
     {
       "id": "attention-quadratic-cost",
-      "name": "The (n,n) score matrix — O(n²)",
+      "name": "The (n,n) score matrix \u2014 O(n\u00b2)",
       "room": "forge-of-the-query",
       "exhibit": "ledger-of-queries",
-      "summary": "The score matrix Q.K^T has shape (n, n) — every token's score to every token — making self-attention O(n^2) in sequence length. This (n,n) object is what later gets masked, cached, and (in Flash attention) never materialised."
+      "summary": "The score matrix Q.K^T has shape (n, n) \u2014 every token's score to every token \u2014 making self-attention O(n^2) in sequence length. This (n,n) object is what later gets masked, cached, and (in Flash attention) never materialised."
     },
     {
-      "id": "multi-head-attention",
-      "name": "Multi-head attention",
-      "room": "council-of-heads",
-      "exhibit": "round-table",
-      "summary": "Run h attention operations in parallel, each in its own d_k = d_model/h subspace with its own Wq,Wk,Wv, then concatenate and mix with Wo: MultiHead = Concat(head_1..head_h).Wo. One head captures one notion of relevance; many heads capture many. d_model must be divisible by h."
+      "id": "variance-rules",
+      "name": "The two variance rules",
+      "room": "ledger-of-variance",
+      "exhibit": "two-rules",
+      "summary": "Var(c*X)=c^2*Var(X) (a constant comes out squared) and Var(A+B)=Var(A)+Var(B) for independent A,B (covariance term vanishes). The deliberate tools behind every noise schedule."
     },
     {
-      "id": "output-projection-wo",
-      "name": "Output projection Wo",
-      "room": "council-of-heads",
-      "exhibit": "the-weaver-wo",
-      "summary": "The (d_model x d_model) matrix Wo applied after concatenating heads. Concatenation alone keeps head subspaces isolated; Wo makes every output dimension a blend of all heads, weaving their separate insights into one representation."
+      "id": "variance-preservation",
+      "name": "Variance-preserving mixture",
+      "room": "ledger-of-variance",
+      "exhibit": "variance-preservation",
+      "summary": "A mixture sqrt(a)*X + sqrt(1-a)*E of two unit-variance, independent parts keeps variance exactly 1, because the squared weights a and (1-a) sum to 1. Pure algebra from the two variance rules. (Upstairs it is diffusion's forward step, with a = 1-beta.)"
     },
     {
-      "id": "head-redundancy",
-      "name": "Head specialisation and redundancy",
-      "room": "council-of-heads",
-      "exhibit": "why-heads-differ",
-      "summary": "Heads specialise without any explicit diversity loss — difference emerges from random init, gradient pressure through Wo, and distinct subspaces. Yet trained heads end up partly redundant (20-40% are often prunable), which is exactly what motivates sharing keys and values in MQA and GQA."
+      "id": "covariance",
+      "name": "Covariance",
+      "room": "ledger-of-variance",
+      "exhibit": "covariance-collapse",
+      "summary": "How two quantities move together \u2014 the missing 2*Cov(A,B) term in the sum rule when variables are dependent. Upstairs it becomes VICReg's decorrelation law: drive feature covariances to zero so dimensions carry independent information."
     },
     {
-      "id": "grouped-query-attention",
-      "name": "Grouped-query attention (GQA)",
-      "room": "council-of-heads",
-      "exhibit": "shared-libraries",
-      "summary": "GQA shares one key/value pair across each GROUP of query heads: h query heads split into g groups. It interpolates between MHA (g=h, a KV pair per head) and MQA (g=1, one shared pair). LLaMA 2 70B uses g=8. An architecture choice made before training, shrinking the KV cache."
+      "id": "kv-cache",
+      "name": "KV cache",
+      "room": "library-of-keys",
+      "exhibit": "endless-stacks",
+      "summary": "At inference a decoder generates one token at a time; recomputing all past keys and values each step is wasteful. The KV cache stores every past token's K and V, so each new step computes only the new query, scores it against all cached keys, and blends the cached values. Grows by one entry per step per layer (per group in GQA)."
     },
     {
-      "id": "multi-query-attention",
-      "name": "Multi-query attention (MQA)",
-      "room": "council-of-heads",
-      "exhibit": "shared-libraries",
-      "summary": "MQA keeps h independent query heads but a SINGLE shared Wk, Wv across all of them — eight researchers, one library — collapsing the KV cache up to 8-fold. It is the g=1 extreme of grouped-query attention, decided before training, not a post-hoc optimisation."
+      "id": "query-not-cached",
+      "name": "Why Q is not cached",
+      "room": "library-of-keys",
+      "exhibit": "why-asker-not-kept",
+      "summary": "Only K and V are cached, never Q. The query is the asker: it asks once and moves on, so caching it would only ever reuse its last row. Keys and values are the label and content that every future query must still consult. Unlike an RNN, each new query has direct access to all past K,V \u2014 nothing is compressed."
     },
     {
-      "id": "causal-masking",
-      "name": "Causal masking",
-      "room": "veil-of-the-future",
-      "exhibit": "veiled-glass",
-      "summary": "In a decoder, a token must not attend to the future. Before softmax, the upper triangle of the (n,n) score matrix is set to -inf; since e^(-inf)=0, those positions get zero weight. This single change turns bidirectional attention into autoregressive generation. In code use a large negative number, and watch for NaNs from leaks."
+      "id": "transformer-block",
+      "name": "The Transformer block",
+      "room": "library-of-keys",
+      "exhibit": "two-rhythms",
+      "summary": "The repeating unit: LayerNorm -> Multi-Head Attention -> +residual -> LayerNorm -> MLP -> +residual. Attention is inter-token mixing ('who to listen to', like spatial conv); the MLP is per-token processing ('what to do with it', like 1x1 conv). Residuals are the gradient highway; input shape equals output shape, so blocks stack (L=32 for 7B, L=96 for GPT-4 class)."
     },
     {
-      "id": "encoder-vs-decoder",
-      "name": "Encoder vs decoder",
-      "room": "veil-of-the-future",
-      "exhibit": "two-halves-of-2017",
-      "summary": "Names for which half of the 2017 Transformer a model keeps. Encoder = self-attention with NO mask (bidirectional, e.g. BERT). Decoder = self-attention with a causal mask (e.g. GPT, LLaMA). Decoder-only won the scaling race, but encoder-decoder lives on in T5, BART, and Whisper."
+      "id": "flash-attention",
+      "name": "Flash attention",
+      "room": "library-of-keys",
+      "exhibit": "flash-antechamber",
+      "summary": "An exact (not approximate) attention that never materialises the (n,n) score matrix in slow HBM. It tiles Q and K into fast on-chip SRAM and keeps a running softmax (running max m, running sum l, correcting by e^(m_old-m_new)), cutting memory from O(n^2) to O(n) while producing identical output."
     },
     {
-      "id": "self-attention",
-      "name": "Self-attention",
-      "room": "veil-of-the-future",
-      "exhibit": "reads-the-sentence",
-      "summary": "Q, K and V all drawn from the same sequence — the tokens attend to one another. For 'The cat sat on the mat' the score matrix is (6,6); processing 'sat' should attend to its subject 'cat'. Different heads read the same sentence differently (syntactic, positional, determiner)."
+      "id": "token-embedding-lm-head",
+      "name": "Embedding & lm_head",
+      "room": "library-of-keys",
+      "exhibit": "the-bookends",
+      "summary": "The two learned layers bracketing a Transformer: the token embedding (vocab_size x d_model lookup, a sparse gather of the used rows) and the lm_head / W_vocab (d_model -> vocab logits, a full matmul). Often tied (W_vocab = embedding^T). Rare tokens, looked up seldom, receive fewer gradient updates."
+    },
+    {
+      "id": "dot-product-math",
+      "name": "The dot product",
+      "room": "loom-of-similarity",
+      "exhibit": "the-dot-product",
+      "summary": "u.v = sum of u_i*v_i = |u||v|cos(theta): one scalar of alignment between two vectors \u2014 large when they point the same way, zero when perpendicular, negative when opposed. Pure linear algebra; grows with dimension d. (Upstairs it is attention's query.key score, scaled by 1/sqrt(d).)"
+    },
+    {
+      "id": "softmax-math",
+      "name": "Softmax",
+      "room": "loom-of-similarity",
+      "exhibit": "softmax",
+      "summary": "weight_i = e^(s_i)/sum_j e^(s_j): exponentiate (positive, amplify gaps) then normalize (sum to 1). Turns any list of scores into positive weights that sum to one, with a temperature to sharpen or soften. (Upstairs it is attention's second half, blending values.)"
+    },
+    {
+      "id": "i-jepa",
+      "name": "I-JEPA",
+      "room": "mirror-of-occlusion",
+      "exhibit": "the-mirror",
+      "summary": "Image Joint-Embedding Predictive Architecture (Assran et al., CVPR 2023): self-supervised learning by predicting the representations of masked image regions from visible context, in latent space rather than pixel space, so the model learns semantic gist instead of low-level texture."
+    },
+    {
+      "id": "context-encoder",
+      "name": "Context encoder",
+      "room": "mirror-of-occlusion",
+      "exhibit": "plaque-two-scribes",
+      "summary": "The trained branch of I-JEPA: an encoder that sees only the visible (unmasked) patches and is updated by gradient descent on the prediction loss \u2014 the Context Scribe whose quill is sharpened nightly by its errors."
+    },
+    {
+      "id": "ema-target-encoder",
+      "name": "EMA target encoder",
+      "room": "mirror-of-occlusion",
+      "exhibit": "plaque-two-scribes",
+      "summary": "The gradient-free branch of I-JEPA: its weights are an exponential moving average of the context encoder (new target = 0.996 x old target + 0.004 x context). It encodes the full image to produce prediction targets, and because it cannot learn, it cannot collude in collapse."
+    },
+    {
+      "id": "predictor-network",
+      "name": "Predictor network",
+      "room": "mirror-of-occlusion",
+      "exhibit": "plaque-latent-regret",
+      "summary": "A narrow network between the two encoders: given the context encoder's representations of visible patches plus positional mask tokens marking where the occlusion lies, it conjures the target encoder's representation of the hidden region."
+    },
+    {
+      "id": "masked-latent-prediction",
+      "name": "Masked latent prediction",
+      "room": "mirror-of-occlusion",
+      "exhibit": "plaque-latent-regret",
+      "summary": "The I-JEPA objective: minimize the squared distance between predicted and true representations of masked regions \u2014 representation against representation, never pixel against pixel. Predicting in latent space returns the sense of what belongs, not the texture."
+    },
+    {
+      "id": "representation-collapse",
+      "name": "Representation collapse",
+      "room": "mirror-of-occlusion",
+      "exhibit": "plaque-no-collapse",
+      "summary": "The failure mode of joint-embedding methods: all inputs mapped to one constant point, giving zero loss and zero information \u2014 the blank page with no regret. I-JEPA forbids it by learning asymmetry (EMA target, no gradient); VICReg forbids it with explicit variance and covariance penalties."
+    },
+    {
+      "id": "jepa-family",
+      "name": "The JEPA family",
+      "room": "paris-cauldron",
+      "exhibit": "the-paris-cauldron",
+      "summary": "The joint-embedding predictive architecture paradigm \u2014 predict in representation space, not pixel space \u2014 spanning I-JEPA, V-JEPA 2/2.1, and AMI Labs' world models. As of May 2026 it stands roughly at its GPT-3 moment: deployed, funded, and still awaiting its ChatGPT-equivalent."
+    },
+    {
+      "id": "v-jepa-2",
+      "name": "V-JEPA 2 / 2.1",
+      "room": "paris-cauldron",
+      "exhibit": "plaque-vjepa",
+      "summary": "Meta's video JEPA: pretrained on one million hours of video plus sixty-two hours of robot data, grasping novel objects at 65-80% on a Franka arm. V-JEPA 2.1 added Dense Predictive Loss, Deep Self-Supervision at intermediate layers, and modality-specific tokenizers: +20 points grasping, 10x faster planning; sizes from ViT-B (80M) to ViT-G (2B)."
+    },
+    {
+      "id": "world-action-models",
+      "name": "World Action Models",
+      "room": "paris-cauldron",
+      "exhibit": "plaque-wams",
+      "summary": "The winter-2026 paradigm: one model jointly generates future video AND future action, instead of bolting perception onto action as VLAs do. DreamZero (NVIDIA, 14B, flow matching, 7 Hz), Fast-WAM (video prediction as a training-time representational enrichment, like BERT's masked tokens), MotuBrain (Mixture-of-Transformers, 95.8% on RoboTwin 2.0)."
+    },
+    {
+      "id": "marble-generative-worlds",
+      "name": "Marble / generative 3D worlds",
+      "room": "paris-cauldron",
+      "exhibit": "plaque-new-houses",
+      "summary": "WorldLabs' Marble (Nov 2025): generates persistent, downloadable 3D worlds from text, image, video or sketch, represented as Gaussian Splatting \u2014 soft elliptical motes with color, opacity and orientation. Framed as the complement to JEPA: generative models create the worlds in which predictive agents train."
+    },
+    {
+      "id": "jepa-scaling-laws",
+      "name": "Scaling laws (the missing decree)",
+      "room": "paris-cauldron",
+      "exhibit": "portrait-lecturer",
+      "summary": "Language models had the Chinchilla decree (Hoffmann et al., 2022: roughly 20 tokens per parameter), telling the field how to spend its compute. JEPA has no such decree yet \u2014 one of the four reasons the paradigm has not exploded commercially despite its technical merits."
+    },
+    {
+      "id": "projector-head",
+      "name": "Projector head",
+      "room": "projector-shield",
+      "exhibit": "four-monographs",
+      "summary": "The funnel between encoder and self-supervised loss, discarded after training. It concentrates the pretext task's distortion within itself so the encoder beneath retains broadly useful features \u2014 a soft buffer, not a hard guard, since gradients still flow through it."
+    },
+    {
+      "id": "simclr",
+      "name": "SimCLR",
+      "room": "projector-shield",
+      "exhibit": "plaque-guillotine",
+      "summary": "Chen et al., ICML 2020: the simple contrastive framework whose authors first observed, almost by accident, that the encoder performs better downstream once the projection head is removed \u2014 the first sighting of the projector-head phenomenon, offered without a mathematics of the gradient."
+    },
+    {
+      "id": "guillotine-regularization",
+      "name": "Guillotine Regularization",
+      "room": "projector-shield",
+      "exhibit": "plaque-guillotine",
+      "summary": "Bordes et al., NeurIPS 2023: snip off the head and the body sings on. Severing the projector after training can raise downstream performance by over thirty percentage points, because overfitting to the pretext task is localized in the head while the encoder is spared."
+    },
+    {
+      "id": "gradient-feature-migration",
+      "name": "Gradient feature migration",
+      "room": "projector-shield",
+      "exhibit": "plaque-feature-migration",
+      "summary": "Xue et al., ICLR 2024: the implicit bias of gradient-based training makes pretext-useful features migrate toward the projector's output while downstream-useful features settle in the encoder. The head's non-linearities enable this emergent, non-architectural functional specialization."
+    },
+    {
+      "id": "information-bottleneck",
+      "name": "Information bottleneck view",
+      "room": "projector-shield",
+      "exhibit": "plaque-bottleneck",
+      "summary": "ICLR 2025: the projection head is secretly an information bottleneck \u2014 it compresses out information irrelevant to the SSL objective and attenuates the gradient signal reaching the encoder, which sits upstream of the compression and so retains the broader signal."
+    },
+    {
+      "id": "mse-loss",
+      "name": "Mean squared error",
+      "room": "scales-of-error",
+      "exhibit": "why-squared",
+      "summary": "Loss = average of squared differences between prediction and target (the squared L2 distance). Squaring removes sign, punishes big errors most, and gives a smooth slope for gradient descent. (Upstairs: diffusion trains on MSE between true and predicted noise; I-JEPA and VICReg use it too.)"
+    },
+    {
+      "id": "gradient-descent",
+      "name": "Gradient descent",
+      "room": "scales-of-error",
+      "exhibit": "gradient-descent",
+      "summary": "Reduce a loss by stepping weights opposite the gradient (steepest ascent): new = old - lr*grad. Backpropagation computes the gradient efficiently. The patient engine training every network in the palace."
+    },
+    {
+      "id": "adaln-zero",
+      "name": "adaLN-Zero conditioning",
+      "room": "the-adaptive-sanctum",
+      "summary": "How a DiT block injects timestep t and class/text c: sum t_embed+c_embed, pass through a small MLP to GENERATE the LayerNorm scale/shift (gamma,beta) plus a residual gate alpha per sub-layer. The alpha gates start at ZERO so each block begins as identity, stabilizing deep-transformer training."
+    },
+    {
+      "id": "reverse-sampling",
+      "name": "Sampling: the backward walk",
+      "room": "the-backward-walk",
+      "summary": "Start from pure noise, walk t=T->0 in small steps: predict eps, estimate x_0, re-noise only to level t-1, plus a small random kick. Small steps because the x_0 estimate is rough at high noise; the kick keeps samples sharp and diverse."
+    },
+    {
+      "id": "classifier-free-guidance",
+      "name": "Classifier-free guidance (CFG)",
+      "room": "the-guidance-forge",
+      "summary": "Make prompts stick: train with ~10% prompt dropout so one net learns conditioned + unconditioned denoising, then at sampling extrapolate eps_guided = eps_uncond + w*(eps_cond - eps_uncond), w~7.5. The subtraction, done in noise space, isolates the prompt's influence."
+    },
+    {
+      "id": "diffusion-core",
+      "name": "Diffusion in one sentence",
+      "room": "the-inkwell",
+      "summary": "Generate data by REVERSING a gradual noising process. Destroying structure (adding noise) is easy and fixed; reconstructing it from noise is the hard, learned part \u2014 done in many tiny denoising steps."
+    },
+    {
+      "id": "forward-process",
+      "name": "The forward process (DDPM)",
+      "room": "the-inkwell",
+      "summary": "x_t = sqrt(1-beta_t)*x_{t-1} + sqrt(beta_t)*eps_t: shrink the signal a little, inject a little noise. Designed to be variance-preserving so the endpoint is always N(0,1). Fixed, no learning (Ho et al., 2020)."
+    },
+    {
+      "id": "latent-diffusion",
+      "name": "Latent diffusion",
+      "room": "the-latent-vault",
+      "summary": "Run the entire diffusion in a compressed VAE latent (e.g. 512x512x3 -> 64x64x4, ~48x smaller) instead of pixels. The U-Net denoises latents; the VAE handles fine pixel detail. THE reason Stable Diffusion fits on consumer GPUs."
+    },
+    {
+      "id": "vae-compression",
+      "name": "VAE compression & attention cost",
+      "room": "the-latent-vault",
+      "summary": "A separately-trained VAE encodes images to a small latent and decodes back. In latent space, attention still runs over SPATIAL positions only (channels are NOT squared), and only at low-resolution levels (the attention_resolutions config)."
+    },
+    {
+      "id": "noise-predictor",
+      "name": "The network is a noise predictor",
+      "room": "the-noise-oracle",
+      "summary": "The learning problem: input (x_t, t), output eps_predicted \u2014 the network predicts the NOISE that was added, not the clean image. Everything else in diffusion is algebra around this one prediction."
+    },
+    {
+      "id": "prediction-equivalence",
+      "name": "eps-prediction = x0-prediction",
+      "room": "the-noise-oracle",
+      "summary": "The forward equation solves three ways, so predicting the noise eps and predicting the clean image x_0 are mathematically equivalent given (x_t,t). Different models pick different targets (eps, x0, v) for numerical stability."
+    },
+    {
+      "id": "diffusion-training-loop",
+      "name": "The training loop",
+      "room": "the-noise-oracle",
+      "summary": "Sample x_0; pick random t; draw eps~N(0,1); build x_t; minimize ||eps - net(x_t,t)||^2. The eps drawn to corrupt IS the label \u2014 the corruption process hands you the answer key for free."
+    },
+    {
+      "id": "patchify",
+      "name": "Patchify",
+      "room": "the-patchwork-loom",
+      "summary": "Turn a latent grid into a token sequence for a transformer: a 32x32x4 latent with patch 2x2 gives 16x16=256 patches, each flattened (16 values) and projected to d_model \u2014 exactly ViT/SmolVLM tokenization. Unpatchify mirrors it at the end. Positional embeddings are added because a transformer sees tokens as an unordered set."
+    },
+    {
+      "id": "dit",
+      "name": "DiT (Diffusion Transformer)",
+      "room": "the-reforged-transformer",
+      "summary": "Replace the U-Net denoiser with a plain transformer: patchify the latent to tokens, add positions, run N transformer blocks conditioned by adaLN-Zero, unpatchify back to (H,W,C) predicted noise. The transformer machinery of the Attention wing, dropped unchanged into the Diffusion framework."
+    },
+    {
+      "id": "dit-vs-unet",
+      "name": "DiT vs U-Net",
+      "room": "the-reforged-transformer",
+      "summary": "Two interchangeable denoisers for the SAME diffusion framework (forward, reverse, CFG, latent all unchanged). U-Net: conv + low-res attention + skips + up/down sampling. DiT: patchify + plain transformer blocks + unpatchify, positions instead of conv, adaLN-Zero conditioning. DiT scales more predictably (LLM scaling laws) so large models (Sora, SD3, PixArt) migrate to it."
+    },
+    {
+      "id": "alpha-bar-shortcut",
+      "name": "The jump-to-any-step shortcut",
+      "room": "the-shortcut-shrine",
+      "summary": "x_t = sqrt(alpha_bar_t)*x_0 + sqrt(1-alpha_bar_t)*eps, where alpha_bar_t is the running product of alpha=1-beta. Jump to any noise level in one draw (sum of Gaussians), which is why training needs no forward-chain loop."
     },
     {
       "id": "cross-attention",
       "name": "Cross-attention",
       "room": "the-two-gazes",
       "exhibit": "janus-sentinel",
-      "summary": "Attention where Q comes from one source and K, V from another — e.g. a text decoder querying image-encoder patches. The score matrix Q.K^T is (n_text, n_patches), not square. Output gives each text token visual information from the patches it attended to."
+      "summary": "Attention where Q comes from one source and K, V from another \u2014 e.g. a text decoder querying image-encoder patches. The score matrix Q.K^T is (n_text, n_patches), not square. Output gives each text token visual information from the patches it attended to."
     },
     {
       "id": "qkv-source-principle",
@@ -274,140 +407,823 @@
       "summary": "Most modern VLMs (SmolVLM, LLaVA, PaliGemma, Qwen-VL) skip explicit cross-attention: they project image patches into the LM's embedding space, concatenate them with text tokens, and let self-attention mix the modalities. Simpler and decoder-agnostic, but image tokens consume KV-cache and context budget."
     },
     {
-      "id": "kv-cache",
-      "name": "KV cache",
-      "room": "library-of-keys",
-      "exhibit": "endless-stacks",
-      "summary": "At inference a decoder generates one token at a time; recomputing all past keys and values each step is wasteful. The KV cache stores every past token's K and V, so each new step computes only the new query, scores it against all cached keys, and blends the cached values. Grows by one entry per step per layer (per group in GQA)."
+      "id": "unet",
+      "name": "The U-Net denoiser",
+      "room": "the-unet-cathedral",
+      "summary": "The network that maps a noisy image (H,W,C) to predicted noise of the same shape: an encoder that shrinks spatial + grows channels, a bottleneck, and a decoder that grows back \u2014 same-shape-in-out with multi-scale understanding."
     },
     {
-      "id": "query-not-cached",
-      "name": "Why Q is not cached",
-      "room": "library-of-keys",
-      "exhibit": "why-asker-not-kept",
-      "summary": "Only K and V are cached, never Q. The query is the asker: it asks once and moves on, so caching it would only ever reuse its last row. Keys and values are the label and content that every future query must still consult. Unlike an RNN, each new query has direct access to all past K,V — nothing is compressed."
+      "id": "skip-connections",
+      "name": "Skip connections",
+      "room": "the-unet-cathedral",
+      "summary": "Each U-Net encoder level hands its high-resolution detail straight to the matching decoder level. Downsampling knows WHAT but loses WHERE; skips restore the where, so the output is sharp instead of blurry."
     },
     {
-      "id": "transformer-block",
-      "name": "The Transformer block",
-      "room": "library-of-keys",
-      "exhibit": "two-rhythms",
-      "summary": "The repeating unit: LayerNorm -> Multi-Head Attention -> +residual -> LayerNorm -> MLP -> +residual. Attention is inter-token mixing ('who to listen to', like spatial conv); the MLP is per-token processing ('what to do with it', like 1x1 conv). Residuals are the gradient highway; input shape equals output shape, so blocks stack (L=32 for 7B, L=96 for GPT-4 class)."
+      "id": "unet-self-attention",
+      "name": "Self-attention in the U-Net",
+      "room": "the-unet-cathedral",
+      "summary": "At low resolutions the feature map is flattened to a sequence of spatial positions and given the exact (n,n) self-attention from the transformer \u2014 global mixing, shape-preserving. Only at low res because attention is O(n^2)."
     },
     {
-      "id": "flash-attention",
-      "name": "Flash attention",
-      "room": "library-of-keys",
-      "exhibit": "flash-antechamber",
-      "summary": "An exact (not approximate) attention that never materialises the (n,n) score matrix in slow HBM. It tiles Q and K into fast on-chip SRAM and keeps a running softmax (running max m, running sum l, correcting by e^(m_old-m_new)), cutting memory from O(n^2) to O(n) while producing identical output."
+      "id": "diffusion-cross-attention",
+      "name": "Cross-attention for text",
+      "room": "the-unet-cathedral",
+      "summary": "Text conditioning: Q from image positions, K and V from the prompt's text tokens; scores (n_image, n_text). Each image position asks which words are relevant to it \u2014 the same image-text cross-attention as the Two Gazes, here steering the picture."
     },
     {
-      "id": "token-embedding-lm-head",
-      "name": "Embedding & lm_head",
-      "room": "library-of-keys",
-      "exhibit": "the-bookends",
-      "summary": "The two learned layers bracketing a Transformer: the token embedding (vocab_size x d_model lookup, a sparse gather of the used rows) and the lm_head / W_vocab (d_model -> vocab logits, a full matmul). Often tied (W_vocab = embedding^T). Rare tokens, looked up seldom, receive fewer gradient updates."
+      "id": "causal-masking",
+      "name": "Causal masking",
+      "room": "veil-of-the-future",
+      "exhibit": "veiled-glass",
+      "summary": "In a decoder, a token must not attend to the future. Before softmax, the upper triangle of the (n,n) score matrix is set to -inf; since e^(-inf)=0, those positions get zero weight. This single change turns bidirectional attention into autoregressive generation. In code use a large negative number, and watch for NaNs from leaks."
     },
     {
-      "id": "positional-encoding",
-      "name": "Positional encoding",
-      "room": "compass-and-clock",
-      "exhibit": "orrery-of-positions",
-      "summary": "Bare attention is permutation-equivariant — it sees content, not order — so position must be injected. Two fixed, precomputed families do it: sinusoidal encodings ADD a position signal to embeddings, while RoPE ROTATES queries and keys; both use frequencies freq_i = 1/10000^(2i/d)."
+      "id": "encoder-vs-decoder",
+      "name": "Encoder vs decoder",
+      "room": "veil-of-the-future",
+      "exhibit": "two-halves-of-2017",
+      "summary": "Names for which half of the 2017 Transformer a model keeps. Encoder = self-attention with NO mask (bidirectional, e.g. BERT). Decoder = self-attention with a causal mask (e.g. GPT, LLaMA). Decoder-only won the scaling race, but encoder-decoder lives on in T5, BART, and Whisper."
     },
     {
-      "id": "sinusoidal-pe",
-      "name": "Sinusoidal positional encoding",
-      "room": "compass-and-clock",
-      "exhibit": "sinusoidal-clock",
-      "summary": "Fixed sin/cos position vectors added to token embeddings before the Q,K,V projections. Each dimension pair gets its own frequency freq_i = 1/10000^(2i/d) — fast hands and slow hands, like a clock — so every position has a unique code. Encodes ABSOLUTE position; a learned-table variant cannot extrapolate past its training length."
+      "id": "self-attention",
+      "name": "Self-attention",
+      "room": "veil-of-the-future",
+      "exhibit": "reads-the-sentence",
+      "summary": "Q, K and V all drawn from the same sequence \u2014 the tokens attend to one another. For 'The cat sat on the mat' the score matrix is (6,6); processing 'sat' should attend to its subject 'cat'. Different heads read the same sentence differently (syntactic, positional, determiner)."
     },
     {
-      "id": "rope",
-      "name": "RoPE (rotary position embedding)",
-      "room": "compass-and-clock",
-      "exhibit": "rope-rotation",
-      "summary": "Rotary Position Embedding rotates Q and K (not V) by an angle m.theta proportional to position, after projection. Because a dot product of vectors rotated by m.theta and n.theta depends only on (m-n).theta (via cos(A-B)), RoPE encodes RELATIVE distance and preserves length. Favoured by modern long-context models."
+      "id": "vicreg",
+      "name": "VICReg",
+      "room": "vicereg-corridor",
+      "exhibit": "three-sisters-statue",
+      "summary": "Variance-Invariance-Covariance Regularization (Bardes, Ponce and LeCun, ICLR 2022): a self-supervised loss of three explicit terms that prevents collapse without negative pairs or asymmetric networks, yielding representations that are semantically tight, globally spread, and dimensionally rich."
+    },
+    {
+      "id": "invariance-term",
+      "name": "Invariance term",
+      "room": "vicereg-corridor",
+      "exhibit": "plaque-three-vows",
+      "summary": "VICReg's first vow: a mean-squared-error term pulling together the embeddings of two augmented views of the same image \u2014 two glimpses of the same thing must sound the same note."
+    },
+    {
+      "id": "variance-term",
+      "name": "Variance term",
+      "room": "vicereg-corridor",
+      "exhibit": "plaque-three-vows",
+      "summary": "VICReg's second vow, in open rebellion against the first: a hinge penalty keeps the standard deviation of each embedding dimension, computed across the batch, at no less than one \u2014 so the batch never collapses onto a single note."
+    },
+    {
+      "id": "covariance-term",
+      "name": "Covariance term",
+      "room": "vicereg-corridor",
+      "exhibit": "plaque-three-vows",
+      "summary": "VICReg's third and subtlest vow: drive the off-diagonal entries of the embedding covariance matrix toward zero, decorrelating dimensions so the spread won by the variance term is not secretly crowded into a single direction (informational collapse)."
+    },
+    {
+      "id": "vicreg-expander",
+      "name": "Expander h-phi",
+      "room": "vicereg-corridor",
+      "exhibit": "plaque-expander",
+      "summary": "VICReg's projector: expands encoder output into a higher-dimensional space before the loss. It absorbs the invariance pressure so the encoder stays rich, and it turns nonlinear dependencies into linear correlations the covariance term can detect and remove. Discarded after training."
+    },
+    {
+      "id": "gaussian-normal",
+      "name": "The Gaussian N(0,1)",
+      "room": "well-of-chance",
+      "exhibit": "the-well",
+      "summary": "The normal distribution \u2014 the bell curve. The standard normal N(0,1) has mean 0 and variance 1; draws cluster near 0. Make any Gaussian by scale-and-shift (x = mu + sigma*eps); the sum of independent Gaussians is again Gaussian, variances adding. Pure probability. (Upstairs it becomes diffusion's noise and its fixed N(0,1) endpoint.)"
+    },
+    {
+      "id": "mean-and-variance",
+      "name": "Mean and variance",
+      "room": "well-of-chance",
+      "exhibit": "mean-and-variance",
+      "summary": "A Gaussian is fixed by its mean mu (center) and variance sigma-squared (spread). Standardize with z=(x-mu)/sigma; sample with x=mu+sigma*eps from a standard draw. That scale-and-shift is the skeleton of the diffusion forward step."
+    },
+    {
+      "id": "sum-of-gaussians",
+      "name": "Sum of Gaussians",
+      "room": "well-of-chance",
+      "exhibit": "bell-is-endpoint",
+      "summary": "The sum of two independent Gaussians is another Gaussian with variances added. This closure property is why a whole chain of noising steps collapses into one jump formula, and (via the Central Limit Theorem) why summed randomness is so often bell-shaped."
+    },
+    {
+      "id": "sinusoid",
+      "name": "Sinusoids & frequencies",
+      "room": "wheel-of-frequencies",
+      "exhibit": "the-wheel",
+      "summary": "sin and cos at a ladder of frequencies freq_i=1/10000^(2i/d) \u2014 fast and slow hands that together pinpoint an index as a unique fingerprint. Pure trigonometry. (Upstairs: positional encoding and diffusion's timestep embedding.)"
+    },
+    {
+      "id": "rotation-length",
+      "name": "Rotation preserves length",
+      "room": "wheel-of-frequencies",
+      "exhibit": "rotation-length",
+      "summary": "Rotating a vector changes its direction but not its length (sin^2+cos^2=1). The whole idea of RoPE: inject 'where' by rotating queries and keys without distorting 'what'."
+    },
+    {
+      "id": "angle-addition",
+      "name": "The angle-addition identity",
+      "room": "wheel-of-frequencies",
+      "exhibit": "angle-addition",
+      "summary": "cos(A)cos(B)+sin(A)sin(B)=cos(A-B): the dot product of two rotated vectors depends only on the difference of angles. This is why RoPE's rotations yield a RELATIVE sense of position."
     }
   ],
   "edges": [
-    { "from": "context-encoder", "to": "i-jepa", "relation": "part-of" },
-    { "from": "ema-target-encoder", "to": "i-jepa", "relation": "part-of" },
-    { "from": "predictor-network", "to": "i-jepa", "relation": "part-of" },
-    { "from": "masked-latent-prediction", "to": "i-jepa", "relation": "part-of" },
-    { "from": "ema-target-encoder", "to": "context-encoder", "relation": "relates-to" },
-    { "from": "predictor-network", "to": "masked-latent-prediction", "relation": "relates-to" },
-    { "from": "ema-target-encoder", "to": "representation-collapse", "relation": "relates-to" },
-    { "from": "representation-collapse", "to": "masked-latent-prediction", "relation": "relates-to" },
-    { "from": "invariance-term", "to": "vicreg", "relation": "part-of" },
-    { "from": "variance-term", "to": "vicreg", "relation": "part-of" },
-    { "from": "covariance-term", "to": "vicreg", "relation": "part-of" },
-    { "from": "vicreg-expander", "to": "vicreg", "relation": "part-of" },
-    { "from": "invariance-term", "to": "variance-term", "relation": "contrasts-with" },
-    { "from": "variance-term", "to": "covariance-term", "relation": "relates-to" },
-    { "from": "variance-term", "to": "representation-collapse", "relation": "relates-to" },
-    { "from": "covariance-term", "to": "representation-collapse", "relation": "relates-to" },
-    { "from": "vicreg", "to": "ema-target-encoder", "relation": "contrasts-with" },
-    { "from": "vicreg", "to": "i-jepa", "relation": "relates-to" },
-    { "from": "invariance-term", "to": "masked-latent-prediction", "relation": "relates-to" },
-    { "from": "vicreg-expander", "to": "projector-head", "relation": "relates-to" },
-    { "from": "vicreg-expander", "to": "simclr", "relation": "builds-on" },
-    { "from": "projector-head", "to": "simclr", "relation": "builds-on" },
-    { "from": "guillotine-regularization", "to": "simclr", "relation": "builds-on" },
-    { "from": "guillotine-regularization", "to": "projector-head", "relation": "relates-to" },
-    { "from": "gradient-feature-migration", "to": "guillotine-regularization", "relation": "builds-on" },
-    { "from": "gradient-feature-migration", "to": "projector-head", "relation": "relates-to" },
-    { "from": "information-bottleneck", "to": "projector-head", "relation": "relates-to" },
-    { "from": "information-bottleneck", "to": "gradient-feature-migration", "relation": "relates-to" },
-    { "from": "invariance-term", "to": "projector-head", "relation": "relates-to" },
-    { "from": "i-jepa", "to": "jepa-family", "relation": "part-of" },
-    { "from": "v-jepa-2", "to": "jepa-family", "relation": "part-of" },
-    { "from": "v-jepa-2", "to": "i-jepa", "relation": "builds-on" },
-    { "from": "v-jepa-2", "to": "ema-target-encoder", "relation": "builds-on" },
-    { "from": "world-action-models", "to": "jepa-family", "relation": "contrasts-with" },
-    { "from": "world-action-models", "to": "v-jepa-2", "relation": "relates-to" },
-    { "from": "marble-generative-worlds", "to": "jepa-family", "relation": "contrasts-with" },
-    { "from": "marble-generative-worlds", "to": "v-jepa-2", "relation": "relates-to" },
-    { "from": "jepa-scaling-laws", "to": "jepa-family", "relation": "relates-to" },
-    { "from": "vicreg", "to": "jepa-family", "relation": "relates-to" },
-
-    { "from": "dot-product-similarity", "to": "scaled-dot-product-attention", "relation": "part-of" },
-    { "from": "softmax-attention", "to": "scaled-dot-product-attention", "relation": "part-of" },
-    { "from": "qkv-projections", "to": "scaled-dot-product-attention", "relation": "part-of" },
-    { "from": "attention-quadratic-cost", "to": "scaled-dot-product-attention", "relation": "relates-to" },
-    { "from": "multi-head-attention", "to": "scaled-dot-product-attention", "relation": "builds-on" },
-    { "from": "output-projection-wo", "to": "multi-head-attention", "relation": "part-of" },
-    { "from": "head-redundancy", "to": "multi-head-attention", "relation": "relates-to" },
-    { "from": "grouped-query-attention", "to": "multi-head-attention", "relation": "builds-on" },
-    { "from": "multi-query-attention", "to": "grouped-query-attention", "relation": "builds-on" },
-    { "from": "multi-query-attention", "to": "multi-head-attention", "relation": "contrasts-with" },
-    { "from": "head-redundancy", "to": "grouped-query-attention", "relation": "relates-to" },
-    { "from": "grouped-query-attention", "to": "kv-cache", "relation": "relates-to" },
-    { "from": "causal-masking", "to": "scaled-dot-product-attention", "relation": "builds-on" },
-    { "from": "encoder-vs-decoder", "to": "causal-masking", "relation": "relates-to" },
-    { "from": "self-attention", "to": "scaled-dot-product-attention", "relation": "relates-to" },
-    { "from": "self-attention", "to": "multi-head-attention", "relation": "relates-to" },
-    { "from": "cross-attention", "to": "self-attention", "relation": "contrasts-with" },
-    { "from": "cross-attention", "to": "scaled-dot-product-attention", "relation": "builds-on" },
-    { "from": "qkv-source-principle", "to": "cross-attention", "relation": "relates-to" },
-    { "from": "qkv-source-principle", "to": "self-attention", "relation": "relates-to" },
-    { "from": "attention-maps", "to": "self-attention", "relation": "relates-to" },
-    { "from": "vit-patch-attention", "to": "attention-maps", "relation": "part-of" },
-    { "from": "vit-patch-attention", "to": "self-attention", "relation": "relates-to" },
-    { "from": "modern-vlm-concat", "to": "cross-attention", "relation": "contrasts-with" },
-    { "from": "kv-cache", "to": "causal-masking", "relation": "builds-on" },
-    { "from": "query-not-cached", "to": "kv-cache", "relation": "part-of" },
-    { "from": "transformer-block", "to": "multi-head-attention", "relation": "builds-on" },
-    { "from": "transformer-block", "to": "scaled-dot-product-attention", "relation": "relates-to" },
-    { "from": "flash-attention", "to": "scaled-dot-product-attention", "relation": "relates-to" },
-    { "from": "flash-attention", "to": "kv-cache", "relation": "relates-to" },
-    { "from": "token-embedding-lm-head", "to": "transformer-block", "relation": "part-of" },
-    { "from": "positional-encoding", "to": "scaled-dot-product-attention", "relation": "relates-to" },
-    { "from": "sinusoidal-pe", "to": "positional-encoding", "relation": "part-of" },
-    { "from": "rope", "to": "positional-encoding", "relation": "part-of" },
-    { "from": "rope", "to": "sinusoidal-pe", "relation": "builds-on" },
-    { "from": "rope", "to": "sinusoidal-pe", "relation": "contrasts-with" },
-    { "from": "vit-patch-attention", "to": "i-jepa", "relation": "relates-to" },
-    { "from": "transformer-block", "to": "jepa-family", "relation": "relates-to" }
+    {
+      "from": "positional-encoding",
+      "to": "scaled-dot-product-attention",
+      "relation": "relates-to"
+    },
+    {
+      "from": "sinusoidal-pe",
+      "to": "positional-encoding",
+      "relation": "part-of"
+    },
+    {
+      "from": "rope",
+      "to": "positional-encoding",
+      "relation": "part-of"
+    },
+    {
+      "from": "rope",
+      "to": "sinusoidal-pe",
+      "relation": "builds-on"
+    },
+    {
+      "from": "rope",
+      "to": "sinusoidal-pe",
+      "relation": "contrasts-with"
+    },
+    {
+      "from": "positional-encoding",
+      "to": "sinusoid",
+      "relation": "builds-on"
+    },
+    {
+      "from": "sinusoidal-pe",
+      "to": "sinusoid",
+      "relation": "builds-on"
+    },
+    {
+      "from": "rope",
+      "to": "rotation-length",
+      "relation": "builds-on"
+    },
+    {
+      "from": "rope",
+      "to": "angle-addition",
+      "relation": "builds-on"
+    },
+    {
+      "from": "multi-head-attention",
+      "to": "scaled-dot-product-attention",
+      "relation": "builds-on"
+    },
+    {
+      "from": "output-projection-wo",
+      "to": "multi-head-attention",
+      "relation": "part-of"
+    },
+    {
+      "from": "head-redundancy",
+      "to": "multi-head-attention",
+      "relation": "relates-to"
+    },
+    {
+      "from": "grouped-query-attention",
+      "to": "multi-head-attention",
+      "relation": "builds-on"
+    },
+    {
+      "from": "multi-query-attention",
+      "to": "grouped-query-attention",
+      "relation": "builds-on"
+    },
+    {
+      "from": "multi-query-attention",
+      "to": "multi-head-attention",
+      "relation": "contrasts-with"
+    },
+    {
+      "from": "head-redundancy",
+      "to": "grouped-query-attention",
+      "relation": "relates-to"
+    },
+    {
+      "from": "grouped-query-attention",
+      "to": "kv-cache",
+      "relation": "relates-to"
+    },
+    {
+      "from": "dot-product-similarity",
+      "to": "scaled-dot-product-attention",
+      "relation": "part-of"
+    },
+    {
+      "from": "softmax-attention",
+      "to": "scaled-dot-product-attention",
+      "relation": "part-of"
+    },
+    {
+      "from": "qkv-projections",
+      "to": "scaled-dot-product-attention",
+      "relation": "part-of"
+    },
+    {
+      "from": "attention-quadratic-cost",
+      "to": "scaled-dot-product-attention",
+      "relation": "relates-to"
+    },
+    {
+      "from": "dot-product-similarity",
+      "to": "dot-product-math",
+      "relation": "builds-on"
+    },
+    {
+      "from": "softmax-attention",
+      "to": "softmax-math",
+      "relation": "builds-on"
+    },
+    {
+      "from": "scaled-dot-product-attention",
+      "to": "dot-product-math",
+      "relation": "builds-on"
+    },
+    {
+      "from": "variance-preservation",
+      "to": "variance-rules",
+      "relation": "builds-on"
+    },
+    {
+      "from": "covariance",
+      "to": "variance-rules",
+      "relation": "relates-to"
+    },
+    {
+      "from": "covariance",
+      "to": "dot-product-math",
+      "relation": "relates-to"
+    },
+    {
+      "from": "kv-cache",
+      "to": "causal-masking",
+      "relation": "builds-on"
+    },
+    {
+      "from": "query-not-cached",
+      "to": "kv-cache",
+      "relation": "part-of"
+    },
+    {
+      "from": "transformer-block",
+      "to": "multi-head-attention",
+      "relation": "builds-on"
+    },
+    {
+      "from": "transformer-block",
+      "to": "scaled-dot-product-attention",
+      "relation": "relates-to"
+    },
+    {
+      "from": "flash-attention",
+      "to": "scaled-dot-product-attention",
+      "relation": "relates-to"
+    },
+    {
+      "from": "flash-attention",
+      "to": "kv-cache",
+      "relation": "relates-to"
+    },
+    {
+      "from": "token-embedding-lm-head",
+      "to": "transformer-block",
+      "relation": "part-of"
+    },
+    {
+      "from": "transformer-block",
+      "to": "jepa-family",
+      "relation": "relates-to"
+    },
+    {
+      "from": "flash-attention",
+      "to": "attention-quadratic-cost",
+      "relation": "relates-to"
+    },
+    {
+      "from": "context-encoder",
+      "to": "i-jepa",
+      "relation": "part-of"
+    },
+    {
+      "from": "ema-target-encoder",
+      "to": "i-jepa",
+      "relation": "part-of"
+    },
+    {
+      "from": "predictor-network",
+      "to": "i-jepa",
+      "relation": "part-of"
+    },
+    {
+      "from": "masked-latent-prediction",
+      "to": "i-jepa",
+      "relation": "part-of"
+    },
+    {
+      "from": "ema-target-encoder",
+      "to": "context-encoder",
+      "relation": "relates-to"
+    },
+    {
+      "from": "predictor-network",
+      "to": "masked-latent-prediction",
+      "relation": "relates-to"
+    },
+    {
+      "from": "ema-target-encoder",
+      "to": "representation-collapse",
+      "relation": "relates-to"
+    },
+    {
+      "from": "representation-collapse",
+      "to": "masked-latent-prediction",
+      "relation": "relates-to"
+    },
+    {
+      "from": "i-jepa",
+      "to": "jepa-family",
+      "relation": "part-of"
+    },
+    {
+      "from": "masked-latent-prediction",
+      "to": "mse-loss",
+      "relation": "builds-on"
+    },
+    {
+      "from": "v-jepa-2",
+      "to": "jepa-family",
+      "relation": "part-of"
+    },
+    {
+      "from": "v-jepa-2",
+      "to": "i-jepa",
+      "relation": "builds-on"
+    },
+    {
+      "from": "v-jepa-2",
+      "to": "ema-target-encoder",
+      "relation": "builds-on"
+    },
+    {
+      "from": "world-action-models",
+      "to": "jepa-family",
+      "relation": "contrasts-with"
+    },
+    {
+      "from": "world-action-models",
+      "to": "v-jepa-2",
+      "relation": "relates-to"
+    },
+    {
+      "from": "marble-generative-worlds",
+      "to": "jepa-family",
+      "relation": "contrasts-with"
+    },
+    {
+      "from": "marble-generative-worlds",
+      "to": "v-jepa-2",
+      "relation": "relates-to"
+    },
+    {
+      "from": "jepa-scaling-laws",
+      "to": "jepa-family",
+      "relation": "relates-to"
+    },
+    {
+      "from": "projector-head",
+      "to": "simclr",
+      "relation": "builds-on"
+    },
+    {
+      "from": "guillotine-regularization",
+      "to": "simclr",
+      "relation": "builds-on"
+    },
+    {
+      "from": "guillotine-regularization",
+      "to": "projector-head",
+      "relation": "relates-to"
+    },
+    {
+      "from": "gradient-feature-migration",
+      "to": "guillotine-regularization",
+      "relation": "builds-on"
+    },
+    {
+      "from": "gradient-feature-migration",
+      "to": "projector-head",
+      "relation": "relates-to"
+    },
+    {
+      "from": "information-bottleneck",
+      "to": "projector-head",
+      "relation": "relates-to"
+    },
+    {
+      "from": "information-bottleneck",
+      "to": "gradient-feature-migration",
+      "relation": "relates-to"
+    },
+    {
+      "from": "gradient-descent",
+      "to": "mse-loss",
+      "relation": "relates-to"
+    },
+    {
+      "from": "mse-loss",
+      "to": "gaussian-normal",
+      "relation": "relates-to"
+    },
+    {
+      "from": "adaln-zero",
+      "to": "transformer-block",
+      "relation": "builds-on"
+    },
+    {
+      "from": "adaln-zero",
+      "to": "sinusoid",
+      "relation": "builds-on"
+    },
+    {
+      "from": "adaln-zero",
+      "to": "classifier-free-guidance",
+      "relation": "relates-to"
+    },
+    {
+      "from": "adaln-zero",
+      "to": "diffusion-cross-attention",
+      "relation": "contrasts-with"
+    },
+    {
+      "from": "reverse-sampling",
+      "to": "noise-predictor",
+      "relation": "builds-on"
+    },
+    {
+      "from": "reverse-sampling",
+      "to": "alpha-bar-shortcut",
+      "relation": "builds-on"
+    },
+    {
+      "from": "reverse-sampling",
+      "to": "gaussian-normal",
+      "relation": "builds-on"
+    },
+    {
+      "from": "classifier-free-guidance",
+      "to": "diffusion-cross-attention",
+      "relation": "builds-on"
+    },
+    {
+      "from": "classifier-free-guidance",
+      "to": "noise-predictor",
+      "relation": "builds-on"
+    },
+    {
+      "from": "forward-process",
+      "to": "diffusion-core",
+      "relation": "part-of"
+    },
+    {
+      "from": "forward-process",
+      "to": "variance-preservation",
+      "relation": "builds-on"
+    },
+    {
+      "from": "forward-process",
+      "to": "gaussian-normal",
+      "relation": "builds-on"
+    },
+    {
+      "from": "latent-diffusion",
+      "to": "unet",
+      "relation": "builds-on"
+    },
+    {
+      "from": "vae-compression",
+      "to": "latent-diffusion",
+      "relation": "part-of"
+    },
+    {
+      "from": "vae-compression",
+      "to": "masked-latent-prediction",
+      "relation": "relates-to"
+    },
+    {
+      "from": "vae-compression",
+      "to": "information-bottleneck",
+      "relation": "relates-to"
+    },
+    {
+      "from": "noise-predictor",
+      "to": "forward-process",
+      "relation": "builds-on"
+    },
+    {
+      "from": "prediction-equivalence",
+      "to": "noise-predictor",
+      "relation": "part-of"
+    },
+    {
+      "from": "diffusion-training-loop",
+      "to": "noise-predictor",
+      "relation": "builds-on"
+    },
+    {
+      "from": "diffusion-training-loop",
+      "to": "mse-loss",
+      "relation": "builds-on"
+    },
+    {
+      "from": "diffusion-training-loop",
+      "to": "gradient-descent",
+      "relation": "builds-on"
+    },
+    {
+      "from": "patchify",
+      "to": "vit-patch-attention",
+      "relation": "builds-on"
+    },
+    {
+      "from": "patchify",
+      "to": "positional-encoding",
+      "relation": "builds-on"
+    },
+    {
+      "from": "dit",
+      "to": "transformer-block",
+      "relation": "builds-on"
+    },
+    {
+      "from": "dit",
+      "to": "self-attention",
+      "relation": "builds-on"
+    },
+    {
+      "from": "dit",
+      "to": "patchify",
+      "relation": "builds-on"
+    },
+    {
+      "from": "dit",
+      "to": "adaln-zero",
+      "relation": "builds-on"
+    },
+    {
+      "from": "dit",
+      "to": "noise-predictor",
+      "relation": "builds-on"
+    },
+    {
+      "from": "dit",
+      "to": "latent-diffusion",
+      "relation": "builds-on"
+    },
+    {
+      "from": "dit-vs-unet",
+      "to": "dit",
+      "relation": "part-of"
+    },
+    {
+      "from": "dit-vs-unet",
+      "to": "unet",
+      "relation": "contrasts-with"
+    },
+    {
+      "from": "alpha-bar-shortcut",
+      "to": "forward-process",
+      "relation": "builds-on"
+    },
+    {
+      "from": "alpha-bar-shortcut",
+      "to": "sum-of-gaussians",
+      "relation": "builds-on"
+    },
+    {
+      "from": "cross-attention",
+      "to": "self-attention",
+      "relation": "contrasts-with"
+    },
+    {
+      "from": "cross-attention",
+      "to": "scaled-dot-product-attention",
+      "relation": "builds-on"
+    },
+    {
+      "from": "qkv-source-principle",
+      "to": "cross-attention",
+      "relation": "relates-to"
+    },
+    {
+      "from": "qkv-source-principle",
+      "to": "self-attention",
+      "relation": "relates-to"
+    },
+    {
+      "from": "attention-maps",
+      "to": "self-attention",
+      "relation": "relates-to"
+    },
+    {
+      "from": "vit-patch-attention",
+      "to": "attention-maps",
+      "relation": "part-of"
+    },
+    {
+      "from": "vit-patch-attention",
+      "to": "self-attention",
+      "relation": "relates-to"
+    },
+    {
+      "from": "modern-vlm-concat",
+      "to": "cross-attention",
+      "relation": "contrasts-with"
+    },
+    {
+      "from": "vit-patch-attention",
+      "to": "i-jepa",
+      "relation": "relates-to"
+    },
+    {
+      "from": "unet",
+      "to": "noise-predictor",
+      "relation": "builds-on"
+    },
+    {
+      "from": "skip-connections",
+      "to": "unet",
+      "relation": "part-of"
+    },
+    {
+      "from": "unet-self-attention",
+      "to": "unet",
+      "relation": "part-of"
+    },
+    {
+      "from": "unet-self-attention",
+      "to": "self-attention",
+      "relation": "builds-on"
+    },
+    {
+      "from": "unet-self-attention",
+      "to": "sinusoid",
+      "relation": "builds-on"
+    },
+    {
+      "from": "diffusion-cross-attention",
+      "to": "unet",
+      "relation": "part-of"
+    },
+    {
+      "from": "diffusion-cross-attention",
+      "to": "cross-attention",
+      "relation": "builds-on"
+    },
+    {
+      "from": "causal-masking",
+      "to": "scaled-dot-product-attention",
+      "relation": "builds-on"
+    },
+    {
+      "from": "encoder-vs-decoder",
+      "to": "causal-masking",
+      "relation": "relates-to"
+    },
+    {
+      "from": "self-attention",
+      "to": "scaled-dot-product-attention",
+      "relation": "relates-to"
+    },
+    {
+      "from": "self-attention",
+      "to": "multi-head-attention",
+      "relation": "relates-to"
+    },
+    {
+      "from": "encoder-vs-decoder",
+      "to": "cross-attention",
+      "relation": "relates-to"
+    },
+    {
+      "from": "invariance-term",
+      "to": "vicreg",
+      "relation": "part-of"
+    },
+    {
+      "from": "variance-term",
+      "to": "vicreg",
+      "relation": "part-of"
+    },
+    {
+      "from": "covariance-term",
+      "to": "vicreg",
+      "relation": "part-of"
+    },
+    {
+      "from": "vicreg-expander",
+      "to": "vicreg",
+      "relation": "part-of"
+    },
+    {
+      "from": "invariance-term",
+      "to": "variance-term",
+      "relation": "contrasts-with"
+    },
+    {
+      "from": "variance-term",
+      "to": "covariance-term",
+      "relation": "relates-to"
+    },
+    {
+      "from": "variance-term",
+      "to": "representation-collapse",
+      "relation": "relates-to"
+    },
+    {
+      "from": "covariance-term",
+      "to": "representation-collapse",
+      "relation": "relates-to"
+    },
+    {
+      "from": "vicreg",
+      "to": "ema-target-encoder",
+      "relation": "contrasts-with"
+    },
+    {
+      "from": "vicreg",
+      "to": "i-jepa",
+      "relation": "relates-to"
+    },
+    {
+      "from": "invariance-term",
+      "to": "masked-latent-prediction",
+      "relation": "relates-to"
+    },
+    {
+      "from": "vicreg-expander",
+      "to": "projector-head",
+      "relation": "relates-to"
+    },
+    {
+      "from": "vicreg-expander",
+      "to": "simclr",
+      "relation": "builds-on"
+    },
+    {
+      "from": "invariance-term",
+      "to": "projector-head",
+      "relation": "relates-to"
+    },
+    {
+      "from": "vicreg",
+      "to": "jepa-family",
+      "relation": "relates-to"
+    },
+    {
+      "from": "invariance-term",
+      "to": "mse-loss",
+      "relation": "builds-on"
+    },
+    {
+      "from": "variance-term",
+      "to": "variance-rules",
+      "relation": "builds-on"
+    },
+    {
+      "from": "covariance-term",
+      "to": "covariance",
+      "relation": "builds-on"
+    },
+    {
+      "from": "mean-and-variance",
+      "to": "gaussian-normal",
+      "relation": "part-of"
+    },
+    {
+      "from": "sum-of-gaussians",
+      "to": "gaussian-normal",
+      "relation": "part-of"
+    },
+    {
+      "from": "rotation-length",
+      "to": "sinusoid",
+      "relation": "relates-to"
+    },
+    {
+      "from": "angle-addition",
+      "to": "sinusoid",
+      "relation": "relates-to"
+    }
   ]
 }

@@ -1,0 +1,19 @@
+{
+  "concepts": [
+    {
+      "id": "dot-product-math",
+      "name": "The dot product",
+      "room": "loom-of-similarity",
+      "exhibit": "the-dot-product",
+      "summary": "u.v = sum of u_i*v_i = |u||v|cos(theta): one scalar of alignment between two vectors \u2014 large when they point the same way, zero when perpendicular, negative when opposed. Pure linear algebra; grows with dimension d. (Upstairs it is attention's query.key score, scaled by 1/sqrt(d).)"
+    },
+    {
+      "id": "softmax-math",
+      "name": "Softmax",
+      "room": "loom-of-similarity",
+      "exhibit": "softmax",
+      "summary": "weight_i = e^(s_i)/sum_j e^(s_j): exponentiate (positive, amplify gaps) then normalize (sum to 1). Turns any list of scores into positive weights that sum to one, with a temperature to sharpen or soften. (Upstairs it is attention's second half, blending values.)"
+    }
+  ],
+  "edges": []
+}

@@ -1,0 +1,86 @@
+{
+  "concepts": [
+    {
+      "id": "kv-cache",
+      "name": "KV cache",
+      "room": "library-of-keys",
+      "exhibit": "endless-stacks",
+      "summary": "At inference a decoder generates one token at a time; recomputing all past keys and values each step is wasteful. The KV cache stores every past token's K and V, so each new step computes only the new query, scores it against all cached keys, and blends the cached values. Grows by one entry per step per layer (per group in GQA)."
+    },
+    {
+      "id": "query-not-cached",
+      "name": "Why Q is not cached",
+      "room": "library-of-keys",
+      "exhibit": "why-asker-not-kept",
+      "summary": "Only K and V are cached, never Q. The query is the asker: it asks once and moves on, so caching it would only ever reuse its last row. Keys and values are the label and content that every future query must still consult. Unlike an RNN, each new query has direct access to all past K,V \u2014 nothing is compressed."
+    },
+    {
+      "id": "transformer-block",
+      "name": "The Transformer block",
+      "room": "library-of-keys",
+      "exhibit": "two-rhythms",
+      "summary": "The repeating unit: LayerNorm -> Multi-Head Attention -> +residual -> LayerNorm -> MLP -> +residual. Attention is inter-token mixing ('who to listen to', like spatial conv); the MLP is per-token processing ('what to do with it', like 1x1 conv). Residuals are the gradient highway; input shape equals output shape, so blocks stack (L=32 for 7B, L=96 for GPT-4 class)."
+    },
+    {
+      "id": "flash-attention",
+      "name": "Flash attention",
+      "room": "library-of-keys",
+      "exhibit": "flash-antechamber",
+      "summary": "An exact (not approximate) attention that never materialises the (n,n) score matrix in slow HBM. It tiles Q and K into fast on-chip SRAM and keeps a running softmax (running max m, running sum l, correcting by e^(m_old-m_new)), cutting memory from O(n^2) to O(n) while producing identical output."
+    },
+    {
+      "id": "token-embedding-lm-head",
+      "name": "Embedding & lm_head",
+      "room": "library-of-keys",
+      "exhibit": "the-bookends",
+      "summary": "The two learned layers bracketing a Transformer: the token embedding (vocab_size x d_model lookup, a sparse gather of the used rows) and the lm_head / W_vocab (d_model -> vocab logits, a full matmul). Often tied (W_vocab = embedding^T). Rare tokens, looked up seldom, receive fewer gradient updates."
+    }
+  ],
+  "edges": [
+    {
+      "from": "kv-cache",
+      "to": "causal-masking",
+      "relation": "builds-on"
+    },
+    {
+      "from": "query-not-cached",
+      "to": "kv-cache",
+      "relation": "part-of"
+    },
+    {
+      "from": "transformer-block",
+      "to": "multi-head-attention",
+      "relation": "builds-on"
+    },
+    {
+      "from": "transformer-block",
+      "to": "scaled-dot-product-attention",
+      "relation": "relates-to"
+    },
+    {
+      "from": "flash-attention",
+      "to": "scaled-dot-product-attention",
+      "relation": "relates-to"
+    },
+    {
+      "from": "flash-attention",
+      "to": "kv-cache",
+      "relation": "relates-to"
+    },
+    {
+      "from": "token-embedding-lm-head",
+      "to": "transformer-block",
+      "relation": "part-of"
+    },
+    {
+      "from": "transformer-block",
+      "to": "jepa-family",
+      "relation": "relates-to"
+    },
+    {
+      "from": "flash-attention",
+      "to": "attention-quadratic-cost",
+      "relation": "relates-to"
+    }
+  ]
+}

@@ -26,13 +26,6 @@
       "title": "How to Walk This Palace",
       "prop": "lectern",
       "text": "Move with W, A, S, D and look with the mouse. Approach any exhibit and press E to study it; diagrams and figures unfold large in the room around you. Follow the signposts at each doorway — press E on one to travel onward — and read the wisp's nudge when you pause. Press M for this floor's map, G for the constellation of ideas across all floors, and F to travel by Floo to any chamber you know by name. Staircases mark the lineage: up to what builds on this floor, down to its foundations."
-    },
-    {
-      "id": "ascending-staircase",
-      "type": "stair",
-      "title": "The Grand Staircase",
-      "to": "atrium",
-      "caption": "A sweeping stair that climbs to the Upper Floor — the realm of world models, which build their predictions atop the attention you learn here. Press E to ascend."
     }
   ]
 }

@@ -1,0 +1,52 @@
+{
+  "id": "the-noise-oracle",
+  "name": "The Noise Oracle",
+  "wing": "diffusion",
+  "size": "medium",
+  "order": 3,
+  "exhibits": [
+    {
+      "id": "the-oracle-orb",
+      "type": "artifact",
+      "title": "The Noise Oracle",
+      "prop": "crystal_ball",
+      "scale": 1.4,
+      "text": "A seeing-globe that stares into a fogged image and answers exactly one question: how much of this fog is noise, and which noise? The reverse process walks a corrupted sample home — x_t → x_{t-1} → … → x₀ — peeling one layer of grain at each step. You might expect the seer to conjure the clean picture directly, or to whisper the previous step. It does neither. The surprising heart of diffusion: the network is a NOISE PREDICTOR. Its input is (x_t, t) — the noisy sample and which timestep it belongs to. Its output is ε_predicted — the noise it believes was mixed in. Nothing else. Everything after is algebra around that single guess.\n\nWhy predict the noise instead of the image? Because from the forward shortcut x_t = √ᾱ_t·x₀ + √(1−ᾱ_t)·ε, if you knew ε you could immediately solve for the clean sample: x₀ = (x_t − √(1−ᾱ_t)·ε) / √ᾱ_t. At generation time you do NOT know ε — so you train a network to name it. Guess the noise, subtract a measured sliver, and the picture emerges one denoising step at a time, all the way back to x₀. The Oracle never invents; it only identifies what was hidden."
+    },
+    {
+      "id": "the-threefold-solving",
+      "type": "plaque",
+      "prop": "pedestal",
+      "title": "The Threefold Solving",
+      "text": "One forward equation, three faces — the rearrangement symmetry a careful learner always spots. Start with the corruption:\n\n  x_t = √ᾱ_t·x₀ + √(1−ᾱ_t)·ε\n\nSolve it for the noise:\n\n  ε = (x_t − √ᾱ_t·x₀) / √(1−ᾱ_t)\n\nSolve it for the clean sample:\n\n  x₀ = (x_t − √(1−ᾱ_t)·ε) / √ᾱ_t\n\nHere is the consequence: given x_t and t, knowing ε gives you x₀ and knowing x₀ gives you ε. Predicting the noise and predicting the clean image are MATHEMATICALLY EQUIVALENT — the same problem wearing two masks. This is precisely why different diffusion models pick different prediction targets: ε-prediction, x₀-prediction, and v-prediction are not different theories but different NUMERICAL choices about which face to have the network output, trading off stability and conditioning. The truth underneath is one equation, rearranged."
+    },
+    {
+      "id": "the-five-line-rite",
+      "type": "plaque",
+      "prop": "lectern",
+      "title": "The Five-Line Rite",
+      "text": "Training the Oracle is a rite of only five lines, repeated millions of times:\n\n  1. Pick a clean sample x₀ from the dataset.\n  2. Pick a random timestep t, uniform over 1..1000.\n  3. Draw fresh noise ε ~ N(0,1) — a single dip into The Well of Chance.\n  4. Build the corrupted sample: x_t = √ᾱ_t·x₀ + √(1−ᾱ_t)·ε.\n  5. Weigh the guess: Loss = ‖ε − net(x_t, t)‖² — the squared error carried down to the basement chamber, The Scales of Error.\n\nThe deepest trick lives in step 3 and step 5: the very ε you drew to CORRUPT the image IS the label you train against. The corruption process hands you the answer key for free — no human ever labels a thing. One draw of noise plays two roles at once, corruptor and target. Backpropagate, nudge the weights, repeat.\n\nWhy a RANDOM t every time? Because the Oracle must denoise at every noise level — from t=1, barely fogged, to t=999, near-pure static. Sampling t uniformly trains across the whole range cheaply, and thanks to the forward shortcut no step-by-step chain is ever simulated to reach x_t."
+    },
+    {
+      "id": "one-turn-of-the-globe",
+      "type": "plaque",
+      "prop": "pedestal",
+      "title": "One Turn of the Globe",
+      "text": "Watch a single training example pass through the rite. Take a clean value x₀ = 5.0, and let chance choose t = 3. The Well of Chance yields the TRUE noise ε = 0.4. The schedule fixes ᾱ₃ = 0.729, so √ᾱ₃ ≈ 0.854 and √(1−ᾱ₃) ≈ 0.520. Build the corrupted sample:\n\n  x₃ = 0.854·5.0 + 0.520·0.4 ≈ 4.478.\n\nNow the Oracle sees only the pair (4.478, 3) — it is never shown the answer — and reports ε_pred = 0.35. Lay both on The Scales of Error:\n\n  Loss = (0.4 − 0.35)² = 0.0025.\n\nA tiny weight, a good guess. The gradient of that squared miss nudges every weight a hair toward 0.4, and the globe turns again with a new x₀, a new t, a new draw of ε. Do this until the Oracle can name the noise at any timestep, and generation becomes possible: start from static and let it subtract, step by step, back to x₀."
+    },
+    {
+      "id": "reverse-walk-diagram",
+      "type": "diagram",
+      "title": "One Denoising Step of the Reverse Walk",
+      "spec": "graph LR\n  XT[x_t + t] --> NET[Oracle net]\n  NET --> EP[ε_predicted]\n  EP --> SOLVE[solve x₀ = x_t−√1−ᾱ·ε / √ᾱ]\n  XT --> SOLVE\n  SOLVE --> STEP[take one step]\n  STEP --> XP[x_t−1]\n  XP -.repeat.-> XT",
+      "caption": "The network only ever outputs ε_predicted from (x_t, t); the algebra of the threefold solving turns that guess into x_{t-1}, and the loop walks x_t → x_{t-1} → … → x₀."
+    },
+    {
+      "id": "oracle-training-figure",
+      "type": "image",
+      "title": "One Turn of the Globe — A Single Training Step, Start to Finish",
+      "image": "world/assets/oracle-training-step.png",
+      "caption": "The five-line rite made visible on a rune. A clean sample x₀ is mixed with a freshly drawn noise field ε at a random timestep (t=400, ᾱ=0.45) to build the fogged x_t. The Oracle sees only that pair (x_t, t) — never the answer — and reports its guess ε̂. Here is the trick: the very ε used to corrupt the rune IS the training label. Lay ε against ε̂ on the Scales of Error and the loss is just the mean squared miss, ‖ε − ε̂‖² = 0.034 (blue map, brighter squares = larger error). No human labels a thing — the corruption hands over its own answer key, and backprop nudges every weight a hair toward the true noise."
+    }
+  ]
+}
