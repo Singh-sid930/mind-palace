@@ -41,6 +41,7 @@ export class LevelManager {
     this.colliders = [];
     this.interactables = new Map();
     this.updates = [];
+    this.tours = new Map(); // roomId -> ordered exhibit waypoints (footsteps guide)
 
     const env = buildEnvironment(scene);
     this.dome = env.dome;
@@ -67,6 +68,7 @@ export class LevelManager {
       const ex = buildExhibits(this.scene, this.layout, this.roomsById, levelId);
       const way = buildWayfinding(this.scene, this.layout, this.roomsById, this.graph, levelId);
       for (const [obj, r] of way.interactables) ex.interactables.set(obj, r);
+      for (const [rid, arr] of ex.tours) this.tours.set(rid, arr);
       rec = {
         groups: [world.group, ex.group, way.group],
         colliders: world.colliders,

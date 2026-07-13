@@ -1,0 +1,59 @@
+{
+  "id": "the-sphere-of-turns",
+  "name": "The Sphere of Turns",
+  "wing": "lie",
+  "size": "grand",
+  "order": 5,
+  "exhibits": [
+    {
+      "id": "the-sphere-of-turns",
+      "type": "artifact",
+      "title": "The Sphere of Turns",
+      "prop": "orrery",
+      "scale": 1.5,
+      "text": "The great instrument of the wing, and its climax: a nest of turning brass frames, each ring free to swing within the last, so that together they can carry a fixed pointer to face ANY direction whatsoever. This is the machine of all orientations — every turn a thing can make, made walkable.\n\nWatch the innermost ring alone. Locked to swing in a single plane, it has but one freedom: an ANGLE. Sweep that angle round and it returns to where it began — a turn of the plane, and the family of all such turns is a CIRCLE. That is SO(2), and this wing has taught you to read it as a 2×2 grid of sines and cosines.\n\nNow release the outer frames. With three rings nested and free, the pointer can be swung to face anywhere on the celestial globe, and TWIST once it arrives — three genuine freedoms, no more, no fewer. This is SO(3), the turns of space: a smooth curved surface written with a 3×3 grid of nine numbers, yet only three of them ever truly free.\n\nTwo groups of turns, then — the circle and the surface — and one machine that makes both. Study the pedestals: each turn is born by HATTING a few bare numbers into a skew matrix and EXPONENTIATING it onto these very rings. The brass remembers what the algebra proposes."
+    },
+    {
+      "id": "the-circle-so2",
+      "type": "plaque",
+      "prop": "pedestal",
+      "title": "SO(2): The Circle of Turns",
+      "text": "SO(2) — the turns of the PLANE. A single planar turn is a 2×2 grid built from one angle θ:\n\n  R(θ) = [[cos θ, −sin θ], [sin θ, cos θ]]\n\nSweep θ from 0 round to 2π and R(θ) returns to where it began — the angle WRAPS. So the whole family of planar turns is a CIRCLE: one degree of freedom, curved because it closes on itself. That circle is the group SO(2).\n\nIts LIE ALGEBRA — the flat patch of turning-directions at the identity — is so(2), the set of 2×2 SKEW-symmetric matrices:\n\n  [[0, −a], [a, 0]]\n\none free number a, matching the circle's one freedom. The bridge between algebra and group is the EXPONENTIAL MAP: hat the angle into such a skew matrix and exponentiate, and you land exactly on the turn —\n\n  exp([[0, −θ], [θ, 0]]) = R(θ).\n\nCompose two turns and their grids multiply — but the effect is simply to ADD the angles: R(α)·R(β) = R(α + β). This is the angle-addition identity of the Wheel of Frequencies, now read as the group law on the circle.\n\nWorked: take θ = π/6 (30°). Then R(π/6) = [[0.866, −0.5], [0.5, 0.866]]. Turn twice — π/6 then π/6 — and the angles add to π/3: R(π/3) = [[0.5, −0.866], [0.866, 0.5]], a clean 60° turn. Adding angles is all that composing planar turns ever does."
+    },
+    {
+      "id": "the-manifold-so3",
+      "type": "plaque",
+      "prop": "lectern",
+      "title": "SO(3): The Surface of 3D Turns",
+      "text": "SO(3) — the turns of SPACE. A spatial turn is a 3×3 grid, but not just any grid: it must be ORTHOGONAL (columns unit-length and mutually square) and have DETERMINANT +1 (a true turn, no reflection). All such grids form SO(3): a smooth, closed, THREE-dimensional curved surface — three degrees of freedom, though written with nine constrained numbers.\n\nIts LIE ALGEBRA is so(3), the 3×3 SKEW-symmetric matrices (Aᵀ = −A), which carry exactly three free numbers — the flat patch of turning-directions at the identity.\n\nA spatial turn is named by an AXIS (a unit direction to spin about) and an ANGLE (how far). Fuse them into one AXIS-ANGLE vector ω in ℝ³: its direction is the axis, its length |ω| = θ the angle. Three numbers, matching the surface's three freedoms.\n\nThe bridge is again the EXPONENTIAL MAP: HAT the vector ω into a 3×3 skew matrix [ω]× and exponentiate to land on the turn, R = exp([ω]×). This has a CLOSED FORM — the classical RODRIGUES formula, the exp of 3D turns written with no infinite sum:\n\n  R = I + sin θ · K + (1 − cos θ) · K²,\n\nwhere θ = |ω| and K = [ω]×/θ is the hatted unit axis.\n\nBe honest about the picture: SO(3) is genuinely three-dimensional and CANNOT be drawn. A sphere is only a proxy for it — the true shape is subtler, and is not a plain 2-sphere."
+    },
+    {
+      "id": "hat-then-exp",
+      "type": "plaque",
+      "prop": "pedestal",
+      "title": "Hat, Then Exp — the Recipe of the Wing",
+      "text": "One recipe unites the whole wing, and it reads the same in every dimension.\n\nFORWARD — from freedoms to a turn:\n  1. Start with an axis-angle vector v in ℝⁿ (n = 1 for the plane, n = 3 for space): the bare numbers of genuine freedom.\n  2. HAT it — v ↦ [v]× — arranging those numbers into a SKEW-symmetric matrix, an element of the Lie algebra. This is the flat, additive world of directions.\n  3. EXP it — exp([v]×) — wrapping that flat direction onto the curved surface. Out comes an honest rotation matrix, a point on the group.\n\nBACKWARD — from a turn to its freedoms:\n  1. LOG the rotation — the inverse of exp — recovering its skew matrix in the algebra.\n  2. VEE it — [·]× ↦ v — the inverse of hat, reading that skew matrix back down to its bare vector.\n\n  vec →(hat)→ skew →(exp)→ TURN,   and   TURN →(log)→ skew →(vee)→ vec.\n\nOne clean loop, out and back. The hat/vee pair shuttles between plain numbers and skew matrices; the exp/log pair shuttles between the flat algebra and the curved group. Master this loop and you may LEAVE the curved surface for one of its flat patches, do ordinary arithmetic there, and RETURN — which is the whole art of walking on the manifold of turns."
+    },
+    {
+      "id": "so-diagram",
+      "type": "diagram",
+      "title": "Hat, Exp, and the Two Groups of Turns",
+      "spec": "graph LR\n  V[axis-angle vector v] -->|hat| K[skew matrix: so 2 or so 3]\n  K -->|exp| R[rotation: SO 2 or SO 3]\n  R -->|log| K\n  K -->|vee| V\n  A2[\"so(2): 2x2 skew 0,-a / a,0\"] -->|exp| C[\"SO(2): the circle R(theta)\"]\n  A3[\"so(3): 3x3 skew\"] -->|exp| S[\"SO(3): 3D curved surface\"]\n  S --> RF[Rodrigues: closed form of exp]",
+      "caption": "The wing in one picture. A vector of freedoms is HATTED into a skew matrix (the Lie algebra) and EXPONENTIATED into a rotation (the group); LOG and VEE walk back. Below: so(2), the 2×2 skew matrices, exponentiate to SO(2), the circle of planar turns; so(3), the 3×3 skew matrices, exponentiate to SO(3), the three-dimensional surface of spatial turns — whose exp has the closed-form Rodrigues formula."
+    },
+    {
+      "id": "turns-worked",
+      "type": "image",
+      "title": "Two Groups of Turns, Worked",
+      "image": "world/assets/lie-so2-so3.png",
+      "caption": "Two groups of turns, worked, with one recipe under both. LEFT — SO(2): a vector swept round the unit circle by θ = 0, π/6, π/3, π/2, 2π/3. Each planar turn is the 2×2 grid R(θ) = [[cos θ, −sin θ], [sin θ, cos θ]]; at θ = π/2 it reads the clean [[0, −1], [1, 0]]. And it is no accident — HAT the angle into the skew matrix [[0, −θ], [θ, 0]] and EXPONENTIATE, and you land exactly on R(θ). CENTRE — why exp belongs here: the dashed line is the flat algebra so(2), tangent to the circle at the identity. Walk arc-length θ up that straight, additive line and exp lays it round the curved group, wrapping each θ onto its turn. The line is where you do arithmetic; the circle is where the turns actually live. RIGHT — SO(3): a spatial turn named by an AXIS (the unit ω/|ω|) and an ANGLE θ, carrying v to Rv along the dotted arc. Hat the axis-angle vector ω ∈ R³ into the 3×3 skew [ω]×, exponentiate, and RODRIGUES gives the closed form with no infinite sum: R = I + sin θ·K + (1 − cos θ)·K², K the hatted unit axis. Be honest about the picture: SO(3) is a genuine three-dimensional surface, so(3) the 3×3 skew matrices — and the drawn sphere is only a PROXY. The true shape of SO(3) cannot be drawn. One recipe throughout: hat the bare numbers, exponentiate, get the turn."
+    },
+    {
+      "id": "where-this-leads",
+      "type": "plaque",
+      "prop": "lectern",
+      "title": "Where This Leads ↑",
+      "text": "You need none of what follows to master the sphere of turns — own the pure geometry first, and let this be only a whisper through the floorboards of a hall not yet raised in this palace.\n\nThese turns — SO(2) on its circle, SO(3) on its curved surface — are not idle shapes. Composed one after another, and OPTIMISED as they slide across their curved ground, they are the mathematics of ORIENTATION and MOTION: the language by which anything that must be tracked through space reports which way it faces and how it is turning. To keep faithful account of a moving bearing — never letting the nine numbers drift off the three-dimensional surface of what is truly a valid turn — is a daily craft in a hall not yet raised above this cellar.\n\nKnow too that this geometry is old and pure. The study of continuous symmetry — of smooth families of turns and the algebras beneath them — was raised some hundred and fifty years ago, to understand how a shape may be carried through all its symmetric poses without a single break. The turns you have decomposed here are its first and friendliest citizens.\n\nBut that is only a costume for your mathematics. Here there are no machines, no bearings, no tracking — only circles, curved surfaces, skew matrices, and the exp that carries one onto the other. Master the sphere of turns; the stair, when at last it is built, will already make sense the moment you climb it."
+    }
+  ]
+}

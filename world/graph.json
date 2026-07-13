@@ -288,6 +288,34 @@
       "summary": "Reduce a loss by stepping weights opposite the gradient (steepest ascent): new = old - lr*grad. Backpropagation computes the gradient efficiently. The patient engine training every network in the palace."
     },
     {
+      "id": "merge-vs-adapter",
+      "name": "Merge vs. Separate Deployment",
+      "room": "the-adapter-vault",
+      "exhibit": "merge-or-plug-in",
+      "summary": "A trained LoRA pair A, B has two deployments. MERGE folds it in: W_merged = W + B.A, a single matrix with zero extra inference cost but W permanently changed. KEEP SEPARATE ships W untouched plus tiny A, B and computes the branch live, y = W.x + (B.A.x).alpha (the ComfyUI plug-in case). The pair always exists after training; merging is optional. This resolves the confusion between 'fine-tuning updates W' (merged) and 'download a LoRA and plug it in' (separate)."
+    },
+    {
+      "id": "adapter-stacking",
+      "name": "Stacking & Scaling Adapters",
+      "room": "the-adapter-vault",
+      "exhibit": "stack-and-scale",
+      "summary": "Because each LoRA branch is just an addition onto W.x, kept-separate adapters can be swapped, stacked, and scaled. Stack: y = W.x + B1A1x + B2A2x + ... (style + character + pose). Scale: each branch has its own alpha strength dial (the ComfyUI slider; 0 = off, 1 = trained strength, >1 = stronger). The base checkpoint W is multi-GB downloaded once; LoRA files are 10-200 MB downloaded many. Merging forfeits all three freedoms for one fast matrix."
+    },
+    {
+      "id": "peft-workflow",
+      "name": "The PEFT Workflow",
+      "room": "the-adapter-vault",
+      "exhibit": "the-peft-four-moves",
+      "summary": "Forging a LoRA in code is four moves: (1) load the frozen base; (2) define a LoraConfig with r, lora_alpha, and target_modules (typically attention q_proj/k_proj/v_proj/o_proj); (3) get_peft_model() injects the parallel A, B branches and freezes the rest; (4) train normally so only A, B get gradients. save_pretrained writes just the few-MB adapter; PeftModel.from_pretrained plugs it back; merge_and_unload folds it in. diffusers follows the same moves for U-Net attention (to_q/to_k/to_v/to_out.0)."
+    },
+    {
+      "id": "qlora",
+      "name": "QLoRA",
+      "room": "the-adapter-vault",
+      "exhibit": "qlora-the-memory-saver",
+      "summary": "QLoRA loads the frozen base in 4-bit quantization and trains the LoRA on top in full precision. The base is only read in the forward pass (never receives a gradient), so a coarse 4-bit copy suffices for W.x, while the tiny trainable A, B stay full precision. This cuts memory ~4x (the base is nearly all of it), letting large models be fine-tuned on a single consumer GPU. Enabled via BitsAndBytesConfig(load_in_4bit=True, ...) then the usual get_peft_model()."
+    },
+    {
       "id": "adaln-zero",
       "name": "adaLN-Zero conditioning",
       "room": "the-adaptive-sanctum",
@@ -300,10 +328,122 @@
       "summary": "Start from pure noise, walk t=T->0 in small steps: predict eps, estimate x_0, re-noise only to level t-1, plus a small random kick. Small steps because the x_0 estimate is rough at high noise; the kick keeps samples sharp and diverse."
     },
     {
+      "id": "video-vae-3d",
+      "name": "The 3D Video VAE",
+      "room": "the-causal-cauldron",
+      "exhibit": "compress-space-and-time",
+      "summary": "A video VAE that compresses SPACE and TIME using 3D convolutions sliding over (T, H, W) instead of 2D convolutions over (H, W). Because each 3D kernel spans several frames, the encoder can downsample the time axis, exploiting the redundancy between neighbouring FRAMES just as spatial compression exploits neighbouring PIXELS. Wan: ~4x time, ~8x/side space; 81 input frames become ~21 latent frames, cutting temporal attention's T^2 cost from 81 tokens to 21."
+    },
+    {
+      "id": "causal-3d-vae",
+      "name": "The Causal 3D VAE",
+      "room": "the-causal-cauldron",
+      "exhibit": "what-causal-means",
+      "summary": "A 3D VAE whose temporal convolutions look ONLY at the current and past frames, never the future: the causal kernel spans [t-2, t-1, t] rather than the bilateral [t-2, t-1, t, t+1, t+2]. This is the decoder's causal mask from attention applied to temporal convolution; the first frame pads and conditions on itself. It fixes the bilateral 3D conv's fatal flaws \u2014 needing future frames (so the whole video must sit in memory, no streaming) and breaking on variable length \u2014 and thereby unlocks sliding-window decoding, autoregressive/streaming generation, variable length, and clean chunk handovers."
+    },
+    {
+      "id": "sliding-window-decode",
+      "name": "Sliding-Window Decoding",
+      "room": "the-causal-cauldron",
+      "exhibit": "why-causality-unlocks",
+      "summary": "Because a causal VAE decodes frame t using only its past, decoding can proceed through a small sliding window rather than holding the whole reel at once, keeping VRAM bounded even on long (e.g. 60-second) clips. The same future-free structure enables streaming autoregressive generation and clean chunk handovers, though chunked generation still accumulates drift across segments that the VAE alone cannot fix."
+    },
+    {
+      "id": "smooth-manifold",
+      "name": "The Smooth Manifold",
+      "room": "the-curved-ground",
+      "exhibit": "the-curved-ground",
+      "summary": "A manifold is a space that is globally curved but locally flat: every point has a small neighbourhood indistinguishable from ordinary flat space, where usual arithmetic and geometry apply, while the whole surface bends and closes seamlessly like a globe. Many sets of valid arrangements form such curved surfaces. (Upstairs: these become the spaces of orientation and motion.)"
+    },
+    {
+      "id": "rotations-as-manifold",
+      "name": "Turns Form a Curved Space",
+      "room": "the-curved-ground",
+      "exhibit": "turns-are-a-surface",
+      "summary": "The set of all turns (rotations about a fixed centre) is itself a smooth curved surface. Planar turns need one number, the angle, which wraps around: they form a circle, one degree of freedom. Turns in space need three numbers: they form a three-dimensional curved surface. A 3D turn is written as a 3\u00d73 grid of nine numbers, but rigid constraints leave only three free, so one cannot perturb a single entry and remain a valid turn \u2014 nine numbers, three freedoms. (Upstairs: this is the geometry of orientation.)"
+    },
+    {
+      "id": "tangent-space",
+      "name": "The Tangent Space",
+      "room": "the-flat-window",
+      "exhibit": "the-touching-plane",
+      "summary": "At any point of a curved surface one can lay a flat plane that touches it there \u2014 the tangent space. Near the touch point, short straight steps on this flat plane closely approximate moving along the curved surface, and the smaller the step the better the agreement. It is genuinely flat: an ordinary vector space where arrows add, scale, and measure, so ordinary arithmetic and calculus apply. Every point carries its own tangent plane. (Upstairs: where gradients and small uncertainties are computed.)"
+    },
+    {
+      "id": "lie-algebra",
+      "name": "The Lie Algebra",
+      "room": "the-flat-window",
+      "exhibit": "the-algebra-at-the-origin",
+      "summary": "The Lie algebra is the tangent space at the identity/origin point (the do-nothing turn) \u2014 the one privileged flat window. It is a true flat vector space where ordinary calculus lives, and it is isomorphic to \u211d\u207f, where n is the surface's number of degrees of freedom: \u211d\u00b9 (a line) for planar turns, \u211d\u00b3 for turns in space. To reckon on the curved surface, one steps onto this flat window and does plain linear arithmetic. (Upstairs: the flat space where change and error for curved-living things are computed.)"
+    },
+    {
+      "id": "video-diffusion",
+      "name": "Video Diffusion",
+      "room": "the-flickering-frames",
+      "exhibit": "the-flickering-frames",
+      "summary": "Scaling image diffusion to moving pictures. A video is a stack of T frames, a tensor (T, H, W, C) compressed to a latent (T, h, w, c); the one governing law is that all T frames must be denoised JOINTLY so they stay consistent over time. The entire diffusion framework is inherited unchanged \u2014 forward noising, reverse denoising, \u03b5-prediction MSE, latent diffusion (VAE), classifier-free guidance, and a U-Net or DiT denoiser. What changes is only the DATA SHAPE, which gains a new time axis T, plus one new attention axis (temporal). That extra T dimension is the whole story."
+    },
+    {
+      "id": "temporal-consistency",
+      "name": "Temporal Consistency",
+      "room": "the-flickering-frames",
+      "exhibit": "the-flicker-problem",
+      "summary": "The property that a video's frames agree with one another over time \u2014 an object that is red and in place stays red and in place from frame to frame. Denoising each frame INDEPENDENTLY destroys it: frame 5 has no idea what frame 4 looked like, so although each frame is individually plausible, the sequence flickers (colours drift, objects jitter and morph, backgrounds shift). Restoring temporal consistency by denoising all frames jointly is the reason video diffusion exists."
+    },
+    {
+      "id": "lora-core",
+      "name": "LoRA: Low-Rank Adaptation",
+      "room": "the-frozen-tapestry",
+      "exhibit": "the-frozen-tapestry",
+      "summary": "The fine-tuning update is approximated as a low-rank product: DELTA-W ~= B . A, with A of shape r x d and B of shape d x r and inner rank r << d. The base weight W is frozen and only A, B are trained; at use the correction slots straight in, W_new = W + B . A. For d=1000, r=8 this is 16,000 trained numbers against 1,000,000 for a full DELTA-W (62x fewer)."
+    },
+    {
+      "id": "low-rank-update",
+      "name": "The Low-Rank Update",
+      "room": "the-frozen-tapestry",
+      "exhibit": "the-low-rank-bet",
+      "summary": "LoRA's wager: the meaningful change during fine-tuning lives in a small subspace, so DELTA-W has low effective rank and can be written as B . A with a small inner rank r. It is a bet, confirmed by training, not a proof; too small an r cannot fit the task."
+    },
+    {
+      "id": "frozen-base-weights",
+      "name": "Frozen Base Weights",
+      "room": "the-frozen-tapestry",
+      "exhibit": "frozen-and-cheap",
+      "summary": "The pretrained weight W is frozen: no gradient flows into it, it is trained once and shared unchanged across every adaptation. Only the tiny A, B pair is trained and stored, so each adapted model is a few-megabyte adapter resting on one shared base, not a full copy."
+    },
+    {
       "id": "classifier-free-guidance",
       "name": "Classifier-free guidance (CFG)",
       "room": "the-guidance-forge",
       "summary": "Make prompts stick: train with ~10% prompt dropout so one net learns conditioned + unconditioned denoising, then at sampling extrapolate eps_guided = eps_uncond + w*(eps_cond - eps_uncond), w~7.5. The subtraction, done in noise space, isolates the prompt's influence."
+    },
+    {
+      "id": "svd-connection",
+      "name": "The SVD Connection",
+      "room": "the-hall-of-directions",
+      "exhibit": "the-direction-glass",
+      "summary": "Any update matrix factors as delta-W = U*Sigma*V^T (SVD); singular values sigma measure per-direction importance and, for fine-tuning updates, DECAY FAST. Keeping the top r (Eckart-Young: the optimal rank-r approximation) and grouping B = U_r*Sigma_r, A = V_r^T gives exactly LoRA's B*A shape. The key refinement: LoRA never forms delta-W nor runs an SVD; it directly LEARNS a rank-r factorization B*A by gradient descent to minimise the task loss (not to reconstruct a given delta-W). SVD is the THEORY explaining why low rank suffices, not a pipeline step."
+    },
+    {
+      "id": "effective-rank",
+      "name": "Effective Rank",
+      "room": "the-hall-of-directions",
+      "exhibit": "the-elbow",
+      "summary": "The effective rank of an update is the number of dominant singular directions before the elbow where the singular-value spectrum collapses toward zero. It sets how large r must be: fast-decaying sigmas (steep cliff) mean a tiny subspace and a tiny r suffices; slow decay (a broad, flat spectrum) means the change is spread across many directions and r must grow. Not a pre-computed formula but the shape of the spectrum the useful update would have."
+    },
+    {
+      "id": "hat-operator",
+      "name": "The Hat Operator",
+      "room": "the-hat-and-the-vee",
+      "exhibit": "the-hat",
+      "summary": "The hat operator (\u2227, written v\u0302) lifts a coordinate vector in \u211d\u207f up to its matrix form, carrying the same information in a richer costume. For elements describing turning, the resulting matrix is skew-symmetric (A\u1d40=\u2212A): zeros on the diagonal, mirror entries that are exact negatives. Worked 2D example: a single number a is lifted to the 2\u00d72 skew matrix [[0,\u2212a],[a,0]]. The matrix form is precisely what the exponential map acts upon to reach the curved surface. (Upstairs: this is how a stored parameter vector becomes the generator a rotation is built from.)"
+    },
+    {
+      "id": "vee-operator",
+      "name": "The Vee Operator",
+      "room": "the-hat-and-the-vee",
+      "exhibit": "the-vee",
+      "summary": "The vee operator (\u2228, written A\u02c7) is the inverse of the hat: it reads a skew-symmetric matrix back down to the plain coordinate vector that defines it, discarding the forced zeros and negatives to report the free numbers \u2014 for [[0,\u2212a],[a,0]] it returns a. Applying hat then vee returns the original vector. It lets an algebra element be stored, added, and averaged as an ordinary vector, since constrained matrices resist arithmetic but their coordinate lists do not. Coordinates \u2194 matrix via hat/vee, matrix \u2194 surface via exp/log \u2014 three spaces, one round trip. (Upstairs: keeps parameters in a flat vector for optimisation and storage.)"
     },
     {
       "id": "diffusion-core",
@@ -330,6 +470,20 @@
       "summary": "A separately-trained VAE encodes images to a small latent and decodes back. In latent space, attention still runs over SPATIAL positions only (channels are NOT squared), and only at low-resolution levels (the attention_resolutions config)."
     },
     {
+      "id": "temporal-attention",
+      "name": "Temporal Attention",
+      "room": "the-loom-across-time",
+      "exhibit": "temporal-attention",
+      "summary": "The one new component of video diffusion. Fix a spatial position (i, j) and gather its vector from every one of the T frames; run self-attention over just those T tokens, for every position. Thus each spatial position attends to ITSELF across time, so position (i, j) in a later frame knows what it looked like in earlier frames. This is the entire cure for flicker: it is the only self-attention image diffusion lacked, and temporal consistency is exactly what it buys."
+    },
+    {
+      "id": "factorized-attention",
+      "name": "Factorized Spatial+Temporal Attention",
+      "room": "the-loom-across-time",
+      "exhibit": "factorized-not-3d",
+      "summary": "Replacing one full joint 3D attention over all T\u00b7h\u00b7w positions (cost O((T\u00b7h\u00b7w)^2), explosive) with two cheaper passes: SPATIAL attention fixes a frame and attends over its h\u00b7w tokens at cost O((h\u00b7w)^2), and TEMPORAL attention fixes a position and attends over its T frames at cost O(T^2). The factorized cost is (h\u00b7w)^2 + T^2 rather than (T\u00b7h\u00b7w)^2 \u2014 dramatically cheaper, in the same anti-quadratic spirit as the rest of the attention-cost work."
+    },
+    {
       "id": "noise-predictor",
       "name": "The network is a noise predictor",
       "room": "the-noise-oracle",
@@ -348,10 +502,52 @@
       "summary": "Sample x_0; pick random t; draw eps~N(0,1); build x_t; minimize ||eps - net(x_t,t)||^2. The eps drawn to corrupt IS the label \u2014 the corruption process hands you the answer key for free."
     },
     {
+      "id": "parallel-branch",
+      "name": "The Parallel Branch",
+      "room": "the-parallel-whisper",
+      "exhibit": "the-whisper",
+      "summary": "LoRA runs in parallel with the frozen weight, not as a layer stacked after it. Both the base path and the adapter path receive the same input x and their outputs are added: y = W . x + B . A . x. The branch adds a small learned correction to what W already does rather than transforming W's output."
+    },
+    {
+      "id": "rank-bottleneck",
+      "name": "The Rank Bottleneck",
+      "room": "the-parallel-whisper",
+      "exhibit": "the-bottleneck",
+      "summary": "Shape trace along the LoRA branch: x is (d,), A . x is (r,) \u2014 squeezed to the rank-r bottleneck \u2014 then B . (A . x) is (d,), expanded back. Passing through an r-wide waist makes the branch's d x d effect at most rank r, so the bottleneck structurally forces the update to be low-rank."
+    },
+    {
       "id": "patchify",
       "name": "Patchify",
       "room": "the-patchwork-loom",
       "summary": "Turn a latent grid into a token sequence for a transformer: a 32x32x4 latent with patch 2x2 gives 16x16=256 patches, each flattened (16 values) and projected to d_model \u2014 exactly ViT/SmolVLM tokenization. Unpatchify mirrors it at the end. Positional embeddings are added because a transformer sees tokens as an unordered set."
+    },
+    {
+      "id": "rank-hyperparameter",
+      "name": "Choosing the Rank r",
+      "room": "the-rank-dial",
+      "exhibit": "choosing-r",
+      "summary": "r is a hyperparameter with no closed-form rule, chosen by sweep + validation plateau. Trade-off: too small underfits (can't capture the update), too large costs params/compute, risks overfitting, and eventually beats nothing over full fine-tuning. Typical r = 4/8/16 (most LLM & diffusion tuning), 32/64 (harder or bigger domain shift), 128/256 (rare). Guided by how fast the update's singular values decay (effective rank), task similarity, data amount, and matrix coverage. Rule: pick the smallest r at which validation plateaus."
+    },
+    {
+      "id": "alpha-scaling",
+      "name": "The Alpha Scaling",
+      "room": "the-rank-dial",
+      "exhibit": "the-strength-rune",
+      "summary": "The adapter is applied as W_new = W + (alpha/r)*B*A. Alpha controls the update's MAGNITUDE decoupled from the rank r: dividing by r keeps overall strength stable as r changes, so alpha tunes loudness on its own axis. Conventions: alpha = r (scale 1) or alpha = 2r (double). This is the SAME alpha as ComfyUI's LoRA strength slider \u2014 it scales the B*A branch's contribution to the frozen model."
+    },
+    {
+      "id": "variable-length-generation",
+      "name": "Variable-Length Generation",
+      "room": "the-reel-of-lengths",
+      "exhibit": "t-is-a-sequence-length",
+      "summary": "The frame count T is a SEQUENCE LENGTH, not a value hard-coded into the weights \u2014 temporal attention runs over however many frame-tokens it is handed, exactly as a text transformer reads variable-length sentences. Hand the model a longer temporal axis and attention simply attends over more tokens, so one trained model generates video of many lengths. What makes this real is training on VARIED clip lengths below the maximum (sometimes mixed with static images at T=1); that varied-length training is the cause and variable-length inference the effect."
+    },
+    {
+      "id": "temporal-length-ceiling",
+      "name": "The Trained-Length Ceiling",
+      "room": "the-reel-of-lengths",
+      "exhibit": "the-trained-horizon",
+      "summary": "T_max is the longest clip a video model was trained on (Wan: ~5 s, ~81 frames at 16 FPS) \u2014 its effective CONTEXT LENGTH. Running past T_max is the same failure as running an LLM past its trained context window: temporal attention never learned patterns that long, the temporal positional encoding was never trained at those positions, and error accumulates frame over frame, so temporal consistency breaks into drift. The degradation is a GRADUAL slide, not a cliff, because generation is chunked/autoregressive and errors compound smoothly."
     },
     {
       "id": "dit",
@@ -370,6 +566,83 @@
       "name": "The jump-to-any-step shortcut",
       "room": "the-shortcut-shrine",
       "summary": "x_t = sqrt(alpha_bar_t)*x_0 + sqrt(1-alpha_bar_t)*eps, where alpha_bar_t is the running product of alpha=1-beta. Jump to any noise level in one draw (sum of Gaussians), which is why training needs no forward-chain loop."
+    },
+    {
+      "id": "matrix-as-map",
+      "name": "Matrix as a Transformation",
+      "room": "the-singular-prism",
+      "exhibit": "the-prism",
+      "summary": "A matrix is a linear transformation: it moves every vector consistently, bending space in one fixed way. A 2\u00d72 matrix carries the unit circle onto an ellipse; the semi-axis lengths of that ellipse are the matrix's singular values, and their directions are its principal axes."
+    },
+    {
+      "id": "singular-value-decomposition",
+      "name": "Singular Value Decomposition",
+      "room": "the-singular-prism",
+      "exhibit": "the-three-motions",
+      "summary": "Every matrix M factors as M = U\u00b7\u03a3\u00b7V\u1d40: a rotation V\u1d40 (orthonormal input directions), a diagonal stretch \u03a3 of singular values \u03c3\u2081\u2265\u03c3\u2082\u2265\u2026\u22650, then a rotation U (orthonormal output directions). Rotate, stretch, rotate. It always exists and the singular values are unique; all stretching lives in \u03a3. (Upstairs: the same factorization underlies low-rank adaptation of trained weight matrices.)"
+    },
+    {
+      "id": "singular-values",
+      "name": "Singular Values",
+      "room": "the-singular-prism",
+      "exhibit": "the-ranked-importances",
+      "summary": "The diagonal entries of \u03a3, sorted \u03c3\u2081\u2265\u03c3\u2082\u2265\u2026\u22650, measuring how far a matrix stretches space along each principal direction \u2014 the energy each direction carries. For many real matrices, and especially for differences of two nearby matrices, they decay fast: a few large, then a long tail near zero, with an elbow. (Upstairs: fast decay is why weight updates are effectively low-rank.)"
+    },
+    {
+      "id": "low-rank-approximation",
+      "name": "Low-Rank Approximation",
+      "room": "the-singular-prism",
+      "exhibit": "best-few",
+      "summary": "Keep the top r singular values (zero the rest): M \u2248 U_r\u03a3_rV_r\u1d40, with U_r (d\u00d7r), \u03a3_r (r\u00d7r), V_r\u1d40 (r\u00d7d). Eckart\u2013Young: this truncation is the provably closest rank-r matrix to M, minimizing \u2016M\u2212M_r\u2016. When \u03c3 decay fast a small r captures almost everything, compressing d\u00b2 numbers to 2dr. (Upstairs: this is the mathematics behind LoRA / low-rank adaptation.)"
+    },
+    {
+      "id": "convolution",
+      "name": "Convolution",
+      "room": "the-sliding-kernel",
+      "exhibit": "the-kernel",
+      "summary": "A small window of weights (a kernel) slid across a signal; at each stop it multiplies the values beneath it by the kernel weights and sums them to one output number, then steps over. Example: signal [1,2,3,4,5] with kernel [1,0,-1] gives 1\u00b71+0\u00b72\u22121\u00b73 = \u22122 at the first stop, marching down the line to [\u22122,\u22122,\u22122]. Each output is a dot product of the kernel with the local window it covers. (Upstairs: the same operation, at scale, is how image- and video-processing engines slide learned kernels.)"
+    },
+    {
+      "id": "receptive-field",
+      "name": "The Receptive Field",
+      "room": "the-sliding-kernel",
+      "exhibit": "the-local-window",
+      "summary": "Each convolution output depends only on the small local neighbourhood of the input beneath the kernel at that stop \u2014 its receptive field \u2014 not on the whole signal. Sliding the identical kernel across every position means one small set of weights is reused everywhere: weight sharing. A width-k kernel uses only k weights no matter how long the signal is."
+    },
+    {
+      "id": "conv-dimensions",
+      "name": "1-D, 2-D, 3-D Kernels",
+      "room": "the-sliding-kernel",
+      "exhibit": "one-two-three-d",
+      "summary": "The same convolution works on any number of axes: a 1-D kernel is a strip sliding along a line (summing over k values); a 2-D kernel is a square patch sliding over a grid of rows and columns (summing over a small area, e.g. 3\u00d73); a 3-D kernel is a box sliding over a volume along three axes at once (summing over a small box, e.g. 3\u00d73\u00d73). Same multiply-and-sum, more directions of travel."
+    },
+    {
+      "id": "so2-rotation",
+      "name": "SO(2): The Circle of Turns",
+      "room": "the-sphere-of-turns",
+      "exhibit": "the-circle-so2",
+      "summary": "SO(2) is the group of planar turns R(\u03b8)=[[cos \u03b8,\u2212sin \u03b8],[sin \u03b8,cos \u03b8]]; the whole family is a CIRCLE (one angle, wrapping). Its Lie algebra so(2) is the 2\u00d72 skew-symmetric matrices [[0,\u2212a],[a,0]], and exp([[0,\u2212\u03b8],[\u03b8,0]])=R(\u03b8). Composing two turns ADDS their angles, R(\u03b1)R(\u03b2)=R(\u03b1+\u03b2) \u2014 the angle-addition identity as the group law on the circle. (Upstairs: the geometry of orientation and motion.)"
+    },
+    {
+      "id": "so3-rotation",
+      "name": "SO(3): The Surface of 3D Turns",
+      "room": "the-sphere-of-turns",
+      "exhibit": "the-manifold-so3",
+      "summary": "SO(3) is the group of 3\u00d73 orthogonal matrices with determinant +1 \u2014 the turns of space, a smooth THREE-dimensional curved surface (nine written numbers, three free). Its Lie algebra so(3) is the 3\u00d73 skew-symmetric matrices. A turn is an AXIS-ANGLE vector \u03c9 in \u211d\u00b3; exp(hat(\u03c9)) is the rotation matrix, with closed form the RODRIGUES formula R=I+sin \u03b8\u00b7K+(1\u2212cos \u03b8)\u00b7K\u00b2. SO(3) cannot be drawn \u2014 a sphere is only a proxy, and its true shape is not a 2-sphere. (Upstairs: the geometry of orientation and motion.)"
+    },
+    {
+      "id": "autoregressive-chunking",
+      "name": "Autoregressive Chunking with Overlap",
+      "room": "the-stitchers-table",
+      "exhibit": "chunk-and-overlap",
+      "summary": "The dominant way to push Wan (pretrained ~5 s / 81 frames = T_max) past its ceiling in ComfyUI: generate a chunk within the trained span, take its last few frames, condition the next chunk on that tail, and repeat \u2014 each chunk conditions on the TAIL of the previous, exactly like a language model continuing its own text. An overlap node such as ImageBatchExtendWithOverlap stitches the seams so motion and lighting carry across. It is enabled by a causal 3D VAE (sliding-window decode), local temporal attention over recent frames, and RoPE's relative-position dot product. It still drifts because each chunk sees only a short tail with no global memory, so error accumulates across segments."
+    },
+    {
+      "id": "sliding-window-extension",
+      "name": "Sliding-Window Extension",
+      "room": "the-stitchers-table",
+      "exhibit": "other-extensions",
+      "summary": "The classic, weaker length-extension method: slide a window of overlapping clips and average where they overlap. Documented failure mode \u2014 fine over static backgrounds, but where the background itself moves, latent-space averaging in the overlap regions smears motion into BLUR and inconsistency, a likely reason motion-heavy long Wan videos degrade worst. Contrast with autoregressive chunking, which conditions each chunk on the previous tail instead of averaging overlaps. A related approach is fine-tuned continuation models trained to extend from a few initial frames."
     },
     {
       "id": "cross-attention",
@@ -405,6 +678,20 @@
       "room": "the-two-gazes",
       "exhibit": "where-you-look",
       "summary": "Most modern VLMs (SmolVLM, LLaVA, PaliGemma, Qwen-VL) skip explicit cross-attention: they project image patches into the LM's embedding space, concatenate them with text tokens, and let self-attention mix the modalities. Simpler and decoder-agnostic, but image tokens consume KV-cache and context budget."
+    },
+    {
+      "id": "exponential-map",
+      "name": "The Exponential Map",
+      "room": "the-two-maps",
+      "exhibit": "the-two-maps",
+      "summary": "Given a point p on a curved surface and a straight tangent vector v in the flat tangent plane at p, the exponential map exp_p(v) walks along the surface's straightest path \u2014 a geodesic \u2014 in v's direction, a distance equal to v's length, and returns the point where it lands. It carries a flat straight step onto the curved surface, preserving direction and length (as distance along the surface) while trading away straightness, and it always lands ON the surface. It generalises the ordinary exponential of numbers to curved spaces of motion. (Upstairs: this is how a straight optimisation step or a breath of added uncertainty is carried onto a curved configuration space without leaving it.)"
+    },
+    {
+      "id": "logarithm-map",
+      "name": "The Logarithm Map",
+      "room": "the-two-maps",
+      "exhibit": "the-logarithm",
+      "summary": "The inverse of the exponential map: given a point q on the surface near p, the logarithm map log_p(q) returns the single straight tangent vector v at p for which exp_p(v)=q \u2014 unwrapping a curved point back to the flat tangent window, its direction giving the way to q and its length the geodesic distance. Together, log (curved\u2192flat), ordinary straight-line arithmetic on the flat tangent plane, then exp (flat\u2192curved) let you compute and always return to a valid surface point; the bridge is faithful for small local moves. (Upstairs: log-compute-exp is how averaging, stepping, or filtering is done on curved spaces.)"
     },
     {
       "id": "unet",
@@ -846,6 +1133,41 @@
       "relation": "relates-to"
     },
     {
+      "from": "merge-vs-adapter",
+      "to": "lora-core",
+      "relation": "relates-to"
+    },
+    {
+      "from": "adapter-stacking",
+      "to": "merge-vs-adapter",
+      "relation": "relates-to"
+    },
+    {
+      "from": "adapter-stacking",
+      "to": "latent-diffusion",
+      "relation": "relates-to"
+    },
+    {
+      "from": "merge-vs-adapter",
+      "to": "latent-diffusion",
+      "relation": "relates-to"
+    },
+    {
+      "from": "peft-workflow",
+      "to": "lora-core",
+      "relation": "relates-to"
+    },
+    {
+      "from": "qlora",
+      "to": "lora-core",
+      "relation": "builds-on"
+    },
+    {
+      "from": "qlora",
+      "to": "peft-workflow",
+      "relation": "relates-to"
+    },
+    {
       "from": "adaln-zero",
       "to": "transformer-block",
       "relation": "builds-on"
@@ -881,6 +1203,106 @@
       "relation": "builds-on"
     },
     {
+      "from": "video-vae-3d",
+      "to": "convolution",
+      "relation": "builds-on"
+    },
+    {
+      "from": "video-vae-3d",
+      "to": "vae-compression",
+      "relation": "builds-on"
+    },
+    {
+      "from": "video-vae-3d",
+      "to": "latent-diffusion",
+      "relation": "relates-to"
+    },
+    {
+      "from": "causal-3d-vae",
+      "to": "video-vae-3d",
+      "relation": "builds-on"
+    },
+    {
+      "from": "causal-3d-vae",
+      "to": "convolution",
+      "relation": "builds-on"
+    },
+    {
+      "from": "causal-3d-vae",
+      "to": "causal-masking",
+      "relation": "builds-on"
+    },
+    {
+      "from": "sliding-window-decode",
+      "to": "causal-3d-vae",
+      "relation": "part-of"
+    },
+    {
+      "from": "causal-3d-vae",
+      "to": "autoregressive-chunking",
+      "relation": "relates-to"
+    },
+    {
+      "from": "rotations-as-manifold",
+      "to": "smooth-manifold",
+      "relation": "builds-on"
+    },
+    {
+      "from": "tangent-space",
+      "to": "smooth-manifold",
+      "relation": "builds-on"
+    },
+    {
+      "from": "lie-algebra",
+      "to": "tangent-space",
+      "relation": "part-of"
+    },
+    {
+      "from": "temporal-consistency",
+      "to": "video-diffusion",
+      "relation": "part-of"
+    },
+    {
+      "from": "video-diffusion",
+      "to": "latent-diffusion",
+      "relation": "builds-on"
+    },
+    {
+      "from": "video-diffusion",
+      "to": "reverse-sampling",
+      "relation": "builds-on"
+    },
+    {
+      "from": "video-diffusion",
+      "to": "dit",
+      "relation": "relates-to"
+    },
+    {
+      "from": "low-rank-update",
+      "to": "lora-core",
+      "relation": "part-of"
+    },
+    {
+      "from": "frozen-base-weights",
+      "to": "lora-core",
+      "relation": "part-of"
+    },
+    {
+      "from": "lora-core",
+      "to": "low-rank-approximation",
+      "relation": "builds-on"
+    },
+    {
+      "from": "lora-core",
+      "to": "qkv-projections",
+      "relation": "builds-on"
+    },
+    {
+      "from": "lora-core",
+      "to": "self-attention",
+      "relation": "relates-to"
+    },
+    {
       "from": "classifier-free-guidance",
       "to": "diffusion-cross-attention",
       "relation": "builds-on"
@@ -888,6 +1310,41 @@
     {
       "from": "classifier-free-guidance",
       "to": "noise-predictor",
+      "relation": "builds-on"
+    },
+    {
+      "from": "effective-rank",
+      "to": "svd-connection",
+      "relation": "part-of"
+    },
+    {
+      "from": "svd-connection",
+      "to": "singular-value-decomposition",
+      "relation": "builds-on"
+    },
+    {
+      "from": "svd-connection",
+      "to": "low-rank-approximation",
+      "relation": "builds-on"
+    },
+    {
+      "from": "svd-connection",
+      "to": "lora-core",
+      "relation": "relates-to"
+    },
+    {
+      "from": "effective-rank",
+      "to": "singular-values",
+      "relation": "relates-to"
+    },
+    {
+      "from": "vee-operator",
+      "to": "hat-operator",
+      "relation": "contrasts-with"
+    },
+    {
+      "from": "hat-operator",
+      "to": "lie-algebra",
       "relation": "builds-on"
     },
     {
@@ -926,6 +1383,31 @@
       "relation": "relates-to"
     },
     {
+      "from": "factorized-attention",
+      "to": "temporal-attention",
+      "relation": "part-of"
+    },
+    {
+      "from": "temporal-attention",
+      "to": "self-attention",
+      "relation": "builds-on"
+    },
+    {
+      "from": "temporal-attention",
+      "to": "video-diffusion",
+      "relation": "part-of"
+    },
+    {
+      "from": "temporal-attention",
+      "to": "rope",
+      "relation": "relates-to"
+    },
+    {
+      "from": "factorized-attention",
+      "to": "attention-quadratic-cost",
+      "relation": "relates-to"
+    },
+    {
       "from": "noise-predictor",
       "to": "forward-process",
       "relation": "builds-on"
@@ -951,6 +1433,16 @@
       "relation": "builds-on"
     },
     {
+      "from": "rank-bottleneck",
+      "to": "parallel-branch",
+      "relation": "part-of"
+    },
+    {
+      "from": "parallel-branch",
+      "to": "lora-core",
+      "relation": "relates-to"
+    },
+    {
       "from": "patchify",
       "to": "vit-patch-attention",
       "relation": "builds-on"
@@ -959,6 +1451,41 @@
       "from": "patchify",
       "to": "positional-encoding",
       "relation": "builds-on"
+    },
+    {
+      "from": "rank-hyperparameter",
+      "to": "low-rank-approximation",
+      "relation": "builds-on"
+    },
+    {
+      "from": "rank-hyperparameter",
+      "to": "effective-rank",
+      "relation": "relates-to"
+    },
+    {
+      "from": "alpha-scaling",
+      "to": "rank-hyperparameter",
+      "relation": "relates-to"
+    },
+    {
+      "from": "alpha-scaling",
+      "to": "classifier-free-guidance",
+      "relation": "relates-to"
+    },
+    {
+      "from": "variable-length-generation",
+      "to": "temporal-attention",
+      "relation": "builds-on"
+    },
+    {
+      "from": "temporal-length-ceiling",
+      "to": "variable-length-generation",
+      "relation": "relates-to"
+    },
+    {
+      "from": "temporal-length-ceiling",
+      "to": "rope",
+      "relation": "relates-to"
     },
     {
       "from": "dit",
@@ -1011,6 +1538,96 @@
       "relation": "builds-on"
     },
     {
+      "from": "singular-values",
+      "to": "singular-value-decomposition",
+      "relation": "part-of"
+    },
+    {
+      "from": "matrix-as-map",
+      "to": "singular-value-decomposition",
+      "relation": "relates-to"
+    },
+    {
+      "from": "low-rank-approximation",
+      "to": "singular-value-decomposition",
+      "relation": "builds-on"
+    },
+    {
+      "from": "low-rank-approximation",
+      "to": "singular-values",
+      "relation": "builds-on"
+    },
+    {
+      "from": "singular-value-decomposition",
+      "to": "dot-product-math",
+      "relation": "relates-to"
+    },
+    {
+      "from": "receptive-field",
+      "to": "convolution",
+      "relation": "part-of"
+    },
+    {
+      "from": "conv-dimensions",
+      "to": "convolution",
+      "relation": "part-of"
+    },
+    {
+      "from": "convolution",
+      "to": "dot-product-math",
+      "relation": "relates-to"
+    },
+    {
+      "from": "so2-rotation",
+      "to": "exponential-map",
+      "relation": "builds-on"
+    },
+    {
+      "from": "so2-rotation",
+      "to": "hat-operator",
+      "relation": "builds-on"
+    },
+    {
+      "from": "so3-rotation",
+      "to": "exponential-map",
+      "relation": "builds-on"
+    },
+    {
+      "from": "so3-rotation",
+      "to": "hat-operator",
+      "relation": "builds-on"
+    },
+    {
+      "from": "so3-rotation",
+      "to": "so2-rotation",
+      "relation": "builds-on"
+    },
+    {
+      "from": "so2-rotation",
+      "to": "angle-addition",
+      "relation": "builds-on"
+    },
+    {
+      "from": "so2-rotation",
+      "to": "sinusoid",
+      "relation": "relates-to"
+    },
+    {
+      "from": "autoregressive-chunking",
+      "to": "temporal-length-ceiling",
+      "relation": "relates-to"
+    },
+    {
+      "from": "sliding-window-extension",
+      "to": "autoregressive-chunking",
+      "relation": "contrasts-with"
+    },
+    {
+      "from": "autoregressive-chunking",
+      "to": "rope",
+      "relation": "relates-to"
+    },
+    {
       "from": "cross-attention",
       "to": "self-attention",
       "relation": "contrasts-with"
@@ -1056,8 +1673,33 @@
       "relation": "relates-to"
     },
     {
+      "from": "exponential-map",
+      "to": "tangent-space",
+      "relation": "builds-on"
+    },
+    {
+      "from": "exponential-map",
+      "to": "smooth-manifold",
+      "relation": "builds-on"
+    },
+    {
+      "from": "logarithm-map",
+      "to": "exponential-map",
+      "relation": "contrasts-with"
+    },
+    {
+      "from": "exponential-map",
+      "to": "gradient-descent",
+      "relation": "relates-to"
+    },
+    {
       "from": "unet",
       "to": "noise-predictor",
+      "relation": "builds-on"
+    },
+    {
+      "from": "unet",
+      "to": "convolution",
       "relation": "builds-on"
     },
     {

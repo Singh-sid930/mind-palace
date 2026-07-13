@@ -1,0 +1,21 @@
+{
+  "concepts": [
+    {
+      "id": "smooth-manifold",
+      "name": "The Smooth Manifold",
+      "room": "the-curved-ground",
+      "exhibit": "the-curved-ground",
+      "summary": "A manifold is a space that is globally curved but locally flat: every point has a small neighbourhood indistinguishable from ordinary flat space, where usual arithmetic and geometry apply, while the whole surface bends and closes seamlessly like a globe. Many sets of valid arrangements form such curved surfaces. (Upstairs: these become the spaces of orientation and motion.)"
+    },
+    {
+      "id": "rotations-as-manifold",
+      "name": "Turns Form a Curved Space",
+      "room": "the-curved-ground",
+      "exhibit": "turns-are-a-surface",
+      "summary": "The set of all turns (rotations about a fixed centre) is itself a smooth curved surface. Planar turns need one number, the angle, which wraps around: they form a circle, one degree of freedom. Turns in space need three numbers: they form a three-dimensional curved surface. A 3D turn is written as a 3×3 grid of nine numbers, but rigid constraints leave only three free, so one cannot perturb a single entry and remain a valid turn — nine numbers, three freedoms. (Upstairs: this is the geometry of orientation.)"
+    }
+  ],
+  "edges": [
+    { "from": "rotations-as-manifold", "to": "smooth-manifold", "relation": "builds-on" }
+  ]
+}

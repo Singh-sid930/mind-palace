@@ -1,0 +1,22 @@
+{
+  "concepts": [
+    {
+      "id": "parallel-branch",
+      "name": "The Parallel Branch",
+      "room": "the-parallel-whisper",
+      "exhibit": "the-whisper",
+      "summary": "LoRA runs in parallel with the frozen weight, not as a layer stacked after it. Both the base path and the adapter path receive the same input x and their outputs are added: y = W . x + B . A . x. The branch adds a small learned correction to what W already does rather than transforming W's output."
+    },
+    {
+      "id": "rank-bottleneck",
+      "name": "The Rank Bottleneck",
+      "room": "the-parallel-whisper",
+      "exhibit": "the-bottleneck",
+      "summary": "Shape trace along the LoRA branch: x is (d,), A . x is (r,) — squeezed to the rank-r bottleneck — then B . (A . x) is (d,), expanded back. Passing through an r-wide waist makes the branch's d x d effect at most rank r, so the bottleneck structurally forces the update to be low-rank."
+    }
+  ],
+  "edges": [
+    { "from": "rank-bottleneck", "to": "parallel-branch", "relation": "part-of" },
+    { "from": "parallel-branch", "to": "lora-core", "relation": "relates-to" }
+  ]
+}

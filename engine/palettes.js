@@ -28,8 +28,16 @@ export const PALETTES = {
     glow: 0xd2a8ff, fog: 0x1d1330, light: 0xe4d2ff,
   },
   obsidian: {
-    floor: 0x1c1c20, wall: 0x2c2c32, trim: 0x101012, accent: 0x8c8b86,
-    glow: 0xa8fff2, fog: 0x0a0a0c, light: 0xbfcfd0,
+    floor: 0x43454f, wall: 0x585a66, trim: 0x282a32, accent: 0xb0b0a6,
+    glow: 0xa8fff2, fog: 0x16171d, light: 0xdcebee,
+  },
+  silver: {
+    floor: 0x3a3f47, wall: 0x60656f, trim: 0x22252b, accent: 0xc4ceda,
+    glow: 0xd0e0f0, fog: 0x16191f, light: 0xe8f0f8,
+  },
+  bronze: {
+    floor: 0x4a3d28, wall: 0x796244, trim: 0x2c2214, accent: 0xc9a24e,
+    glow: 0xe8c26a, fog: 0x1e180e, light: 0xf0d692,
   },
 };
 

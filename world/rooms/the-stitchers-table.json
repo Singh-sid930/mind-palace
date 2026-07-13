@@ -1,0 +1,51 @@
+{
+  "id": "the-stitchers-table",
+  "name": "The Stitcher's Table",
+  "wing": "video",
+  "size": "medium",
+  "order": 4,
+  "exhibits": [
+    {
+      "id": "the-stitchers-table",
+      "type": "artifact",
+      "title": "The Table Where Reels Are Stitched",
+      "prop": "table",
+      "text": "A long enchanted table strewn with short reels, and a patient hand that lays them end to end. It never asks the loom for one impossibly long ribbon; instead it takes a reel, holds its final few frames against the first frames of the next, and stitches them so the seam scarcely shows — matching each new reel to the TAIL of the one before. Reel after reel, the scene runs longer than any single spell could make it.\n\nThis is the honest answer to the practitioner's question, keeper: how does Wan make video longer than its five-second horizon? Not by one grand mechanism built into the model. Wan 2.1 and 2.2 are pretrained for only about five seconds — eighty-one frames at sixteen frames per second — and that is T_max, the ceiling you met at the Reel of Lengths. Everything longer is a technique LAYERED ON TOP: short generations, stitched.\n\nThe dominant stitch, and the one you will meet in ComfyUI, is autoregressive chunking with overlap — generate a chunk, condition the next chunk on its tail, repeat; an overlap node such as ImageBatchExtendWithOverlap handles the handover so motion and lighting carry across the seam. The plinths beside me lay out that method and its rival stitches, the architecture in Wan that makes any of this possible, and — plainly — why even the finest stitching still drifts once the reel runs long. A stitched ribbon has no memory of its own beginning; that is both its power and its flaw."
+    },
+    {
+      "id": "chunk-and-overlap",
+      "type": "plaque",
+      "prop": "pedestal",
+      "title": "Chunk and Overlap — the Main ComfyUI Stitch",
+      "text": "The dominant way to push Wan past its five-second ceiling in ComfyUI is AUTOREGRESSIVE CHUNKING WITH OVERLAP. The recipe: generate chunk one (frames 1 to 81, the trained span); take its last FEW frames; condition chunk two on that tail so it begins where the first left off; repeat, reel after reel. Each chunk conditions on the TAIL of the previous — this is what makes it autoregressive, exactly the chunk-by-chunk handover of a language model continuing its own text.\n\nAn overlap node — the familiar ImageBatchExtendWithOverlap — chains these generations and manages the seam automatically, carrying motion and lighting across so consecutive segments agree. The overlapping frames are the stitch: shared between neighbours, they hold the handover consistent.\n\nMind the cost, though: because every chunk sees only the SHORT TAIL of its predecessor and nothing of the whole video, small errors pass forward and accumulate segment over segment. There is no global memory of the reel's beginning — only the last handful of frames. Stitching buys length; it does not buy a mind that remembers the opening scene."
+    },
+    {
+      "id": "other-extensions",
+      "type": "plaque",
+      "prop": "lectern",
+      "title": "Other Stitches — Continuation Engines and Sliding Windows",
+      "text": "Chunk-and-overlap is not the only stitch on the table. Two others deserve naming.\n\nFINE-TUNED CONTINUATION MODELS: some Wan variants are fine-tuned into dedicated continuation engines. Long clips are split into short segments, the model is handed a few initial frames (say zero to nine), and trained to generate the frames that follow — learning 'given this beginning, continue.' Chained, these produce arbitrarily long video, each link continuing the last. It is chunking's idea made native: the extension is trained in rather than bolted on.\n\nSLIDING-WINDOW OVERLAPPING CLIPS: the classic, weaker method — slide a window of overlapping clips along and average where they overlap. Its documented failure is worth remembering: it is fine over STATIC backgrounds, but where the background itself MOVES, the latent-space averaging in the overlap regions smears the motion into BLUR and inconsistency. This is very likely why motion-heavy long Wan videos degrade the worst — the overlap-averaging that steadies a still scene actively muddies a moving one. Prefer chunk-and-overlap; reach for the sliding window only when the scene barely moves."
+    },
+    {
+      "id": "what-makes-it-possible",
+      "type": "plaque",
+      "prop": "pedestal",
+      "title": "What Makes the Stitching Possible — and Why It Still Drifts",
+      "text": "None of these stitches would work without three properties in Wan's architecture, each tying back to a chamber you have already walked.\n\nFirst, a CAUSAL 3D VAE. Because its temporal compression is causal — each moment depends only on those before it — the video can be decoded in a SLIDING WINDOW rather than all at once, which also slashes the memory a long reel would demand. Second, LOCAL TEMPORAL ATTENTION over the recent N latent frames: attention need only span a window of nearby frames, so streaming forward stays affordable. Third, and most elegant, ROPE — the Compass and Clock from the Attention floor. RoPE encodes position by RELATIVE distance: the attention dot product depends on the GAP between two frames, not their absolute index. So when you slide a window forward or stitch a new chunk, the positions still read sensibly — frame-ten-relative-to-frame-eight means the same thing wherever the window sits. Relative position is exactly what lets windowed, streaming extension behave.\n\nAnd yet it still DRIFTS. Each chunk conditions only on a short tail, so error accumulates across segments; overlap-averaging blurs dynamic motion; and past T_max you are beyond the trained coherence range with no global memory of the whole video. 'Bad after ten seconds' is all three compounding at once."
+    },
+    {
+      "id": "chunk-extension-diagram",
+      "type": "diagram",
+      "title": "Stitching Chunks, and the Drift That Creeps In",
+      "spec": "graph LR\n  C1[\"chunk 1: frames 1-81 (within T_max)\"] --> O1[\"take last few frames (overlap tail)\"]\n  O1 --> C2[\"chunk 2: conditioned on tail\"]\n  C2 --> O2[\"overlap tail\"]\n  O2 --> C3[\"chunk 3: conditioned on tail\"]\n  C3 --> C4[\"...\"]\n  C1 -. small error .-> D[\"drift accumulates: tail-only conditioning, no global memory\"]\n  C2 -. + more error .-> D\n  C3 -. + more error .-> D\n  D --> B[\"blur & incoherence past ~10s\"]",
+      "caption": "Autoregressive chunking with overlap: chunk one is generated within the trained span, its last few frames become the overlap tail, and the next chunk is conditioned on that tail — reel after reel, stitched by a node like ImageBatchExtendWithOverlap. Because each chunk sees only the previous tail and there is no global memory of the whole video, small errors pass forward and compound, so drift accumulates segment over segment into blur and incoherence once the reel runs long."
+    },
+    {
+      "id": "the-chunks-stitched",
+      "type": "image",
+      "title": "The Stitch, and the Drift It Inherits",
+      "image": "world/assets/video-chunk-extension.png",
+      "caption": "See the stitch laid bare, keeper. Left: the video timeline as overlapping chunks, each the trained length (about eighty-one frames, ~5s at 16 fps). Chunk one is made within T_max; its last few frames — the gold OVERLAP TAIL — become the conditioning for chunk two, which begins where the first left off; and so on, reel after reel, exactly the autoregressive handover a node like ImageBatchExtendWithOverlap performs. The red band at each seam is drift, and it GROWS chunk over chunk: because every chunk sees only the short tail of its predecessor and holds no global memory of the whole video, small errors pass forward and accumulate. Right: that accumulation as a curve. Overlap-conditioning drifts slowly and sub-linearly; a naive cut with no overlap drifts far faster, each join a visible seam. This is why chunk-and-overlap is preferred — yet even it crosses into blur and incoherence past roughly ten seconds. Two other stitches exist: fine-tuned continuation models train the handover in rather than bolting it on; sliding-window overlap averages overlapping clips and is fine on static scenes but SMEARS dynamic motion into blur. Values are representative, drawn to show the trend, not measured benchmarks."
+    }
+  ]
+}

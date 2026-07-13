@@ -1,0 +1,59 @@
+{
+  "id": "the-sliding-kernel",
+  "name": "The Sliding Kernel",
+  "wing": "math",
+  "size": "medium",
+  "order": 7,
+  "exhibits": [
+    {
+      "id": "the-kernel",
+      "type": "artifact",
+      "title": "The Sliding Kernel",
+      "prop": "orrery",
+      "scale": 1.3,
+      "text": "Lay a long strip of numbers on the table — a SIGNAL, a row of readings: [1, 2, 3, 4, 5]. Now take this small enchanted window, a little frame of three weights called a KERNEL: [1, 0, −1]. It is far shorter than the signal, and it does one thing: it SLIDES.\n\nSet the window down over the first three readings. Under it lie 1, 2, 3. The kernel multiplies each value beneath it by its own weight and SUMS the results into a single number:\n\n  1·1 + 0·2 + (−1)·3 = 1 − 3 = −2.\n\nThat −2 is the first output. Now slide the window one step to the right. It now covers 2, 3, 4:\n\n  1·2 + 0·3 + (−1)·4 = 2 − 4 = −2.\n\nSlide once more, over 3, 4, 5:\n\n  1·3 + 0·4 + (−1)·5 = 3 − 5 = −2.\n\nThree stops, three outputs: [−2, −2, −2]. That is the whole of CONVOLUTION — a window of weights slid across a signal, and at every stop a multiply-and-sum. Nothing more mysterious than that.\n\nAnd look what this particular kernel measures. [1, 0, −1] takes the value ahead minus the value behind: it reports how fast the signal is CHANGING at each point — an EDGE DETECTOR. On our steadily-climbing ramp the change is a constant −2 everywhere (the window looks left-to-right, so a rising ramp reads negative). Feed it a flat stretch [7, 7, 7] and every output is 0 — no change, no edge. Change the weights in the window and you change what the sliding measures; the operation stays the same.\n\nOne more truth to carry: each output number is a DOT PRODUCT — the kernel dotted with the little run of signal values it happens to be covering. Convolution is a dot product, computed again and again, marching down the line."
+    },
+    {
+      "id": "the-local-window",
+      "type": "plaque",
+      "prop": "pedestal",
+      "title": "The Local Window",
+      "text": "Look again at any single output of the sliding kernel and ask: which of the input readings did it actually touch? Only the handful directly beneath the window at that stop. The output at position three came from inputs 3, 4, 5 — and from NOTHING else. The far end of the signal, the beginning of it, the readings a hundred steps away: none of them reached that number.\n\nThis small neighbourhood — the patch of input a given output can see — is called the RECEPTIVE FIELD. Every output depends only on a LOCAL window of the input, as wide as the kernel and no wider. The operation refuses to let distant values mingle; each answer is a purely local verdict.\n\nAnd here is the twin idea. As the window slides, the weights inside it do NOT change. The very same [1, 0, −1] is laid down at position one, at position two, at position three, at every stop clear to the end. One small set of weights is REUSED across all positions — this is WEIGHT SHARING. We do not learn a fresh rule for each place in the signal; we learn one little window and carry it everywhere.\n\nLocal windows and shared weights are the two hands of convolution. The first says an output looks only nearby; the second says the same small lens is used everywhere it looks."
+    },
+    {
+      "id": "why-it-helps",
+      "type": "plaque",
+      "prop": "lectern",
+      "title": "Why the Kernel Is Thrifty",
+      "text": "Why slide one tiny window instead of letting every output drink from the whole signal? Because of a fact about the signals themselves: NEIGHBOURING samples are related. In almost any real row of readings, a value and its immediate neighbours move together — nearby points are redundant, structured, correlated. The interesting events — an edge, a bump, a change — are LOCAL affairs, legible from a small patch alone.\n\nConvolution exploits exactly this. A small shared kernel is enough to catch a local pattern, and since the same pattern (an edge, a ridge, a corner) can appear ANYWHERE along the signal, sliding that one kernel across every position finds the pattern everywhere at once. Learn the lens once; apply it a thousand places.\n\nCount the thrift. Connect every one of N outputs to every one of N inputs and you need N² separate weights — a rule for each pair. But a shared kernel of width k uses only k weights TOTAL, no matter how long the signal grows. For a length-1000 signal a width-3 kernel is three numbers standing where a million once stood. Fewer numbers to store, fewer to learn, and each is used everywhere — a small shared window instead of connecting everything to everything.\n\nThe redundancy between neighbours is the gift; the sliding kernel is how you spend it."
+    },
+    {
+      "id": "one-two-three-d",
+      "type": "plaque",
+      "prop": "pedestal",
+      "title": "One, Two, and Three Axes",
+      "text": "The sliding kernel does not care how many directions it must slide along. The operation — cover a local patch, multiply by the weights, sum to one number, step over — is the same in any number of dimensions. Only the shape of the window and the paths it walks change.\n\n1-D — along a LINE. The kernel is a short strip of k weights and it slides in one direction, left to right, as you just watched: at each stop it sums over k values beneath it. One axis of travel.\n\n2-D — over a GRID. The kernel is now a small square patch of weights, say 3×3 = 9 numbers, laid over a grid of rows and columns. At each stop it multiplies the nine grid values under it by its nine weights and sums them into one output. Then it slides — across the columns, and down the rows — visiting every position on the grid. Two axes of travel, summing over a small area.\n\n3-D — through a VOLUME. The kernel becomes a small box of weights, say 3×3×3 = 27 numbers, and the input is a volume with three axes. At each stop it sums the product over the little box it covers, then slides along all three axes in turn, sweeping the whole volume. Three axes of travel, summing over a small box.\n\nStrip, square, box; line, grid, volume. One axis or three, it is the same enchantment: a local window of shared weights, slid everywhere, multiply-and-sum at every stop."
+    },
+    {
+      "id": "conv-diagram",
+      "type": "diagram",
+      "title": "Slide, Multiply, Sum",
+      "spec": "graph LR\n  S[\"signal [1,2,3,4,5]\"] --> W[\"slide kernel [1,0,-1]\"]\n  K[\"kernel weights\"] --> W\n  W --> P0[\"pos 1: 1·1+0·2−1·3\"]\n  W --> P1[\"pos 2: 1·2+0·3−1·4\"]\n  W --> P2[\"pos 3: 1·3+0·4−1·5\"]\n  P0 --> O[\"output [−2,−2,−2]\"]\n  P1 --> O\n  P2 --> O\n  O --> D[\"each output = kernel · local window (a dot product)\"]",
+      "caption": "Convolution in one picture: the same small kernel is laid over each local window of the signal; at every stop its weights multiply the values beneath and sum to one output number — a dot product of kernel and window, repeated down the line."
+    },
+    {
+      "id": "the-window-slid",
+      "type": "image",
+      "title": "The Window, Slid",
+      "image": "world/assets/convolution-kernel.png",
+      "caption": "Watch the enchanted window walk the length of the signal. (a) At each stop the kernel [1, 0, −1] lies over three readings, multiplies each by its own weight and sums them to a single number — a dot product of the kernel with its local window — and the walk lays down the output [0, −1, −2, −2]: zero where the signal is flat, −2 where it steadily climbs. (b) Ask what any one output actually touched, and the answer is only the handful of readings beneath the window — its receptive field, k wide and no wider — while the very same three weights are set down at every stop: weight sharing, k numbers for a signal of any length, not one rule per position. (c) The operation cares nothing for how many directions it must walk: a strip of weights sliding along a line, a square patch sweeping a grid across rows and columns, a small box marching through a volume along three axes. Strip, square, box; line, grid, volume — one enchantment given more axes. Cover a local patch, multiply by the weights, sum to a single number, step over."
+    },
+    {
+      "id": "where-this-leads",
+      "type": "plaque",
+      "prop": "lectern",
+      "title": "Where This Leads ↑",
+      "text": "You need none of what follows here — own the sliding kernel first, in its pure form: signals, windows, weights, multiply-and-sum. But a whisper of where it carries.\n\nThe picture-arts on the floors above are built from this one operation, slid at scale. 2-D kernels — small squares of weights swept over a grid — are the workhorse of the great denoising engine upstairs, the U-Net that takes a field of pure noise and, pass after pass, slides its kernels across it to carve an image out of the murk. Every stroke of that work is a window multiplying-and-summing over a local patch, exactly as you did by hand here.\n\nClimb higher, to the Gallery of Moving Portraits, and the kernel grows a third axis. There a 3-D kernel slides over two space axes AND time — a small box sweeping through a volume of stacked frames — to compress moving pictures down to a compact essence before the arts work on them. Two space axes and one of time; a box that slides through a volume; a multiply-and-sum at every stop. The very operation of this room, given one more direction to walk.\n\nBut those are their grand costumes for your plain mechanism. Here there are no images, no motion, no engines — only a window of numbers sliding across a row of numbers. Master the sliding kernel; the galleries above will make sense the moment you climb the stair."
+    }
+  ]
+}

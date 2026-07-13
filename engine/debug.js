@@ -5,13 +5,14 @@
 import * as THREE from 'three';
 
 export function installDebugApi({ scene, camera, player, layout, roomsById,
-                                  interactables, levels, wisp, diagramPanel,
-                                  teleport, palette, showStudyCard }) {
+                                  interactables, levels, wisp, footsteps, diagramPanel,
+                                  teleport, palette, showStudyCard, companion }) {
   window.__palace = {
     rooms: () => Object.keys(roomsById),
     scene,
     THREE,
     teleport,
+    companion,
     pose: (x, z, yawDeg, pitchDeg = 0) => {
       player.place(x, z, (yawDeg * Math.PI) / 180);
       camera.rotation.x = (pitchDeg * Math.PI) / 180;
@@ -19,6 +20,12 @@ export function installDebugApi({ scene, camera, player, layout, roomsById,
     pos: () => ({ x: camera.position.x, z: camera.position.z,
                   yaw: camera.rotation.y }),
     wisp,
+    footsteps,
+    footState: () => ({
+      room: footsteps._room,
+      queue: footsteps._queue ? footsteps._queue.length : null,
+      opacities: footsteps.prints.map((p) => +p.material.opacity.toFixed(2)),
+    }),
     diagramPanel,
     layout,
     levels,

@@ -1,0 +1,24 @@
+{
+  "concepts": [
+    {
+      "id": "exponential-map",
+      "name": "The Exponential Map",
+      "room": "the-two-maps",
+      "exhibit": "the-two-maps",
+      "summary": "Given a point p on a curved surface and a straight tangent vector v in the flat tangent plane at p, the exponential map exp_p(v) walks along the surface's straightest path — a geodesic — in v's direction, a distance equal to v's length, and returns the point where it lands. It carries a flat straight step onto the curved surface, preserving direction and length (as distance along the surface) while trading away straightness, and it always lands ON the surface. It generalises the ordinary exponential of numbers to curved spaces of motion. (Upstairs: this is how a straight optimisation step or a breath of added uncertainty is carried onto a curved configuration space without leaving it.)"
+    },
+    {
+      "id": "logarithm-map",
+      "name": "The Logarithm Map",
+      "room": "the-two-maps",
+      "exhibit": "the-logarithm",
+      "summary": "The inverse of the exponential map: given a point q on the surface near p, the logarithm map log_p(q) returns the single straight tangent vector v at p for which exp_p(v)=q — unwrapping a curved point back to the flat tangent window, its direction giving the way to q and its length the geodesic distance. Together, log (curved→flat), ordinary straight-line arithmetic on the flat tangent plane, then exp (flat→curved) let you compute and always return to a valid surface point; the bridge is faithful for small local moves. (Upstairs: log-compute-exp is how averaging, stepping, or filtering is done on curved spaces.)"
+    }
+  ],
+  "edges": [
+    { "from": "exponential-map", "to": "tangent-space", "relation": "builds-on" },
+    { "from": "exponential-map", "to": "smooth-manifold", "relation": "builds-on" },
+    { "from": "logarithm-map", "to": "exponential-map", "relation": "contrasts-with" },
+    { "from": "exponential-map", "to": "gradient-descent", "relation": "relates-to" }
+  ]
+}

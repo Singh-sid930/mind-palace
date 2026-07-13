@@ -1,0 +1,52 @@
+{
+  "id": "the-curved-ground",
+  "name": "The Curved Ground",
+  "wing": "lie",
+  "size": "grand",
+  "order": 1,
+  "exhibits": [
+    {
+      "id": "the-curved-ground",
+      "type": "artifact",
+      "title": "The Curved Ground",
+      "prop": "crystal_ball",
+      "scale": 1.4,
+      "text": "A great luminous globe hangs at the heart of the chamber, and it is the whole lesson made visible. Walk close and press your eye to its surface: the ground beneath your gaze looks FLAT, an honest plane stretching off in every direction, ruled and ordinary. Step back and the same surface curves away on all sides into a perfect round — there is no edge, no seam, no privileged place. This is a MANIFOLD: a space that is globally CURVED yet locally FLAT. Every point wears its own small patch of flatness, and inside that patch you may reckon distances and directions as if the world were an ordinary sheet of paper; only when you travel far does the curvature reveal itself and the patches refuse to agree.\n\nMany a set of valid arrangements forms exactly such a curved ground. Consider the plainest example, and keep it pure: the set of all TURNS — every rotation a thing can undergo about a fixed centre. These do not sprawl freely through open space; they are threaded onto a smooth curved surface of their own, and it is the shape of that surface, and how to walk upon it, that this whole wing was raised to teach. Look into the globe: what seems flat to the ant is round to the astronomer, and both are telling the truth."
+    },
+    {
+      "id": "locally-flat",
+      "type": "plaque",
+      "prop": "pedestal",
+      "title": "Globally Curved, Locally Flat",
+      "text": "A MANIFOLD is a space that is curved when taken whole, but looks flat in any small enough neighbourhood. That is the entire definition, and it is worth holding slowly.\n\nGLOBALLY CURVED: stand back and the surface bends, closes, refuses to lie in a single plane. A globe is the friendliest picture — round, seamless, finite yet without boundary.\n\nLOCALLY FLAT: choose any single point and shrink your attention to a tiny patch around it. That patch is indistinguishable from a piece of ordinary flat space — the plane you learned geometry on. Straight lines behave, small distances add as you expect, coordinates behave like the familiar x and y. Standing on the ground of a vast globe, the earth underfoot seems a level field; the curvature is real but too gentle to see up close.\n\nThe power of the idea is this bargain: whatever curved space of arrangements you are handed, you may always work in one of its flat patches, using nothing more exotic than ordinary arithmetic — and stitch the patches together only when you must travel far. Curvature is a global fact; flatness is always available locally. Every curved ground is a quilt of flat windows."
+    },
+    {
+      "id": "turns-are-a-surface",
+      "type": "plaque",
+      "prop": "lectern",
+      "title": "The Turns Form a Curved Surface",
+      "text": "Take the set of all TURNS — every rotation about a fixed centre — and ask what shape that set has. It is not a formless heap; it is a smooth curved surface, a manifold in its own right.\n\nIN THE PLANE (2D turns): a turn is fixed by a single number, its ANGLE. Sweep the angle from 0 round to a full revolution and you return to where you began — the angle wraps. So the set of all planar turns is a CIRCLE: one degree of freedom, curved because it closes on itself. One number, wrapping round.\n\nIN SPACE (3D turns): a turn now needs THREE numbers to pin it down — three degrees of freedom — and the set of all such turns is a three-dimensional curved surface, closed and seamless like the globe writ large.\n\nHere is the fact that should unsettle you, and that this wing exists to resolve. A turn in space is customarily written as a 3×3 grid — NINE numbers. Yet only THREE of them are truly free. The nine are lashed together by rigid constraints (the grid's directions must stay unit-length and mutually square), so you CANNOT nudge a single entry of the grid and still hold a valid turn — you would slide off the surface into empty nonsense. Nine numbers of description, three of genuine freedom: the valid turns live only on their curved surface, never in the loose nine-dimensional space around it. That mismatch — more numbers than freedoms — is the ache this whole wing was built to soothe."
+    },
+    {
+      "id": "manifold-diagram",
+      "type": "diagram",
+      "title": "A Flat Patch on a Curved Whole",
+      "spec": "graph TD\n  W[The whole surface: globally curved] --> P[Pick any point]\n  P --> N[Shrink to a small neighbourhood]\n  N --> F[The patch looks FLAT: ordinary plane]\n  F --> C[Reckon distances and directions here as usual]\n  W --> G[Travel far: patches disagree, curvature shows]\n  T[All turns] --> T2[2D turns: a circle, 1 freedom]\n  T --> T3[3D turns: a curved surface, 3 freedoms]\n  T3 --> M[Written with 9 numbers, only 3 free]",
+      "caption": "A manifold is globally curved but locally flat: any small patch is an ordinary plane where usual arithmetic works, while the whole surface bends and closes. The set of all turns is such a surface — a circle in the plane (one freedom), a three-dimensional curved surface in space (three freedoms, though written with nine constrained numbers)."
+    },
+    {
+      "id": "the-curved-surface",
+      "type": "image",
+      "title": "The Curved Ground, Drawn to Scale",
+      "image": "world/assets/lie-manifold.png",
+      "caption": "The whole lesson in two hands. (a) A globe — curved when taken whole, closed and seamless. Press a small flat TANGENT PATCH against it at one point and magnify: up close that patch is an ordinary flat plane, where a straight walk and plain arithmetic behave exactly as on a sheet of paper. Globally curved, locally flat; the curvature only shows when far-apart patches refuse to agree. (b) The TURNS as a surface of their own. A turn in the plane is fixed by a single angle θ, and θ wraps — sweep a full revolution and you return to the start — so the planar turns thread onto a CIRCLE: one degree of freedom, curved because it closes. A turn in space needs THREE numbers to pin it, so those turns form a three-dimensional curved surface. Yet such a turn is customarily WRITTEN as a 3×3 grid — nine numbers — whose columns must stay unit-length and mutually square: six rigid constraints, leaving 9 − 6 = 3 truly free. Picture the loose space of all nine-number grids with the valid turns as a thin curved surface threaded through it: nudge a single entry and you slide clean off the surface into nonsense. More numbers of description than genuine freedoms — the ache this whole cellar was raised to soothe."
+    },
+    {
+      "id": "where-this-leads",
+      "type": "plaque",
+      "prop": "pedestal",
+      "title": "Where This Leads ↑",
+      "text": "You need none of what follows to master the curved ground — learn the pure geometry first, and let this be only a whisper through the floorboards of a hall not yet raised in this palace.\n\nOne day a floor will stand above this cellar where these curved spaces of arrangement become the very language of ORIENTATION and MOTION — the mathematics by which anything that turns, travels, and must be tracked reports where it is and which way it faces. The mismatch you met here, more numbers than freedoms, is no idle curiosity there: it is the daily difficulty of every craft that must keep faithful account of a moving thing's bearing without letting its numbers drift off the curved surface of what is possible.\n\nBut that is their costume for your geometry. Here there are no machines, no bearings, no tracking — only curved surfaces, points, and the turns that live upon them. Own the smooth manifold purely; the hall above will make sense the moment its stair is built and you climb it."
+    }
+  ]
+}

@@ -26,6 +26,18 @@
       "name": "The Upper Floor — World Models",
       "hub": "atrium",
       "tier": 1
+    },
+    {
+      "id": "attunement",
+      "name": "The Workshop of Attunement — Efficient Adaptation",
+      "hub": "attunement-atrium",
+      "tier": 1
+    },
+    {
+      "id": "video",
+      "name": "The Gallery of Moving Portraits — Video Diffusion",
+      "hub": "moving-gallery-atrium",
+      "tier": 1
     }
   ],
   "wings": [
@@ -33,6 +45,12 @@
       "id": "math",
       "name": "The Wing of Arithmancy",
       "palette": "violet",
+      "level": "foundations"
+    },
+    {
+      "id": "lie",
+      "name": "The Wing of Continuous Motion",
+      "palette": "bronze",
       "level": "foundations"
     },
     {
@@ -58,6 +76,18 @@
       "name": "The Wing of the Reforged Transformer",
       "palette": "crimson",
       "level": "world-models"
+    },
+    {
+      "id": "lora",
+      "name": "The Wing of Attunement",
+      "palette": "obsidian",
+      "level": "attunement"
+    },
+    {
+      "id": "video",
+      "name": "The Gallery of Moving Portraits",
+      "palette": "silver",
+      "level": "video"
     }
   ],
   "passages": [
@@ -105,6 +135,46 @@
       "id": "attn-diff",
       "type": "archway",
       "between": ["the-two-gazes", "the-unet-cathedral"]
+    },
+    {
+      "id": "attn-attune",
+      "type": "stair",
+      "between": ["attention-atrium", "attunement-atrium"],
+      "gate": {
+        "at": "attention-atrium",
+        "prereqs": ["qkv-projections", "self-attention", "low-rank-approximation"],
+        "persona": "You keep the stair to the Workshop of Attunement, where a trained art is adapted without being remade whole. You ask that a keeper hold the query-key-value projections and the low-rank truth — that a weight update lives in a few directions — before they climb to graft small adapters onto great matrices."
+      }
+    },
+    {
+      "id": "diff-attune",
+      "type": "stair",
+      "between": ["diffusion-atrium", "attunement-atrium"],
+      "gate": {
+        "at": "diffusion-atrium",
+        "prereqs": ["latent-diffusion", "low-rank-approximation"],
+        "persona": "You keep the other stair to the Workshop of Attunement. You care that a keeper knows latent diffusion and the low-rank truth before they learn to slip tiny adapters into a trained model's attention and steer it with a single dial."
+      }
+    },
+    {
+      "id": "diff-video",
+      "type": "stair",
+      "between": ["the-latent-vault", "moving-gallery-atrium"],
+      "gate": {
+        "at": "the-latent-vault",
+        "prereqs": ["latent-diffusion", "vae-compression", "convolution"],
+        "persona": "You keep the stair from the Latent Vault up to the Gallery of Moving Portraits, where diffusion learns to move. You ask that a keeper hold latent diffusion and the compressing VAE — for a video is compressed the same way, only in time as well as space, by a sliding kernel — before they climb to the moving image."
+      }
+    },
+    {
+      "id": "attn-video",
+      "type": "stair",
+      "between": ["compass-and-clock", "moving-gallery-atrium"],
+      "gate": {
+        "at": "compass-and-clock",
+        "prereqs": ["rope", "causal-masking", "self-attention"],
+        "persona": "You keep the other stair to the Gallery of Moving Portraits. You care that a keeper holds RoPE's relative-distance gift, the causal mask, and self-attention — for moving pictures are made by attention run along time, streamed with a rotating clock — before they ascend."
+      }
     }
   ]
 }

@@ -1,0 +1,31 @@
+{
+  "id": "attunement-atrium",
+  "name": "The Atrium of Attunement",
+  "wing": null,
+  "size": "grand",
+  "palette": "obsidian",
+  "order": 1,
+  "exhibits": [
+    {
+      "id": "founder-portrait",
+      "type": "portrait",
+      "title": "Magister Lyra Quillon",
+      "subtitle": "Artificer of the Attuned Arts",
+      "text": "Welcome to the Workshop, keeper. You have climbed from the Ground Floor, and rightly — for nothing here is learned before the arts it adapts. This is a hall of ATTUNEMENT: the craft of taking a great trained work and bending it to a new purpose WITHOUT forging it anew. Below, in Attention and in Diffusion, whole matrices were learned at ruinous cost. Here you will learn to leave those matrices frozen and whisper a small correction beside them — a low-rank adapter, a few thousand numbers where there were millions. The Wing of Attunement opens from this atrium; walk it in order, from the frozen weights to the adapter vault. And mind the two staircases you climbed: one from Attention, one from Diffusion — for this art serves both, and rests on the low-rank truth taught deep in the Undercroft."
+    },
+    {
+      "id": "workshop-welcome",
+      "type": "plaque",
+      "title": "The Workshop of Attunement",
+      "prop": "pedestal",
+      "text": "This floor teaches LoRA — Low-Rank Adaptation — and the family of efficient fine-tuning it belongs to. Its one idea: a fine-tuning update to a huge weight matrix does not need to be huge. The meaningful change lives in a small subspace, so it can be written as the product of two thin matrices and learned cheaply while the original stays frozen. From this atrium the Wing of Attunement builds that idea from the ground up — the frozen base and its low-rank delta, the parallel branch, why a few directions suffice, how the rank and strength are chosen, and how the finished adapter is merged or plugged in. Two stairs descend to the arts LoRA adapts: Attention, whose query-key-value projections are its usual target, and Diffusion, whose U-Nets wear these adapters as swappable styles."
+    },
+    {
+      "id": "how-to-attune",
+      "type": "plaque",
+      "title": "How to Walk This Floor",
+      "prop": "lectern",
+      "text": "Move with W, A, S, D and look with the mouse; press E to study any exhibit, and follow the glowing footsteps — they lead through each chamber's exhibits in study order, then on to the next in sequence. Press M for this floor's map, G for the constellation of ideas across the whole palace, F to travel by Floo. The two descending staircases return you to Attention and to Diffusion; the Undercroft, two flights down, holds the singular-value mathematics this whole floor rests upon. Attunement is the palace's newest storey — an art applied atop finished models, so it stands at the top of the lineage, not the bottom."
+    }
+  ]
+}

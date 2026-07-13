@@ -40,6 +40,12 @@
     position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%);
     color: rgba(233,223,198,0.55); font-size: 13px; pointer-events: none; z-index: 5;
   }
+  #foot-toast {
+    position: absolute; left: 50%; bottom: 20%; transform: translateX(-50%);
+    color: var(--parchment); background: var(--panel); border: 1px solid var(--gold);
+    border-radius: 8px; padding: 7px 16px; font-size: 15px; opacity: 0;
+    transition: opacity 0.3s ease; pointer-events: none; z-index: 6; font-style: italic;
+  }
 
   /* start overlay */
   #start {
@@ -203,10 +209,11 @@
   </div>
   <div id="crosshair"></div>
   <div id="hud-prompt"></div>
+  <div id="foot-toast"></div>
   <div id="hud-keys">
     <kbd>WASD</kbd> walk &nbsp; <kbd>E</kbd> study &nbsp; <kbd>T</kbd> talk to Gemma &nbsp;
     <kbd>M</kbd> map &nbsp; <kbd>G</kbd> constellation &nbsp; <kbd>F</kbd> floo &nbsp;
-    <kbd>Shift</kbd> run
+    <kbd>P</kbd> footsteps &nbsp; <kbd>Shift</kbd> run
   </div>
 
   <div id="start">
@@ -217,7 +224,8 @@
         Walk with <kbd>W A S D</kbd>, look with the mouse.<br/>
         Press <kbd>E</kbd> to study exhibits and step through portals.<br/>
         <kbd>T</kbd> talk to Gemma, your ghostly guide.<br/>
-        <kbd>M</kbd> map · <kbd>G</kbd> constellation of ideas · <kbd>F</kbd> floo travel
+        <kbd>M</kbd> map · <kbd>G</kbd> constellation of ideas · <kbd>F</kbd> floo travel<br/>
+        <kbd>P</kbd> toggle the guiding footsteps on or off
       </p>
       <button id="begin">Enter the Palace</button>
     </div>

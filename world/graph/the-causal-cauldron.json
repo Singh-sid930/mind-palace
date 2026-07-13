@@ -1,0 +1,35 @@
+{
+  "concepts": [
+    {
+      "id": "video-vae-3d",
+      "name": "The 3D Video VAE",
+      "room": "the-causal-cauldron",
+      "exhibit": "compress-space-and-time",
+      "summary": "A video VAE that compresses SPACE and TIME using 3D convolutions sliding over (T, H, W) instead of 2D convolutions over (H, W). Because each 3D kernel spans several frames, the encoder can downsample the time axis, exploiting the redundancy between neighbouring FRAMES just as spatial compression exploits neighbouring PIXELS. Wan: ~4x time, ~8x/side space; 81 input frames become ~21 latent frames, cutting temporal attention's T^2 cost from 81 tokens to 21."
+    },
+    {
+      "id": "causal-3d-vae",
+      "name": "The Causal 3D VAE",
+      "room": "the-causal-cauldron",
+      "exhibit": "what-causal-means",
+      "summary": "A 3D VAE whose temporal convolutions look ONLY at the current and past frames, never the future: the causal kernel spans [t-2, t-1, t] rather than the bilateral [t-2, t-1, t, t+1, t+2]. This is the decoder's causal mask from attention applied to temporal convolution; the first frame pads and conditions on itself. It fixes the bilateral 3D conv's fatal flaws — needing future frames (so the whole video must sit in memory, no streaming) and breaking on variable length — and thereby unlocks sliding-window decoding, autoregressive/streaming generation, variable length, and clean chunk handovers."
+    },
+    {
+      "id": "sliding-window-decode",
+      "name": "Sliding-Window Decoding",
+      "room": "the-causal-cauldron",
+      "exhibit": "why-causality-unlocks",
+      "summary": "Because a causal VAE decodes frame t using only its past, decoding can proceed through a small sliding window rather than holding the whole reel at once, keeping VRAM bounded even on long (e.g. 60-second) clips. The same future-free structure enables streaming autoregressive generation and clean chunk handovers, though chunked generation still accumulates drift across segments that the VAE alone cannot fix."
+    }
+  ],
+  "edges": [
+    { "from": "video-vae-3d", "to": "convolution", "relation": "builds-on" },
+    { "from": "video-vae-3d", "to": "vae-compression", "relation": "builds-on" },
+    { "from": "video-vae-3d", "to": "latent-diffusion", "relation": "relates-to" },
+    { "from": "causal-3d-vae", "to": "video-vae-3d", "relation": "builds-on" },
+    { "from": "causal-3d-vae", "to": "convolution", "relation": "builds-on" },
+    { "from": "causal-3d-vae", "to": "causal-masking", "relation": "builds-on" },
+    { "from": "sliding-window-decode", "to": "causal-3d-vae", "relation": "part-of" },
+    { "from": "causal-3d-vae", "to": "autoregressive-chunking", "relation": "relates-to" }
+  ]
+}

@@ -32,6 +32,11 @@
       "relation": "builds-on"
     },
     {
+      "from": "unet",
+      "to": "convolution",
+      "relation": "builds-on"
+    },
+    {
       "from": "skip-connections",
       "to": "unet",
       "relation": "part-of"

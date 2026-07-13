@@ -1,0 +1,27 @@
+{
+  "concepts": [
+    {
+      "id": "so2-rotation",
+      "name": "SO(2): The Circle of Turns",
+      "room": "the-sphere-of-turns",
+      "exhibit": "the-circle-so2",
+      "summary": "SO(2) is the group of planar turns R(θ)=[[cos θ,−sin θ],[sin θ,cos θ]]; the whole family is a CIRCLE (one angle, wrapping). Its Lie algebra so(2) is the 2×2 skew-symmetric matrices [[0,−a],[a,0]], and exp([[0,−θ],[θ,0]])=R(θ). Composing two turns ADDS their angles, R(α)R(β)=R(α+β) — the angle-addition identity as the group law on the circle. (Upstairs: the geometry of orientation and motion.)"
+    },
+    {
+      "id": "so3-rotation",
+      "name": "SO(3): The Surface of 3D Turns",
+      "room": "the-sphere-of-turns",
+      "exhibit": "the-manifold-so3",
+      "summary": "SO(3) is the group of 3×3 orthogonal matrices with determinant +1 — the turns of space, a smooth THREE-dimensional curved surface (nine written numbers, three free). Its Lie algebra so(3) is the 3×3 skew-symmetric matrices. A turn is an AXIS-ANGLE vector ω in ℝ³; exp(hat(ω)) is the rotation matrix, with closed form the RODRIGUES formula R=I+sin θ·K+(1−cos θ)·K². SO(3) cannot be drawn — a sphere is only a proxy, and its true shape is not a 2-sphere. (Upstairs: the geometry of orientation and motion.)"
+    }
+  ],
+  "edges": [
+    {"from": "so2-rotation", "to": "exponential-map", "relation": "builds-on"},
+    {"from": "so2-rotation", "to": "hat-operator", "relation": "builds-on"},
+    {"from": "so3-rotation", "to": "exponential-map", "relation": "builds-on"},
+    {"from": "so3-rotation", "to": "hat-operator", "relation": "builds-on"},
+    {"from": "so3-rotation", "to": "so2-rotation", "relation": "builds-on"},
+    {"from": "so2-rotation", "to": "angle-addition", "relation": "builds-on"},
+    {"from": "so2-rotation", "to": "sinusoid", "relation": "relates-to"}
+  ]
+}

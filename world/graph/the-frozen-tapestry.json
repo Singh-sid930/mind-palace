@@ -1,0 +1,32 @@
+{
+  "concepts": [
+    {
+      "id": "lora-core",
+      "name": "LoRA: Low-Rank Adaptation",
+      "room": "the-frozen-tapestry",
+      "exhibit": "the-frozen-tapestry",
+      "summary": "The fine-tuning update is approximated as a low-rank product: DELTA-W ~= B . A, with A of shape r x d and B of shape d x r and inner rank r << d. The base weight W is frozen and only A, B are trained; at use the correction slots straight in, W_new = W + B . A. For d=1000, r=8 this is 16,000 trained numbers against 1,000,000 for a full DELTA-W (62x fewer)."
+    },
+    {
+      "id": "low-rank-update",
+      "name": "The Low-Rank Update",
+      "room": "the-frozen-tapestry",
+      "exhibit": "the-low-rank-bet",
+      "summary": "LoRA's wager: the meaningful change during fine-tuning lives in a small subspace, so DELTA-W has low effective rank and can be written as B . A with a small inner rank r. It is a bet, confirmed by training, not a proof; too small an r cannot fit the task."
+    },
+    {
+      "id": "frozen-base-weights",
+      "name": "Frozen Base Weights",
+      "room": "the-frozen-tapestry",
+      "exhibit": "frozen-and-cheap",
+      "summary": "The pretrained weight W is frozen: no gradient flows into it, it is trained once and shared unchanged across every adaptation. Only the tiny A, B pair is trained and stored, so each adapted model is a few-megabyte adapter resting on one shared base, not a full copy."
+    }
+  ],
+  "edges": [
+    { "from": "low-rank-update", "to": "lora-core", "relation": "part-of" },
+    { "from": "frozen-base-weights", "to": "lora-core", "relation": "part-of" },
+    { "from": "lora-core", "to": "low-rank-approximation", "relation": "builds-on" },
+    { "from": "lora-core", "to": "qkv-projections", "relation": "builds-on" },
+    { "from": "lora-core", "to": "self-attention", "relation": "relates-to" }
+  ]
+}

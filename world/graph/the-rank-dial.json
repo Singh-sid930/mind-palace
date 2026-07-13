@@ -1,0 +1,24 @@
+{
+  "concepts": [
+    {
+      "id": "rank-hyperparameter",
+      "name": "Choosing the Rank r",
+      "room": "the-rank-dial",
+      "exhibit": "choosing-r",
+      "summary": "r is a hyperparameter with no closed-form rule, chosen by sweep + validation plateau. Trade-off: too small underfits (can't capture the update), too large costs params/compute, risks overfitting, and eventually beats nothing over full fine-tuning. Typical r = 4/8/16 (most LLM & diffusion tuning), 32/64 (harder or bigger domain shift), 128/256 (rare). Guided by how fast the update's singular values decay (effective rank), task similarity, data amount, and matrix coverage. Rule: pick the smallest r at which validation plateaus."
+    },
+    {
+      "id": "alpha-scaling",
+      "name": "The Alpha Scaling",
+      "room": "the-rank-dial",
+      "exhibit": "the-strength-rune",
+      "summary": "The adapter is applied as W_new = W + (alpha/r)*B*A. Alpha controls the update's MAGNITUDE decoupled from the rank r: dividing by r keeps overall strength stable as r changes, so alpha tunes loudness on its own axis. Conventions: alpha = r (scale 1) or alpha = 2r (double). This is the SAME alpha as ComfyUI's LoRA strength slider — it scales the B*A branch's contribution to the frozen model."
+    }
+  ],
+  "edges": [
+    {"from": "rank-hyperparameter", "to": "low-rank-approximation", "relation": "builds-on"},
+    {"from": "rank-hyperparameter", "to": "effective-rank", "relation": "relates-to"},
+    {"from": "alpha-scaling", "to": "rank-hyperparameter", "relation": "relates-to"},
+    {"from": "alpha-scaling", "to": "classifier-free-guidance", "relation": "relates-to"}
+  ]
+}

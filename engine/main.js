@@ -6,6 +6,7 @@ import * as THREE from 'three';
 import { solveLayout, spaceAt } from './layout.js';
 import { LevelManager } from './levels.js';
 import { Wisp } from './wisp.js';
+import { Footsteps } from './footsteps.js';
 import { DiagramPanel } from './diagrampanel.js';
 import { palette } from './palettes.js';
 import { Player, EYE } from './player.js';
@@ -80,6 +81,9 @@ async function boot() {
   levels.activateFor(world.hub);
   const { colliders, interactables, updates, dome } = levels;
   const wisp = new Wisp(scene, layout, roomsById);
+  // Marauder's footsteps: lead through a room's exhibits in study order, then
+  // out to the next chamber in learning order. Reads the active floor's tours.
+  const footsteps = new Footsteps(scene, layout, roomsById, (rid) => levels.tours.get(rid));
   const diagramPanel = new DiagramPanel(scene);
 
   // Read-only card shown alongside the floating diagram (pointer stays locked).
@@ -232,6 +236,9 @@ async function boot() {
       if (diagramPanel.isOpen) closeDiagramStage();
       hud.toggle('floo');
       player.controls.unlock();
+    } else if (e.code === 'KeyP') {
+      // Toggle the Marauder's footsteps on/off (persisted).
+      footToast(footsteps.toggle());
     } else if (e.code === 'Escape') {
       if (hud.diagramMaxed) hud.closeDiagramMax();
       else if (constellation.isOpen) constellation.close();
@@ -253,10 +260,22 @@ async function boot() {
     setTimeout(() => { flashEl.style.opacity = '0'; }, 60);
   }
 
+  // Transient confirmation when the footsteps guide is toggled.
+  const footToastEl = document.getElementById('foot-toast');
+  let footToastTimer = null;
+  function footToast(on) {
+    footToastEl.textContent = on
+      ? '✦ Marauder’s footsteps: guiding'
+      : '✦ Marauder’s footsteps: off';
+    footToastEl.style.opacity = '1';
+    clearTimeout(footToastTimer);
+    footToastTimer = setTimeout(() => { footToastEl.style.opacity = '0'; }, 1500);
+  }
+
   // --- debug / screenshot API (window.__palace) -----------------------------
   const debugApi = installDebugApi({
     scene, camera, player, layout, roomsById, interactables, levels,
-    wisp, diagramPanel, teleport, palette, showStudyCard,
+    wisp, footsteps, diagramPanel, teleport, palette, showStudyCard, companion,
   });
 
   // --- main loop ------------------------------------------------------------
@@ -278,6 +297,7 @@ async function boot() {
     dome.position.set(camera.position.x, 0, camera.position.z);
     companion.update(dt, camera, t);
     wisp.update(dt, camera, t);
+    footsteps.update(dt, camera, t);
     diagramPanel.update(dt, t);
     for (const fn of updates) fn(t);
 
@@ -287,7 +307,9 @@ async function boot() {
       acc = 0;
       const space = spaceAt(layout, camera.position.x, camera.position.z);
       hud.setLocation(space);
-      wisp.setRoom(space && space.kind === 'room' && space.room ? space.room.id : null);
+      const hereRoom = space && space.kind === 'room' && space.room ? space.room.id : null;
+      wisp.setRoom(hereRoom);
+      footsteps.setRoom(hereRoom);
       target = findTarget();
       // A gated passage summons the Gatekeeper: resolve its prerequisite
       // concepts and hand them to the chat so pressing T opens a quiz.

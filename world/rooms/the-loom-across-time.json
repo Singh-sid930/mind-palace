@@ -1,0 +1,53 @@
+{
+  "id": "the-loom-across-time",
+  "name": "The Loom Across Time",
+  "wing": "video",
+  "size": "medium",
+  "order": 2,
+  "connections": ["the-flickering-frames"],
+  "exhibits": [
+    {
+      "id": "the-temporal-loom",
+      "type": "artifact",
+      "title": "The Loom That Weaves Through Time",
+      "prop": "orrery",
+      "scale": 1.4,
+      "text": "In the last chamber you saw WHY frames must be denoised jointly. Here stands the machine that does it. It looks like a loom, but watch its shuttle and you will see it weaves in two directions at once.\n\nFirst, the ordinary weave you already know from the Attention wing: within a single frame, the shuttle runs ACROSS the cloth, letting every position confer with every other so the picture is internally coherent. This is SPATIAL self-attention — flatten a frame's h·w positions into a sequence and let each attend to all the rest. It is the whole of a still image's attention, and it is inherited here untouched.\n\nBut this loom has a second motion the still-picture loom never had. Fix your eye on a single thread — one spatial position (i, j), say the corner of a mouth. The shuttle now runs BACKWARD AND FORWARD THROUGH TIME, threading that same position (i, j) through every one of the T frames, letting the mouth-corner in frame 5 attend to the mouth-corner in frames 1, 2, 3, 4 and beyond. This is TEMPORAL self-attention, and it is the ONE new component of video diffusion. Because position (i, j) in frame 5 can now look at (i, j) in every other frame, it KNOWS what it looked like an instant ago — and so it stops flickering. The quarrelling portraits of the last hall are steadied not by magic but by this single new gaze along the T axis.\n\nOne caution the next plinths will justify: the loom does NOT weave one vast cloth across all of space AND all of time at once. It weaves two separate, cheaper passes — space, then time — and that FACTORIZATION is what keeps the whole enterprise affordable."
+    },
+    {
+      "id": "temporal-attention",
+      "type": "plaque",
+      "prop": "pedestal",
+      "title": "Temporal Attention — The One New Gaze",
+      "text": "Image diffusion had ONE kind of self-attention: SPATIAL. Flatten a frame's h·w positions into a sequence and let every position attend to every other, so the frame is internally coherent. Video adds exactly ONE new kind: TEMPORAL self-attention.\n\nThe rule is simple and precise. Fix a single spatial position (i, j). Gather the vector sitting at (i, j) in every one of the T frames — a little sequence of length T, one token per frame. Run self-attention over just those T tokens. Do this for every position (i, j). Now the feature at (i, j) in frame 5 has directly attended to the feature at (i, j) in frames 1 through 4 (and all the others): each spatial position attends to ITSELF across time.\n\nThis is the single component that image diffusion lacked, and it is the entire cure for flicker. Frame 5 no longer paints blind; position (i, j) in frame 5 looks back at (i, j) in the earlier frames and matches them — the colour holds, the object stays put, the sequence stops jittering. Everything else in the denoiser is inherited from image diffusion. Temporal attention is the one thing added, and consistency over time is the one thing it buys."
+    },
+    {
+      "id": "factorized-not-3d",
+      "type": "plaque",
+      "prop": "lectern",
+      "title": "Why We Weave Space and Time Apart",
+      "text": "One could imagine the honest, brute-force gaze: let EVERY position in EVERY frame attend to every position in every other frame — one enormous joint attention over all T·h·w tokens at once. It would work. It is also ruinous.\n\nAttention costs the square of its sequence length. Full joint 3D attention runs over T·h·w positions, so it costs O((T·h·w)^2). Double the frames and quadruple the resolution and the bill explodes; it is the same quadratic wall you met in the Attention wing, now raised to a video-sized power.\n\nSo nearly every video model FACTORIZES: it replaces that one giant operation with two cheaper passes.\n— SPATIAL attention fixes a frame and attends over its h·w tokens — 'is this frame internally coherent?' — at cost O((h·w)^2), and it runs T times.\n— TEMPORAL attention fixes a position (i, j) and attends over its T frames — 'is this region consistent frame to frame?' — at cost O(T^2), and it runs h·w times.\n\nThe two together cost on the order of (h·w)^2 + T^2 per token-group instead of (T·h·w)^2 — dramatically cheaper, and in the same anti-quadratic spirit that factored, sparsified and linearised attention elsewhere in the palace. Two modest looms, run in sequence, in place of one impossible one."
+    },
+    {
+      "id": "the-video-block",
+      "type": "plaque",
+      "prop": "pedestal",
+      "title": "Inside the Video Denoiser Block",
+      "text": "Assemble the pieces and the video denoiser's core block reads as the image block with exactly one insertion. In fixed order:\n\n1. SPATIAL self-attention — inherited from image diffusion. Fix a frame, attend over its h·w tokens; make each frame internally coherent.\n\n2. TEMPORAL self-attention — THE NEW ADDITION, and the only one. Fix a position (i, j), attend over its T frames; make each region consistent through time. Remove this single sub-layer and you are back to independent per-frame denoising, and the flicker returns.\n\n3. CROSS-attention to text — inherited from image diffusion. Each image position attends to the prompt's text tokens, so the moving picture obeys the words you asked for.\n\n(Around these sit the same convolutions, timestep injection and feed-forward layers as before.) The lesson of the whole chamber compressed to one line: video's denoiser is image's denoiser plus one temporal self-attention layer. That layer is where the frames finally learn to agree."
+    },
+    {
+      "id": "factorized-attention-diagram",
+      "type": "diagram",
+      "title": "Spatial Across a Frame, Temporal Across Frames",
+      "spec": "graph TD\n  subgraph SPATIAL[\"SPATIAL attention - fix frame t, attend over h.w tokens\"]\n    A1[\"(1,1)\"] --- A2[\"(1,2)\"]\n    A2 --- A3[\"(2,1)\"]\n    A3 --- A4[\"(2,2)\"]\n    A1 --- A4\n  end\n  subgraph TEMPORAL[\"TEMPORAL attention - fix position (i,j), attend over T frames\"]\n    T1[\"(i,j) @ frame 1\"] --> T2[\"(i,j) @ frame 2\"]\n    T2 --> T3[\"(i,j) @ frame 3\"]\n    T3 --> T4[\"(i,j) @ frame T\"]\n  end\n  SPATIAL -->|cost O((h.w)^2), run T times| COST[\"factorized: (h.w)^2 + T^2\"]\n  TEMPORAL -->|cost O(T^2), run h.w times| COST",
+      "caption": "Two cheap passes instead of one impossible one. SPATIAL attention fixes a frame and lets its h·w positions attend to each other (within-frame coherence). TEMPORAL attention fixes a position (i, j) and lets its value attend across all T frames (frame-to-frame consistency). Factorizing costs O((h·w)^2) + O(T^2) rather than the full-3D O((T·h·w)^2)."
+    },
+    {
+      "id": "the-two-axes",
+      "type": "image",
+      "title": "The Two Axes of the Loom, and What They Save",
+      "image": "world/assets/video-factorized-attention.png",
+      "caption": "Lay the whole video flat as a grid: T frames down the rows, the h·w spatial positions of a frame across the columns. Panel (a) makes the loom's two motions a single picture. The gold ROW is SPATIAL attention — fix one frame and let all its h·w positions attend to each other, asking 'is this frame internally coherent?'. The blue COLUMN is TEMPORAL attention — fix one position (here p6) and let it attend to itself across every one of the T frames, asking 'is this region steady frame to frame?'. Their shared cell is the one position, in the one frame, that both passes touch. Panel (b) is why we weave the two apart rather than as one cloth. A single joint 3D attention runs over all T·h·w tokens at once, costing on the order of (T·h·w)² pairs; factorizing pays only (h·w)² + T². For a representative Wan-scale latent — T=21 frames, h·w=1024 positions — that is roughly 4.6×10⁸ pair-scores collapsed to about 1.05×10⁶: some 440-fold cheaper (values representative, log scale). Two modest looms in sequence in place of one ruinous one — the same anti-quadratic escape you met throughout the Attention wing, now raised to a video-sized power."
+    }
+  ]
+}

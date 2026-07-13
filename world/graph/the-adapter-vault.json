@@ -1,0 +1,41 @@
+{
+  "concepts": [
+    {
+      "id": "merge-vs-adapter",
+      "name": "Merge vs. Separate Deployment",
+      "room": "the-adapter-vault",
+      "exhibit": "merge-or-plug-in",
+      "summary": "A trained LoRA pair A, B has two deployments. MERGE folds it in: W_merged = W + B.A, a single matrix with zero extra inference cost but W permanently changed. KEEP SEPARATE ships W untouched plus tiny A, B and computes the branch live, y = W.x + (B.A.x).alpha (the ComfyUI plug-in case). The pair always exists after training; merging is optional. This resolves the confusion between 'fine-tuning updates W' (merged) and 'download a LoRA and plug it in' (separate)."
+    },
+    {
+      "id": "adapter-stacking",
+      "name": "Stacking & Scaling Adapters",
+      "room": "the-adapter-vault",
+      "exhibit": "stack-and-scale",
+      "summary": "Because each LoRA branch is just an addition onto W.x, kept-separate adapters can be swapped, stacked, and scaled. Stack: y = W.x + B1A1x + B2A2x + ... (style + character + pose). Scale: each branch has its own alpha strength dial (the ComfyUI slider; 0 = off, 1 = trained strength, >1 = stronger). The base checkpoint W is multi-GB downloaded once; LoRA files are 10-200 MB downloaded many. Merging forfeits all three freedoms for one fast matrix."
+    },
+    {
+      "id": "peft-workflow",
+      "name": "The PEFT Workflow",
+      "room": "the-adapter-vault",
+      "exhibit": "the-peft-four-moves",
+      "summary": "Forging a LoRA in code is four moves: (1) load the frozen base; (2) define a LoraConfig with r, lora_alpha, and target_modules (typically attention q_proj/k_proj/v_proj/o_proj); (3) get_peft_model() injects the parallel A, B branches and freezes the rest; (4) train normally so only A, B get gradients. save_pretrained writes just the few-MB adapter; PeftModel.from_pretrained plugs it back; merge_and_unload folds it in. diffusers follows the same moves for U-Net attention (to_q/to_k/to_v/to_out.0)."
+    },
+    {
+      "id": "qlora",
+      "name": "QLoRA",
+      "room": "the-adapter-vault",
+      "exhibit": "qlora-the-memory-saver",
+      "summary": "QLoRA loads the frozen base in 4-bit quantization and trains the LoRA on top in full precision. The base is only read in the forward pass (never receives a gradient), so a coarse 4-bit copy suffices for W.x, while the tiny trainable A, B stay full precision. This cuts memory ~4x (the base is nearly all of it), letting large models be fine-tuned on a single consumer GPU. Enabled via BitsAndBytesConfig(load_in_4bit=True, ...) then the usual get_peft_model()."
+    }
+  ],
+  "edges": [
+    { "from": "merge-vs-adapter", "to": "lora-core", "relation": "relates-to" },
+    { "from": "adapter-stacking", "to": "merge-vs-adapter", "relation": "relates-to" },
+    { "from": "adapter-stacking", "to": "latent-diffusion", "relation": "relates-to" },
+    { "from": "merge-vs-adapter", "to": "latent-diffusion", "relation": "relates-to" },
+    { "from": "peft-workflow", "to": "lora-core", "relation": "relates-to" },
+    { "from": "qlora", "to": "lora-core", "relation": "builds-on" },
+    { "from": "qlora", "to": "peft-workflow", "relation": "relates-to" }
+  ]
+}

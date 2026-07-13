@@ -1,0 +1,59 @@
+{
+  "id": "the-singular-prism",
+  "name": "The Singular Prism",
+  "wing": "math",
+  "size": "medium",
+  "order": 6,
+  "exhibits": [
+    {
+      "id": "the-prism",
+      "type": "artifact",
+      "title": "The Singular Prism",
+      "prop": "orrery",
+      "scale": 1.3,
+      "text": "A matrix is not a mere table of numbers — it is a MOTION. Feed it a vector and it moves that vector to a new place: it is a linear transformation, bending all of space in one consistent way. This prism takes any such motion and splits it, as glass splits light, into three simpler motions performed in turn. That is the SINGULAR VALUE DECOMPOSITION: every matrix M, of any shape, can be written M = U · Σ · Vᵀ — first a rotation (Vᵀ), then a pure stretch along the axes (Σ), then another rotation (U). Rotate, stretch, rotate. Nothing more.\n\nWatch what it does to the unit circle. Take M = [[2, 1], [1, 2]]. Every arrow of length one, swept all the way round, is carried by M onto an ELLIPSE. The circle's roundness is destroyed only by the middle step, the stretch: the two rotations merely turn the picture. The ellipse's longest semi-axis has length 3 and its shortest length 1 — and those two numbers, 3 and 1, are the SINGULAR VALUES of M. They are exactly how far the motion stretches space along its two principal directions. Here the long axis points along [1,1]/√2 and the short along [1,−1]/√2; the prism finds those directions for you. A round input, an oval output — and the shape of that oval is the whole character of the matrix, laid bare."
+    },
+    {
+      "id": "the-three-motions",
+      "type": "plaque",
+      "prop": "pedestal",
+      "title": "The Three Motions",
+      "text": "M = U · Σ · Vᵀ. Read it right to left, the order the motion acts.\n\nVᵀ — the FIRST rotation. Its rows are the input directions: an orthonormal set of axes in the source space (the right-singular vectors). It turns space so those special directions line up with the coordinate axes, without stretching anything.\n\nΣ — the STRETCH. A diagonal matrix carrying the singular values σ₁ ≥ σ₂ ≥ … ≥ 0 down its diagonal and zeros elsewhere. It multiplies the first axis by σ₁, the second by σ₂, and so on — pure scaling, each axis on its own. This is the only step that changes lengths.\n\nU — the SECOND rotation. Its columns are the output directions (the left-singular vectors), another orthonormal set, in the destination space. It swings the stretched axes into their final orientation.\n\nEvery matrix, square or oblong, has such a decomposition — it always exists, and the singular values are unique. U and V are rotations (orthonormal: they preserve every length and angle), so all the character of the map — what it magnifies, what it crushes — lives entirely in the singular values of Σ. To know the σ is to know how the motion stretches space along each principal direction."
+    },
+    {
+      "id": "the-ranked-importances",
+      "type": "plaque",
+      "prop": "lectern",
+      "title": "The Ranked Importances",
+      "text": "The singular values are always laid out in order, σ₁ ≥ σ₂ ≥ … ≥ 0, largest first. This ranking is the point: each σ measures how much ENERGY the motion carries along its direction — how hard the matrix pushes there. The first direction is the one the transformation cares about most; the last, the one it barely touches.\n\nAnd here is the fact that makes the whole decomposition precious. For a great many real matrices the singular values DECAY FAST: a few large ones, then a long tail sliding toward zero. Read a typical spectrum:\n\n  σ:  8.2,  5.1,  3.7,  0.9,  0.3,  0.08,  … ≈ 0\n\nThere is an ELBOW after the third value — above it, the motion's real substance; below it, a fading whisper. The energy is hoarded by the first few directions and all but absent from the rest.\n\nThis is truer still for matrices that are DIFFERENCES — one matrix subtracted from another close to it. Such a difference tends to have only a handful of meaningful singular values, the rest collapsing to nearly nothing, because the two matrices agreed almost everywhere and parted ways in just a few directions. Hold that thought: a fast-decaying spectrum means a matrix is secretly simpler than its size suggests."
+    },
+    {
+      "id": "best-few",
+      "type": "plaque",
+      "prop": "pedestal",
+      "title": "The Best Few",
+      "text": "If the tail of σ is nearly zero, why carry it? Keep only the top r singular values, set the rest to zero, and rebuild:\n\n  M ≈ U_r · Σ_r · V_rᵀ\n\nwith U_r of shape (d × r), Σ_r the (r × r) diagonal of the surviving values, and V_rᵀ of shape (r × d). This is the RANK-r APPROXIMATION of M — the closest matrix to M that can be built from only r directions.\n\nThe ECKART–YOUNG theorem makes 'closest' exact and provable: among ALL matrices of rank r, this truncated SVD is THE one that minimises the reconstruction error ‖M − M_r‖. You cannot do better with r directions; and the error you pay is set precisely by the singular values you discarded. So when the spectrum decays fast, a small r captures almost all of M — the elbow tells you where to cut.\n\nAnd the saving is real. A full d × d matrix costs d² numbers. Its rank-r approximation costs only the two thin factors: d×r for U_r and r×d for V_rᵀ, that is 2dr numbers (plus r for the diagonal). With d = 1000 and r = 8, that is 16,000 numbers standing in for a million — a matrix compressed to a sliver, with the theorem's guarantee that no rank-8 stand-in is closer."
+    },
+    {
+      "id": "svd-diagram",
+      "type": "diagram",
+      "title": "Rotate, Stretch, Rotate — and the Best Few",
+      "spec": "graph LR\n  X[input vector] --> VT[Vᵀ: rotate input axes]\n  VT --> SIG[Σ: stretch by σ₁≥σ₂≥…]\n  SIG --> U[U: rotate to output]\n  U --> M[M·x]\n  SIG -.keep top r σ.-> TR[Σ_r: zero the tail]\n  TR --> APX[U_r Σ_r V_rᵀ: best rank-r approx]\n  APX --> EY[Eckart–Young: provably closest]",
+      "caption": "Every matrix is rotate (Vᵀ), stretch by the singular values (Σ), rotate (U). Keep only the top r singular values and you get the provably best rank-r approximation — tiny when the spectrum decays fast."
+    },
+    {
+      "id": "the-ellipse-of-a-map",
+      "type": "image",
+      "title": "The Oval a Matrix Leaves Behind",
+      "image": "world/assets/svd-prism.png",
+      "caption": "Three windows onto one motion. LEFT: feed M = [[2,1],[1,2]] the whole unit circle and it comes back an ellipse — the two rotations only turn the picture, the stretch alone spoils the roundness, and the semi-axes σ₁=3, σ₂=1 (along [1,1]/√2 and [1,−1]/√2) are the entire character of the map. CENTRE: the singular values ranked largest-first, decaying fast to an elbow after the third; the climbing curve counts how much of the motion's energy the top few directions already hoard — here the first three hold 99.2%, the tail a fading whisper. RIGHT: throw away the tail and rebuild from only r directions. The reconstruction error falls steeply, then flattens: by the Eckart–Young theorem this truncation is provably the closest rank-r matrix there is, and the error you pay is fixed exactly by the singular values you discarded. When the spectrum decays fast, a handful of directions is enough — the oval was always simpler than its size let on."
+    },
+    {
+      "id": "where-this-leads",
+      "type": "plaque",
+      "prop": "lectern",
+      "title": "Where This Leads ↑",
+      "text": "You need none of what follows here — own the pure decomposition first. But a whisper of where it carries.\n\nOne floor up, in the Workshop of Attunement, live enormous trained matrices, and the craft there is to nudge them — to add a large correction matrix to one already learned. That correction is a DIFFERENCE of matrices, and you have just seen (at the Ranked Importances) that differences hoard their energy in only a few singular values: their spectrum decays fast, their true rank is small.\n\nSo instead of storing the whole d×d correction, the artisans upstairs store just its best few directions — the product of two thin matrices, exactly the U_r and V_rᵀ shapes you met at the Best Few. Rotate-scale-rotate, truncated to a handful of directions, standing in for a giant update at a fraction of the cost. They call the art LOW-RANK ADAPTATION.\n\nBut that is their costume for your mathematics. Here there are no weights, no training, no adaptation — only matrices, singular values, and the theorem that the best few directions are provably enough. Master the prism; the workshop will make sense the moment you climb the stair."
+    }
+  ]
+}

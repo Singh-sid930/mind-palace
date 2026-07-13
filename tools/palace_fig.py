@@ -30,6 +30,9 @@ WING = {
     "parchment":{"accent": "#e0c98a", "warm": "#d9b25a", "cool": "#c9b079"},
     "violet":   {"accent": "#d2a8ff", "warm": "#d8c27a", "cool": "#a88fe0"},
     "crimson":  {"accent": "#ff9a7a", "warm": "#e0a860", "cool": "#d97f6b"},
+    "obsidian": {"accent": "#8fe9dc", "warm": "#d9b25a", "cool": "#7fc0b8"},
+    "silver":   {"accent": "#c4ceda", "warm": "#d9c07a", "cool": "#8fb0d0"},
+    "bronze":   {"accent": "#e8c26a", "warm": "#d98a4a", "cool": "#9fb87a"},
 }
 
 # Diverging/sequential colormaps that read well on the dark ground.

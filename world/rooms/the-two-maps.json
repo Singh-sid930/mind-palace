@@ -1,0 +1,52 @@
+{
+  "id": "the-two-maps",
+  "name": "The Two Maps",
+  "wing": "lie",
+  "size": "grand",
+  "order": 3,
+  "exhibits": [
+    {
+      "id": "the-two-maps",
+      "type": "artifact",
+      "title": "The Two Maps",
+      "prop": "exp_log_sphere",
+      "scale": 1.4,
+      "text": "A great brass sphere hangs at the chamber's heart, and where its north pole meets the air a flat pane of glass lies tangent to it — a single window touching the curved world at one point. Watch the instrument breathe.\n\nOUT it goes. On the flat window a straight arrow grows from the point of contact, rigid and true, the way arrows behave on a table. But the sphere will not permit a straight arrow to stay straight upon it. As the arrow lengthens, its tip is caught and laid down onto the curved brass, and there it does the only honest thing a path can do on a sphere: it curves. A great-circle arc — a GEODESIC, the straightest road the surface allows — wraps down and around from the pole, travelling a distance exactly equal to the arrow's length, setting off in exactly the arrow's direction. A flat straight step has become a curved move that never leaves the surface. This is the EXPONENTIAL MAP.\n\nThen the motion reverses. The geodesic retracts, gathering itself back up off the brass and onto the glass, until only the straight arrow remains on the flat window, pointing at where the curved journey ended. Curved has been unwrapped into flat. This is the LOGARITHM MAP, the exponential run backwards.\n\nRound and round the instrument cycles — arrow to arc, arc to arrow — and in that patient breathing lies the whole secret of doing arithmetic on a curved world: leave onto the flat window, reckon in straight lines, and return along a geodesic to a point that is always, exactly, on the surface."
+    },
+    {
+      "id": "the-exponential",
+      "type": "plaque",
+      "prop": "pedestal",
+      "title": "The Exponential Map",
+      "text": "Stand at a point p on a curved surface and lay the flat tangent plane against it there — the window of all straight directions you might set off in. Pick one such tangent vector v: it has a direction and a length. The EXPONENTIAL MAP, written exp_p(v), answers a single question — 'if I set off from p in the direction of v and walk along the surface a distance equal to v's length, where do I land?'\n\nThe road you walk is a GEODESIC: the straightest possible path the surface allows, the curved world's honest imitation of a straight line. So the recipe is exact — take the flat straight step v, then WALK it out along the surface. A short v lands you a short geodesic away; double its length and you travel twice as far along the same arc; reverse it and you walk the opposite way.\n\nTwo things are preserved and one is traded. The DIRECTION of departure is kept — the geodesic leaves p exactly along v. The LENGTH is kept, now measured as distance ALONG the surface rather than across the flat plane. What is traded away is straightness: the flat step becomes a curved move. Flat straight step in, curved surface point out — and the point is guaranteed to lie ON the surface, never off it. That guarantee is the whole reason the map is treasured."
+    },
+    {
+      "id": "the-logarithm",
+      "type": "plaque",
+      "prop": "lectern",
+      "title": "The Logarithm Map",
+      "text": "The LOGARITHM MAP runs the exponential backwards. Give it a point q on the surface, near p, and it returns the single straight tangent vector at p that reaches q: log_p(q) = v, the v for which exp_p(v) = q. Where exp wraps a flat arrow down onto the curved brass, log unwraps the curved journey back up onto the flat window — its direction tells you which way q lies from p, and its length tells you the geodesic distance between them. Curved point in, flat straight vector out.\n\nTogether the two maps form a BRIDGE between a curved world and a flat one, and the crossing is the pattern you will use again and again:\n\n  1. LOG — step off the surface at p onto the flat tangent window, turning nearby points into ordinary straight vectors.\n  2. Reckon — do plain, straight-line arithmetic there: add, average, scale, take a small step. The flat window obeys the simple rules of vectors.\n  3. EXP — return along a geodesic to the surface, landing on a point that is once again perfectly VALID.\n\nOne subtlety, kept honest: this bridge is trustworthy near p and grows unreliable far away, where many arrows can reach the same distant point. For the small, local moves that arithmetic needs, exp and log are faithful inverses — out to the flat, compute, back to the curved, always on the surface."
+    },
+    {
+      "id": "exp-log-diagram",
+      "type": "diagram",
+      "title": "Out to the Flat, Back to the Curved",
+      "spec": "graph LR\n  V[straight tangent vector v] -->|exp: walk the geodesic| Q[surface point q]\n  Q -->|log: unwrap to tangent| V2[straight tangent vector v]\n  V2 -.identity round trip.-> V",
+      "caption": "The exponential map wraps a flat straight vector into a curved geodesic move onto the surface; the logarithm map unwraps a surface point back to the straight vector that reaches it. exp and log are inverses: log then exp (or exp then log) returns you where you began — the bridge between the flat window and the curved world."
+    },
+    {
+      "id": "wrap-and-unwrap",
+      "type": "image",
+      "title": "Wrap and Unwrap, Measured Out",
+      "image": "world/assets/lie-exp-log.png",
+      "caption": "The instrument caught in still brass. The curved world is the simplest one there is — the unit circle, the turns of the plane — and the flat window is the tangent line laid against it at the point p. Panel (a) is the exponential map read as a promise about length. The straight step (the orange arrow) rises off the flat line with some length s = θ; the exponential lays it down onto the brass as a geodesic arc — the honest straightest road — of exactly that same length, curving up and around to the point q. Nothing is lost in the crossing but straightness: a length-s step in the flat becomes an s-long journey along the curve. On the circle this is exact and nameable — the tangent value θ maps to the point standing at angle θ, here θ = 1.0 radian, and the arc it travels is 1.0 long because the radius is one. Panel (b) closes the loop. Send v = 1.0 out along exp to the point q = (cos 1, sin 1) ≈ (0.540, 0.841); then read it back with log, the exponential run in reverse, and land on 1.0 again, unchanged. Out to the flat, reckon in straight lines, back along a geodesic — and always, exactly, onto the surface."
+    },
+    {
+      "id": "where-this-leads",
+      "type": "plaque",
+      "prop": "pedestal",
+      "title": "Where This Leads ↑",
+      "text": "You need none of this to own the two maps — but a whisper of the hall it opens onto, a floor not yet raised in this palace.\n\nImagine a world where every valid state is a point on a curved surface — every honest configuration a place on the brass — and to move from one to the next you may only ever land on the surface, never beside it. How do you take a step? You cannot simply add a straight vector to a curved point; the sum would fall off the world. But you have the bridge. LOG the current point to the flat window, take your ordinary straight step there — a step downhill to lessen some regret, or a small nudge of uncertainty added to a guess — and EXP back along a geodesic to a point that is, once more, perfectly valid.\n\nThis is the quiet workhorse of the halls above: doing gradient descent, or tracking a moving thing through time, when the space of answers is curved. The exponential map is exactly how a straight step, or a breath of uncertainty, is carried onto a curved space of motion without ever producing an impossible state. Master the two maps here as pure geometry; the moment that hall is built, its machinery will already be familiar."
+    }
+  ]
+}

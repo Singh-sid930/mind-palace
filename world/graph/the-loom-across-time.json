@@ -1,0 +1,45 @@
+{
+  "concepts": [
+    {
+      "id": "temporal-attention",
+      "name": "Temporal Attention",
+      "room": "the-loom-across-time",
+      "exhibit": "temporal-attention",
+      "summary": "The one new component of video diffusion. Fix a spatial position (i, j) and gather its vector from every one of the T frames; run self-attention over just those T tokens, for every position. Thus each spatial position attends to ITSELF across time, so position (i, j) in a later frame knows what it looked like in earlier frames. This is the entire cure for flicker: it is the only self-attention image diffusion lacked, and temporal consistency is exactly what it buys."
+    },
+    {
+      "id": "factorized-attention",
+      "name": "Factorized Spatial+Temporal Attention",
+      "room": "the-loom-across-time",
+      "exhibit": "factorized-not-3d",
+      "summary": "Replacing one full joint 3D attention over all T·h·w positions (cost O((T·h·w)^2), explosive) with two cheaper passes: SPATIAL attention fixes a frame and attends over its h·w tokens at cost O((h·w)^2), and TEMPORAL attention fixes a position and attends over its T frames at cost O(T^2). The factorized cost is (h·w)^2 + T^2 rather than (T·h·w)^2 — dramatically cheaper, in the same anti-quadratic spirit as the rest of the attention-cost work."
+    }
+  ],
+  "edges": [
+    {
+      "from": "factorized-attention",
+      "to": "temporal-attention",
+      "relation": "part-of"
+    },
+    {
+      "from": "temporal-attention",
+      "to": "self-attention",
+      "relation": "builds-on"
+    },
+    {
+      "from": "temporal-attention",
+      "to": "video-diffusion",
+      "relation": "part-of"
+    },
+    {
+      "from": "temporal-attention",
+      "to": "rope",
+      "relation": "relates-to"
+    },
+    {
+      "from": "factorized-attention",
+      "to": "attention-quadratic-cost",
+      "relation": "relates-to"
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "concepts": [
+    {
+      "id": "svd-connection",
+      "name": "The SVD Connection",
+      "room": "the-hall-of-directions",
+      "exhibit": "the-direction-glass",
+      "summary": "Any update matrix factors as delta-W = U*Sigma*V^T (SVD); singular values sigma measure per-direction importance and, for fine-tuning updates, DECAY FAST. Keeping the top r (Eckart-Young: the optimal rank-r approximation) and grouping B = U_r*Sigma_r, A = V_r^T gives exactly LoRA's B*A shape. The key refinement: LoRA never forms delta-W nor runs an SVD; it directly LEARNS a rank-r factorization B*A by gradient descent to minimise the task loss (not to reconstruct a given delta-W). SVD is the THEORY explaining why low rank suffices, not a pipeline step."
+    },
+    {
+      "id": "effective-rank",
+      "name": "Effective Rank",
+      "room": "the-hall-of-directions",
+      "exhibit": "the-elbow",
+      "summary": "The effective rank of an update is the number of dominant singular directions before the elbow where the singular-value spectrum collapses toward zero. It sets how large r must be: fast-decaying sigmas (steep cliff) mean a tiny subspace and a tiny r suffices; slow decay (a broad, flat spectrum) means the change is spread across many directions and r must grow. Not a pre-computed formula but the shape of the spectrum the useful update would have."
+    }
+  ],
+  "edges": [
+    {"from": "effective-rank", "to": "svd-connection", "relation": "part-of"},
+    {"from": "svd-connection", "to": "singular-value-decomposition", "relation": "builds-on"},
+    {"from": "svd-connection", "to": "low-rank-approximation", "relation": "builds-on"},
+    {"from": "svd-connection", "to": "lora-core", "relation": "relates-to"},
+    {"from": "effective-rank", "to": "singular-values", "relation": "relates-to"}
+  ]
+}

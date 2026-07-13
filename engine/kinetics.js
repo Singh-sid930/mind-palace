@@ -420,7 +420,143 @@ function guidanceArrows(pal) {
   return { group: g, update };
 }
 
+// --- low_rank_bottleneck: the LoRA parallel branch, animated -----------------
+// d inputs on the left, d outputs on the right, and a thin waist of r nodes
+// between them. Motes of signal converge through the narrow r bottleneck and
+// fan back out — the squeeze-to-r-expand-to-d that FORCES the update low-rank —
+// beside a faint frozen slab (W). Teal, to match the obsidian Workshop.
+function lowRankBottleneck(pal) {
+  const g = new THREE.Group();
+  g.add(smallPedestal(pal));
+  const Y = 1.62, D = 6, R = 2, xL = -0.72, xR = 0.72, spread = 0.95;
+  const TEAL = 0x9af0e0;
+  const col = (x, n, h, r = 0.05) => {
+    const arr = [], step = n > 1 ? spread / (n - 1) : 0;
+    for (let i = 0; i < n; i++) {
+      const y = Y + (i - (n - 1) / 2) * step;
+      const m = new THREE.Mesh(new THREE.SphereGeometry(r, 8, 8), bas(h));
+      m.position.set(x, y, 0);
+      g.add(m); arr.push(m.position.clone());
+    }
+    return arr;
+  };
+  const Ln = col(xL, D, TEAL), Mn = col(0, R, 0xffffff, 0.07), Rn = col(xR, D, TEAL);
+  // Faint frozen W slab behind, spanning input to output directly.
+  const slab = new THREE.Mesh(
+    new THREE.PlaneGeometry(1.55, spread * 1.15),
+    bas(0x8590a0, { transparent: true, opacity: 0.08, side: THREE.DoubleSide, depthWrite: false })
+  );
+  slab.position.set(0, Y, -0.2);
+  g.add(slab);
+  // Fan-in (L->M) and fan-out (M->R) wires.
+  const verts = [];
+  for (const a of Ln) for (const b of Mn) verts.push(a.x, a.y, a.z, b.x, b.y, b.z);
+  for (const a of Mn) for (const b of Rn) verts.push(a.x, a.y, a.z, b.x, b.y, b.z);
+  const lg = new THREE.BufferGeometry();
+  lg.setAttribute('position', new THREE.Float32BufferAttribute(verts, 3));
+  g.add(new THREE.LineSegments(lg, new THREE.LineBasicMaterial({
+    color: TEAL, transparent: true, opacity: 0.2, blending: THREE.AdditiveBlending, depthWrite: false,
+  })));
+  // Motes routed L->M->R, brightest at the waist.
+  const K = 12, motes = [], paths = [];
+  const gm = new THREE.SphereGeometry(0.035, 6, 6);
+  for (let k = 0; k < K; k++) {
+    paths.push([Ln[k % D], Mn[k % R], Rn[(k * 5) % D]]);
+    const m = new THREE.Mesh(gm, bas(0xffffff, { transparent: true, blending: THREE.AdditiveBlending, depthWrite: false }));
+    g.add(m); motes.push(m);
+  }
+  const light = new THREE.PointLight(pal.glow, 0.9, 3.5, 1.8);
+  light.position.set(0, Y, 0.5);
+  g.add(light);
+  const _a = new THREE.Vector3(), _b = new THREE.Vector3();
+  const update = (t) => {
+    g.rotation.y = Math.sin(t * 0.16) * 0.5; // sway (the fan reads best near front-on)
+    for (let k = 0; k < K; k++) {
+      const ph = ((t * 0.45) + k / K) % 1;
+      const [a, b, c] = paths[k];
+      if (ph < 0.5) _a.copy(a).lerp(b, ph / 0.5);
+      else _a.copy(b).lerp(c, (ph - 0.5) / 0.5);
+      motes[k].position.copy(_a);
+      motes[k].material.opacity = 0.45 + 0.55 * Math.cos((ph - 0.5) * Math.PI);
+    }
+  };
+  return { group: g, update };
+}
+
+// --- exp_log_sphere: the exponential/logarithm map, animated -----------------
+// A curved manifold (sphere) with a flat tangent plane at its pole. A straight
+// vector on the plane grows out (a Lie-algebra element) while, in lockstep, a
+// geodesic of the SAME length wraps down the sphere from the pole — that is the
+// exponential map. Then it retracts (the logarithm). Straight-in-the-flat becomes
+// curved-on-the-manifold: the whole point of Lie theory in one motion.
+function expLogSphere(pal) {
+  const g = new THREE.Group();
+  g.add(smallPedestal(pal));
+  const R = 0.55, CY = 1.68;
+  const pole = new THREE.Vector3(0, CY + R, 0);
+
+  const sphere = new THREE.Mesh(
+    new THREE.SphereGeometry(R, 32, 24),
+    new THREE.MeshStandardMaterial({ color: 0x3a3020, metalness: 0.3, roughness: 0.5,
+      transparent: true, opacity: 0.34, emissive: pal.glow, emissiveIntensity: 0.06 })
+  );
+  sphere.position.set(0, CY, 0);
+  const wire = new THREE.Mesh(
+    new THREE.SphereGeometry(R * 1.003, 18, 12),
+    bas(pal.glow, { wireframe: true, transparent: true, opacity: 0.12 })
+  );
+  wire.position.set(0, CY, 0);
+  g.add(sphere, wire);
+
+  // Tangent plane patch at the pole.
+  const disk = new THREE.Mesh(
+    new THREE.CircleGeometry(R * 1.5, 40),
+    bas(pal.accent, { transparent: true, opacity: 0.14, side: THREE.DoubleSide, depthWrite: false })
+  );
+  disk.rotation.x = -Math.PI / 2; disk.position.copy(pole);
+  const ring = new THREE.Mesh(
+    new THREE.TorusGeometry(R * 1.5, 0.006, 6, 44),
+    bas(pal.accent, { transparent: true, opacity: 0.5 })
+  );
+  ring.rotation.x = -Math.PI / 2; ring.position.copy(pole);
+  const base = new THREE.Mesh(new THREE.SphereGeometry(0.03, 8, 8), bas(pal.accent));
+  base.position.copy(pole);
+  g.add(disk, ring, base);
+
+  const tipT = new THREE.Mesh(new THREE.SphereGeometry(0.035, 8, 8), bas(0xffffff));
+  const tipS = new THREE.Mesh(new THREE.SphereGeometry(0.042, 10, 10), bas(pal.glow));
+  const straight = new THREE.Line(new THREE.BufferGeometry(),
+    new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.85 }));
+  const geo = new THREE.Line(new THREE.BufferGeometry(),
+    new THREE.LineBasicMaterial({ color: pal.glow, transparent: true, opacity: 0.95 }));
+  g.add(tipT, tipS, straight, geo);
+  const light = new THREE.PointLight(pal.glow, 0.7, 3.5, 1.8);
+  light.position.set(0, CY, 0.6); g.add(light);
+
+  const N = 22, SMAX = R * 1.35;
+  const stP = [], gP = [];
+  const update = (t) => {
+    const phi = t * 0.22;                          // sweep the tangent direction
+    const s = SMAX * 0.5 * (1 - Math.cos(t * 0.85)); // 0..SMAX..0 (exp then log)
+    const dx = Math.cos(phi), dz = Math.sin(phi);
+    stP.length = 0; gP.length = 0;
+    for (let i = 0; i <= N; i++) {
+      const u = i / N;
+      stP.push(new THREE.Vector3(pole.x + dx * s * u, pole.y, pole.z + dz * s * u));
+      const th = (s / R) * u;                       // geodesic: polar angle down the meridian
+      gP.push(new THREE.Vector3(R * Math.sin(th) * dx, CY + R * Math.cos(th), R * Math.sin(th) * dz));
+    }
+    straight.geometry.setFromPoints(stP);
+    geo.geometry.setFromPoints(gP);
+    tipT.position.copy(stP[N]);
+    tipS.position.copy(gP[N]);
+  };
+  return { group: g, update };
+}
+
 export const KINETIC_BUILDERS = {
+  low_rank_bottleneck: lowRankBottleneck,
+  exp_log_sphere: expLogSphere,
   attention_beams: attentionBeams,
   similarity_dial: similarityDial,
   frequency_wheel: frequencyWheel,

@@ -95,7 +95,9 @@ hands at doubling speeds), error_scales (balance settling as loss shrinks),
 variance_balance (two columns trading under a fixed budget cap),
 dissolving_cloud (figure melting into noise), reforming_cloud (noise
 gathering into a figure), patch_shuttle (image cut into a token thread and
-rewoven), guidance_arrows (u + w·(c−u) extrapolating as w sweeps).
+rewoven), guidance_arrows (u + w·(c−u) extrapolating as w sweeps),
+low_rank_bottleneck (signal squeezing d→r→d through a thin rank-r waist),
+exp_log_sphere (a straight tangent vector wrapping onto a sphere as a geodesic — the exp/log map).
 
 `diagram.spec` is standard Mermaid (`graph TD`, `graph LR`, `sequenceDiagram`).
 Keep diagrams ≤ ~12 nodes; they render on an in-world panel.

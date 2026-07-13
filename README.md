@@ -1,9 +1,15 @@
-# The Palace of Mind
+# 🏰 The Palace of Mind
 
-A walkable, Harry Potter–styled mind palace. Every piece of knowledge you learn becomes
-a 3D chamber you can physically walk through: artifacts are working metaphors, plaques
-carry the distilled mechanics, tomes hold full source texts, portals and a constellation
-map keep every idea connected.
+*A walkable, Harry Potter–styled mind palace. Every piece of knowledge you learn becomes
+a 3D chamber you can physically walk through.*
+
+<p align="center">
+  <img src="docs/media/hero.gif" width="760"
+       alt="Walking out of the Undercroft into the Wing of Continuous Motion">
+</p>
+
+Artifacts are working metaphors, plaques carry the distilled mechanics, tomes hold full
+source texts, and a knowledge graph keeps every idea connected to the ideas it builds on.
 
 **The core design:** the engine is code, built once; the world is pure data, grown
 forever. Any LLM can extend the palace by writing small JSON files against
@@ -14,36 +20,104 @@ no assets.
 
 ```bash
 cd mind-palace
-python serve.py
-# open http://localhost:8777
+python serve.py          # → open http://localhost:8777
+ollama serve             # optional, powers Gemma & the Gatekeepers (gemma3:27b)
 ```
 
-WASD + mouse to walk, **E** study / step through portals, **T** talk to Gemma,
-**M** map, **G** constellation of ideas, **F** floo travel, **Shift** run.
-Click a diagram (or its ⛶ button) to maximize it.
+| Key | Does |
+|---|---|
+| **W A S D** + mouse | walk & look (**Shift** to run) |
+| **E** | study an exhibit · step through a portal, stair, or signpost |
+| **T** | talk to Gemma, the ghost companion |
+| **G** | the constellation — a 3D map of every idea on every floor |
+| **M** / **F** | this floor's map / floo travel to any chamber by name |
+| **P** | toggle the Marauder's footsteps |
+| **Esc** | close whatever is open |
+
+## A castle built as a lineage
+
+Floors encode *where knowledge comes from*. Mathematical foundations lie in the
+basement, the ground floor holds the two great halls built directly on them, and
+everything higher is built from what stands below. Stairs follow the lineage — and
+every stair is kept by a **Gatekeeper**, a quiz-ghost who asks about the prerequisite
+concepts before letting you climb. (You can always answer, skip, or walk away.)
+
+<p align="center">
+  <img src="docs/media/palace-map.png" width="820"
+       alt="Elevation map: foundations below, attention and diffusion on the ground floor, world models, LoRA and video diffusion above">
+</p>
+
+## Exhibits that move like the mathematics
+
+The palace's centerpiece artifacts are **kinetic**: the animation *is* the mechanism.
+A figure dissolves into noise exactly the way forward diffusion destroys an image; the
+Orb of Likeness pours real softmax weight onto orbiting keys; a straight tangent arrow
+wraps onto a sphere as a geodesic — the exp map, running on a loop.
+
+<p align="center">
+  <img src="docs/media/exhibits.gif" width="680"
+       alt="Kinetic props: the dissolving cloud, live attention beams, the exp/log sphere">
+</p>
+
+Press **E** at any diagram or figure and it unfolds as a large panel floating in the
+room — you keep control, so you can step back, walk around it, and read the study card
+alongside.
+
+<p align="center">
+  <img src="docs/media/study.gif" width="680"
+       alt="Studying a figure: it floats large in the room while a study card explains it">
+</p>
+
+## The constellation of ideas
+
+Press **G** anywhere: the palace falls away and the knowledge graph hangs in space —
+each floor a layer of stars, each room a star, each concept a mote, every edge a typed
+thread (*builds-on*, *part-of*, *relates-to*, *contrasts-with*). Drag to orbit, scroll
+to zoom, click a star to travel there.
+
+<p align="center">
+  <img src="docs/media/constellation.gif" width="680"
+       alt="The 3D constellation: floors as star layers, drag to orbit, click to travel">
+</p>
+
+## The Marauder's footsteps
+
+Ghostly footprints march ahead of you, always toward the next thing to learn — the
+exhibits of a room in study order, then the doorway that continues the wing. Press
+**P** to send them away when you'd rather wander (they remember your choice).
+
+<p align="center">
+  <img src="docs/media/footsteps.gif" width="680"
+       alt="Marauder's-map footprints marching toward the next exhibit, toggled with P">
+</p>
 
 ## Gemma, the Whispering Sage
 
-A ghost companion drifts at your shoulder, backed by a local Ollama service
-(`gemma3:27b` at `localhost:11434` — start it with `ollama serve` if it isn't
-running; override with `OLLAMA_URL` / `OLLAMA_MODEL`). She knows which room you're in, which
-exhibit you're studying, and the concepts anchored there — so "why doesn't
-this collapse?" needs no setup. Answers come as short speech bubbles; anything
-that needs depth is saved as a parchment-styled HTML **scroll** in `scrolls/`
-with a 📜 link in the bubble. `serve.py` never starts Ollama itself — it only
-talks to the existing service.
+A ghost drifts at your shoulder, backed by a local Ollama service (`gemma3:27b` at
+`localhost:11434`; override with `OLLAMA_URL` / `OLLAMA_MODEL`). She knows which room
+you're in, which exhibit you're studying, and the concepts anchored there — so *"why
+doesn't this collapse?"* needs no setup. Short answers come as speech bubbles; anything
+deep is saved as a parchment-styled **scroll** in `scrolls/` with a 📜 link. The same
+service voices the Gatekeepers at the stairs. `serve.py` never starts Ollama itself —
+it only talks to the existing service.
+
+<p align="center">
+  <img src="docs/media/gemma.gif" width="760"
+       alt="Asking Gemma about the attention beams; she answers in a speech bubble with a scroll link">
+</p>
 
 ## Grow it
 
 Give any capable model this prompt:
 
 > Read WORLD_SPEC.md in ~/workspace/mind-palace and add what I just learned about
-> <topic> as a new room (or extend an existing wing). Run `python world.py validate`
+> \<topic\> as a new room (or extend an existing wing). Run `python world.py validate`
 > until it passes.
 
 The validator (`world.py`) enforces the schema and referential integrity, and
-regenerates the engine's room manifest only on success — unvalidated content never
-renders.
+regenerates the engine's load manifest only on success — unvalidated content never
+renders. The knowledge graph is authored as one fragment per room, so many rooms
+(or many agents) can be written in parallel without touching a shared file.
 
 ## Layout
 
@@ -62,29 +136,29 @@ world/
   rooms/index.json  # GENERATED by validate — engine load manifest
   graph.json        # GENERATED by validate — merged graph the engine fetches
 engine/             # Three.js renderer — content models never touch this
-  layout.js         # deterministic solver: semantics -> geometry (incl. passages)
+  layout.js         # deterministic solver: semantics -> geometry (branching wings)
   builder.js        # procedural rooms, walls, doors, pits, lights, sky
-  props.js          # 13 parametric furniture props (primitives only, zero assets)
+  levels.js         # lazy floor loading: build on first visit, LRU-dispose the rest
+  props.js          # parametric furniture props (primitives only, zero assets)
+  kinetics.js       # animated concept props — the motion is the mechanism
   passages.js       # stairs, archways, Gatekeeper spectre, passage signboards
   exhibits.js       # exhibit placement + portals + passage mouths
+  constellation.js  # the 3D idea map (G)
+  footsteps.js      # the Marauder's guide (P)
   wayfinding.js     # carved signposts derived from layout + graph
   wisp.js           # idle guiding wisp
   player.js         # first-person controls + collision
-  hud.js            # focus panels, map, constellation, floo
+  hud.js            # focus panels, floor map, floo
   chat.js           # Gemma / Gatekeeper speech-bubble chat
   companion.js      # Gemma's ghost body
+  palettes.js       # the named color palettes wings may use
   debug.js          # window.__palace API for headless tooling
-  common.js         # shared material helper + palace-wide colors
   vendor/           # three.js (vendored, no CDN needed to walk around)
-tools/              # figure generators + headless screenshot harness (playwright)
+tools/              # figure generators + headless capture harness (playwright)
+  capture.py        # records the README footage headlessly
+  readme_map.py     # regenerates the elevation map from world data
+docs/media/         # README gifs + the palace map
 ```
 
 Diagrams render via Mermaid from CDN when online; offline they fall back to the
 diagram source text. Everything else runs fully offline.
-
-## Current wings
-
-- **The Divination Wing** (emerald) — JEPA-family self-supervised learning, migrated
-  from the original Hogwarts Chronicles: the Mirror of Occlusion (I-JEPA), the Corridor
-  of the Three Vows (VICReg), the Restricted Section of Soft Shields (projector heads),
-  and the Great Hall of the Paris Cauldron (the JEPA realm).

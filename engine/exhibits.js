@@ -203,6 +203,7 @@ export function buildExhibits(scene, layout, roomsById, levelId = null) {
   const group = new THREE.Group();
   const interactables = new Map();
   const updates = [];
+  const tours = new Map(); // roomId -> [{x,z,title,type}] in study order (footsteps)
 
   const register = (hit, record) => {
     interactables.set(hit, record);
@@ -223,6 +224,7 @@ export function buildExhibits(scene, layout, roomsById, levelId = null) {
     let slotIdx = 0;
     const takeSlot = () => slots[Math.min(slotIdx++, slots.length - 1)];
 
+    const tour = [];
     let centerTaken = false;
     for (const ex of room.exhibits) {
       let slot;
@@ -248,6 +250,7 @@ export function buildExhibits(scene, layout, roomsById, levelId = null) {
       const made = buildExhibit(ex, slot, pal, slot.x === space.rect.cx && slot.z === space.rect.cz, roomsById);
       group.add(made.group);
       if (made.update) updates.push(made.update);
+      tour.push({ x: slot.x, z: slot.z, title: ex.title, type: ex.type });
       register(made.hit, {
         kind: 'exhibit',
         roomId: room.id,
@@ -260,6 +263,7 @@ export function buildExhibits(scene, layout, roomsById, levelId = null) {
         },
       });
     }
+    tours.set(room.id, tour);
 
     // Passage mouths: staircases and archways declared in world.passages.
     for (const mouth of roomMouths) {
@@ -293,7 +297,7 @@ export function buildExhibits(scene, layout, roomsById, levelId = null) {
   }
 
   scene.add(group);
-  return { group, interactables, updates };
+  return { group, interactables, updates, tours };
 }
 
 function typeLabel(type) {

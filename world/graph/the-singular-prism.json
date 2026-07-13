@@ -1,0 +1,39 @@
+{
+  "concepts": [
+    {
+      "id": "matrix-as-map",
+      "name": "Matrix as a Transformation",
+      "room": "the-singular-prism",
+      "exhibit": "the-prism",
+      "summary": "A matrix is a linear transformation: it moves every vector consistently, bending space in one fixed way. A 2×2 matrix carries the unit circle onto an ellipse; the semi-axis lengths of that ellipse are the matrix's singular values, and their directions are its principal axes."
+    },
+    {
+      "id": "singular-value-decomposition",
+      "name": "Singular Value Decomposition",
+      "room": "the-singular-prism",
+      "exhibit": "the-three-motions",
+      "summary": "Every matrix M factors as M = U·Σ·Vᵀ: a rotation Vᵀ (orthonormal input directions), a diagonal stretch Σ of singular values σ₁≥σ₂≥…≥0, then a rotation U (orthonormal output directions). Rotate, stretch, rotate. It always exists and the singular values are unique; all stretching lives in Σ. (Upstairs: the same factorization underlies low-rank adaptation of trained weight matrices.)"
+    },
+    {
+      "id": "singular-values",
+      "name": "Singular Values",
+      "room": "the-singular-prism",
+      "exhibit": "the-ranked-importances",
+      "summary": "The diagonal entries of Σ, sorted σ₁≥σ₂≥…≥0, measuring how far a matrix stretches space along each principal direction — the energy each direction carries. For many real matrices, and especially for differences of two nearby matrices, they decay fast: a few large, then a long tail near zero, with an elbow. (Upstairs: fast decay is why weight updates are effectively low-rank.)"
+    },
+    {
+      "id": "low-rank-approximation",
+      "name": "Low-Rank Approximation",
+      "room": "the-singular-prism",
+      "exhibit": "best-few",
+      "summary": "Keep the top r singular values (zero the rest): M ≈ U_rΣ_rV_rᵀ, with U_r (d×r), Σ_r (r×r), V_rᵀ (r×d). Eckart–Young: this truncation is the provably closest rank-r matrix to M, minimizing ‖M−M_r‖. When σ decay fast a small r captures almost everything, compressing d² numbers to 2dr. (Upstairs: this is the mathematics behind LoRA / low-rank adaptation.)"
+    }
+  ],
+  "edges": [
+    { "from": "singular-values", "to": "singular-value-decomposition", "relation": "part-of" },
+    { "from": "matrix-as-map", "to": "singular-value-decomposition", "relation": "relates-to" },
+    { "from": "low-rank-approximation", "to": "singular-value-decomposition", "relation": "builds-on" },
+    { "from": "low-rank-approximation", "to": "singular-values", "relation": "builds-on" },
+    { "from": "singular-value-decomposition", "to": "dot-product-math", "relation": "relates-to" }
+  ]
+}

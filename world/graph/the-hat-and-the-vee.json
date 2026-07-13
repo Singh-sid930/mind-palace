@@ -1,0 +1,22 @@
+{
+  "concepts": [
+    {
+      "id": "hat-operator",
+      "name": "The Hat Operator",
+      "room": "the-hat-and-the-vee",
+      "exhibit": "the-hat",
+      "summary": "The hat operator (∧, written v̂) lifts a coordinate vector in ℝⁿ up to its matrix form, carrying the same information in a richer costume. For elements describing turning, the resulting matrix is skew-symmetric (Aᵀ=−A): zeros on the diagonal, mirror entries that are exact negatives. Worked 2D example: a single number a is lifted to the 2×2 skew matrix [[0,−a],[a,0]]. The matrix form is precisely what the exponential map acts upon to reach the curved surface. (Upstairs: this is how a stored parameter vector becomes the generator a rotation is built from.)"
+    },
+    {
+      "id": "vee-operator",
+      "name": "The Vee Operator",
+      "room": "the-hat-and-the-vee",
+      "exhibit": "the-vee",
+      "summary": "The vee operator (∨, written Aˇ) is the inverse of the hat: it reads a skew-symmetric matrix back down to the plain coordinate vector that defines it, discarding the forced zeros and negatives to report the free numbers — for [[0,−a],[a,0]] it returns a. Applying hat then vee returns the original vector. It lets an algebra element be stored, added, and averaged as an ordinary vector, since constrained matrices resist arithmetic but their coordinate lists do not. Coordinates ↔ matrix via hat/vee, matrix ↔ surface via exp/log — three spaces, one round trip. (Upstairs: keeps parameters in a flat vector for optimisation and storage.)"
+    }
+  ],
+  "edges": [
+    { "from": "vee-operator", "to": "hat-operator", "relation": "contrasts-with" },
+    { "from": "hat-operator", "to": "lie-algebra", "relation": "builds-on" }
+  ]
+}
