@@ -98,6 +98,9 @@ async function boot() {
   };
   const hideStudyCard = () => { studyCard.style.display = 'none'; };
   const closeDiagramStage = () => { diagramPanel.hide(); hideStudyCard(); };
+  // The stage counts as open if EITHER piece is up: if a diagram fails to
+  // render (bad spec, offline CDN) the card must still be closable on its own.
+  const stageOpen = () => diagramPanel.isOpen || studyCard.style.display === 'block';
 
   const player = new Player(camera, renderer.domElement, colliders);
   player.place(layout.spawn.x, layout.spawn.z, layout.spawn.yaw);
@@ -195,7 +198,7 @@ async function boot() {
 
   document.addEventListener('keydown', (e) => {
     if (e.code === 'KeyE') {
-      if (diagramPanel.isOpen) { closeDiagramStage(); return; }
+      if (stageOpen()) { closeDiagramStage(); return; }
       if (hud.openPanel === 'focus') { hud.closeAll(); player.controls.lock(); return; }
       if (target) {
         if (target.kind === 'portal') {
@@ -219,21 +222,21 @@ async function boot() {
         }
       }
     } else if (e.code === 'KeyT') {
-      if (diagramPanel.isOpen) closeDiagramStage();
+      if (stageOpen()) closeDiagramStage();
       if (chat.toggle()) player.controls.unlock(); else player.controls.lock();
     } else if (e.code === 'KeyM') {
-      if (diagramPanel.isOpen) closeDiagramStage();
+      if (stageOpen()) closeDiagramStage();
       const pl = { x: camera.position.x, z: camera.position.z, yaw: camera.rotation.y };
       if (hud.toggle('map', pl)) player.controls.unlock(); else player.controls.lock();
     } else if (e.code === 'KeyG') {
-      if (diagramPanel.isOpen) closeDiagramStage();
+      if (stageOpen()) closeDiagramStage();
       hud.closeAll();
       const sp = spaceAt(layout, camera.position.x, camera.position.z);
       const here = sp && sp.kind === 'room' && sp.room ? sp.room.id : null;
       if (constellation.toggle(here)) player.controls.unlock();
       else player.controls.lock();
     } else if (e.code === 'KeyF' && !hud.openPanel) {
-      if (diagramPanel.isOpen) closeDiagramStage();
+      if (stageOpen()) closeDiagramStage();
       hud.toggle('floo');
       player.controls.unlock();
     } else if (e.code === 'KeyP') {
@@ -242,7 +245,7 @@ async function boot() {
     } else if (e.code === 'Escape') {
       if (hud.diagramMaxed) hud.closeDiagramMax();
       else if (constellation.isOpen) constellation.close();
-      else if (diagramPanel.isOpen) closeDiagramStage();
+      else if (stageOpen()) closeDiagramStage();
       else if (chat.isOpen) chat.close();
       else if (hud.openPanel) hud.closeAll();
     }

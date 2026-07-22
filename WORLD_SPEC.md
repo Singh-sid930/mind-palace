@@ -100,7 +100,10 @@ low_rank_bottleneck (signal squeezing d→r→d through a thin rank-r waist),
 exp_log_sphere (a straight tangent vector wrapping onto a sphere as a geodesic — the exp/log map).
 
 `diagram.spec` is standard Mermaid (`graph TD`, `graph LR`, `sequenceDiagram`).
-Keep diagrams ≤ ~12 nodes; they render on an in-world panel.
+Keep diagrams ≤ ~12 nodes; they render on an in-world panel. **Always wrap node
+and edge labels in double quotes** — `A["Var(X) = 1"]`, `-->|"O(n^2)"| B` —
+because unquoted `()`/`{}` inside a label is parsed as Mermaid shape syntax and
+the diagram silently fails to render in-world.
 
 ## Knowledge graph — `world/graph/<room-id>.json`
 

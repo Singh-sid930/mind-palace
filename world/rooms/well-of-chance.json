@@ -31,7 +31,7 @@
       "id": "gaussian-diagram",
       "type": "diagram",
       "title": "The Standard Normal N(0,1)",
-      "spec": "graph TD\n  D[draw ε ~ N(0,1)] --> C[center 0, spread 1]\n  C --> U[scale + shift: x = μ + σ·ε → any Gaussian]\n  I1[independent Gaussian A] --> S[sum]\n  I2[independent Gaussian B] --> S\n  S --> G[one Gaussian, variances added]",
+      "spec": "graph TD\n  D[\"draw ε ~ N(0,1)\"] --> C[\"center 0, spread 1\"]\n  C --> U[\"scale + shift: x = μ + σ·ε → any Gaussian\"]\n  I1[\"independent Gaussian A\"] --> S[\"sum\"]\n  I2[\"independent Gaussian B\"] --> S\n  S --> G[\"one Gaussian, variances added\"]",
       "caption": "One standard well: rescale a draw to make any Gaussian; add independent draws and the bell survives, spreads adding."
     },
     {

@@ -4,7 +4,9 @@
   "wing": "video",
   "size": "medium",
   "order": 2,
-  "connections": ["the-flickering-frames"],
+  "connections": [
+    "the-flickering-frames"
+  ],
   "exhibits": [
     {
       "id": "the-temporal-loom",
@@ -39,7 +41,7 @@
       "id": "factorized-attention-diagram",
       "type": "diagram",
       "title": "Spatial Across a Frame, Temporal Across Frames",
-      "spec": "graph TD\n  subgraph SPATIAL[\"SPATIAL attention - fix frame t, attend over h.w tokens\"]\n    A1[\"(1,1)\"] --- A2[\"(1,2)\"]\n    A2 --- A3[\"(2,1)\"]\n    A3 --- A4[\"(2,2)\"]\n    A1 --- A4\n  end\n  subgraph TEMPORAL[\"TEMPORAL attention - fix position (i,j), attend over T frames\"]\n    T1[\"(i,j) @ frame 1\"] --> T2[\"(i,j) @ frame 2\"]\n    T2 --> T3[\"(i,j) @ frame 3\"]\n    T3 --> T4[\"(i,j) @ frame T\"]\n  end\n  SPATIAL -->|cost O((h.w)^2), run T times| COST[\"factorized: (h.w)^2 + T^2\"]\n  TEMPORAL -->|cost O(T^2), run h.w times| COST",
+      "spec": "graph TD\n  subgraph SPATIAL[\"SPATIAL attention - fix frame t, attend over h.w tokens\"]\n    A1[\"(1,1)\"] --- A2[\"(1,2)\"]\n    A2 --- A3[\"(2,1)\"]\n    A3 --- A4[\"(2,2)\"]\n    A1 --- A4\n  end\n  subgraph TEMPORAL[\"TEMPORAL attention - fix position (i,j), attend over T frames\"]\n    T1[\"(i,j) @ frame 1\"] --> T2[\"(i,j) @ frame 2\"]\n    T2 --> T3[\"(i,j) @ frame 3\"]\n    T3 --> T4[\"(i,j) @ frame T\"]\n  end\n  SPATIAL -->|\"cost O((h.w)^2), run T times\"| COST[\"factorized: (h.w)^2 + T^2\"]\n  TEMPORAL -->|\"cost O(T^2), run h.w times\"| COST",
       "caption": "Two cheap passes instead of one impossible one. SPATIAL attention fixes a frame and lets its h·w positions attend to each other (within-frame coherence). TEMPORAL attention fixes a position (i, j) and lets its value attend across all T frames (frame-to-frame consistency). Factorizing costs O((h·w)^2) + O(T^2) rather than the full-3D O((T·h·w)^2)."
     },
     {
