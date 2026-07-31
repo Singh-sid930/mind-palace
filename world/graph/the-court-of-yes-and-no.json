@@ -1,0 +1,27 @@
+{
+  "concepts": [
+    {
+      "id": "siglip",
+      "name": "SigLIP",
+      "room": "the-court-of-yes-and-no",
+      "exhibit": "contrastive-lattice",
+      "summary": "Sigmoid Loss for Language-Image Pretraining: keeps CLIP's architecture, shared space, and N x N similarity matrix, and changes only the loss. Each pair (i,j) becomes an independent binary 'do these match? yes/no' via sigmoid + binary cross-entropy against a 0/1 label (1 on the diagonal). Logit = sim x t + b with learned temperature t and learned bias b (b negative because most cells are negatives). No batch-wide normalization -> no all-gather, works at small batches, better efficiency. The default vision encoder in most modern VLMs (PaliGemma, SmolVLM, Qwen-VL variants)."
+    },
+    {
+      "id": "sigmoid-pairwise-loss",
+      "name": "Sigmoid Pairwise Loss",
+      "room": "the-court-of-yes-and-no",
+      "exhibit": "one-change-sigmoid",
+      "summary": "Per-cell sigmoid + binary cross-entropy on the N x N matrix: each cell answers alone against its 0/1 label, loss = -[y log p + (1-y) log(1-p)], averaged over all N^2 cells. Completely decoupled -- no cell needs any other cell's value, unlike softmax which needs the whole row's denominator. Worked N=3 example: sims 0.82/0.15/-0.20 -> logits (t=10,b=-5) 3.20/-3.50/-7.00 -> sigmoid 0.961/0.029/0.001 -> BCE 0.040/0.030/0.001. This decoupling is what removes CLIP's all-gather and large-batch requirement."
+    }
+  ],
+  "edges": [
+    { "from": "siglip", "to": "clip", "relation": "builds-on" },
+    { "from": "siglip", "to": "vision-encoder", "relation": "builds-on" },
+    { "from": "siglip", "to": "training-objective", "relation": "relates-to" },
+    { "from": "siglip", "to": "sigmoid-pairwise-loss", "relation": "builds-on" },
+    { "from": "sigmoid-pairwise-loss", "to": "binary-cross-entropy", "relation": "builds-on" },
+    { "from": "sigmoid-pairwise-loss", "to": "contrastive-loss", "relation": "contrasts-with" },
+    { "from": "sigmoid-pairwise-loss", "to": "softmax-math", "relation": "contrasts-with" }
+  ]
+}

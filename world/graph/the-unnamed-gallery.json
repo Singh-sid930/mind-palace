@@ -1,0 +1,16 @@
+{
+  "concepts": [
+    {
+      "id": "emergent-abstraction",
+      "name": "Emergent Abstraction",
+      "room": "the-unnamed-gallery",
+      "exhibit": "the-unnamed-form",
+      "summary": "How a concept like 'wing' arises in a self-supervised encoder with no labels. Because a local crop must predict the global context the teacher sees, a wing-patch must encode what predicts its whole (elongated, attached to a body, aerodynamic, sky/flight context). Bird wings and plane wings must predict similar wholes, so under limited capacity the most efficient encoding gives them the SAME code and they converge. Abstraction emerges from compression pressure, not supervision. Honest caveat: emergent concepts align with human categories only where visual statistics happen to match human semantics, and nothing names them — you find them only by probing the features."
+    }
+  ],
+  "edges": [
+    { "from": "emergent-abstraction", "to": "dino", "relation": "builds-on" },
+    { "from": "emergent-abstraction", "to": "dinov2", "relation": "relates-to" },
+    { "from": "emergent-abstraction", "to": "self-distillation", "relation": "relates-to" }
+  ]
+}

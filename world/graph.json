@@ -204,6 +204,20 @@
       "summary": "The failure mode of joint-embedding methods: all inputs mapped to one constant point, giving zero loss and zero information \u2014 the blank page with no regret. I-JEPA forbids it by learning asymmetry (EMA target, no gradient); VICReg forbids it with explicit variance and covariance penalties."
     },
     {
+      "id": "vision-encoder",
+      "name": "Vision Encoder",
+      "room": "observatory-atrium",
+      "exhibit": "the-shared-eye",
+      "summary": "A model that maps an image to a representation: image -> encoder -> patch embeddings (n_patches, d) and often one global vector. Almost always a ViT (patchify the image into a grid, then run a transformer over the patches). The crucial fact: architecture is shared across encoders and is NOT what distinguishes them -- the training objective is. Swapping encoders in a real system is mostly a projector/dimension change."
+    },
+    {
+      "id": "training-objective",
+      "name": "Training Objective (Encoder Oath)",
+      "room": "observatory-atrium",
+      "exhibit": "architecture-is-shared",
+      "summary": "The training signal that shapes an encoder's features -- the 'oath' it swears at training time -- and the true axis that differentiates vision encoders. Four families: match image to caption (CLIP/SigLIP, text-supervised -> language-aligned semantics); match two crops of the same image (DINO/DINOv2, self-supervised -> visual structure); reconstruct masked patches (MAE); predict a label (supervised ViT). Trained WITH text gives semantic, nameable features; trained WITHOUT text gives spatially precise, structural features with no language grounding."
+    },
+    {
       "id": "jepa-family",
       "name": "The JEPA family",
       "room": "paris-cauldron",
@@ -349,6 +363,20 @@
       "summary": "Because a causal VAE decodes frame t using only its past, decoding can proceed through a small sliding window rather than holding the whole reel at once, keeping VRAM bounded even on long (e.g. 60-second) clips. The same future-free structure enables streaming autoregressive generation and clean chunk handovers, though chunked generation still accumulates drift across segments that the VAE alone cannot fix."
     },
     {
+      "id": "siglip",
+      "name": "SigLIP",
+      "room": "the-court-of-yes-and-no",
+      "exhibit": "contrastive-lattice",
+      "summary": "Sigmoid Loss for Language-Image Pretraining: keeps CLIP's architecture, shared space, and N x N similarity matrix, and changes only the loss. Each pair (i,j) becomes an independent binary 'do these match? yes/no' via sigmoid + binary cross-entropy against a 0/1 label (1 on the diagonal). Logit = sim x t + b with learned temperature t and learned bias b (b negative because most cells are negatives). No batch-wide normalization -> no all-gather, works at small batches, better efficiency. The default vision encoder in most modern VLMs (PaliGemma, SmolVLM, Qwen-VL variants)."
+    },
+    {
+      "id": "sigmoid-pairwise-loss",
+      "name": "Sigmoid Pairwise Loss",
+      "room": "the-court-of-yes-and-no",
+      "exhibit": "one-change-sigmoid",
+      "summary": "Per-cell sigmoid + binary cross-entropy on the N x N matrix: each cell answers alone against its 0/1 label, loss = -[y log p + (1-y) log(1-p)], averaged over all N^2 cells. Completely decoupled -- no cell needs any other cell's value, unlike softmax which needs the whole row's denominator. Worked N=3 example: sims 0.82/0.15/-0.20 -> logits (t=10,b=-5) 3.20/-3.50/-7.00 -> sigmoid 0.961/0.029/0.001 -> BCE 0.040/0.030/0.001. This decoupling is what removes CLIP's all-gather and large-batch requirement."
+    },
+    {
       "id": "smooth-manifold",
       "name": "The Smooth Manifold",
       "room": "the-curved-ground",
@@ -361,6 +389,41 @@
       "room": "the-curved-ground",
       "exhibit": "turns-are-a-surface",
       "summary": "The set of all turns (rotations about a fixed centre) is itself a smooth curved surface. Planar turns need one number, the angle, which wraps around: they form a circle, one degree of freedom. Turns in space need three numbers: they form a three-dimensional curved surface. A 3D turn is written as a 3\u00d73 grid of nine numbers, but rigid constraints leave only three free, so one cannot perturb a single entry and remain a valid turn \u2014 nine numbers, three freedoms. (Upstairs: this is the geometry of orientation.)"
+    },
+    {
+      "id": "dino",
+      "name": "DINO",
+      "room": "the-echoed-gaze",
+      "exhibit": "the-echoed-gaze",
+      "summary": "Self-supervised vision encoder trained with no labels or text: two augmented crops of one image must encode to the same representation. The trivial constant solution (collapse) is forbidden by self-distillation with an EMA teacher plus centering and sharpening. Features are spatially precise and semantically structured with no language grounding; attention maps segment objects with no segmentation supervision. Strong for dense prediction, correspondence, k-NN retrieval, and linear probing."
+    },
+    {
+      "id": "self-distillation",
+      "name": "Self-Distillation (EMA Teacher)",
+      "room": "the-echoed-gaze",
+      "exhibit": "student-and-teacher",
+      "summary": "DINO's anti-collapse mechanism. A gradient-trained STUDENT sees small local crops; a TEACHER of identical architecture, whose weights are an exponential moving average (EMA) of the student's and are never touched by gradients, sees large global crops. The student must match the teacher's output, learning that a local piece belongs to a particular global scene. The EMA gives a stable, slowly-moving target; a target as fast as the student would destabilize training. Same distillation family as BYOL and V-JEPA."
+    },
+    {
+      "id": "collapse-problem",
+      "name": "The Collapse Problem",
+      "room": "the-echoed-gaze",
+      "exhibit": "two-views-one-truth",
+      "summary": "The trivial, useless solution to any 'two views must agree' objective: output one constant vector for every input. All views then match, the loss is exactly zero, and the features carry no information. With no labels, no outside authority can mark this answer wrong, so preventing collapse is the entire design problem of self-supervised learning; the methods differ only in HOW they forbid the constant answer."
+    },
+    {
+      "id": "centering-sharpening",
+      "name": "Centering + Sharpening",
+      "room": "the-echoed-gaze",
+      "exhibit": "the-two-restraints",
+      "summary": "DINO's balanced anti-collapse pair, applied to the teacher's output. CENTERING subtracts a running mean so no single dimension dominates (spreads the output out). SHARPENING applies a low softmax temperature so the target is confident and peaked (concentrates the output). Centering alone drifts to a uniform smear; sharpening alone piles onto one dimension and collapses. Together they hold the representation between the two failure modes. Neither works alone."
+    },
+    {
+      "id": "dinov2",
+      "name": "DINOv2",
+      "room": "the-echoed-gaze",
+      "exhibit": "dino-chapter",
+      "summary": "The scaled successor to DINO: a much larger curated dataset (LVD-142M), bigger models, and DINO's image-level objective combined with iBOT's patch-level masked objective. The result is a general-purpose visual backbone \u2014 the go-to self-supervised encoder for dense features and spatial precision, used in depth, segmentation, correspondence, and robotics perception. Spatially precise and semantically structured, but with no language alignment, so no zero-shot classification. DINOv3 scales it further."
     },
     {
       "id": "tangent-space",
@@ -500,6 +563,27 @@
       "name": "The training loop",
       "room": "the-noise-oracle",
       "summary": "Sample x_0; pick random t; draw eps~N(0,1); build x_t; minimize ||eps - net(x_t,t)||^2. The eps drawn to corrupt IS the label \u2014 the corruption process hands you the answer key for free."
+    },
+    {
+      "id": "clip",
+      "name": "CLIP",
+      "room": "the-paired-lanterns",
+      "exhibit": "the-paired-lanterns",
+      "summary": "Contrastive Language-Image Pretraining: trains an image encoder and a text encoder jointly into a shared embedding space. From a batch of N image-caption pairs it builds an N x N cosine-similarity matrix; the diagonal holds the correct pairs. Trained WITH text, so its features are language-aligned and semantic -- strong for zero-shot classification, retrieval, and VLM input, and it is Stable Diffusion's text encoder. Weaker at pixel-precise spatial localization because caption supervision is image-level."
+    },
+    {
+      "id": "contrastive-loss",
+      "name": "Contrastive Loss (Softmax Cross-Entropy)",
+      "room": "the-paired-lanterns",
+      "exhibit": "the-contrastive-oath",
+      "summary": "CLIP's objective: softmax cross-entropy over each row and each column of the N x N similarity matrix, driving the diagonal high and off-diagonal low. For each image its true caption is the positive; the other N-1 captions in the batch are negatives. A RELATIVE question -- 'which of these N matches best?' -- so the candidates compete and the negatives are the entire source of learning signal. Softmax over a single element is 1.0 always, so training needs many negatives."
+    },
+    {
+      "id": "batch-coupling",
+      "name": "Batch Coupling",
+      "room": "the-paired-lanterns",
+      "exhibit": "price-of-coupling",
+      "summary": "The consequence of softmax normalizing over the whole batch: every pair's loss depends on all the others, so the batch is coupled. This forces global normalization (an expensive all-gather across GPUs in distributed training) and makes quality depend heavily on large batch sizes -- more negatives means sharper signal, so CLIP trained at batches of ~32K. Exactly the cost SigLIP removes by switching to a per-pair sigmoid loss."
     },
     {
       "id": "parallel-branch",
@@ -645,6 +729,20 @@
       "summary": "The classic, weaker length-extension method: slide a window of overlapping clips and average where they overlap. Documented failure mode \u2014 fine over static backgrounds, but where the background itself moves, latent-space averaging in the overlap regions smears motion into BLUR and inconsistency, a likely reason motion-heavy long Wan videos degrade worst. Contrast with autoregressive chunking, which conditions each chunk on the previous tail instead of averaging overlaps. A related approach is fine-tuned continuation models trained to extend from a few initial frames."
     },
     {
+      "id": "encoder-fusion",
+      "name": "Encoder Fusion (SigLIP + DINOv2)",
+      "room": "the-twin-sighted-helm",
+      "exhibit": "the-fusion-pattern",
+      "summary": "Running two complementary vision encoders on one image and concatenating their features: SigLIP for semantic, language-aligned 'what is it' and DINOv2 for spatial, dense, precise 'where exactly is it'. The concatenated features pass through a projector into an LLM. OpenVLA does exactly this for robot manipulation, which needs both what and where at once. The semantic-vs-spatial split is a strength gradient, not a hard boundary \u2014 SigLIP still carries (less precise) spatial info, and DINOv2 features are semantically structured but not language-aligned."
+    },
+    {
+      "id": "mae",
+      "name": "MAE (Masked Autoencoder)",
+      "room": "the-twin-sighted-helm",
+      "exhibit": "landscape-chapter",
+      "summary": "A self-supervised vision encoder trained by reconstructing masked-out image patches \u2014 the reconstruction-based road away from collapse, distinct from DINO's distillation and VICReg's regularization. A good pretraining initialization, but its features are weaker off-the-shelf than DINO's and usually need fine-tuning to shine. Like the other encoders it is a ViT, so swapping it in is mostly a projector/dimension change."
+    },
+    {
       "id": "cross-attention",
       "name": "Cross-attention",
       "room": "the-two-gazes",
@@ -678,6 +776,20 @@
       "room": "the-two-gazes",
       "exhibit": "where-you-look",
       "summary": "Most modern VLMs (SmolVLM, LLaVA, PaliGemma, Qwen-VL) skip explicit cross-attention: they project image patches into the LM's embedding space, concatenate them with text tokens, and let self-attention mix the modalities. Simpler and decoder-agnostic, but image tokens consume KV-cache and context budget."
+    },
+    {
+      "id": "relative-judgment",
+      "name": "Relative judgment (softmax)",
+      "room": "the-two-judgments",
+      "exhibit": "relative-verdict",
+      "summary": "Softmax over N candidate scores: p_i = e^(s_i) / sum_j e^(s_j) \u2014 exponentiate, then normalise so the weights sum to 1. A single COUPLED distribution in which only the gaps between scores matter (a common shift cancels), nudging any one score shifts every weight, and one candidate wins; with no rivals it is meaningless, since a lone candidate always gets p = 1. Answers 'which of these is best?'. Its regret for true candidate k is -log(p_k). (Upstairs it is CLIP's contrastive softmax cross-entropy over a batch of image-caption pairs \u2014 coupled, so training must all-gather across GPUs and craves ~32K batches for enough negatives.)"
+    },
+    {
+      "id": "binary-cross-entropy",
+      "name": "Binary cross-entropy (sigmoid)",
+      "room": "the-two-judgments",
+      "exhibit": "absolute-verdict",
+      "summary": "The regret for an INDEPENDENT yes/no verdict: -[y*log(p) + (1-y)*log(1-p)], where p = sigmoid(s) = 1/(1+e^(-s)) squashes a single score alone into (0,1). It is -log(p) when the truth is yes (y=1) and -log(1-p) when no (y=0). Each score is judged on its own absolute level with no denominator over rivals; a rescale t and shift b set the threshold, a negative b lowering every default probability when a 'yes' is rare. Changing one score leaves the other verdicts untouched. Answers 'is THIS one a yes?'. (Upstairs it is SigLIP's per-pair sigmoid loss \u2014 decoupled, no all-gather, small batches.)"
     },
     {
       "id": "exponential-map",
@@ -716,6 +828,13 @@
       "name": "Cross-attention for text",
       "room": "the-unet-cathedral",
       "summary": "Text conditioning: Q from image positions, K and V from the prompt's text tokens; scores (n_image, n_text). Each image position asks which words are relevant to it \u2014 the same image-text cross-attention as the Two Gazes, here steering the picture."
+    },
+    {
+      "id": "emergent-abstraction",
+      "name": "Emergent Abstraction",
+      "room": "the-unnamed-gallery",
+      "exhibit": "the-unnamed-form",
+      "summary": "How a concept like 'wing' arises in a self-supervised encoder with no labels. Because a local crop must predict the global context the teacher sees, a wing-patch must encode what predicts its whole (elongated, attached to a body, aerodynamic, sky/flight context). Bird wings and plane wings must predict similar wholes, so under limited capacity the most efficient encoding gives them the SAME code and they converge. Abstraction emerges from compression pressure, not supervision. Honest caveat: emergent concepts align with human categories only where visual statistics happen to match human semantics, and nothing names them \u2014 you find them only by probing the features."
     },
     {
       "id": "causal-masking",
@@ -1048,6 +1167,21 @@
       "relation": "builds-on"
     },
     {
+      "from": "vision-encoder",
+      "to": "patchify",
+      "relation": "builds-on"
+    },
+    {
+      "from": "vision-encoder",
+      "to": "self-attention",
+      "relation": "builds-on"
+    },
+    {
+      "from": "training-objective",
+      "to": "vision-encoder",
+      "relation": "relates-to"
+    },
+    {
       "from": "v-jepa-2",
       "to": "jepa-family",
       "relation": "part-of"
@@ -1243,8 +1377,103 @@
       "relation": "relates-to"
     },
     {
+      "from": "siglip",
+      "to": "clip",
+      "relation": "builds-on"
+    },
+    {
+      "from": "siglip",
+      "to": "vision-encoder",
+      "relation": "builds-on"
+    },
+    {
+      "from": "siglip",
+      "to": "training-objective",
+      "relation": "relates-to"
+    },
+    {
+      "from": "siglip",
+      "to": "sigmoid-pairwise-loss",
+      "relation": "builds-on"
+    },
+    {
+      "from": "sigmoid-pairwise-loss",
+      "to": "binary-cross-entropy",
+      "relation": "builds-on"
+    },
+    {
+      "from": "sigmoid-pairwise-loss",
+      "to": "contrastive-loss",
+      "relation": "contrasts-with"
+    },
+    {
+      "from": "sigmoid-pairwise-loss",
+      "to": "softmax-math",
+      "relation": "contrasts-with"
+    },
+    {
       "from": "rotations-as-manifold",
       "to": "smooth-manifold",
+      "relation": "builds-on"
+    },
+    {
+      "from": "dino",
+      "to": "vision-encoder",
+      "relation": "builds-on"
+    },
+    {
+      "from": "dino",
+      "to": "vicreg",
+      "relation": "relates-to"
+    },
+    {
+      "from": "dino",
+      "to": "v-jepa-2",
+      "relation": "relates-to"
+    },
+    {
+      "from": "dino",
+      "to": "siglip",
+      "relation": "contrasts-with"
+    },
+    {
+      "from": "self-distillation",
+      "to": "dino",
+      "relation": "part-of"
+    },
+    {
+      "from": "self-distillation",
+      "to": "v-jepa-2",
+      "relation": "relates-to"
+    },
+    {
+      "from": "self-distillation",
+      "to": "vicreg",
+      "relation": "contrasts-with"
+    },
+    {
+      "from": "collapse-problem",
+      "to": "self-distillation",
+      "relation": "relates-to"
+    },
+    {
+      "from": "centering-sharpening",
+      "to": "self-distillation",
+      "relation": "part-of"
+    },
+    {
+      "from": "centering-sharpening",
+      "to": "collapse-problem",
+      "relation": "relates-to"
+    },
+    {
+      "from": "centering-sharpening",
+      "to": "softmax-math",
+      "relation": "builds-on"
+    },
+    {
+      "from": "dinov2",
+      "to": "dino",
       "relation": "builds-on"
     },
     {
@@ -1431,6 +1660,36 @@
       "from": "diffusion-training-loop",
       "to": "gradient-descent",
       "relation": "builds-on"
+    },
+    {
+      "from": "clip",
+      "to": "vision-encoder",
+      "relation": "builds-on"
+    },
+    {
+      "from": "clip",
+      "to": "training-objective",
+      "relation": "relates-to"
+    },
+    {
+      "from": "clip",
+      "to": "contrastive-loss",
+      "relation": "builds-on"
+    },
+    {
+      "from": "clip",
+      "to": "cross-attention",
+      "relation": "relates-to"
+    },
+    {
+      "from": "contrastive-loss",
+      "to": "softmax-math",
+      "relation": "builds-on"
+    },
+    {
+      "from": "batch-coupling",
+      "to": "contrastive-loss",
+      "relation": "relates-to"
     },
     {
       "from": "rank-bottleneck",
@@ -1628,6 +1887,36 @@
       "relation": "relates-to"
     },
     {
+      "from": "encoder-fusion",
+      "to": "siglip",
+      "relation": "builds-on"
+    },
+    {
+      "from": "encoder-fusion",
+      "to": "dinov2",
+      "relation": "builds-on"
+    },
+    {
+      "from": "encoder-fusion",
+      "to": "v-jepa-2",
+      "relation": "relates-to"
+    },
+    {
+      "from": "mae",
+      "to": "vision-encoder",
+      "relation": "builds-on"
+    },
+    {
+      "from": "mae",
+      "to": "dino",
+      "relation": "contrasts-with"
+    },
+    {
+      "from": "mae",
+      "to": "mse-loss",
+      "relation": "relates-to"
+    },
+    {
       "from": "cross-attention",
       "to": "self-attention",
       "relation": "contrasts-with"
@@ -1671,6 +1960,16 @@
       "from": "vit-patch-attention",
       "to": "i-jepa",
       "relation": "relates-to"
+    },
+    {
+      "from": "relative-judgment",
+      "to": "softmax-math",
+      "relation": "builds-on"
+    },
+    {
+      "from": "relative-judgment",
+      "to": "binary-cross-entropy",
+      "relation": "contrasts-with"
     },
     {
       "from": "exponential-map",
@@ -1731,6 +2030,21 @@
       "from": "diffusion-cross-attention",
       "to": "cross-attention",
       "relation": "builds-on"
+    },
+    {
+      "from": "emergent-abstraction",
+      "to": "dino",
+      "relation": "builds-on"
+    },
+    {
+      "from": "emergent-abstraction",
+      "to": "dinov2",
+      "relation": "relates-to"
+    },
+    {
+      "from": "emergent-abstraction",
+      "to": "self-distillation",
+      "relation": "relates-to"
     },
     {
       "from": "causal-masking",

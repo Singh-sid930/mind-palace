@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <title>The Palace of Mind</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏰</text></svg>">
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <style>
   :root {
@@ -40,11 +41,20 @@
     position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%);
     color: rgba(233,223,198,0.55); font-size: 13px; pointer-events: none; z-index: 5;
   }
+  /* Static host with no companion backend: hide the Gemma affordances. */
+  body.no-gemma .needs-gemma { display: none; }
   #foot-toast {
     position: absolute; left: 50%; bottom: 20%; transform: translateX(-50%);
     color: var(--parchment); background: var(--panel); border: 1px solid var(--gold);
     border-radius: 8px; padding: 7px 16px; font-size: 15px; opacity: 0;
     transition: opacity 0.3s ease; pointer-events: none; z-index: 6; font-style: italic;
+  }
+  /* ambient-event whisper: a sibling of #foot-toast, sitting just above it */
+  #event-toast {
+    position: absolute; left: 50%; bottom: 27%; transform: translateX(-50%);
+    color: var(--parchment); background: var(--panel); border: 1px solid var(--gold);
+    border-radius: 8px; padding: 7px 16px; font-size: 15px; opacity: 0;
+    transition: opacity 0.4s ease; pointer-events: none; z-index: 6; font-style: italic;
   }
 
   /* start overlay */
@@ -209,11 +219,13 @@
   </div>
   <div id="crosshair"></div>
   <div id="hud-prompt"></div>
+  <div id="event-toast"></div>
   <div id="foot-toast"></div>
   <div id="hud-keys">
-    <kbd>WASD</kbd> walk &nbsp; <kbd>E</kbd> study &nbsp; <kbd>T</kbd> talk to Gemma &nbsp;
+    <kbd>WASD</kbd> walk &nbsp; <kbd>E</kbd> study &nbsp;
+    <span class="needs-gemma"><kbd>T</kbd> talk to Gemma &nbsp;</span>
     <kbd>M</kbd> map &nbsp; <kbd>G</kbd> constellation &nbsp; <kbd>F</kbd> floo &nbsp;
-    <kbd>P</kbd> footsteps &nbsp; <kbd>Shift</kbd> run
+    <kbd>P</kbd> footsteps &nbsp; <kbd>N</kbd> music &nbsp; <kbd>Shift</kbd> run
   </div>
 
   <div id="start">
@@ -223,9 +235,9 @@
       <p style="font-size:15px; line-height:1.7">
         Walk with <kbd>W A S D</kbd>, look with the mouse.<br/>
         Press <kbd>E</kbd> to study exhibits and step through portals.<br/>
-        <kbd>T</kbd> talk to Gemma, your ghostly guide.<br/>
+        <span class="needs-gemma"><kbd>T</kbd> talk to Gemma, your ghostly guide.<br/></span>
         <kbd>M</kbd> map · <kbd>G</kbd> constellation of ideas · <kbd>F</kbd> floo travel<br/>
-        <kbd>P</kbd> toggle the guiding footsteps on or off
+        <kbd>P</kbd> footsteps · <kbd>N</kbd> toggle the music (headphones reveal the binaural layer)
       </p>
       <button id="begin">Enter the Palace</button>
     </div>
@@ -266,7 +278,7 @@
   <div id="chat-panel" class="panel">
     <div id="chat-log"></div>
     <input id="chat-input" placeholder="ask Gemma…" autocomplete="off" />
-    <div class="hint">Enter — send · T or Esc — close · long answers become scrolls</div>
+    <div class="hint">Enter — send · T or Esc — close · say “give me a scroll” to save the full version</div>
   </div>
 
   <div id="study-card">

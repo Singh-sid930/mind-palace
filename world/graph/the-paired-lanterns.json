@@ -1,0 +1,33 @@
+{
+  "concepts": [
+    {
+      "id": "clip",
+      "name": "CLIP",
+      "room": "the-paired-lanterns",
+      "exhibit": "the-paired-lanterns",
+      "summary": "Contrastive Language-Image Pretraining: trains an image encoder and a text encoder jointly into a shared embedding space. From a batch of N image-caption pairs it builds an N x N cosine-similarity matrix; the diagonal holds the correct pairs. Trained WITH text, so its features are language-aligned and semantic -- strong for zero-shot classification, retrieval, and VLM input, and it is Stable Diffusion's text encoder. Weaker at pixel-precise spatial localization because caption supervision is image-level."
+    },
+    {
+      "id": "contrastive-loss",
+      "name": "Contrastive Loss (Softmax Cross-Entropy)",
+      "room": "the-paired-lanterns",
+      "exhibit": "the-contrastive-oath",
+      "summary": "CLIP's objective: softmax cross-entropy over each row and each column of the N x N similarity matrix, driving the diagonal high and off-diagonal low. For each image its true caption is the positive; the other N-1 captions in the batch are negatives. A RELATIVE question -- 'which of these N matches best?' -- so the candidates compete and the negatives are the entire source of learning signal. Softmax over a single element is 1.0 always, so training needs many negatives."
+    },
+    {
+      "id": "batch-coupling",
+      "name": "Batch Coupling",
+      "room": "the-paired-lanterns",
+      "exhibit": "price-of-coupling",
+      "summary": "The consequence of softmax normalizing over the whole batch: every pair's loss depends on all the others, so the batch is coupled. This forces global normalization (an expensive all-gather across GPUs in distributed training) and makes quality depend heavily on large batch sizes -- more negatives means sharper signal, so CLIP trained at batches of ~32K. Exactly the cost SigLIP removes by switching to a per-pair sigmoid loss."
+    }
+  ],
+  "edges": [
+    { "from": "clip", "to": "vision-encoder", "relation": "builds-on" },
+    { "from": "clip", "to": "training-objective", "relation": "relates-to" },
+    { "from": "clip", "to": "contrastive-loss", "relation": "builds-on" },
+    { "from": "clip", "to": "cross-attention", "relation": "relates-to" },
+    { "from": "contrastive-loss", "to": "softmax-math", "relation": "builds-on" },
+    { "from": "batch-coupling", "to": "contrastive-loss", "relation": "relates-to" }
+  ]
+}

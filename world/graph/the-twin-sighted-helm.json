@@ -1,0 +1,26 @@
+{
+  "concepts": [
+    {
+      "id": "encoder-fusion",
+      "name": "Encoder Fusion (SigLIP + DINOv2)",
+      "room": "the-twin-sighted-helm",
+      "exhibit": "the-fusion-pattern",
+      "summary": "Running two complementary vision encoders on one image and concatenating their features: SigLIP for semantic, language-aligned 'what is it' and DINOv2 for spatial, dense, precise 'where exactly is it'. The concatenated features pass through a projector into an LLM. OpenVLA does exactly this for robot manipulation, which needs both what and where at once. The semantic-vs-spatial split is a strength gradient, not a hard boundary — SigLIP still carries (less precise) spatial info, and DINOv2 features are semantically structured but not language-aligned."
+    },
+    {
+      "id": "mae",
+      "name": "MAE (Masked Autoencoder)",
+      "room": "the-twin-sighted-helm",
+      "exhibit": "landscape-chapter",
+      "summary": "A self-supervised vision encoder trained by reconstructing masked-out image patches — the reconstruction-based road away from collapse, distinct from DINO's distillation and VICReg's regularization. A good pretraining initialization, but its features are weaker off-the-shelf than DINO's and usually need fine-tuning to shine. Like the other encoders it is a ViT, so swapping it in is mostly a projector/dimension change."
+    }
+  ],
+  "edges": [
+    { "from": "encoder-fusion", "to": "siglip", "relation": "builds-on" },
+    { "from": "encoder-fusion", "to": "dinov2", "relation": "builds-on" },
+    { "from": "encoder-fusion", "to": "v-jepa-2", "relation": "relates-to" },
+    { "from": "mae", "to": "vision-encoder", "relation": "builds-on" },
+    { "from": "mae", "to": "dino", "relation": "contrasts-with" },
+    { "from": "mae", "to": "mse-loss", "relation": "relates-to" }
+  ]
+}

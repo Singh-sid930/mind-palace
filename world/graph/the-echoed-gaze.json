@@ -1,0 +1,53 @@
+{
+  "concepts": [
+    {
+      "id": "dino",
+      "name": "DINO",
+      "room": "the-echoed-gaze",
+      "exhibit": "the-echoed-gaze",
+      "summary": "Self-supervised vision encoder trained with no labels or text: two augmented crops of one image must encode to the same representation. The trivial constant solution (collapse) is forbidden by self-distillation with an EMA teacher plus centering and sharpening. Features are spatially precise and semantically structured with no language grounding; attention maps segment objects with no segmentation supervision. Strong for dense prediction, correspondence, k-NN retrieval, and linear probing."
+    },
+    {
+      "id": "self-distillation",
+      "name": "Self-Distillation (EMA Teacher)",
+      "room": "the-echoed-gaze",
+      "exhibit": "student-and-teacher",
+      "summary": "DINO's anti-collapse mechanism. A gradient-trained STUDENT sees small local crops; a TEACHER of identical architecture, whose weights are an exponential moving average (EMA) of the student's and are never touched by gradients, sees large global crops. The student must match the teacher's output, learning that a local piece belongs to a particular global scene. The EMA gives a stable, slowly-moving target; a target as fast as the student would destabilize training. Same distillation family as BYOL and V-JEPA."
+    },
+    {
+      "id": "collapse-problem",
+      "name": "The Collapse Problem",
+      "room": "the-echoed-gaze",
+      "exhibit": "two-views-one-truth",
+      "summary": "The trivial, useless solution to any 'two views must agree' objective: output one constant vector for every input. All views then match, the loss is exactly zero, and the features carry no information. With no labels, no outside authority can mark this answer wrong, so preventing collapse is the entire design problem of self-supervised learning; the methods differ only in HOW they forbid the constant answer."
+    },
+    {
+      "id": "centering-sharpening",
+      "name": "Centering + Sharpening",
+      "room": "the-echoed-gaze",
+      "exhibit": "the-two-restraints",
+      "summary": "DINO's balanced anti-collapse pair, applied to the teacher's output. CENTERING subtracts a running mean so no single dimension dominates (spreads the output out). SHARPENING applies a low softmax temperature so the target is confident and peaked (concentrates the output). Centering alone drifts to a uniform smear; sharpening alone piles onto one dimension and collapses. Together they hold the representation between the two failure modes. Neither works alone."
+    },
+    {
+      "id": "dinov2",
+      "name": "DINOv2",
+      "room": "the-echoed-gaze",
+      "exhibit": "dino-chapter",
+      "summary": "The scaled successor to DINO: a much larger curated dataset (LVD-142M), bigger models, and DINO's image-level objective combined with iBOT's patch-level masked objective. The result is a general-purpose visual backbone — the go-to self-supervised encoder for dense features and spatial precision, used in depth, segmentation, correspondence, and robotics perception. Spatially precise and semantically structured, but with no language alignment, so no zero-shot classification. DINOv3 scales it further."
+    }
+  ],
+  "edges": [
+    { "from": "dino", "to": "vision-encoder", "relation": "builds-on" },
+    { "from": "dino", "to": "vicreg", "relation": "relates-to" },
+    { "from": "dino", "to": "v-jepa-2", "relation": "relates-to" },
+    { "from": "dino", "to": "siglip", "relation": "contrasts-with" },
+    { "from": "self-distillation", "to": "dino", "relation": "part-of" },
+    { "from": "self-distillation", "to": "v-jepa-2", "relation": "relates-to" },
+    { "from": "self-distillation", "to": "vicreg", "relation": "contrasts-with" },
+    { "from": "collapse-problem", "to": "self-distillation", "relation": "relates-to" },
+    { "from": "centering-sharpening", "to": "self-distillation", "relation": "part-of" },
+    { "from": "centering-sharpening", "to": "collapse-problem", "relation": "relates-to" },
+    { "from": "centering-sharpening", "to": "softmax-math", "relation": "builds-on" },
+    { "from": "dinov2", "to": "dino", "relation": "builds-on" }
+  ]
+}

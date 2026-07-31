@@ -38,6 +38,12 @@
       "name": "The Gallery of Moving Portraits — Video Diffusion",
       "hub": "moving-gallery-atrium",
       "tier": 1
+    },
+    {
+      "id": "vision",
+      "name": "The Observatory of Sight — Vision Encoders",
+      "hub": "observatory-atrium",
+      "tier": 1
     }
   ],
   "wings": [
@@ -88,6 +94,12 @@
       "name": "The Gallery of Moving Portraits",
       "palette": "silver",
       "level": "video"
+    },
+    {
+      "id": "sight",
+      "name": "The Wing of the Watchful Eye",
+      "palette": "verdigris",
+      "level": "vision"
     }
   ],
   "passages": [
@@ -175,6 +187,26 @@
         "prereqs": ["rope", "causal-masking", "self-attention"],
         "persona": "You keep the other stair to the Gallery of Moving Portraits. You care that a keeper holds RoPE's relative-distance gift, the causal mask, and self-attention — for moving pictures are made by attention run along time, streamed with a rotating clock — before they ascend."
       }
+    },
+    {
+      "id": "attn-vision",
+      "type": "stair",
+      "between": ["forge-of-the-query", "observatory-atrium"],
+      "gate": {
+        "at": "forge-of-the-query",
+        "prereqs": ["self-attention", "patchify", "softmax-math"],
+        "persona": "You keep the stair to the Observatory of Sight, where the great eyes of the palace are trained. You ask that a keeper hold self-attention, the cutting of images into patch-tokens, and the softmax — for every encoder above is the same transformer eye, and what differs is only the oath it was trained under — before they climb to the lenses."
+      }
+    },
+    {
+      "id": "dit-vision",
+      "type": "archway",
+      "between": ["the-patchwork-loom", "observatory-atrium"]
+    },
+    {
+      "id": "vision-jepa",
+      "type": "archway",
+      "between": ["the-echoed-gaze", "vicereg-corridor"]
     }
   ]
 }

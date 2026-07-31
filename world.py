@@ -97,8 +97,17 @@ def load_world():
         if err:
             errors.append(err)
 
+    # Ambient events are optional — a world with no events.json is valid.
+    events = None
+    events_path = WORLD_DIR / "events.json"
+    if events_path.exists():
+        events, err = _load(events_path)
+        if err:
+            errors.append(err)
+
     return {"schema": schema, "catalog": catalog, "world": world,
-            "graph": graph, "fragments": fragments, "rooms": rooms}, errors
+            "graph": graph, "fragments": fragments, "rooms": rooms,
+            "events": events}, errors
 
 
 def _inject_catalog_enums(schema, catalog):
@@ -108,6 +117,7 @@ def _inject_catalog_enums(schema, catalog):
     d["exhibit"]["properties"]["type"]["enum"] = catalog["exhibit_types"]
     d["room"]["properties"]["size"]["enum"] = catalog["room_sizes"]
     d["passage"]["properties"]["type"]["enum"] = catalog["passage_types"]
+    d["event"]["properties"]["actor"]["enum"] = catalog["actors"]
     for clause in d["exhibit"].get("allOf", []):
         if clause["if"]["properties"]["type"]["const"] == "plaque":
             clause["then"]["properties"]["prop"]["enum"] = catalog["plaque_props"]
@@ -146,6 +156,10 @@ def validate(data):
         _schema_check(room, schema, "room", label, errors)
         if isinstance(room, dict) and room.get("id") != stem:
             errors.append(f"{label}: filename must equal room id (got id={room.get('id')!r})")
+
+    events = data.get("events")
+    if events is not None:
+        _schema_check(events, schema, "events", "world/events.json", errors)
 
     if errors:
         return errors  # referential checks would just cascade noise
@@ -289,6 +303,34 @@ def validate(data):
             for pre in gate.get("prereqs", []):
                 if pre not in concept_ids:
                     errors.append(f"world.json: passage '{pid}' gate prereq '{pre}' is not a declared concept")
+
+    # Ambient events: referential checks (schema already covered shape, the
+    # actor/kinds enums, and the numeric floors on rarity/cooldown/duration).
+    if events is not None:
+        actors = set(catalog.get("actors", []))
+        event_ids = {ev["id"] for ev in events["events"]}
+        seen_events = set()
+        for ev in events["events"]:
+            eid = ev["id"]
+            label = f"world/events.json: event '{eid}'"
+            if eid in seen_events:
+                errors.append(f"{label}: duplicate event id '{eid}'")
+            seen_events.add(eid)
+            if ev["actor"] not in actors:
+                errors.append(f"{label}: actor '{ev['actor']}' not in catalog actors")
+            where = ev.get("where", {})
+            for lvl in where.get("levels", []):
+                if lvl not in level_ids:
+                    errors.append(f"{label}: where.level '{lvl}' not declared in world.json")
+            for wg in where.get("wings", []):
+                if wg not in wing_ids:
+                    errors.append(f"{label}: where.wing '{wg}' not declared in world.json")
+            for cid in where.get("concepts", []):
+                if cid not in concept_ids:
+                    errors.append(f"{label}: where.concept '{cid}' is not a declared concept")
+            chains = ev.get("chains")
+            if chains and chains["event"] not in event_ids:
+                errors.append(f"{label}: chains.event '{chains['event']}' is not a declared event")
 
     return errors
 

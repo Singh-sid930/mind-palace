@@ -44,12 +44,13 @@ who drifts beside the keeper of this memory palace. The palace is a Harry Potter
 Rules:
 1. Default to a SHORT spoken reply: at most 2 sentences (~50 words), plain text — no \
 tags, headers, lists or markdown. Be precise and factual first, charming second.
-2. Write a SCROLL only when the question genuinely needs more than two sentences (a \
-derivation, a multi-step mechanism, a real comparison). Most questions — definitions, \
-navigation ("where next?"), quick facts, yes/no — do NOT; answer those in the spoken \
-reply alone, with no ---SCROLL---. When a scroll IS warranted, give a one-sentence spoken \
-summary, a new line with exactly ---SCROLL---, and after it a TIGHT answer in Markdown \
-using EXACTLY these five headers and nothing else:
+2. Write a SCROLL ONLY when the keeper explicitly asks for one — "give me a scroll", \
+"write it down", "save that", "the full version", "in detail", or the like. NEVER \
+volunteer a scroll, however large the topic: keep the conversation spoken and short, \
+and if a question truly cannot fit in two sentences, give the essence and add that \
+they may ask for a scroll if they want the full working. When a scroll IS requested, \
+give a one-sentence spoken summary, a new line with exactly ---SCROLL---, and after it \
+a TIGHT answer in Markdown using EXACTLY these five headers and nothing else:
 
 ## In a nutshell
 <one sentence — the core idea>
@@ -236,7 +237,9 @@ class Handler(SimpleHTTPRequestHandler):
         super().end_headers()
 
     def log_message(self, fmt, *args):
-        if "/api/" in (args[0] if args else ""):
+        # Only surface /api/ traffic. args may hold non-strings (e.g. an
+        # HTTPStatus on the error-logging path), so stringify before testing.
+        if any("/api/" in str(a) for a in args):
             super().log_message(fmt, *args)
 
     def _json(self, code, obj):

@@ -9,6 +9,7 @@ export class CompanionChat {
     this.history = [];
     this.busy = false;
     this.healthChecked = false;
+    this.offline = false;     // true when hosted with no companion backend (e.g. GitHub Pages)
     this.gateCtx = null;      // set by main when near a gated passage
     this._primedFor = null;   // which gate the Gatekeeper has already greeted
 
@@ -30,8 +31,25 @@ export class CompanionChat {
 
   open() {
     this.panel.style.display = 'block';
-    this.input.placeholder = this.gateCtx ? 'answer the Gatekeeper…' : 'ask Gemma…';
-    setTimeout(() => this.input.focus(), 0);
+    this.input.placeholder = this.offline ? '(the sage is silent here)'
+      : this.gateCtx ? 'answer the Gatekeeper…' : 'ask Gemma…';
+    if (!this.offline) setTimeout(() => this.input.focus(), 0);
+    // No companion backend (a static host): explain once, gently, in-world.
+    if (this.offline) {
+      if (!this.healthChecked) {
+        this.healthChecked = true;
+        this._bubble('gemma',
+          'The Whispering Sage keeps to the home palace — her voice does not ' +
+          'carry to this realm. Wander freely; every chamber is still yours to read.');
+      }
+      if (this.gateCtx && this._primedFor !== this.gateCtx.dest) {
+        this._primedFor = this.gateCtx.dest;
+        this._bubble('gate',
+          `✦ A Gatekeeper bars the way to “${this.gateCtx.dest}.” It is wordless ` +
+          'in this realm — press E to pass.');
+      }
+      return;
+    }
     if (!this.healthChecked) {
       this.healthChecked = true;
       this._checkHealth();
@@ -43,6 +61,8 @@ export class CompanionChat {
       this._startGate();
     }
   }
+
+  setOffline(v) { this.offline = v; }
 
   setGate(ctx) {
     // ctx: { dest, persona, prereqs:[{name,summary}] } or null.
@@ -109,6 +129,11 @@ export class CompanionChat {
     const message = overrideText != null ? overrideText : this.input.value.trim();
     if (!message || this.busy) return;
     if (overrideText == null) this.input.value = '';
+    if (this.offline) {
+      if (!opts.silent) this._bubble('you', message);
+      this._bubble('gemma', '(no answer comes — the sage is silent in this realm)');
+      return;
+    }
     const who = this.gateCtx ? 'gate' : 'gemma';
     if (!opts.silent) this._bubble('you', message);
     const pending = this._bubble(who, '…');

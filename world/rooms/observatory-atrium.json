@@ -1,0 +1,52 @@
+{
+  "id": "observatory-atrium",
+  "name": "The Observatory of Sight",
+  "wing": null,
+  "size": "grand",
+  "palette": "verdigris",
+  "order": 1,
+  "exhibits": [
+    {
+      "id": "the-shared-eye",
+      "type": "artifact",
+      "title": "The Shared Eye and the Four Oaths",
+      "prop": "orrery",
+      "scale": 1.4,
+      "text": "At the heart of the Observatory turns a great verdigris armature of brass and glass — a single mechanism, one shared EYE. Every encoder in this hall is built from this same movement: an image is cut into patches, the patches are threaded through a transformer, and out comes a representation — a cloud of patch-tokens, and often one global vector that stands for the whole. This is the ViT, the patchify-and-attend engine you already forged in the halls below. Look closely: the eye does not change from encoder to encoder. The armature is identical.\n\nAround it orbit FOUR planets, and here is the whole secret of the Observatory — each planet is driven by a DIFFERENT OATH. Not a different eye; a different vow sworn during training, a different signal that shaped the features:\n\n  • 'Match this image to its caption' — a pair of planets bound by language (CLIP, SigLIP).\n  • 'Match two crops of the same image' — a planet that needs no words (DINO, DINOv2).\n  • 'Reconstruct the patches I have hidden from you' — a planet that rebuilds what it cannot see (MAE).\n  • 'Name the class you were told' — a planet driven by human labels (supervised ViT).\n\nSame armature, four vows, four utterly different orbits. Trained WITH text, the features become SEMANTIC — aligned to language, fluent for VLMs, retrieval, zero-shot naming. Trained WITHOUT text, the features become STRUCTURAL — spatially precise, dense, fluent for correspondence, depth, and segmentation, but grounded in no word at all. The eye is shared. The oath is everything. Walk the wing and meet each planet in turn."
+    },
+    {
+      "id": "professor-wren",
+      "type": "portrait",
+      "title": "Professor Cassiel Wren, Astronomer of Sight",
+      "subtitle": "Keeper of the Observatory",
+      "text": "A silver-haired witch in a star-charted robe leans out of her frame, a brass eyeglass swinging from one hand. 'Ah — another apprentice come to learn how machines are taught to SEE. Good. Sit where the armature can watch you back.\n\n'I will save you the mistake nine in ten make. They arrive believing that different encoders are different ENGINES — that CLIP and DINO are built from unlike parts, the way a broom differs from a carriage. They are not. Every one of them is the same ViT: patchify the image, let the patches attend, read off the tokens. If you can build one, you can build them all. The blueprint is settled.\n\n'What is NOT settled — what you have truly come here to study — is the OATH each one swears the night it is trained. One swears to bind image to caption, and wakes speaking the language of things: it can name a creature it has never been shown, because names are the very grammar it was raised on. Another swears only that two glimpses of the same scene shall agree, and never hears a single word: it wakes knowing exactly WHERE everything sits, every edge and boundary, yet unable to tell you the NAME of any of it. Same eye, apprentice. Different vow. Different soul.\n\n'So when someone asks you which encoder to reach for, do not ask how it is BUILT. Ask what it was made to PROMISE. That question, and no other, is the door to this whole Observatory.'"
+    },
+    {
+      "id": "architecture-is-shared",
+      "type": "plaque",
+      "prop": "pedestal",
+      "title": "The Eye Is Shared; the Oath Differs",
+      "text": "A vision encoder maps an image to a representation: image → encoder → patch embeddings (n_patches, d), and often one global vector for the whole. The encoder is almost always a ViT — patchify the image into a grid of patches, then run a transformer over them. The same patchify, the same attention you already know.\n\nHere is the load-bearing fact of this entire floor: ARCHITECTURE IS NOT WHAT DISTINGUISHES ENCODERS. Nearly all of them are ViTs. What distinguishes them is the TRAINING SIGNAL that shaped their features — the objective, the oath sworn at training time:\n\n  CLIP / SigLIP  → 'match this image to its caption'   → language-aligned features\n  DINO / DINOv2  → 'match two crops of the same image' → self-supervised, no text\n  MAE            → 'reconstruct the masked-out patches'→ self-supervised, reconstruction\n  Supervised ViT → 'predict the labelled class'        → label-driven features\n\nWhen you swap one encoder for another in a real system, you are mostly changing a projector and a dimension — the eye barely moves. What moved was the oath, and with it the whole character of what the features MEAN."
+    },
+    {
+      "id": "two-families",
+      "type": "plaque",
+      "prop": "lectern",
+      "title": "Two Families of Sight",
+      "text": "The oaths fall into two great families, and knowing which family an encoder belongs to tells you what it is good for before you test a single image.\n\nTRAINED WITH TEXT → SEMANTIC, language-aligned features.\n  The features live in a space shared with words, so they can be NAMED. Good for: VLM inputs, zero-shot classification, image-text retrieval. Weaker at pixel-precise WHERE, because caption supervision only ever describes the image as a whole.\n\nTRAINED WITHOUT TEXT → VISUAL, STRUCTURAL features.\n  The features answer 'what is the visual structure here?' with great spatial precision, but connect to no word. Good for: dense prediction (depth, segmentation), correspondence and matching, k-NN retrieval, geometry. Cannot do zero-shot naming — nothing ties them to language.\n\nCarry the summary as a single line: text-supervised gives you MEANING, self-supervised gives you STRUCTURE. The rooms ahead are simply the two families, met one member at a time — and the climactic hall shows why the strongest modern systems refuse to choose, and FUSE one from each."
+    },
+    {
+      "id": "four-oaths-diagram",
+      "type": "diagram",
+      "title": "One Eye, Four Oaths",
+      "spec": "graph TD\n  IMG[\"image\"] --> VIT[\"shared eye: ViT (patchify + transformer)\"]\n  VIT --> O1[\"oath: match image to caption\"]\n  VIT --> O2[\"oath: match two crops\"]\n  VIT --> O3[\"oath: reconstruct masked patches\"]\n  VIT --> O4[\"oath: predict the label\"]\n  O1 --> SEM[\"language-aligned semantics (CLIP, SigLIP)\"]\n  O2 --> STR[\"visual structure, no text (DINO, DINOv2)\"]\n  O3 --> STR2[\"reconstruction features (MAE)\"]\n  O4 --> SUP[\"label-driven features (supervised ViT)\"]",
+      "caption": "The architecture (ViT) is a shared trunk; four training objectives branch from it. Text-supervised oaths yield language-aligned semantics; the wordless oaths yield visual structure. Same eye, different oath — the organizing principle of the whole floor."
+    },
+    {
+      "id": "phase-one-tome",
+      "type": "tome",
+      "title": "On the One Question That Separates Them All",
+      "text": "THE ORGANIZING PRINCIPLE\n\nA vision encoder is a machine that turns an image into a representation you can compute with:\n\n    image → encoder → patch embeddings (n_patches, d)  and/or a global vector\n\nAlmost every encoder worth naming is a ViT: patchify the image into a grid of small patches, embed each patch, and run a transformer over the sequence — the exact patchify-and-attend stack raised in the diffusion and DiT halls. This matters because it means architecture is the WRONG place to look for what makes encoders differ. Line up CLIP, SigLIP, DINO, DINOv2, MAE, and a plain supervised ViT, and their skeletons are nearly interchangeable.\n\nWHAT ACTUALLY DIFFERS: THE TRAINING SIGNAL.\n\n    CLIP / SigLIP:   'match this image to its caption'    → language-aligned features\n    DINO / DINOv2:   'match two crops of the same image'  → self-supervised, no text\n    MAE:             'reconstruct the masked-out patches' → self-supervised, reconstruction\n    Supervised ViT:  'predict the ImageNet class'          → label-driven\n\nThe objective is the oath the encoder swears at training time, and it decides the soul of the features. The consequence that matters in practice:\n\n    Trained WITH text    → SEMANTIC, language-aligned features.\n                           Good for: VLMs, zero-shot classification, retrieval.\n    Trained WITHOUT text → VISUAL / SPATIAL features, no language grounding.\n                           Good for: dense tasks, correspondence, segmentation, depth.\n\nSo the single sentence to carry through every room on this floor:\n\n    Architecture (ViT) is shared. The TRAINING OBJECTIVE is what differs.\n    Text-supervised  → language-aligned semantics  (CLIP, SigLIP).\n    Self-supervised  → pure visual structure        (DINO, DINOv2, MAE).\n\nEverything ahead is a variation on this theme. The paired lanterns and the court of yes-and-no are two ways of swearing the SAME oath — bind image to caption — that differ only in how the promise is scored. The echoed gaze and the halls past it swear the wordless oath — agree with yourself — and must invent clever ways to keep that promise from collapsing into saying nothing at all. And the climactic helm shows the practitioners who, refusing to give up either meaning or structure, take one encoder from each family and fuse them. Keep your eye on the oath, and the whole Observatory will make sense."
+    }
+  ]
+}

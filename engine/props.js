@@ -46,12 +46,13 @@ function lectern(pal) {
   foot.position.y = 0.06;
   const post = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.12, 1.05, 8), lam(WOOD));
   post.position.y = 0.62;
+  // Slope faces +z — the exhibit slot convention's "into the room" direction.
   const desk = new THREE.Mesh(new THREE.BoxGeometry(0.78, 0.06, 0.56), lam(WOOD));
   desk.position.y = 1.18;
-  desk.rotation.x = -0.42;
+  desk.rotation.x = 0.42;
   const lip = new THREE.Mesh(new THREE.BoxGeometry(0.78, 0.07, 0.05), lam(DARKWOOD));
   lip.position.set(0, 1.06, 0.245);
-  lip.rotation.x = -0.42;
+  lip.rotation.x = 0.42;
   g.add(foot, post, desk, lip);
   return { group: g };
 }

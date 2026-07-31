@@ -1,0 +1,66 @@
+{
+  "id": "the-twin-sighted-helm",
+  "name": "The Twin-Sighted Helm",
+  "wing": "sight",
+  "size": "grand",
+  "order": 5,
+  "connections": ["the-court-of-yes-and-no", "the-echoed-gaze"],
+  "exhibits": [
+    {
+      "id": "the-twin-sighted-helm",
+      "type": "artifact",
+      "title": "The Twin-Sighted Helm",
+      "prop": "orrery",
+      "scale": 1.5,
+      "text": "At the wing's end hangs a great brass helm with two visors, and through each the same scene looks utterly different. Lower the LEFT visor — the language-aligned lens — and every object wears its NAME: this is a mug, that is a dog, the caption of the world laid over it. Lower the RIGHT visor — the self-supervised lens — and the names vanish but the STRUCTURE sharpens: every edge, surface, and exact position rendered with a precision the naming lens never had. What is it, against where exactly is it.\n\nNeither visor alone makes a complete sight. The naming lens knows what a thing is but is vague about where; the structure lens knows where every part sits but cannot say its name. So the helm does the obvious, powerful thing: it lowers BOTH AT ONCE and fuses the two views into a single stream for the wearer's hands.\n\nThis is the climactic instrument of the Observatory. Below in the wing you met the two lenses apart — SigLIP that reads meaning, the self-supervised eye that reads structure. Here they are joined. Turn the helm and the two feeds run side by side, are laid end to end into one longer view, and passed forward to a mind that reasons and to hands that act. A pilot of grasping things needs both eyes open: to know what it reaches for, and to know exactly where it is."
+    },
+    {
+      "id": "landscape-chapter",
+      "type": "tome",
+      "title": "The Practical Landscape of Sight",
+      "text": "One architecture, the ViT, is shared across nearly all of these; the TRAINING OBJECTIVE is what divides them into two great houses.\n\nLANGUAGE-ALIGNED (TEXT-SUPERVISED)\n  CLIP — the original. Still widely used, especially in diffusion; Stable Diffusion's text encoder is CLIP.\n  SigLIP / SigLIP 2 — the current default for VLMs, better in efficiency and quality; the backbone of SmolVLM, PaliGemma, and most modern VLMs.\n  EVA-CLIP — a scaled-up CLIP variant, strong, used in some VLMs.\n\nSELF-SUPERVISED (NO TEXT)\n  DINOv2 — the go-to general visual backbone: dense features, spatial precision, reached for in depth, segmentation, correspondence, and robotics perception.\n  DINOv3 — the latest iteration, scaled further.\n  MAE — the masked autoencoder: reconstruct masked-out patches. A good pretraining initialization, but its features are weaker off-the-shelf than DINO's and generally need fine-tuning to shine.\n  V-JEPA / V-JEPA 2 — video-native, predicting in latent space rather than pixels; relevant to world models.\n\nMANY SYSTEMS USE BOTH. SigLIP and DINOv2 have COMPLEMENTARY strengths, so a common design runs both and concatenates their features:\n\n  image -> SigLIP -> semantic, language-aligned features  \\\n                                                            concat -> projector -> LLM\n  image -> DINOv2 -> spatial, dense, precise features      /\n\nOpenVLA does exactly this — fusing SigLIP and DINOv2 — because manipulation needs both 'what object is this' (semantic) and 'where exactly is it' (spatial).\n\nSELECTION HEURISTIC\n  Need language grounding / zero-shot / VLM input?     -> SigLIP\n  Need dense spatial features / correspondence / depth? -> DINOv2\n  Need both (robotics, manipulation, grounded VLMs)?    -> fuse both\n  Working with video / world models?                    -> V-JEPA family\n  Text encoder for a diffusion model?                   -> CLIP or T5\n\nAN IMPORTANT NUANCE. 'Semantic vs spatial' is a STRENGTH GRADIENT, not a hard boundary. SigLIP DOES carry spatial information in its patch embeddings — it is a ViT — just less precise, because caption supervision is image-level and never rewards pixel-precise localization. And DINOv2 features ARE semantically structured (recall the wing) — they are simply not LANGUAGE-aligned.\n\nDEBUGGING NOTES FROM THE FIELD. All these encoders are ViTs, so swapping one for another is mostly a projector/dimension change. Zero-shot classification requires language alignment, so only the text-supervised encoders can do it. Poor spatial localization out of a VLM is a sign to add or fuse DINOv2 features. For small-batch contrastive training, prefer SigLIP over CLIP. And self-supervised features usually need a linear probe or projector before they are usable downstream."
+    },
+    {
+      "id": "the-fusion-pattern",
+      "type": "plaque",
+      "prop": "pedestal",
+      "title": "The Fusion Pattern",
+      "text": "The two visors of the helm are SigLIP and DINOv2, and their fusion is a concrete, common pattern:\n\n  image -> SigLIP -> semantic, language-aligned features\n  image -> DINOv2 -> spatial, dense, precise features\n  the two feature streams are CONCATENATED, passed through a PROJECTOR, and handed to an LLM.\n\nOne image, two encoders, features laid end to end, mapped into the language model's space. Nothing more exotic than that.\n\nWhy bother running two encoders? Because their strengths are complementary and manipulation needs both at once. OPENVLA — the vision-language-action model for robots — does exactly this fusion, for exactly this reason: to grasp a thing you must know both WHAT it is (semantic, from SigLIP) and WHERE EXACTLY it is (spatial, from DINOv2). One lens answers the first question, the other the second; fused, they answer both."
+    },
+    {
+      "id": "how-to-choose",
+      "type": "plaque",
+      "prop": "lectern",
+      "title": "How to Choose an Eye",
+      "text": "A traveller's field-guide to picking the right sight for the task:\n\n  Need language grounding, zero-shot classification, or input to a VLM? Reach for SIGLIP.\n\n  Need dense spatial features, correspondence, or depth? Reach for DINOv2.\n\n  Need BOTH — robotics, manipulation, a grounded VLM? FUSE both (the OpenVLA pattern of this helm).\n\n  Working with video or world models? Reach for the V-JEPA family, which predicts in latent space.\n\n  Need a text encoder for a diffusion model? Reach for CLIP or T5.\n\nThe rule beneath the rules: name the question you are actually asking of the image — 'what does this mean in words' or 'where exactly is every part' — and let the answer choose the eye. When you are asking both, do not choose; fuse."
+    },
+    {
+      "id": "fusion-diagram",
+      "type": "diagram",
+      "title": "Two Eyes Into One Mind",
+      "spec": "graph LR\n  IMG[\"image\"] --> SIG[\"SigLIP: semantic, language-aligned\"]\n  IMG --> DIN[\"DINOv2: spatial, dense, precise\"]\n  SIG --> CAT[\"concatenate features\"]\n  DIN --> CAT\n  CAT --> PROJ[\"projector\"]\n  PROJ --> LLM[\"LLM / action head\"]",
+      "caption": "The fusion pattern behind OpenVLA: one image passed through both SigLIP and DINOv2, their features concatenated, projected, and handed to the language model or action head. Semantic 'what' from one eye, spatial 'where' from the other — manipulation needs both."
+    },
+    {
+      "id": "a-gradient-not-a-wall",
+      "type": "plaque",
+      "prop": "pedestal",
+      "title": "A Gradient, Not a Wall",
+      "text": "Do not read the two houses as opposites separated by a wall. 'Semantic versus spatial' is a STRENGTH GRADIENT, not a hard boundary.\n\nSigLIP DOES carry spatial information — it is a ViT, and its patch embeddings hold position. The spatial signal is merely less PRECISE, because caption supervision is image-level and never rewards pixel-perfect localization.\n\nDINOv2 features ARE semantically structured — the emergent 'wing' of the gallery is proof. They are simply not LANGUAGE-aligned; nothing ties them to words, so they cannot do zero-shot classification.\n\nA few field notes that follow from this. Every encoder here is a ViT, so swapping one for another is mostly a projector/dimension change. If a VLM localizes poorly, the cure is often to fuse in DINOv2. For small-batch contrastive training, prefer SigLIP over CLIP. And raw self-supervised features usually want a linear probe or projector before they are useful downstream."
+    },
+    {
+      "id": "fusion-figure",
+      "type": "image",
+      "title": "The Fused Front-End",
+      "image": "world/assets/vision-fusion.png",
+      "caption": "The OpenVLA-style fusion drawn in full: one image split down two paths — SigLIP producing semantic, language-aligned features, DINOv2 producing spatial, dense, precise features — the two concatenated, projected, and passed to the LLM. Beside it, the selection heuristic as a side table: SigLIP for language grounding and VLM input, DINOv2 for dense spatial tasks, fuse both for robotics and manipulation, V-JEPA for video and world models, CLIP or T5 for diffusion text encoding. What-and-where, side by side, feeding one mind."
+    },
+    {
+      "id": "the-hall-not-yet-raised",
+      "type": "plaque",
+      "prop": "lectern",
+      "title": "The Hall Not Yet Raised ↑",
+      "text": "You need none of this to master the two sights — but a whisper of the hall the helm opens onto, a floor not yet raised in this palace.\n\nImagine a chamber where sight is not the end but the beginning of action — where a machine must look at a cluttered table, understand WHAT sits there and WHERE EXACTLY each thing lies, and then MOVE a real hand to grasp it. That hall would take this fused front-end whole: SigLIP for meaning, DINOv2 for structure, joined and projected, then handed not to a mere describer but to an ACTION head that turns seeing into reaching. This is the vision-language-action machine — OpenVLA and its kin — and the helm you stand before is precisely its eyes.\n\nThe Wing of Continuous Motion, down in the foundations, points up at this same unbuilt hall from the other side: it teaches how a straight step is carried onto a curved space of motion without ever producing an impossible pose — the geometry an action head needs to command a joint. Two staircases, one landing. Master the fused sight here and the curved motion below; the moment that hall of grasping is raised, both its eyes and its hands will already be familiar."
+    }
+  ]
+}

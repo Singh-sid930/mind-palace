@@ -554,7 +554,72 @@ function expLogSphere(pal) {
   return { group: g, update };
 }
 
+// A 4x4 similarity matrix as floating orbs (rows = images, cols = captions,
+// diagonal = true pairs). Alternates between the two contrastive judgments:
+// CLIP phase — a bracket sweeps row by row and the row's cells COMPETE, softmax
+// weights sharpening until the diagonal wins while the row's total light stays
+// constant (batch coupling made visible). SigLIP phase — the bracket fades and
+// every cell settles independently toward its own yes/no, each on its own clock.
+function contrastiveLattice(pal) {
+  const g = new THREE.Group();
+  g.add(smallPedestal(pal));
+  const N = 4, SP = 0.34, CY = 1.55;
+  const cells = [];
+  for (let i = 0; i < N; i++) {
+    for (let j = 0; j < N; j++) {
+      const diag = i === j;
+      const m = bas(diag ? GOLD : BLUE, { transparent: true, opacity: 0.5 });
+      const orb = new THREE.Mesh(new THREE.SphereGeometry(diag ? 0.062 : 0.05, 10, 8), m);
+      orb.position.set((j - (N - 1) / 2) * SP, CY + ((N - 1) / 2 - i) * SP, 0);
+      // A fixed pseudo-random "wrong pair" score per off-diagonal cell.
+      const score = diag ? 1 : 0.25 + 0.3 * Math.abs(Math.sin(i * 3.7 + j * 5.1));
+      cells.push({ m, orb, i, j, score, delay: (i * N + j) * 0.11 });
+      g.add(orb);
+    }
+  }
+  // Clean rectangular outline (EdgesGeometry, else wireframe draws triangle
+  // diagonals and the bracket reads as a tangled prism).
+  const bracket = new THREE.LineSegments(
+    new THREE.EdgesGeometry(new THREE.BoxGeometry(N * SP + 0.14, SP * 0.82, 0.16)),
+    new THREE.LineBasicMaterial({ color: pal.accent, transparent: true, opacity: 0.0 })
+  );
+  bracket.position.set(0, CY, 0);
+  g.add(bracket);
+  const light = new THREE.PointLight(pal.glow, 0.6, 3.5, 1.8);
+  light.position.set(0, CY, 0.7);
+  g.add(light);
+
+  const HALF = 8; // seconds per phase
+  const update = (t) => {
+    // Sway, don't spin: a flat lattice goes unreadable edge-on.
+    g.rotation.y = 0.5 * Math.sin(t * 0.22);
+    const c = t % (HALF * 2), clip = c < HALF, u = (c % HALF) / HALF;
+    if (clip) {
+      const rowF = u * N, r = Math.min(N - 1, Math.floor(rowF)), p = rowF - r;
+      const k = 6 * smooth(Math.min(1, p * 1.6));      // softmax sharpens over the row's moment
+      let denom = 0;
+      for (const cl of cells) if (cl.i === r) denom += Math.exp(k * cl.score);
+      for (const cl of cells) {
+        cl.m.opacity = cl.i === r
+          ? 0.2 + 2.4 * (Math.exp(k * cl.score) / denom)   // coupled: one rises, the row's rest sink
+          : 0.24;
+      }
+      bracket.position.y = CY + ((N - 1) / 2 - r) * SP;
+      bracket.material.opacity = 0.55 * smooth(Math.min(p, 1 - p) * 6 + 0.4);
+    } else {
+      bracket.material.opacity = Math.max(0, bracket.material.opacity - 0.03);
+      for (const cl of cells) {
+        const target = cl.i === cl.j ? 0.95 : 0.18;      // absolute yes/no per pair
+        const s = smooth((u * 3 - cl.delay));            // each cell on its own clock
+        cl.m.opacity = 0.5 + (target - 0.5) * s;
+      }
+    }
+  };
+  return { group: g, update };
+}
+
 export const KINETIC_BUILDERS = {
+  contrastive_lattice: contrastiveLattice,
   low_rank_bottleneck: lowRankBottleneck,
   exp_log_sphere: expLogSphere,
   attention_beams: attentionBeams,

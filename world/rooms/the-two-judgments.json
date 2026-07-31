@@ -1,0 +1,58 @@
+{
+  "id": "the-two-judgments",
+  "name": "The Chamber of Two Judgments",
+  "wing": "math",
+  "size": "medium",
+  "order": 8,
+  "exhibits": [
+    {
+      "id": "the-scales-of-judgment",
+      "type": "artifact",
+      "title": "The Scales of Judgment",
+      "prop": "error_scales",
+      "scale": 1.3,
+      "text": "A single instrument that renders verdicts two different ways, and the choice of way is the whole lesson. You arrive holding a LIST OF SCORES — a handful of plain real numbers, one per candidate, each saying 'this much in favour'. Scores are not yet answers; a verdict is what you make of them, and there are exactly two honest ways to turn a list of numbers into probabilities. The RELATIVE way sets every candidate against its rivals on one shared beam: exponentiate each score, then normalise so the weights sum to one. Only ONE distribution comes out, only the GAPS between scores matter, and the beam is coupled — press any pan down and every other pan must rise, because the total is pinned at one. It answers 'which of these is best?' and is meaningless with nothing to compare against. The ABSOLUTE way gives each candidate its own private gate: push the lone score through a squashing curve to get a standalone yes/no probability, judged on its own level with no denominator and no rivals. Any number of gates may open; changing one score leaves the others untouched. It answers 'is THIS one a yes?'. Same scores, two verdicts: one coupled and comparative, one independent and self-standing. Learn to feel which question you are actually asking, because the mathematics of the answer follows from it entirely."
+    },
+    {
+      "id": "relative-verdict",
+      "type": "plaque",
+      "prop": "pedestal",
+      "title": "The Relative Verdict",
+      "text": "Given scores s_1, ..., s_N, the RELATIVE verdict is the softmax: p_i = e^(s_i) / (sum_j e^(s_j)). Exponentiate — every weight is now positive and gaps are amplified — then divide by the total so the weights SUM TO ONE. Out comes a single distribution over the N candidates, a share of belief handed to each. Three properties define it. First, ONLY GAPS MATTER: add the same constant to every score and the answer is unchanged (the constant factors out of top and bottom), so a raw score means nothing on its own — only how it compares to its rivals. Second, COUPLING: every p_i sits over the same denominator, which sums all the scores, so nudging any single score up lifts its own share and forces EVERY other share down. You cannot move one verdict without moving all of them; the pans are chained. Third, it NEEDS RIVALS: with a single candidate the sum has one term and p = 1 always, carrying no information. The relative verdict answers 'which of these is best?' — a question that only exists when there is more than one. Its regret, if candidate k is the true answer, is -log(p_k): pushing p_k toward 1 necessarily starves the others."
+    },
+    {
+      "id": "absolute-verdict",
+      "type": "plaque",
+      "prop": "pedestal",
+      "title": "The Absolute Verdict",
+      "text": "Take a SINGLE score s. The ABSOLUTE verdict is the sigmoid: p = 1 / (1 + e^(-s)), which squashes any real number into the open interval (0, 1) — a standalone probability of 'yes'. There is no denominator summing over rivals; p depends on s ALONE. Feed a whole list of scores through it and you get a list of independent yes/no probabilities, each judged on its own absolute level. Two consequences. First, INDEPENDENCE: changing one score changes only its own verdict; every other gate is untouched. Any number of gates may read 'yes' at once — the probabilities need not sum to anything. Second, a LEARNED THRESHOLD: before squashing you may rescale the score by a positive factor t and shift it by a constant b, judging sigmoid(t*s + b). The factor t sharpens or softens; the shift b sets where the yes/no boundary falls. A NEGATIVE b lowers every default probability, so the natural answer becomes 'no' unless a score is strongly positive — exactly what you want when a 'yes' is RARE and most honest verdicts should be 'no'. The regret for one gate with true label y in {0, 1} is binary cross-entropy: -[y*log(p) + (1-y)*log(1-p)] — which is -log(p) when the truth is yes and -log(1-p) when it is no."
+    },
+    {
+      "id": "two-judgments-diagram",
+      "type": "diagram",
+      "title": "One List of Scores, Two Verdicts",
+      "spec": "graph TD\n  S[\"a list of scores s1, s2, s3\"] --> R[\"RELATIVE: exponentiate, then normalise\"]\n  S --> A[\"ABSOLUTE: squash each score on its own\"]\n  R --> RP[\"weights sum to 1, one winner among rivals\"]\n  RP --> RC[\"move ANY score and EVERY weight shifts = coupled\"]\n  A --> AP[\"each weight in 0..1, its own yes or no\"]\n  AP --> AC[\"move ONE score and only ITS weight shifts = independent\"]",
+      "caption": "The same scores split into two verdicts. Left: a shared denominator chains the weights so they sum to one and compete. Right: a private curve judges each score alone, so any number may say yes."
+    },
+    {
+      "id": "worked-verdicts",
+      "type": "tome",
+      "title": "The Two Verdicts, Worked by Hand",
+      "text": "Take one item with three candidate scores:\n\n    s = ( 0.82,  0.15,  -0.20 )\n\nWe will read this same list both ways and watch the difference appear in the arithmetic.\n\n=== THE RELATIVE VERDICT (softmax) ===\n\nStep 1 — exponentiate each score:\n    e^(0.82)  = 2.2705\n    e^(0.15)  = 1.1618\n    e^(-0.20) = 0.8187\n\nStep 2 — sum them: 2.2705 + 1.1618 + 0.8187 = 4.2511\n\nStep 3 — divide each by the sum:\n    p1 = 2.2705 / 4.2511 = 0.534\n    p2 = 1.1618 / 4.2511 = 0.273\n    p3 = 0.8187 / 4.2511 = 0.193\n    (they sum to 1.000, as they must)\n\nThe first candidate leads, but not overwhelmingly. Now feel the COUPLING. Raise ONLY the first score, from 0.82 to 1.82, and leave the other two exactly where they were:\n\n    e^(1.82)  = 6.1719\n    e^(0.15)  = 1.1618  (unchanged)\n    e^(-0.20) = 0.8187  (unchanged)\n    sum       = 8.1524\n\n    p1 = 6.1719 / 8.1524 = 0.757   (rose,  0.534 -> 0.757)\n    p2 = 1.1618 / 8.1524 = 0.143   (FELL,  0.273 -> 0.143)\n    p3 = 0.8187 / 8.1524 = 0.100   (FELL,  0.193 -> 0.100)\n\nThe second and third weights dropped even though their own scores never moved a hair. That is the coupling: the shared denominator grew, so every share shrank except the one that pushed it. One list, one intertwined verdict.\n\nAnd a companion fact — ONLY GAPS MATTER. Add 5 to all three scores at once:\n\n    softmax(5.82, 5.15, 4.80) = (0.534, 0.273, 0.193)\n\nIdentical to before. A common shift cancels top and bottom; a raw score is meaningless, only its distance from its rivals counts.\n\n=== THE ABSOLUTE VERDICT (sigmoid, then regret) ===\n\nHere each score answers alone. First we may rescale by a factor t and shift by a bias b to set the threshold; take t = 10 and b = -5 (a negative b, because here a 'yes' is rare — only one of the three should be a yes — so the default should lean 'no'):\n\n    logit = t * s + b\n    0.82 * 10 - 5 =  3.20\n    0.15 * 10 - 5 = -3.50\n    -0.20 * 10 - 5 = -7.00\n\nSquash each with the sigmoid p = 1 / (1 + e^(-logit)):\n    sigmoid( 3.20) = 0.961\n    sigmoid(-3.50) = 0.029\n    sigmoid(-7.00) = 0.001\n\nEach is a standalone probability of 'yes' — no sum, no denominator, no other cell consulted. Now the regret. Suppose the truth is that the first is a yes (y = 1) and the other two are no (y = 0). Binary cross-entropy, -[y*log(p) + (1-y)*log(1-p)]:\n\n    yes, first:  -log(0.961)     = 0.040\n    no,  second: -log(1 - 0.029) = -log(0.971) = 0.030\n    no,  third:  -log(1 - 0.001) = -log(0.999) = 0.001\n\nEvery one of these numbers was computed from ITS OWN score and nothing else. Raise the first score and only the first probability and its regret move; the second and third are frozen. That is the decoupling, and it is the exact opposite of what the softmax did above with the very same list.\n\n=== THE ONE-LINE CONTRAST ===\n\n    RELATIVE: exponentiate + normalise -> weights sum to 1 -> coupled -> 'which is best?' -> needs rivals.\n    ABSOLUTE: squash each alone (+ a bias to set the threshold) -> independent yes/no -> 'is this one a yes?' -> stands on its own.\n\nSame scores. The question you ask decides which verdict — and therefore the entire shape of the arithmetic that follows."
+    },
+    {
+      "id": "two-judgments-figure",
+      "type": "image",
+      "title": "Coupled Versus Independent",
+      "image": "world/assets/two-judgments.png",
+      "caption": "One list of scores rendered two ways. On the left, softmax: exponentiate and normalise, and the weights become a single distribution summing to one — press one bar up and the others must give way. On the right, sigmoid: each score is squashed on its own private curve into an independent yes/no probability, and the bars owe nothing to one another. The left panel is comparative and coupled; the right panel is absolute and independent. Pure arithmetic — no machinery required."
+    },
+    {
+      "id": "where-this-leads",
+      "type": "plaque",
+      "prop": "lectern",
+      "title": "Where This Leads ↑",
+      "text": "You need none of the following to master the two verdicts here — they are pure arithmetic on a list of numbers, and they wait for you on the floors above. UP IN THE OBSERVATORY OF SIGHT: this exact fork is the difference between two ways of teaching a machine to match pictures to words. The RELATIVE verdict — softmax over all the rivals in a batch, coupled so that pushing one match up pulls the rest down — is the older recipe (the Paired Lanterns); its coupling is precisely why it must gather the whole batch together and craves enormous batches. The ABSOLUTE verdict — sigmoid on each pair alone, a private yes/no with a learned negative bias because true matches are rare — is the newer one (the Court of Yes-and-No); its independence is exactly why it needs no batch-wide gathering and thrives on small batches. When you climb the stair from the Forge of the Query and stand in the Observatory, you will recognise these two scales wearing new names, and understand at once why one is coupled and one is free."
+    }
+  ]
+}

@@ -1,10 +1,38 @@
 {
-  "_comment": "Single source of truth for every enum content may reference. world.py injects these into schema.json at validate time, so extending the world (new palette, prop, exhibit type...) means editing THIS file plus the code that renders it — never the schema. Content models: you may USE these values; you may not ADD to them (leave a TODO in your report instead).",
-  "room_sizes": ["small", "medium", "grand"],
-  "palettes": ["parchment", "emerald", "amber", "crimson", "sapphire", "violet", "obsidian", "silver", "bronze"],
-  "exhibit_types": ["plaque", "tome", "portrait", "artifact", "diagram", "image"],
-  "passage_types": ["stair", "archway"],
-  "plaque_props": ["pedestal", "lectern"],
+  "_comment": "Single source of truth for every enum content may reference. world.py injects these into schema.json at validate time, so extending the world (new palette, prop, exhibit type...) means editing THIS file plus the code that renders it \u2014 never the schema. Content models: you may USE these values; you may not ADD to them (leave a TODO in your report instead).",
+  "room_sizes": [
+    "small",
+    "medium",
+    "grand"
+  ],
+  "palettes": [
+    "parchment",
+    "emerald",
+    "amber",
+    "crimson",
+    "sapphire",
+    "violet",
+    "obsidian",
+    "silver",
+    "bronze",
+    "verdigris"
+  ],
+  "exhibit_types": [
+    "plaque",
+    "tome",
+    "portrait",
+    "artifact",
+    "diagram",
+    "image"
+  ],
+  "passage_types": [
+    "stair",
+    "archway"
+  ],
+  "plaque_props": [
+    "pedestal",
+    "lectern"
+  ],
   "props": [
     "pedestal",
     "lectern",
@@ -29,7 +57,28 @@
     "patch_shuttle",
     "guidance_arrows",
     "low_rank_bottleneck",
-    "exp_log_sphere"
+    "exp_log_sphere",
+    "contrastive_lattice"
   ],
-  "edge_relations": ["builds-on", "relates-to", "contrasts-with", "part-of"]
+  "edge_relations": [
+    "builds-on",
+    "relates-to",
+    "contrasts-with",
+    "part-of"
+  ],
+  "actors": [
+    "rat",
+    "ghost",
+    "cat",
+    "owl",
+    "snitch",
+    "dementor",
+    "patronus",
+    "boggart_chest",
+    "draft",
+    "rumble",
+    "noise_veil",
+    "time_glint",
+    "peeves"
+  ]
 }

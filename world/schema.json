@@ -220,6 +220,65 @@
           }
         }
       }
+    },
+
+    "event": {
+      "type": "object",
+      "required": ["id", "actor", "rarity", "cooldown_s", "duration_s"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "$ref": "#/definitions/kebabId" },
+        "actor": { "type": "string", "description": "catalog: actors" },
+        "rarity": { "type": "number", "minimum": 0 },
+        "cooldown_s": { "type": "number", "exclusiveMinimum": 0 },
+        "duration_s": { "type": "number", "exclusiveMinimum": 0 },
+        "where": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "levels": { "type": "array", "items": { "$ref": "#/definitions/kebabId" } },
+            "wings": { "type": "array", "items": { "$ref": "#/definitions/kebabId" } },
+            "kinds": {
+              "type": "array",
+              "items": { "type": "string", "enum": ["room", "corridor"] }
+            },
+            "concepts": { "type": "array", "items": { "$ref": "#/definitions/kebabId" } }
+          }
+        },
+        "opts": { "type": "object" },
+        "fx": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "light_dim": { "type": "number", "minimum": 0, "maximum": 1 },
+            "fog_pull": { "type": "number", "minimum": 0, "maximum": 1 },
+            "particles": { "type": "string", "enum": ["frost", "dust", "sparks"] }
+          }
+        },
+        "toast": { "type": "string", "minLength": 1, "maxLength": 60 },
+        "chains": {
+          "type": "object",
+          "required": ["event", "p", "within_s"],
+          "additionalProperties": false,
+          "properties": {
+            "event": { "$ref": "#/definitions/kebabId" },
+            "p": { "type": "number", "minimum": 0, "maximum": 1 },
+            "within_s": { "type": "number", "exclusiveMinimum": 0 }
+          }
+        }
+      }
+    },
+
+    "events": {
+      "type": "object",
+      "required": ["events"],
+      "additionalProperties": false,
+      "properties": {
+        "events": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/event" }
+        }
+      }
     }
   }
 }

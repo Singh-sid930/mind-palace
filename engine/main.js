@@ -14,6 +14,8 @@ import { Hud } from './hud.js';
 import { Companion } from './companion.js';
 import { CompanionChat } from './chat.js';
 import { Constellation } from './constellation.js';
+import { AmbientEvents } from './events.js';
+import { PalaceMusic } from './music.js';
 import { installDebugApi } from './debug.js';
 
 async function fetchJson(path) {
@@ -22,15 +24,22 @@ async function fetchJson(path) {
   return res.json();
 }
 
+// Optional world data: missing file means the feature is simply absent, no crash.
+async function fetchJsonOpt(path) {
+  try { const res = await fetch(path); return res.ok ? await res.json() : null; }
+  catch (e) { return null; }
+}
+
 async function loadWorldData() {
-  const [world, index, graph] = await Promise.all([
+  const [world, index, graph, events] = await Promise.all([
     fetchJson('world/world.json'),
     fetchJson('world/rooms/index.json'),
     fetchJson('world/graph.json'),
+    fetchJsonOpt('world/events.json'),
   ]);
   const rooms = await Promise.all(index.rooms.map((f) => fetchJson(`world/rooms/${f}`)));
   const roomsById = Object.fromEntries(rooms.map((r) => [r.id, r]));
-  return { world, graph, roomsById };
+  return { world, graph, roomsById, events };
 }
 
 // A compact, data-derived overview of the whole palace for the companion: each
@@ -59,7 +68,7 @@ async function boot() {
   const params = new URLSearchParams(location.search);
   const debug = params.has('debug');
 
-  const { world, graph, roomsById } = await loadWorldData();
+  const { world, graph, roomsById, events: eventDefs } = await loadWorldData();
   const layout = solveLayout(world, roomsById);
   const palaceGist = buildPalaceGist(world, roomsById, graph);
   const conceptsById = Object.fromEntries(graph.concepts.map((c) => [c.id, c]));
@@ -105,6 +114,9 @@ async function boot() {
   const player = new Player(camera, renderer.domElement, colliders);
   player.place(layout.spawn.x, layout.spawn.z, layout.spawn.yaw);
 
+  // Brief window after a teleport during which ambient events hold their fire
+  // (spawning mid-jump would look wrong). Read by the events getContext below.
+  let teleportGuardUntil = 0;
   const teleport = (roomId) => {
     const space = layout.spaceById[roomId];
     if (!space) return;
@@ -113,6 +125,7 @@ async function boot() {
     const r = space.rect;
     const back = Math.min(r.d / 2 - 1.4, Math.max(3.4, r.d * 0.32));
     player.place(r.cx, r.cz + back, 0);
+    teleportGuardUntil = performance.now() + 500;
     flash();
   };
 
@@ -151,6 +164,56 @@ async function boot() {
     onThinking: (v) => companion.setThinking(v),
   });
 
+  // Detect whether a companion backend exists at all. On a static host (e.g.
+  // GitHub Pages) /api/* returns a 404 HTML page, not JSON — so Gemma and the
+  // Gatekeeper quizzes go quiet and their hints are hidden. A local server with
+  // Ollama merely down still counts as "present" (the chat's own health check
+  // shows the helpful "start Ollama" line in that case).
+  (async () => {
+    let present = false;
+    try {
+      const r = await fetch('api/companion/health');
+      present = r.ok && (r.headers.get('content-type') || '').includes('application/json');
+      if (present) await r.json();
+    } catch { present = false; }
+    if (!present) {
+      chat.setOffline(true);
+      document.body.classList.add('no-gemma');
+    }
+  })();
+
+  // --- ambient events: the palace's fleeting inhabitants ------------------
+  // A short in-world line, shown just above the footsteps toast.
+  const eventToastEl = document.getElementById('event-toast');
+  let eventToastTimer = null;
+  function eventToast(msg) {
+    eventToastEl.textContent = msg;
+    eventToastEl.style.opacity = '1';
+    clearTimeout(eventToastTimer);
+    eventToastTimer = setTimeout(() => { eventToastEl.style.opacity = '0'; }, 2200);
+  }
+  // The live context the scheduler filters on: where the keeper stands, that
+  // floor's lights (for fx dimming), the room's anchored concepts, and whether
+  // anything (a panel, the diagram stage, a fresh teleport) should hold events.
+  const eventContext = () => {
+    const space = spaceAt(layout, camera.position.x, camera.position.z);
+    if (!space) return null;
+    const roomId = space.kind === 'room' && space.room ? space.room.id : null;
+    const paused = constellation.isOpen || diagramPanel.isOpen || chat.isOpen
+      || !!hud.openPanel || stageOpen() || performance.now() < teleportGuardUntil;
+    return {
+      rect: space.rect, h: space.h, kind: space.kind, pal: palette(space.paletteName),
+      wing: space.wing, level: space.level, roomId,
+      concepts: roomId ? graph.concepts.filter((c) => c.room === roomId).map((c) => c.id) : [],
+      camera, lights: levels.lights, paused,
+    };
+  };
+  const music = new PalaceMusic();
+  const ambientEvents = new AmbientEvents({
+    scene, defs: eventDefs, getContext: eventContext, toast: eventToast,
+    onSting: (actor) => music.sting(actor),
+  });
+
   // --- start overlay / pointer lock ---------------------------------------
   const startEl = document.getElementById('start');
   const beginBtn = document.getElementById('begin');
@@ -159,6 +222,8 @@ async function boot() {
     startEl.style.display = 'none';
     player.enabled = true;
     hud.closeAll();
+    music.start();   // first lock is a user gesture — required to open audio
+    music.resume();
   });
   player.controls.addEventListener('unlock', () => {
     player.enabled = false;
@@ -242,6 +307,13 @@ async function boot() {
     } else if (e.code === 'KeyP') {
       // Toggle the Marauder's footsteps on/off (persisted).
       footToast(footsteps.toggle());
+    } else if (e.code === 'KeyN') {
+      // Toggle the procedural score on/off (persisted).
+      const on = music.toggle();
+      footToastEl.textContent = on ? '♪ Palace music: on' : '♪ Palace music: off';
+      footToastEl.style.opacity = '1';
+      clearTimeout(footToastTimer);
+      footToastTimer = setTimeout(() => { footToastEl.style.opacity = '0'; }, 1500);
     } else if (e.code === 'Escape') {
       if (hud.diagramMaxed) hud.closeDiagramMax();
       else if (constellation.isOpen) constellation.close();
@@ -279,6 +351,7 @@ async function boot() {
   const debugApi = installDebugApi({
     scene, camera, player, layout, roomsById, interactables, levels,
     wisp, footsteps, diagramPanel, teleport, palette, showStudyCard, companion,
+    events: ambientEvents, renderer, music,
   });
 
   // --- main loop ------------------------------------------------------------
@@ -297,6 +370,8 @@ async function boot() {
     }
 
     player.update(dt);
+    // After player.update so a rumble's camera tremor lands this frame.
+    ambientEvents.update(t, dt);
     dome.position.set(camera.position.x, 0, camera.position.z);
     companion.update(dt, camera, t);
     wisp.update(dt, camera, t);

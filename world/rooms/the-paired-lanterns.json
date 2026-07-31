@@ -1,0 +1,59 @@
+{
+  "id": "the-paired-lanterns",
+  "name": "The Paired Lanterns",
+  "wing": "sight",
+  "size": "medium",
+  "order": 1,
+  "connections": ["the-two-gazes"],
+  "exhibits": [
+    {
+      "id": "the-paired-lanterns",
+      "type": "artifact",
+      "title": "The Paired Lanterns",
+      "prop": "candelabra",
+      "scale": 1.3,
+      "text": "Two lanterns hang in the shared dark of this hall, and they were lit to find each other. The IMAGE-LANTERN takes a picture and casts it as a point of light into the room. The TEXT-LANTERN takes a caption and casts it as a point of light into the SAME room — for both encoders, though built differently, are trained to project into one SHARED SPACE. A picture and its true caption are meant to land in the same place.\n\nWatch the floor between them. When a batch of N images and N captions is lit at once, the room fills with an N×N grid of light — every image's beam measured against every caption's beam, cell by cell, as a cosine similarity. The correct pairs lie along the DIAGONAL, and the whole training is one relentless instruction to the lanterns: make the diagonal blaze and let every off-diagonal cell go dark. Each image's own caption is the one true match; the other N−1 captions in the batch are impostors to be pushed away.\n\nThat pushing-away is the word CONTRASTIVE. The lantern learns what a thing IS by contrast with what it is NOT — the true caption held bright against a crowd of rivals. And because the rivals are drawn from whoever else happens to share the batch, the lanterns come to care, quietly and expensively, about the size of the crowd."
+    },
+    {
+      "id": "two-encoders-shared-hall",
+      "type": "plaque",
+      "prop": "pedestal",
+      "title": "Two Encoders, One Shared Hall",
+      "text": "CLIP trains TWO encoders jointly — one for images, one for text — and both project into a single SHARED embedding space. That shared space is the whole trick: once an image and a sentence live in the same space, you can measure how well they match with an ordinary cosine similarity.\n\nThe training signal comes from a batch of N image-caption pairs. Compute ALL pairwise similarities and you get an N×N matrix:\n\n           cap1   cap2   cap3   cap4\n    img1 [ HIGH   low    low    low  ]  ← diagonal = correct pairs\n    img2 [ low    HIGH   low    low  ]\n    img3 [ low    low    HIGH   low  ]\n    img4 [ low    low    low    HIGH ]\n\nThe objective is exactly what your eye wants: diagonal high, off-diagonal low. For each image, its own caption is the POSITIVE; the other N−1 captions riding in the same batch are the NEGATIVES. The features are shaped entirely by this tug — pull the true pair together, push the impostors apart."
+    },
+    {
+      "id": "the-contrastive-oath",
+      "type": "plaque",
+      "prop": "lectern",
+      "title": "The Contrastive Oath: Softmax Down Each Row and Column",
+      "text": "How is 'make the diagonal blaze' turned into a loss? SOFTMAX CROSS-ENTROPY, taken over each ROW and each COLUMN of the matrix.\n\nFor image i, take its row of N similarities, softmax them into a probability distribution over the N captions, and demand that the probability mass land on the correct caption. Do the same down each column, so every caption also picks its correct image. This is a RELATIVE question — 'which of these N captions is the best match?' — not an absolute one. The softmax forces the candidates to compete: raising the true pair's probability necessarily lowers the others'.\n\nThat is precisely why the method is called contrastive. There is no notion of a pair being 'good enough' on its own; a pair is only ever good RELATIVE to the rivals it is scored against. Remove the rivals and the question becomes meaningless — softmax over a single candidate is 1.0 no matter what, and nothing is learned. The negatives are not a nuisance; they are the entire source of signal."
+    },
+    {
+      "id": "price-of-coupling",
+      "type": "plaque",
+      "prop": "pedestal",
+      "title": "The Price of Coupling",
+      "text": "The softmax has a cost hidden in its denominator. Because softmax normalizes over the WHOLE batch, every pair's loss depends on every other pair — the batch is COUPLED. Two consequences follow, and both are expensive:\n\n1. GLOBAL NORMALIZATION. In distributed training the batch is spread across many GPUs, but the softmax denominator needs all the similarities at once. So each step requires a costly all-gather, hauling embeddings across the whole machine to normalize together.\n\n2. HUNGER FOR LARGE BATCHES. More captions in the batch means more negatives, and more negatives means a sharper, more informative contrast. So CLIP's quality climbs with batch size — and CLIP was trained at batch sizes of roughly 32K to feed the objective enough rivals.\n\nHold onto this coupling. It is the exact pain that the next room — the Court of Yes and No — sets out to abolish, by asking a different question entirely."
+    },
+    {
+      "id": "clip-diagram",
+      "type": "diagram",
+      "title": "The Contrastive Matrix",
+      "spec": "graph TD\n  IMG[\"batch of N images\"] --> IE[\"image encoder\"]\n  CAP[\"batch of N captions\"] --> TE[\"text encoder\"]\n  IE --> SP[\"shared embedding space\"]\n  TE --> SP\n  SP --> M[\"N x N cosine-similarity matrix\"]\n  M --> L[\"softmax cross-entropy per row and column\"]\n  L --> D[\"diagonal high, off-diagonal low\"]\n  L --> C[\"batch-coupled: all-gather, ~32K batch\"]",
+      "caption": "Two encoders project into one shared space; all N x N similarities are scored with softmax cross-entropy down every row and column, driving the diagonal high. Because softmax normalizes across the batch, the loss is coupled — hence all-gather and very large batches."
+    },
+    {
+      "id": "clip-matrix-figure",
+      "type": "image",
+      "title": "The Bright Diagonal and the Cost of the Crowd",
+      "image": "world/assets/vision-clip-matrix.png",
+      "caption": "The N x N similarity matrix with its bright diagonal of correct image-caption pairs. One row is highlighted to show the softmax competition: for that image, the N captions compete for probability mass and the true caption must win. The annotation traces the consequence of that softmax denominator — because normalization spans the whole batch, distributed training must all-gather embeddings across GPUs, and quality leans on very large batches (~32K) to supply enough negatives."
+    },
+    {
+      "id": "phase-two-tome",
+      "type": "tome",
+      "title": "On CLIP, and the Two Lives of a Similarity Score",
+      "text": "CLIP — THE CONTRASTIVE OBJECTIVE\n\nCLIP trains two encoders jointly, image and text, both projecting into a shared embedding space. From a batch of N image-caption pairs it computes every pairwise cosine similarity — an N×N matrix whose diagonal holds the correct pairs. The objective: diagonal high, off-diagonal low. For each image, its true caption is the positive; the other N−1 captions in the batch are negatives. The loss is softmax cross-entropy over each row (each image picks its caption) and each column (each caption picks its image). It is 'contrastive' because it contrasts the true pair against the crowd of rivals sharing the batch.\n\nTHE CONSEQUENCE — BATCH COUPLING. Softmax normalizes over the whole batch, so (1) the loss needs global normalization → an expensive all-gather across GPUs in distributed training, and (2) performance depends heavily on large batch sizes, because more negatives means a stronger signal. CLIP used batches of roughly 32K. This coupling is exactly what SigLIP, in the next room, sets out to remove.\n\nA LEARNER'S QUESTION, RESOLVED. Does a similarity score only make sense many-to-many — never one-to-one? The resolution is to separate TRAINING from INFERENCE.\n\n    TRAINING:  needs many. Softmax over a single element is 1.0 always → no learning\n               signal. Negatives are required for the loss to mean anything at all.\n    INFERENCE: one-to-one works fine. The embedding space is already learned, so\n               cos(embed(image), embed(caption)) is a meaningful ABSOLUTE measure.\n               This is exactly how CLIP-score evaluates generative models — one image,\n               one caption, one number.\n\nThe reason one-to-one works at inference is that the many-to-many contrast during training is precisely what BUILT the space. You pay the cost of the crowd once, while learning; afterwards a lone pair can be judged on its own.\n\nWHERE CLIP STILL LIVES. Beyond zero-shot classification and retrieval, CLIP is the text encoder inside Stable Diffusion — the captions that condition image generation are read by CLIP and fed, through cross-attention, into the denoiser. So the shared space forged here is the same space that later steers a diffusion model toward the words you typed. Follow the portal to the Two Gazes to see where those text embeddings are consumed.\n\nCARRY FORWARD: softmax → a RELATIVE 'which of these matches?' → the batch is coupled → all-gather and huge batches. Next door, one small change to the loss breaks the coupling entirely."
+    }
+  ]
+}

@@ -97,7 +97,9 @@ dissolving_cloud (figure melting into noise), reforming_cloud (noise
 gathering into a figure), patch_shuttle (image cut into a token thread and
 rewoven), guidance_arrows (u + w·(c−u) extrapolating as w sweeps),
 low_rank_bottleneck (signal squeezing d→r→d through a thin rank-r waist),
-exp_log_sphere (a straight tangent vector wrapping onto a sphere as a geodesic — the exp/log map).
+exp_log_sphere (a straight tangent vector wrapping onto a sphere as a geodesic — the exp/log map),
+contrastive_lattice (an N×N similarity matrix of orbs alternating between a
+coupled row-softmax sweep and independent per-cell yes/no judgments).
 
 `diagram.spec` is standard Mermaid (`graph TD`, `graph LR`, `sequenceDiagram`).
 Keep diagrams ≤ ~12 nodes; they render on an in-world panel. **Always wrap node
@@ -137,6 +139,56 @@ the edges those concepts originate:
   "(Upstairs: …)" parenthetical.
 - `world/graph.json` (the merged graph the engine loads) is **generated** by a clean
   validate — never edit it by hand.
+
+## Ambient events — `world/events.json`
+
+The palace is alive between the exhibits. **Ambient events** are fleeting bits of
+theatre — a rat scurrying the baseboards, the Grey Lady drifting through a wall, a
+dementor's chill on the foundation floor — that the engine schedules at random while
+you wander. The *engine* owns the behaviours (one built-once **actor** per creature);
+this data file owns *what exists and when it may fire*. The file is **optional** — a
+world with no `world/events.json` validates fine and simply stays quiet.
+
+Each entry:
+
+```json
+{
+  "id": "dementor-pass",          // kebab, unique
+  "actor": "dementor",            // must be a name in catalog.json "actors"
+  "rarity": 0.4,                  // >= 0 weight; 0 = never rolled (chain-only)
+  "cooldown_s": 600,              // > 0 seconds before this event may re-fire
+  "duration_s": 9,               // > 0 seconds the event runs
+  "where": { "levels": [], "wings": [], "kinds": [], "concepts": [] },
+  "opts": { },                    // free-form, actor-specific (e.g. rat walk style)
+  "fx": { "light_dim": 0.25, "fog_pull": 0.5, "particles": "frost" },
+  "toast": "a cold that remembers you drifts past.",
+  "chains": { "event": "patronus-answer", "p": 0.35, "within_s": 20 }
+}
+```
+
+- **`where` is AND across fields; each field is OR within itself; an empty or
+  omitted field is no constraint.** So `{ "kinds": ["room"], "wings": ["diffusion",
+  "video"] }` fires only in a *room* that is *also* in the diffusion **or** video wing.
+  A bare `{}` (or no `where`) means the event may fire anywhere. `where.kinds` ⊆
+  `["room", "corridor"]`; `where.levels`/`where.wings` must exist in `world.json`;
+  `where.concepts` must be real concept ids anchored somewhere in the graph.
+- **The actor enum lives in `catalog.json` (`actors`), never here.** You may only use
+  an actor the engine has already built — inventing an actor name will fail validation.
+  If you need a creature that does not exist yet, leave a **TODO** in your report for the
+  engine author; do not add to the catalog yourself.
+- **`rarity` 0 = chain-only**: never picked by the random scheduler, only reachable as
+  the target of another event's `chains`. Give the answering/consequence half of a pair
+  (e.g. the patronus that answers the dementor) `rarity: 0`.
+- `fx` is all optional: `light_dim` (0–1, dims the room's lights toward that factor),
+  `fog_pull` (0–1, draws the fog in around the player), `particles`
+  (`frost` | `dust` | `sparks`, a small burst). The scheduler owns `fx`; the actor owns
+  its own meshes/motion.
+- `toast` (optional, **≤ 60 chars**, in-world Hogwarts voice) prints a brief line when
+  the event fires. `chains` (optional) fires another event `within_s` seconds after this
+  one ends, with probability `p`; `chains.event` must be a real event id.
+- **A change is not done until `python world.py validate` prints `WORLD OK`.** Validation
+  checks schema shape, unique kebab ids, the actor/where references above, and that
+  `chains` points at a declared event.
 
 ## Style guide
 

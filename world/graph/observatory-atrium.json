@@ -1,0 +1,23 @@
+{
+  "concepts": [
+    {
+      "id": "vision-encoder",
+      "name": "Vision Encoder",
+      "room": "observatory-atrium",
+      "exhibit": "the-shared-eye",
+      "summary": "A model that maps an image to a representation: image -> encoder -> patch embeddings (n_patches, d) and often one global vector. Almost always a ViT (patchify the image into a grid, then run a transformer over the patches). The crucial fact: architecture is shared across encoders and is NOT what distinguishes them -- the training objective is. Swapping encoders in a real system is mostly a projector/dimension change."
+    },
+    {
+      "id": "training-objective",
+      "name": "Training Objective (Encoder Oath)",
+      "room": "observatory-atrium",
+      "exhibit": "architecture-is-shared",
+      "summary": "The training signal that shapes an encoder's features -- the 'oath' it swears at training time -- and the true axis that differentiates vision encoders. Four families: match image to caption (CLIP/SigLIP, text-supervised -> language-aligned semantics); match two crops of the same image (DINO/DINOv2, self-supervised -> visual structure); reconstruct masked patches (MAE); predict a label (supervised ViT). Trained WITH text gives semantic, nameable features; trained WITHOUT text gives spatially precise, structural features with no language grounding."
+    }
+  ],
+  "edges": [
+    { "from": "vision-encoder", "to": "patchify", "relation": "builds-on" },
+    { "from": "vision-encoder", "to": "self-attention", "relation": "builds-on" },
+    { "from": "training-objective", "to": "vision-encoder", "relation": "relates-to" }
+  ]
+}

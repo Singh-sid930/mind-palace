@@ -1,0 +1,181 @@
+{
+  "events": [
+    {
+      "id": "rat-scurry",
+      "actor": "rat",
+      "rarity": 0.5,
+      "cooldown_s": 45,
+      "duration_s": 7,
+      "opts": {
+        "walk": "baseboard"
+      }
+    },
+    {
+      "id": "rat-random-walk",
+      "actor": "rat",
+      "rarity": 0.5,
+      "cooldown_s": 50,
+      "duration_s": 10,
+      "where": {
+        "concepts": [
+          "gaussian-normal"
+        ]
+      },
+      "opts": {
+        "walk": "gaussian"
+      }
+    },
+    {
+      "id": "grey-lady",
+      "actor": "ghost",
+      "rarity": 0.5,
+      "cooldown_s": 55,
+      "duration_s": 11,
+      "toast": "the grey lady passes, and does not look back."
+    },
+    {
+      "id": "corridor-draft",
+      "actor": "draft",
+      "rarity": 0.7,
+      "cooldown_s": 40,
+      "duration_s": 12,
+      "where": {
+        "kinds": [
+          "corridor"
+        ]
+      }
+    },
+    {
+      "id": "foundations-draft",
+      "actor": "draft",
+      "rarity": 0.5,
+      "cooldown_s": 50,
+      "duration_s": 12,
+      "where": {
+        "levels": [
+          "foundations"
+        ]
+      }
+    },
+    {
+      "id": "dementor-pass",
+      "actor": "dementor",
+      "rarity": 0.4,
+      "cooldown_s": 135,
+      "duration_s": 9,
+      "where": {
+        "levels": [
+          "foundations"
+        ]
+      },
+      "fx": {
+        "light_dim": 0.25,
+        "fog_pull": 0.5,
+        "particles": "frost"
+      },
+      "toast": "a cold that remembers you drifts past.",
+      "chains": {
+        "event": "patronus-answer",
+        "p": 0.35,
+        "within_s": 20
+      }
+    },
+    {
+      "id": "patronus-answer",
+      "actor": "patronus",
+      "rarity": 0,
+      "cooldown_s": 30,
+      "duration_s": 8,
+      "fx": {
+        "particles": "sparks"
+      },
+      "toast": "something bright answers the cold."
+    },
+    {
+      "id": "staircase-rumble",
+      "actor": "rumble",
+      "rarity": 0.6,
+      "cooldown_s": 45,
+      "duration_s": 4,
+      "toast": "the staircases are moving again. mind your step."
+    },
+    {
+      "id": "peeves-books",
+      "actor": "peeves",
+      "rarity": 0.5,
+      "cooldown_s": 55,
+      "duration_s": 8,
+      "where": {
+        "kinds": [
+          "room"
+        ]
+      },
+      "toast": "peeves has found the shelves. books, beware."
+    },
+    {
+      "id": "mrs-norris",
+      "actor": "cat",
+      "rarity": 0.6,
+      "cooldown_s": 45,
+      "duration_s": 9,
+      "where": {
+        "kinds": [
+          "corridor"
+        ]
+      }
+    },
+    {
+      "id": "owl-post",
+      "actor": "owl",
+      "rarity": 0.6,
+      "cooldown_s": 50,
+      "duration_s": 8
+    },
+    {
+      "id": "golden-snitch",
+      "actor": "snitch",
+      "rarity": 0.5,
+      "cooldown_s": 60,
+      "duration_s": 11,
+      "where": {
+        "kinds": [
+          "room"
+        ]
+      }
+    },
+    {
+      "id": "noise-veil",
+      "actor": "noise_veil",
+      "rarity": 0.5,
+      "cooldown_s": 55,
+      "duration_s": 12,
+      "where": {
+        "wings": [
+          "diffusion",
+          "video"
+        ]
+      }
+    },
+    {
+      "id": "time-turner-glint",
+      "actor": "time_glint",
+      "rarity": 0.15,
+      "cooldown_s": 200,
+      "duration_s": 10,
+      "toast": "somewhere, an hour is spent twice."
+    },
+    {
+      "id": "boggart-chest",
+      "actor": "boggart_chest",
+      "rarity": 0.2,
+      "cooldown_s": 160,
+      "duration_s": 7,
+      "where": {
+        "kinds": [
+          "room"
+        ]
+      },
+      "toast": "a chest rattles. best not to open it."
+    }
+  ]
+}

@@ -57,6 +57,14 @@ export class LevelManager {
     return rec ? rec.signs : [];
   }
 
+  // The active floor's PointLights (ambient events dim these; see events.js).
+  get lights() {
+    const rec = this.loaded.get(this.activeId);
+    const out = [];
+    if (rec) for (const g of rec.groups) g.traverse((o) => { if (o.isPointLight) out.push(o); });
+    return out;
+  }
+
   // Make the level containing `roomId` the active (visible, walkable) one.
   activateFor(roomId) {
     const levelId = this.levelOf(roomId);

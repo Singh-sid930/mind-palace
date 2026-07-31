@@ -127,7 +127,7 @@ function buildExhibit(ex, slot, pal, isCenter, roomsById) {
     g.add(made.group);
     const book = openBook(pal);
     book.position.set(0, 1.28, 0.05);
-    book.rotation.x = -0.42;
+    book.rotation.x = 0.42;
     g.add(book);
     const glow = new THREE.PointLight(pal.glow, 0.8, 2.5, 1.8);
     glow.position.set(0, 1.6, 0.2);
@@ -240,9 +240,17 @@ export function buildExhibits(scene, layout, roomsById, levelId = null) {
           const dd = (d.x - hx) ** 2 + (d.z - hz) ** 2;
           if (dd < bestD) { bestD = dd; best = d; }
         }
-        const yaw = best
+        let yaw = best
           ? Math.atan2(best.x - space.rect.cx, best.z - space.rect.cz)
           : 0;
+        // Static FLAT props (mirror, banner) vanish edge-on for anyone who
+        // arrives facing their side (teleport/floo lands south of center), so
+        // angle them between the door and the room: readable from both.
+        if (ex.prop === 'mirror' || ex.prop === 'banner') {
+          while (yaw > Math.PI) yaw -= 2 * Math.PI;   // facing south landing = yaw 0
+          while (yaw < -Math.PI) yaw += 2 * Math.PI;
+          yaw *= 0.55;                                // blend 45% toward the landing
+        }
         slot = { x: space.rect.cx, z: space.rect.cz, yaw };
       } else {
         slot = takeSlot();

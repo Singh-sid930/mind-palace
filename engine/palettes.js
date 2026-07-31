@@ -39,6 +39,10 @@ export const PALETTES = {
     floor: 0x4a3d28, wall: 0x796244, trim: 0x2c2214, accent: 0xc9a24e,
     glow: 0xe8c26a, fog: 0x1e180e, light: 0xf0d692,
   },
+  verdigris: {
+    floor: 0x2e4a47, wall: 0x467a72, trim: 0x1c2f2c, accent: 0xd8b25a,
+    glow: 0x7ff2d8, fog: 0x10201d, light: 0xcfeee4,
+  },
 };
 
 export function palette(name) {

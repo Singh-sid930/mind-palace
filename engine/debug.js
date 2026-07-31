@@ -6,13 +6,17 @@ import * as THREE from 'three';
 
 export function installDebugApi({ scene, camera, player, layout, roomsById,
                                   interactables, levels, wisp, footsteps, diagramPanel,
-                                  teleport, palette, showStudyCard, companion }) {
+                                  teleport, palette, showStudyCard, companion, events,
+                                  renderer, music }) {
   window.__palace = {
     rooms: () => Object.keys(roomsById),
     scene,
     THREE,
     teleport,
     companion,
+    renderer, // renderer.info gives true draw-call / GPU-memory numbers to tooling
+    events, // the AmbientEvents scheduler: .spawn(id), .active, .update(t, dt)
+    music,  // the procedural score: .start(), .toggle(), .sting(actor)
     pose: (x, z, yawDeg, pitchDeg = 0) => {
       player.place(x, z, (yawDeg * Math.PI) / 180);
       camera.rotation.x = (pitchDeg * Math.PI) / 180;
