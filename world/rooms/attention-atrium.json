@@ -11,21 +11,24 @@
       "type": "portrait",
       "title": "Professor Aurelius Bramblestoke",
       "subtitle": "Keeper of the Predictive Arts",
-      "text": "Ah — you've arrived. Welcome to the Palace of Mind, keeper. The castle grows as you learn, and it grows UPWARD from its foundations: descend toward the groundwork an idea rests upon, climb toward what is built from it. You stand on the Ground Floor, among the halls of Attention — the mechanism every higher art borrows. The Wing of Attention opens from here, and the Grand Staircase climbs to the world models that put attention to work. Mind the signposts at each door; they remember where every idea leads. And when you learn something new in the wider world, send word — the masons will raise another chamber by morning."
+      "text": "Welcome. The castle grows as you learn, and it grows UPWARD from its foundations: descend toward the groundwork an idea rests on, climb toward what is built from it. You stand on the Ground Floor — the halls of Attention, the mechanism every higher art borrows. The Wing of Attention opens from here, and the Grand Staircase climbs to the world models that put attention to work. The signposts at each door remember where every idea leads. When you learn something new in the wider world, send word — the masons will raise another chamber by morning.",
+      "float": { "widget": "stack_rise", "n": 6 }
     },
     {
       "id": "ground-welcome",
       "type": "plaque",
       "title": "The Ground Floor — Attention",
       "prop": "pedestal",
-      "text": "This is the realm of Attention — the mechanism that lets a model decide what to listen to. From this atrium opens the Wing of Attention: six chambers that build the transformer from a single dot product through multi-head attention, the KV cache and Flash, on to positional schemes like RoPE. Everything on the floors above borrows from what is taught here, which is why Attention sits at the palace's ground. Follow the signposts from doorway to doorway, in order, and the whole machine assembles itself around you."
+      "text": "Attention is the mechanism that lets a model decide what to listen to. Six chambers off this atrium build the transformer piece by piece: from a single dot product, through multi-head attention, the KV cache and Flash, to positional schemes like RoPE. Everything on the floors above borrows what is taught here — that is why Attention sits at the ground. Follow the signposts in order and the machine assembles itself around you. The matrix above is the destination: every token scoring every other, one bright reader per row.",
+      "float": { "widget": "heat_grid", "n": 5, "variant": "row_softmax" }
     },
     {
       "id": "how-to-attend",
       "type": "plaque",
       "title": "How to Walk This Palace",
       "prop": "lectern",
-      "text": "Move with W, A, S, D and look with the mouse. Approach any exhibit and press E to study it; diagrams and figures unfold large in the room around you. Follow the signposts at each doorway — press E on one to travel onward — and read the wisp's nudge when you pause. Press M for this floor's map, G for the constellation of ideas across all floors, and F to travel by Floo to any chamber you know by name. Staircases mark the lineage: up to what builds on this floor, down to its foundations."
+      "text": "Move with W A S D; look with the mouse. Walk up to any display and press E to study it — diagrams and figures unfold large in the room. E or Esc steps back. M: this floor's map. G: the constellation of every idea in the palace. F: travel to any room by name. N: music. P: footstep trails. Follow the signposts at each doorway (E to travel), and read the wisp's nudge when you pause. Staircases mark the lineage: up to what builds on this floor, down to its foundations.",
+      "float": { "widget": "flow_nodes", "layers": [2, 3, 2] }
     }
   ]
 }

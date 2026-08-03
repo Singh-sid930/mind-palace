@@ -80,5 +80,29 @@
     "noise_veil",
     "time_glint",
     "peeves"
+  ],
+  "widgets": [
+    "arrows_dot",
+    "softmax_bars",
+    "heat_grid",
+    "token_stream",
+    "flow_nodes",
+    "curve_trace",
+    "noise_morph",
+    "pull_push",
+    "stack_rise",
+    "mask_tiles",
+    "orbit_phase",
+    "balance_tilt",
+    "funnel_flow",
+    "field_warp",
+    "descend_bowl",
+    "rain_bell",
+    "bell_slide",
+    "circle_ellipse",
+    "decay_bars",
+    "slide_window",
+    "tangent_touch",
+    "lift_matrix"
   ]
 }

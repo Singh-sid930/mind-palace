@@ -10,7 +10,7 @@
       "type": "artifact",
       "title": "The Whisper Beside the Weight",
       "prop": "low_rank_bottleneck",
-      "text": "A slender branch of light stands BESIDE the frozen tapestry, not after it. When the same input x arrives, it strikes both at once: the great frozen W does its full work, and this thin taper does a small work of its own \u2014 and their lights are ADDED where they meet. The taper is the LoRA branch, and it whispers a correction rather than replacing a word.\n\nA great confusion to burn away here: LoRA is NOT a layer bolted on at the END of W, taking W's output and transforming it further. It is a SIDE BRANCH, running in PARALLEL, fed the very same input x that W is fed. Sequentially stacking would mean 'reshape what W already said'; running in parallel means 'ADD a small learned delta to what W already does'. LoRA wants the second. So the full computation of the adapted layer is\n\n    y  =  W . x  +  B . A . x\n\nOne input x, two paths, one summed output y. Freeze the tapestry; let the taper beside it whisper how much to adjust. The artifact enacts it: motes of signal stream from the d inputs on the left, CONVERGE through a narrow waist of just r nodes \u2014 the bottleneck that forces the correction to be low-rank \u2014 then fan back out to d on the right, all beside the dim, frozen slab of W they are added to.",
+      "text": "A slender branch of light stands BESIDE the frozen tapestry, not after it. When the same input x arrives, it strikes both at once: the great frozen W does its full work, and this thin taper does a small work of its own — and their lights are ADDED where they meet. The taper is the LoRA branch, and it whispers a correction rather than replacing a word.\n\nA great confusion to burn away here: LoRA is NOT a layer bolted on at the END of W, taking W's output and transforming it further. It is a SIDE BRANCH, running in PARALLEL, fed the very same input x that W is fed. Sequentially stacking would mean 'reshape what W already said'; running in parallel means 'ADD a small learned delta to what W already does'. LoRA wants the second. So the full computation of the adapted layer is\n\n    y  =  W . x  +  B . A . x\n\nOne input x, two paths, one summed output y. Freeze the tapestry; let the taper beside it whisper how much to adjust. The artifact enacts it: motes of signal stream from the d inputs on the left, CONVERGE through a narrow waist of just r nodes — the bottleneck that forces the correction to be low-rank — then fan back out to d on the right, all beside the dim, frozen slab of W they are added to.",
       "scale": 1.3
     },
     {
@@ -18,14 +18,25 @@
       "type": "plaque",
       "prop": "pedestal",
       "title": "A Parallel Branch, Not a Later Layer",
-      "text": "A plain linear layer computes y = W . x. The instinct on first hearing 'add A and B' is to imagine them appended AFTER W, so the signal passes through W and then through A and B in sequence. That is the wrong picture, and it is worth correcting precisely.\n\nLoRA keeps W exactly as it is and adds a second path that sees the SAME input x. The two paths run side by side and their outputs are SUMMED:\n\n    y  =  W . x  +  B . A . x\n\nRead the two terms plainly. W . x is what the frozen, pretrained layer already does \u2014 untouched. B . A . x is the learned correction, the 'delta', computed from the identical x and added on top. Because they share the input and add their outputs, the branch cannot distort W's answer; it can only nudge it. That is exactly what fine-tuning wants: not to re-transform the base model's output, but to add a small, learned adjustment beside it."
+      "text": "A plain linear layer computes y = W . x. The instinct on first hearing 'add A and B' is to imagine them appended AFTER W, so the signal passes through W and then through A and B in sequence. That is the wrong picture, and it is worth correcting precisely.\n\nLoRA keeps W exactly as it is and adds a second path that sees the SAME input x. The two paths run side by side and their outputs are SUMMED:\n\n    y  =  W . x  +  B . A . x\n\nRead the two terms plainly. W . x is what the frozen, pretrained layer already does — untouched. B . A . x is the learned correction, the 'delta', computed from the identical x and added on top. Because they share the input and add their outputs, the branch cannot distort W's answer; it can only nudge it. That is exactly what fine-tuning wants: not to re-transform the base model's output, but to add a small, learned adjustment beside it.",
+      "float": {
+        "widget": "flow_nodes",
+        "layers": [
+          1,
+          2,
+          1
+        ]
+      }
     },
     {
       "id": "the-bottleneck",
       "type": "plaque",
       "prop": "lectern",
       "title": "The Bottleneck That Forces Low Rank",
-      "text": "Follow the input along the whisper-branch and watch its width change. The input x is a vector of length d. First A acts:\n\n    x      : (d,)     the full-width input\n    A . x  : (r,)     A is r x d, so it SQUEEZES x down to just r numbers\n    B (A.x): (d,)     B is d x r, so it EXPANDS back up to d\n\nThe middle line is the whole trick. Everything the branch will contribute must pass through a channel only r numbers wide \u2014 the BOTTLENECK. With r = 8, no matter how large d is, the branch's entire message is throttled to 8 numbers before it is re-expanded. A composition that squeezes to r and expands from r can produce a d x d effect of rank AT MOST r; it is structurally incapable of a full-rank update. So the low rank is not asked for politely and hoped for \u2014 it is FORCED by the shape of the path. The bottleneck is the mechanism; low rank is its guarantee. Widen r and you widen the channel, letting a richer correction through at the price of more parameters \u2014 the trade weighed in the chambers ahead."
+      "text": "Follow the input along the whisper-branch and watch its width change. The input x is a vector of length d. First A acts:\n\n    x      : (d,)     the full-width input\n    A . x  : (r,)     A is r x d, so it SQUEEZES x down to just r numbers\n    B (A.x): (d,)     B is d x r, so it EXPANDS back up to d\n\nThe middle line is the whole trick. Everything the branch will contribute must pass through a channel only r numbers wide — the BOTTLENECK. With r = 8, no matter how large d is, the branch's entire message is throttled to 8 numbers before it is re-expanded. A composition that squeezes to r and expands from r can produce a d x d effect of rank AT MOST r; it is structurally incapable of a full-rank update. So the low rank is not asked for politely and hoped for — it is FORCED by the shape of the path. The bottleneck is the mechanism; low rank is its guarantee. Widen r and you widen the channel, letting a richer correction through at the price of more parameters — the trade weighed in the chambers ahead.",
+      "float": {
+        "widget": "funnel_flow"
+      }
     },
     {
       "id": "parallel-branch-diagram",

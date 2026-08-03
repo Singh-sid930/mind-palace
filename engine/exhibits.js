@@ -8,6 +8,7 @@ import { makeProp } from './props.js';
 import { buildMouth } from './passages.js';
 import { lam } from './common.js';
 import { textPanelTexture, portraitTexture, diagramTexture } from './text.js';
+import { makeWidget } from './widgets.js';
 
 // Usable wall slots for a space: inset points along each wall, skipping
 // doorways and corners, facing into the room.
@@ -163,6 +164,24 @@ function buildExhibit(ex, slot, pal, isCenter, roomsById) {
     hit = panel;
   }
 
+  // Floating diagram: a small animated graphic hovering above the display,
+  // declared by content as `float: { widget, ...params }`.
+  if (ex.float) {
+    const phase = (Math.abs(slot.x * 7.31 + slot.z * 3.17)) % (Math.PI * 2);
+    const madeW = makeWidget(ex.float, pal, phase);
+    if (madeW) {
+      const y = ex.type === 'artifact' ? (isCenter ? 3.2 : 2.6)
+        : ex.type === 'plaque' ? (ex.prop ? 2.4 : 3.05)
+        : ex.type === 'tome' ? 2.4
+        : ex.type === 'portrait' ? 3.5 : 3.15;
+      const z = (ex.type === 'artifact') ? 0 : 0.4; // off the wall, into the room
+      madeW.group.position.set(0, y, z);
+      g.add(madeW.group);
+      const prev = update;
+      update = prev ? (t) => { prev(t); madeW.update(t); } : madeW.update;
+    }
+  }
+
   return { group: g, update, hit };
 }
 
@@ -221,8 +240,24 @@ export function buildExhibits(scene, layout, roomsById, levelId = null) {
     const roomMouths = (layout.mouths || []).filter((m) => m.roomId === space.id);
     const excludeSides = new Set(roomMouths.map((m) => m.side));
     const slots = wallSlots(space, doors, excludeSides);
+    // Spread displays around the whole perimeter instead of packing them
+    // shoulder-to-shoulder along the first walls: sort the slots rotationally
+    // around the room's center, count how many takers this room actually has
+    // (wall exhibits + portals), and hand out evenly strided slots.
+    slots.sort((a, b) =>
+      Math.atan2(a.z - space.rect.cz, a.x - space.rect.cx) -
+      Math.atan2(b.z - space.rect.cz, b.x - space.rect.cx));
+    const nPortals = layout.portals.filter((p) => p.a === space.id || p.b === space.id).length;
+    const hasCenter = room.exhibits.some((e) => e.type === 'artifact');
+    const nTakers = room.exhibits.length - (hasCenter ? 1 : 0) + nPortals;
+    let spread = slots;
+    if (nTakers > 0 && slots.length > nTakers) {
+      spread = [];
+      for (let i = 0; i < nTakers; i++)
+        spread.push(slots[Math.round((i * slots.length) / nTakers) % slots.length]);
+    }
     let slotIdx = 0;
-    const takeSlot = () => slots[Math.min(slotIdx++, slots.length - 1)];
+    const takeSlot = () => spread[slotIdx++ % spread.length];
 
     const tour = [];
     let centerTaken = false;

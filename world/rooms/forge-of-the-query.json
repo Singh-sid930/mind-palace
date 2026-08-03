@@ -11,55 +11,78 @@
       "title": "The Orb of Likeness",
       "prop": "attention_beams",
       "scale": 1.3,
-      "text": "Here the atomic act of attention is forged: one question, asked of many. Gaze into the Orb of Likeness and it returns a single number for any two vectors \u2014 their dot product, the measure of their alignment. A query q = [1, 0, 2, 1] is held against two keys. Against k1 = [1, 1, 0, 0] the orb reads (1x1)+(0x1)+(2x0)+(1x0) = 1. Against k2 = [0, 0, 1, 1] it reads (1x0)+(0x0)+(2x1)+(1x1) = 3. The lesson is carved beneath: a larger dot product means greater likeness. q leans toward k2. Every act of attention begins exactly here \u2014 by asking how alike two things are. Watch the orb at work: three keys circle the golden query, and the beams between them brighten and fade by the softmax of each key's alignment with the query's gaze \u2014 the weights of attention, flowing in real time to whichever key drifts in front."
+      "text": "Here the atomic act of attention is forged: one question, asked of many. The Orb returns a single number for any two vectors — their dot product, the measure of alignment. A query q = [1, 0, 2, 1] held against two keys: against k1 = [1, 1, 0, 0] it reads 1; against k2 = [0, 0, 1, 1] it reads 3. Larger dot product, greater likeness — q leans toward k2. Every act of attention begins exactly here. Watch the orb: three keys circle the golden query, and the beams brighten by the softmax of each key's alignment with the query's gaze — attention weights, flowing live to whichever key drifts in front."
     },
     {
       "id": "the-sharpening",
       "type": "plaque",
       "prop": "pedestal",
-      "title": "The Sharpening \u2014 Scale and Softmax",
-      "text": "Raw likeness is unruly, so two rites tame it. First the SCALE: divide every score by the square root of the key's dimension, here sqrt(4) = 2, turning [1, 3] into [0.5, 1.5]. Without it, scores in high dimensions grow vast, softmax collapses to a near one-hot spike, and gradients die. This is the 'scaled' in scaled dot-product attention. Then SOFTMAX, which does two things at once: it exponentiates (e^x is always positive and amplifies gaps, so the winner wins by more) and it normalises (the results sum to one). For [0.5, 1.5]: e^0.5 ~ 1.65, e^1.5 ~ 4.48, giving weights 0.27 and 0.73. Remember softmax as 'normalise + sharpen': equal scores give near-uniform attention (the model unsure), large gaps give near one-hot (the model certain). The sharpening is what lets attention FOCUS."
+      "title": "The Sharpening — Scale and Softmax",
+      "text": "Raw likeness is unruly, so two rites tame it. SCALE: divide every score by √d_k — here √4 = 2, turning [1, 3] into [0.5, 1.5]. Without it, high-dimensional scores grow vast, softmax collapses to a one-hot spike, and gradients die. SOFTMAX: exponentiate (always positive, gaps amplified) and normalise (sum to one). For [0.5, 1.5]: e^0.5 ≈ 1.65, e^1.5 ≈ 4.48 → weights [0.27, 0.73]. Remember it as 'normalise + sharpen': equal scores → near-uniform (unsure); large gaps → near one-hot (certain). The bars above run that race without pause.",
+      "float": {
+        "widget": "softmax_bars",
+        "n": 3
+      }
     },
     {
       "id": "the-weighted-gift",
       "type": "plaque",
       "prop": "lectern",
-      "title": "The Weighted Gift \u2014 Values",
-      "text": "The weights decide how much of each value to take. With v1 = [10, 0, 0, 0] and v2 = [0, 0, 0, 10], the output is 0.27 x v1 + 0.73 x v2 = [2.7, 0, 0, 7.3] \u2014 mostly v2, because the query was most alike to k2. Attention never picks a single value; it returns a soft, differentiable blend, a pointer that can be trained by gradient descent. The whole atomic rite, written as one master equation: Attention(q, K, V) = softmax(qK^T / sqrt(d)) . V. Score, scale, soften, blend. Everything else in this wing is this one act, repeated, masked, split, or made cheaper."
+      "title": "The Weighted Gift — Values",
+      "text": "The weights decide how much of each value to take. With v1 = [10, 0, 0, 0] and v2 = [0, 0, 0, 10]: output = 0.27·v1 + 0.73·v2 = [2.7, 0, 0, 7.3] — mostly v2, because the query was most alike to k2. Attention never picks one value; it returns a soft, differentiable blend that gradient descent can train. The whole rite in one equation: Attention(q, K, V) = softmax(qKᵀ/√d)·V. Score, scale, soften, blend. Everything else in this wing is this one act — repeated, masked, split, or made cheaper.",
+      "float": {
+        "widget": "flow_nodes",
+        "layers": [
+          2,
+          1
+        ]
+      }
     },
     {
       "id": "three-cloaks",
       "type": "plaque",
       "prop": "pedestal",
       "title": "Three Cloaks: Query, Key, Value",
-      "text": "Where do Q, K and V come from? From the SAME input X \u2014 a sequence of token embeddings of shape (n, d_model) \u2014 dressed in three learned cloaks: Q = X.Wq, K = X.Wk, V = X.Wv. The model learns WHAT to ask (Q), WHAT to advertise (K), and WHAT to give (V) as three separate transformations. The library tells it plainly: the query is the question you walk in with, the key is the label on each book's spine, the value is the content inside. One iron constraint: d_q must equal d_k, always \u2014 not a choice but arithmetic, since Q.K^T demands matching inner dimensions. d_v may differ; it only appears after the softmax. In practice d_k = d_v = d_model / h."
+      "text": "Where do Q, K, V come from? The SAME input X — token embeddings of shape (n, d_model) — dressed in three learned cloaks: Q = X·Wq, K = X·Wk, V = X·Wv. The model learns WHAT to ask (Q), WHAT to advertise (K), WHAT to give (V). Library reading: the query is the question you walk in with, the key is the label on a book's spine, the value is the content inside. One iron constraint: d_q must equal d_k — not a choice but arithmetic, since Q·Kᵀ needs matching inner dimensions. d_v may differ; it appears only after the softmax. In practice d_k = d_v = d_model/h. Above: one stream, three cloaks.",
+      "float": {
+        "widget": "flow_nodes",
+        "layers": [
+          1,
+          3
+        ]
+      }
     },
     {
       "id": "attention-pipeline",
       "type": "diagram",
       "title": "The Attention Pipeline",
-      "spec": "graph LR\n  X[Input X] --> Q[Q = X\u00b7Wq]\n  X --> K[K = X\u00b7Wk]\n  X --> V[V = X\u00b7Wv]\n  Q --> S[scores = Q\u00b7K\u1d40]\n  K --> S\n  S --> SC[\u00f7 \u221ad_k]\n  SC --> SM[softmax row-wise]\n  SM --> O[\u00b7 V \u2192 output]\n  V --> O",
-      "caption": "Score, scale, soften, blend \u2014 the whole atomic unit, drawn left to right."
+      "spec": "graph LR\n  X[Input X] --> Q[Q = X·Wq]\n  X --> K[K = X·Wk]\n  X --> V[V = X·Wv]\n  Q --> S[scores = Q·Kᵀ]\n  K --> S\n  S --> SC[÷ √d_k]\n  SC --> SM[softmax row-wise]\n  SM --> O[· V → output]\n  V --> O",
+      "caption": "Score, scale, soften, blend — the whole atomic unit, drawn left to right."
     },
     {
       "id": "ledger-of-queries",
       "type": "tome",
       "title": "The Ledger of Many Queries",
-      "text": "One query was a warm-up; the real machine asks all questions at once. Stack three queries into a matrix Q (3x4):\n  q1 = [1, 0, 2, 1]\n  q2 = [0, 1, 0, 1]\n  q3 = [2, 0, 1, 0]\nand two keys into K (2x4). Then Q.K^T is a (3x4)x(4x2) = (3x2) matrix of every query-key score:\n  [[1, 3],\n   [1, 1],\n   [2, 1]]\nThe first row is exactly the single-query result [1, 3] \u2014 proof the matrix form does the same thing for everyone simultaneously. Scaling (divide by 2) and softmax are applied independently to EACH ROW, so every query gets its own probability distribution:\n  Row 1: [0.27, 0.73] \u2014 leans to v2\n  Row 2: [0.50, 0.50] \u2014 a tie, equal attention, the model unsure\n  Row 3: [0.62, 0.38] \u2014 leans to v1\nMultiplying the (3x2) weights by V (2x4) gives the output (3x4):\n  Row 1: [2.7, 0, 0, 7.3]\n  Row 2: [5.0, 0, 0, 5.0]\n  Row 3: [6.2, 0, 0, 3.8]\n\nThe full equation is unchanged: Attention(Q, K, V) = softmax(Q.K^T / sqrt(d_k)) . V.\n\nThe dimensional trace is worth memorising, because debugging attention is mostly shape arithmetic:\n  Q: (n, d_k), K: (n, d_k), V: (n, d_v)\n  K^T            -> (d_k, n)\n  Q.K^T          -> (n, n)        <- every token's score to every token\n  / sqrt(d_k)    -> (n, n)\n  softmax        -> (n, n)        row-wise\n  . V            -> (n, d_v)\nThat (n, n) score matrix is the heart of the cost: self-attention is O(n^2) in sequence length. It is also the object we will later mask (the Veil), cache (the Library), and refuse to materialise (the Antechamber of Lightning)."
+      "text": "One query was a warm-up; the real machine asks all questions at once. Stack three queries into a matrix Q (3x4):\n  q1 = [1, 0, 2, 1]\n  q2 = [0, 1, 0, 1]\n  q3 = [2, 0, 1, 0]\nand two keys into K (2x4). Then Q.K^T is a (3x4)x(4x2) = (3x2) matrix of every query-key score:\n  [[1, 3],\n   [1, 1],\n   [2, 1]]\nThe first row is exactly the single-query result [1, 3] — proof the matrix form does the same thing for everyone simultaneously. Scaling (divide by 2) and softmax are applied independently to EACH ROW, so every query gets its own probability distribution:\n  Row 1: [0.27, 0.73] — leans to v2\n  Row 2: [0.50, 0.50] — a tie, equal attention, the model unsure\n  Row 3: [0.62, 0.38] — leans to v1\nMultiplying the (3x2) weights by V (2x4) gives the output (3x4):\n  Row 1: [2.7, 0, 0, 7.3]\n  Row 2: [5.0, 0, 0, 5.0]\n  Row 3: [6.2, 0, 0, 3.8]\n\nThe full equation is unchanged: Attention(Q, K, V) = softmax(Q.K^T / sqrt(d_k)) . V.\n\nThe dimensional trace is worth memorising, because debugging attention is mostly shape arithmetic:\n  Q: (n, d_k), K: (n, d_k), V: (n, d_v)\n  K^T            -> (d_k, n)\n  Q.K^T          -> (n, n)        <- every token's score to every token\n  / sqrt(d_k)    -> (n, n)\n  softmax        -> (n, n)        row-wise\n  . V            -> (n, d_v)\nThat (n, n) score matrix is the heart of the cost: self-attention is O(n^2) in sequence length. It is also the object we will later mask (the Veil), cache (the Library), and refuse to materialise (the Antechamber of Lightning).",
+      "float": {
+        "widget": "heat_grid",
+        "n": 4,
+        "variant": "row_softmax"
+      }
     },
     {
       "id": "fig-attention-worked-example",
       "type": "image",
       "title": "The atomic act of attention, worked end to end",
       "image": "world/assets/attention-worked-example.png",
-      "caption": "The whole atomic rite of attention, carried out on the Forge's own numbers. Top row: (a) the query q=[1,0,2,1] is scored against the two keys \u2014 q.k1=1, q.k2=3 \u2014 then each score is divided by sqrt(d_k)=sqrt(4)=2 to give [0.5, 1.5]; (b) softmax turns those scaled scores into attention weights [0.27, 0.73], which sum to one \u2014 q leans toward k2; (c) the output is the weighted blend 0.27*v1 + 0.73*v2 = [2.7, 0, 0, 7.3], mostly v2 because the query was most alike to k2. The bottom row shows the matrix form, all three queries at once: Q.K^T gives the score grid [[1,3],[1,1],[2,1]]; softmax is applied independently to each row, giving [0.27,0.73] (leans v2), [0.50,0.50] (a tie, the model unsure), and [0.62,0.38] (leans v1); multiplying by V yields [2.7,0,0,7.3], [5.0,0,0,5.0], [6.2,0,0,3.8]. Row 1 is exactly the single-query example above \u2014 proof the matrix form does the same thing for everyone simultaneously. Score, scale, soften, blend."
+      "caption": "The whole atomic rite of attention, carried out on the Forge's own numbers. Top row: (a) the query q=[1,0,2,1] is scored against the two keys — q.k1=1, q.k2=3 — then each score is divided by sqrt(d_k)=sqrt(4)=2 to give [0.5, 1.5]; (b) softmax turns those scaled scores into attention weights [0.27, 0.73], which sum to one — q leans toward k2; (c) the output is the weighted blend 0.27*v1 + 0.73*v2 = [2.7, 0, 0, 7.3], mostly v2 because the query was most alike to k2. The bottom row shows the matrix form, all three queries at once: Q.K^T gives the score grid [[1,3],[1,1],[2,1]]; softmax is applied independently to each row, giving [0.27,0.73] (leans v2), [0.50,0.50] (a tie, the model unsure), and [0.62,0.38] (leans v1); multiplying by V yields [2.7,0,0,7.3], [5.0,0,0,5.0], [6.2,0,0,3.8]. Row 1 is exactly the single-query example above — proof the matrix form does the same thing for everyone simultaneously. Score, scale, soften, blend."
     },
     {
       "id": "fig-softmax-sharpening",
       "type": "image",
       "title": "Softmax = normalise + sharpen, and why we divide by sqrt(d_k)",
       "image": "world/assets/softmax-sharpening.png",
-      "caption": "Softmax does two jobs at once: it normalises (the weights always sum to one) and it sharpens (e^x amplifies gaps, so the winner wins by more). Take the SAME score gap and scale it up. (a) softmax([0.5,1.5]) = [0.27, 0.73] is gentle and near-uniform; softmax([1,3]) = [0.12, 0.88] is sharper; softmax([2,6]) = [0.02, 0.98] is nearly one-hot. (b) The same story as entropy, the spread of the distribution: 0.84 bits, then 0.53, then 0.13, collapsing toward zero as the scores grow (1 bit is the maximum for a two-way tie). This is exactly why we divide by sqrt(d_k). In high dimensions raw dot-product scores grow vast; left unscaled, softmax spikes to a near one-hot distribution where almost all weights are ~0, its gradient vanishes, and learning stalls. The sqrt(d_k) scaling keeps scores small so the distribution stays soft and differentiable \u2014 equal scores give near-uniform attention (unsure), large gaps give near one-hot (certain). The sharpening lets attention FOCUS; the scaling keeps it trainable."
+      "caption": "Softmax does two jobs at once: it normalises (the weights always sum to one) and it sharpens (e^x amplifies gaps, so the winner wins by more). Take the SAME score gap and scale it up. (a) softmax([0.5,1.5]) = [0.27, 0.73] is gentle and near-uniform; softmax([1,3]) = [0.12, 0.88] is sharper; softmax([2,6]) = [0.02, 0.98] is nearly one-hot. (b) The same story as entropy, the spread of the distribution: 0.84 bits, then 0.53, then 0.13, collapsing toward zero as the scores grow (1 bit is the maximum for a two-way tie). This is exactly why we divide by sqrt(d_k). In high dimensions raw dot-product scores grow vast; left unscaled, softmax spikes to a near one-hot distribution where almost all weights are ~0, its gradient vanishes, and learning stalls. The sqrt(d_k) scaling keeps scores small so the distribution stays soft and differentiable — equal scores give near-uniform attention (unsure), large gaps give near one-hot (certain). The sharpening lets attention FOCUS; the scaling keeps it trainable."
     }
   ]
 }

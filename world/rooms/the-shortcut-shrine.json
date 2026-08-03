@@ -11,28 +11,42 @@
       "title": "The Hourglass of Any Hour",
       "prop": "hourglass",
       "scale": 1.4,
-      "text": "An hourglass that refuses to be watched grain by grain. The slow way to add noise is a CHAIN: nudge x₀ a little to get x₁, nudge x₁ to get x₂, and so on, hundreds of tiny steps in a row. This hourglass skips the whole fall. Turn it to any hour t and the sand is ALREADY where it would settle — one turn, one draw, no loop.\n\nTwo numbers make the magic. First define, for each step, how much SIGNAL survives one nudge: αₜ = 1 − βₜ, where βₜ is that step's little noise budget. Then multiply those survivals together to get the running product, the 'alpha bar': ᾱₜ = α₁·α₂·…·αₜ. Because every αₜ is below 1, this product only shrinks — the more steps, the less of the original left.\n\nWith all that precomputed, jumping straight from the clean start x₀ to the noised sample at ANY step t is a single line:\n\n    x_t = √ᾱₜ · x₀  +  √(1 − ᾱₜ) · ε ,     ε ~ N(0,1)\n\nRead it as scale-and-shift a standard draw, the same skeleton met in the basement Well of Chance: a SIGNAL term √ᾱₜ·x₀ that fades as the hours pass, plus a NOISE term √(1 − ᾱₜ)·ε that swells to fill the gap. The two coefficients are tuned so the total variance stays honest — signal-squared plus noise-squared, ᾱₜ + (1 − ᾱₜ) = 1.\n\nWatch a concrete turn. Let β = 0.1 at every step, so α = 0.9. Then ᾱ₁ = 0.9, ᾱ₂ = 0.81, ᾱ₃ = 0.729. To leap to x₃ from x₀ = 5.0 with a single scooped ε = 0.4:\n\n    √0.729 = 0.854,   √(1 − 0.729) = √0.271 = 0.521\n    x₃ = 0.854 × 5.0 + 0.521 × 0.4 = 4.27 + 0.208 = 4.478\n\nNo x₁, no x₂ — the intermediate hours were never computed. That is why training is fast: to teach the model to denoise at step t you need a noised sample at step t, and this hourglass hands it over in one shot instead of grinding through the forward chain.\n\nNow tip it to the far end. As t grows, ᾱₜ is a product of many numbers below 1, so ᾱₜ → 0. Then √ᾱₜ → 0 and the signal term vanishes — x₀ is forgotten — while √(1 − ᾱₜ) → 1 and the noise term takes over completely. The endpoint is x_t ≈ ε, a pure draw from N(0,1). Every starting picture, whatever it was, dissolves into the same standard-normal pool: exactly the well a diffusion model dips into when it begins generating from nothing."
+      "text": "An hourglass that refuses to be watched grain by grain. The slow way is a chain — x₀ → x₁ → x₂, hundreds of nudges. The hourglass skips the fall: turn it to any hour t and the sand is already settled. Define each step's signal survival αₜ = 1 − βₜ, and the running product ᾱₜ = α₁·α₂·…·αₜ — every factor below 1, so it only shrinks (the fading curve above). Then for ANY t, one line:\n\n  x_t = √ᾱₜ·x₀ + √(1−ᾱₜ)·ε,   ε ~ N(0,1)\n\nScale-and-shift a standard draw — the Well of Chance skeleton — with ᾱₜ + (1−ᾱₜ) = 1 keeping the spread honest. A concrete turn: β = 0.1 everywhere gives ᾱ₃ = 0.729; leap straight to x₃ from x₀ = 5.0 with a single ε = 0.4: x₃ = 0.854×5.0 + 0.521×0.4 = 4.478. No x₁, no x₂ — never computed. That is why training is fast. And as t grows, ᾱₜ → 0: the signal term vanishes, the noise term takes over, x_t ≈ ε — every picture dissolves into the same standard-normal pool generation later dips from.",
+      "float": {
+        "widget": "curve_trace",
+        "fn": "decay"
+      }
     },
     {
       "id": "why-two-become-one",
       "type": "plaque",
       "prop": "lectern",
       "title": "Why Two Steps Collapse Into One",
-      "text": "The shortcut is not a trick of notation; it rests on one law from the Well of Chance below — the SUM OF TWO INDEPENDENT GAUSSIANS IS ANOTHER GAUSSIAN, with variances added. Chain two real steps and substitute x₁ into x₂:\n\n  x₂ = √(α₁α₂)·x₀ + √α₂·√(1−α₁)·ε₁ + √(1−α₂)·ε₂\n\nThe first piece is signal; the last two are independent noise draws, ε₁ from step one and ε₂ from step two. Because they are independent Gaussians, they MERGE into a single Gaussian whose variance is the sum of theirs:\n\n  Var(first)  = α₂(1−α₁)\n  Var(second) = (1−α₂)\n  Sum = α₂ − α₁α₂ + 1 − α₂ = 1 − α₁α₂ = 1 − ᾱ₂\n\nSo the two kicks become one kick of size √(1−ᾱ₂), and the whole line folds into x₂ = √ᾱ₂·x₀ + √(1−ᾱ₂)·ε. Repeat the merge down the chain and t noise draws collapse into a single ε — the shortcut for any step."
+      "text": "The shortcut is not a trick of notation; it rests on one law from the Well of Chance below — the SUM OF TWO INDEPENDENT GAUSSIANS IS ANOTHER GAUSSIAN, with variances added. Chain two real steps and substitute x₁ into x₂:\n\n  x₂ = √(α₁α₂)·x₀ + √α₂·√(1−α₁)·ε₁ + √(1−α₂)·ε₂\n\nThe first piece is signal; the last two are independent noise draws, ε₁ from step one and ε₂ from step two. Because they are independent Gaussians, they MERGE into a single Gaussian whose variance is the sum of theirs:\n\n  Var(first)  = α₂(1−α₁)\n  Var(second) = (1−α₂)\n  Sum = α₂ − α₁α₂ + 1 − α₂ = 1 − α₁α₂ = 1 − ᾱ₂\n\nSo the two kicks become one kick of size √(1−ᾱ₂), and the whole line folds into x₂ = √ᾱ₂·x₀ + √(1−ᾱ₂)·ε. Repeat the merge down the chain and t noise draws collapse into a single ε — the shortcut for any step.",
+      "float": {
+        "widget": "rain_bell"
+      }
     },
     {
       "id": "the-schedule",
       "type": "plaque",
       "prop": "pedestal",
       "title": "β Is a Schedule, Not a Number",
-      "text": "The worked example held β = 0.1 fixed to keep the arithmetic clean, but real models never do. β is a SCHEDULE: it grows across timesteps, typically from about 0.0001 early to about 0.02 late, so the process nudges gently at first and harder as the picture dissolves. Each step therefore has its own αₜ = 1 − βₜ, and ᾱₜ is the running product of those ACTUAL per-step survivals — not a single power. None of this costs time during training: the whole β schedule, every αₜ, and the full table of ᾱₜ are PRECOMPUTED ONCE before training begins. From then on, jumping to step t is just two lookups, √ᾱₜ and √(1−ᾱₜ), and one draw of ε."
+      "text": "The worked example held β = 0.1 fixed to keep the arithmetic clean, but real models never do. β is a SCHEDULE: it grows across timesteps, typically from about 0.0001 early to about 0.02 late, so the process nudges gently at first and harder as the picture dissolves. Each step therefore has its own αₜ = 1 − βₜ, and ᾱₜ is the running product of those ACTUAL per-step survivals — not a single power. None of this costs time during training: the whole β schedule, every αₜ, and the full table of ᾱₜ are PRECOMPUTED ONCE before training begins. From then on, jumping to step t is just two lookups, √ᾱₜ and √(1−ᾱₜ), and one draw of ε.",
+      "float": {
+        "widget": "curve_trace",
+        "fn": "exp_rise"
+      }
     },
     {
       "id": "signal-vs-noise",
       "type": "plaque",
       "prop": "pedestal",
       "title": "The Fading of the Signal",
-      "text": "Picture the two coefficients as a seesaw that always balances. √ᾱₜ carries the ORIGINAL, √(1−ᾱₜ) carries the NOISE, and their squares sum to 1. At t = 0 the seesaw is all signal (ᾱ₀ = 1). Each step tips it a little toward noise. In the β = 0.1 example the signal weight slides 1 → 0.949 (√0.9) → 0.9 (√0.81) → 0.854 (√0.729), while the noise weight climbs 0 → 0.316 → 0.436 → 0.521. Push t far enough and ᾱₜ → 0: the signal weight reaches 0, the noise weight reaches 1, and x_t is indistinguishable from a fresh scoop of N(0,1). This is the endpoint diffusion is built around — pure, structureless noise that sampling can later run backward into an image."
+      "text": "Picture the two coefficients as a seesaw that always balances. √ᾱₜ carries the ORIGINAL, √(1−ᾱₜ) carries the NOISE, and their squares sum to 1. At t = 0 the seesaw is all signal (ᾱ₀ = 1). Each step tips it a little toward noise. In the β = 0.1 example the signal weight slides 1 → 0.949 (√0.9) → 0.9 (√0.81) → 0.854 (√0.729), while the noise weight climbs 0 → 0.316 → 0.436 → 0.521. Push t far enough and ᾱₜ → 0: the signal weight reaches 0, the noise weight reaches 1, and x_t is indistinguishable from a fresh scoop of N(0,1). This is the endpoint diffusion is built around — pure, structureless noise that sampling can later run backward into an image.",
+      "float": {
+        "widget": "balance_tilt"
+      }
     },
     {
       "id": "shortcut-diagram",

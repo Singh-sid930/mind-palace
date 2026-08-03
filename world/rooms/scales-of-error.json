@@ -11,42 +11,45 @@
       "title": "The Scales of Error",
       "prop": "error_scales",
       "scale": 1.3,
-      "text": "A pair of scales that weigh a guess against the truth. The weight they report is the LOSS \u2014 a single number saying how wrong an answer is right now. Make that number small and the answer is good; that is the whole shape of learning from examples. The workhorse of these scales is MEAN SQUARED ERROR (MSE): take the difference between a prediction and its target, square it, and average over all the numbers involved. Squaring does two honest things at once \u2014 it makes every error positive, so overshoot and undershoot cannot cancel out, and it punishes large mistakes far more than small ones. It is the same 'sum of squares' that measures straight-line distance, so MSE is really just the squared L2 distance between what you predicted and what was true. Nothing here is specific to any one method: whenever you can say 'here is my guess, here is the right answer', these scales will tell you how far off you are, in one clean, differentiable number that something can then work to reduce."
+      "text": "A pair of scales that weigh a guess against the truth. The reading is the LOSS — one number saying how wrong an answer is right now; make it small and the answer is good. That is the whole shape of learning from examples. The workhorse here is MEAN SQUARED ERROR: difference between prediction and target, squared, averaged. Squaring makes every error positive (overshoot cannot cancel undershoot) and punishes large mistakes far more than small ones — it is the squared straight-line distance between what you predicted and what was true. Wherever you can say 'here is my guess, here is the right answer', these scales report how far off you are in one clean, differentiable number."
     },
     {
       "id": "why-squared",
       "type": "plaque",
       "prop": "pedestal",
       "title": "Why Squared",
-      "text": "Why square the error instead of taking its raw size? Three reasons. First, sign: squaring makes +2 and \u22122 both weigh 4, so overshoot and undershoot both count as wrong and cannot cancel when averaged. Second, emphasis: an error of 4 weighs 16 while an error of 1 weighs 1 \u2014 big mistakes dominate the bill, pushing whatever is being tuned to fix the worst errors first. Third, smoothness: the square has a clean, continuous slope everywhere (its derivative is simply 2 \u00d7 error), which is exactly what a downhill search needs to follow. A worked weighing: if the true value is 0.4 and the prediction is 0.35, the loss is (0.4 \u2212 0.35)\u00b2 = 0.0025 \u2014 a tiny weight, a good guess. Compare that to a prediction of 0.9, which would weigh (0.4 \u2212 0.9)\u00b2 = 0.25, a hundred times heavier."
+      "text": "Three honest reasons to square an error. SIGN: +2 and −2 both weigh 4, so misses cannot cancel when averaged. EMPHASIS: an error of 4 weighs 16 while an error of 1 weighs 1 — the worst mistakes dominate the bill and get fixed first. SMOOTHNESS: the slope of a square is simply 2·error, continuous everywhere — exactly what a downhill search needs. Worked weighing: truth 0.4, prediction 0.35 → (0.05)² = 0.0025, a feather. Prediction 0.9 → (−0.5)² = 0.25 — a hundred times heavier.",
+      "float": { "widget": "curve_trace", "fn": "bowl" }
     },
     {
       "id": "gradient-descent",
       "type": "plaque",
       "prop": "lectern",
       "title": "Gradient Descent, Briefly",
-      "text": "A loss is only useful if you can reduce it. GRADIENT DESCENT is the method. The gradient is the direction in which the loss INCREASES most steeply as you nudge each adjustable number; so step a little in the OPPOSITE direction and the loss goes down. Repeat \u2014 new = old \u2212 (learning rate) \u00d7 gradient \u2014 and you walk steadily downhill toward smaller error. The learning rate sets the stride: too large and you overshoot the valley and bounce; too small and you crawl. Backpropagation is just the efficient bookkeeping that computes this gradient through many chained steps at once. It is a patient, local procedure \u2014 feel the slope beneath your feet, take a small step down, feel again \u2014 and it is how essentially everything that learns from a loss is trained."
+      "text": "A loss is only useful if you can reduce it. The GRADIENT is the direction in which the loss rises fastest as you nudge each adjustable number; so step the OPPOSITE way: new = old − (learning rate) × gradient. Repeat, and you walk downhill toward smaller error. The learning rate is the stride — too long overshoots the valley and bounces, too short crawls. Backpropagation is just the efficient bookkeeping that computes the gradient through many chained steps at once. Watch the bead above: every hop moves against the slope, and the hops shrink as the floor flattens — the walk settles instead of overshooting.",
+      "float": { "widget": "descend_bowl" }
     },
     {
       "id": "error-diagram",
       "type": "diagram",
       "title": "Weigh, Square, Step Downhill",
-      "spec": "graph LR\n  P[prediction] --> D[difference vs target]\n  T[target] --> D\n  D --> S[square it \u2192 MSE loss]\n  S --> G[gradient: slope of the loss]\n  G --> U[step the knobs downhill]\n  U --> P",
-      "caption": "Weigh the error, square it, follow the slope down, repeat \u2014 the loop beneath all learning from examples."
+      "spec": "graph LR\n  P[prediction] --> D[difference vs target]\n  T[target] --> D\n  D --> S[square it → MSE loss]\n  S --> G[gradient: slope of the loss]\n  G --> U[step the knobs downhill]\n  U --> P",
+      "caption": "Weigh the error, square it, follow the slope down, repeat — the loop beneath all learning from examples."
     },
     {
       "id": "the-parabola-and-the-descent",
       "type": "image",
       "title": "The Parabola and the Walk Downhill",
       "image": "world/assets/squared-error-descent.png",
-      "caption": "The left panel is the squared-error bowl, loss = (value minus target)-squared, with a walk downhill marked on it. From step 0 far up one wall, each step moves against the slope \u2014 new value = old minus (rate) times the gradient, and the gradient of a square is just 2 times the error. Notice the strides shrink as the wall flattens toward the minimum: the gentler the slope, the smaller the step, so the walk settles rather than overshoots. The right panel is why we square at all: it lays the raw size |error| beside error-squared. An error of 1 weighs 1 either way, but an error of 4 weighs 16 once squared \u2014 sixteen times heavier, not four. Squaring makes the largest mistakes dominate the bill, so the walk fixes them first."
+      "caption": "Left: the squared-error bowl with a walk downhill marked on it — each step is new = old − rate × gradient, and the strides shrink as the wall flattens, so the walk settles rather than overshoots. Right: why we square — raw |error| beside error². An error of 1 weighs 1 either way, but an error of 4 weighs 16 once squared. The largest mistakes dominate the bill, so they get fixed first."
     },
     {
       "id": "where-this-leads",
       "type": "plaque",
       "prop": "lectern",
-      "title": "Where This Leads \u2191",
-      "text": "These scales weigh far more than schoolbook fits. UP IN DIFFUSION: the ENTIRE training objective is one line on these scales \u2014 the squared difference between the true noise that was added and the noise the network predicted, \u2016\u03b5 \u2212 net(x_t, t)\u2016\u00b2. Because the noise used to corrupt an image is known, it doubles as the free answer key, and MSE does the rest. UP IN WORLD MODELS: the same squared distance is how I-JEPA scores a predicted representation against the true one, and how VICReg's 'invariance' term pulls two views together. Everywhere in the palace, when a model must be told how wrong it is, it is weighed on these scales \u2014 and gradient descent walks it downhill."
+      "title": "Where This Leads ↑",
+      "text": "Upstairs in DIFFUSION, the entire training objective is one line on these scales: ‖ε − net(x_t, t)‖² — the squared gap between the noise actually added and the noise the network predicted. The corrupting noise is known, so it doubles as a free answer key. Upstairs in WORLD MODELS, the same squared distance scores I-JEPA's predicted representation against the true one, and pulls VICReg's two views of one image together. Wherever a model must be told how wrong it is, it is weighed here — and gradient descent walks it down.",
+      "float": { "widget": "pull_push" }
     }
   ]
 }

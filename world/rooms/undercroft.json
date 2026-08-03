@@ -11,21 +11,24 @@
       "type": "portrait",
       "title": "Professor Septima Vector",
       "subtitle": "Mistress of Arithmancy",
-      "text": "Welcome to the bedrock, keeper. You have begun where every art in this palace secretly begins — in the Undercroft, among the mathematics the higher floors quietly stand upon. Up there they speak of attention and diffusion as if they were magic; down here you learn what makes the magic lawful. Two wings open from this hall. The Wing of ARITHMANCY gathers the NUMBERS — chance and the bell curve, the ledger of variance, the loom of similarity, the wheel of frequencies, the scales of error, and deeper still the singular values and the sliding kernel. The Wing of CONTINUOUS MOTION gathers the GEOMETRY of smooth transformation — curved surfaces of every valid configuration, the flat tangent windows that touch them, and the exp and log maps that carry you between; it is where turns and rotations are made lawful. Learn a thing here and you will meet it again higher up, wearing a costume. When you are ready, the staircases rise toward Attention and Diffusion; climb only when the ground beneath you feels solid — the Gatekeeper may ask."
+      "text": "Welcome. You are starting in the Undercroft — the mathematics everything upstairs is built from. Two wings open here. ARITHMANCY holds the numbers: probability and the bell curve, variance, similarity, frequency, error. CONTINUOUS MOTION holds the geometry of smooth change: curved spaces, the flat tangent planes that touch them, and the exp/log maps that carry you between. Learn a thing down here and you will meet it again upstairs wearing a costume — the bell curve returns as the noise diffusion adds; the dot product returns as attention's score. When the ground feels solid, take a staircase up. The Gatekeeper may ask a question first.",
+      "float": { "widget": "stack_rise", "n": 6 }
     },
     {
       "id": "undercroft-welcome",
       "type": "plaque",
       "prop": "pedestal",
       "title": "The Undercroft — Foundations",
-      "text": "This is the lowest floor, and therefore the deepest. The palace grows UPWARD from here: each floor above is built from what lies below. Descending means moving toward foundations — probability, variance, similarity, frequency, error — the pure mathematics that deep learning is assembled from. The chambers of Arithmancy were quarried wherever the floors above (Attention, Diffusion, and the arts built on them) needed a piece of core mathematics — its true home is down here. The Wing of Continuous Motion runs deeper still, into the geometry of smooth transformation; some of what it teaches points not to a floor already standing but to one not yet raised. Read a chamber, then follow how it is USED — the same equation, dressed as a mechanism."
+      "text": "The palace grows upward from this floor: every level is built from the one below it. Down here the ideas are pure — no machine learning yet, just the math itself. That is deliberate: an idea learned clean is easy to recognize in disguise. Example: the sliding kernel in this wing is plain convolution; two floors up it reappears moving frames of video. Read a chamber, then follow its staircase to watch the same equation doing a job.",
+      "float": { "widget": "curve_trace", "fn": "gauss" }
     },
     {
       "id": "how-to-walk",
       "type": "plaque",
       "prop": "lectern",
       "title": "How to Walk the Palace",
-      "text": "Move with W, A, S, D and look with the mouse. Approach any exhibit and press E to study it; diagrams and figures unfold large in the room around you. Follow the signposts at each doorway (press E to travel), and read the wisp's nudge when you pause. Press M for this floor's map, G for the constellation of ideas across every floor, and F to travel by Floo to any chamber you know by name. Staircases mark the lineage — up toward what is built, down toward foundations — and an archway joins wings that are siblings. A Gatekeeper ghost may quiz you before a stair rises; you may always answer, skip, or simply walk on."
+      "text": "Move with W A S D; look with the mouse. Walk up to any display and press E to study it — diagrams and figures unfold large in the room. E or Esc steps back. M: this floor's map. G: the constellation of every idea in the palace. F: travel to any room by name. N: music. P: footstep trails. Signposts at each doorway point the way; staircases go up toward what is built on this floor. A Gatekeeper ghost may quiz you at a stair — answer, skip, or simply walk on.",
+      "float": { "widget": "flow_nodes", "layers": [2, 3, 2] }
     }
   ]
 }

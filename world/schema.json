@@ -1,171 +1,352 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Mind Palace world schemas",
-  "description": "Structural rules only. Fields marked 'catalog:' get their enum injected from world/catalog.json by world.py at validate time — the catalog is the single source of truth for legal values.",
+  "description": "Structural rules only. Fields marked 'catalog:' get their enum injected from world/catalog.json by world.py at validate time \u2014 the catalog is the single source of truth for legal values.",
   "definitions": {
     "kebabId": {
       "type": "string",
       "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
       "maxLength": 64
     },
-    "shortText": { "type": "string", "minLength": 1, "maxLength": 120 },
-    "bodyText": { "type": "string", "minLength": 1, "maxLength": 1600 },
-    "longText": { "type": "string", "minLength": 1, "maxLength": 16000 },
-
+    "shortText": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "bodyText": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1600
+    },
+    "longText": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 16000
+    },
     "exhibit": {
       "type": "object",
-      "required": ["id", "type", "title"],
+      "required": [
+        "id",
+        "type",
+        "title"
+      ],
       "properties": {
-        "id": { "$ref": "#/definitions/kebabId" },
-        "type": { "type": "string", "description": "catalog: exhibit_types" },
-        "title": { "$ref": "#/definitions/shortText" }
+        "id": {
+          "$ref": "#/definitions/kebabId"
+        },
+        "type": {
+          "type": "string",
+          "description": "catalog: exhibit_types"
+        },
+        "title": {
+          "$ref": "#/definitions/shortText"
+        },
+        "float": {
+          "$ref": "#/definitions/floatWidget"
+        }
       },
       "allOf": [
         {
-          "if": { "properties": { "type": { "const": "plaque" } } },
-          "then": {
-            "required": ["text"],
+          "if": {
             "properties": {
-              "text": { "$ref": "#/definitions/bodyText" },
-              "prop": { "type": "string", "description": "catalog: plaque_props" }
+              "type": {
+                "const": "plaque"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "text"
+            ],
+            "properties": {
+              "text": {
+                "$ref": "#/definitions/bodyText"
+              },
+              "prop": {
+                "type": "string",
+                "description": "catalog: plaque_props"
+              }
             }
           }
         },
         {
-          "if": { "properties": { "type": { "const": "tome" } } },
-          "then": {
-            "required": ["text"],
-            "properties": { "text": { "$ref": "#/definitions/longText" } }
-          }
-        },
-        {
-          "if": { "properties": { "type": { "const": "portrait" } } },
-          "then": {
-            "required": ["text"],
+          "if": {
             "properties": {
-              "subtitle": { "$ref": "#/definitions/shortText" },
-              "text": { "$ref": "#/definitions/longText" }
+              "type": {
+                "const": "tome"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "text"
+            ],
+            "properties": {
+              "text": {
+                "$ref": "#/definitions/longText"
+              }
             }
           }
         },
         {
-          "if": { "properties": { "type": { "const": "artifact" } } },
-          "then": {
-            "required": ["prop", "text"],
+          "if": {
             "properties": {
-              "prop": { "type": "string" },
-              "text": { "$ref": "#/definitions/longText" },
-              "scale": { "type": "number", "minimum": 0.5, "maximum": 2.0 }
+              "type": {
+                "const": "portrait"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "text"
+            ],
+            "properties": {
+              "subtitle": {
+                "$ref": "#/definitions/shortText"
+              },
+              "text": {
+                "$ref": "#/definitions/longText"
+              }
             }
           }
         },
         {
-          "if": { "properties": { "type": { "const": "diagram" } } },
-          "then": {
-            "required": ["spec"],
+          "if": {
             "properties": {
-              "spec": { "type": "string", "minLength": 1, "maxLength": 4000 },
-              "caption": { "$ref": "#/definitions/bodyText" }
+              "type": {
+                "const": "artifact"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "prop",
+              "text"
+            ],
+            "properties": {
+              "prop": {
+                "type": "string"
+              },
+              "text": {
+                "$ref": "#/definitions/longText"
+              },
+              "scale": {
+                "type": "number",
+                "minimum": 0.5,
+                "maximum": 2.0
+              }
             }
           }
         },
         {
-          "if": { "properties": { "type": { "const": "image" } } },
-          "then": {
-            "required": ["image"],
+          "if": {
             "properties": {
-              "image": { "type": "string", "minLength": 1, "maxLength": 200 },
-              "caption": { "$ref": "#/definitions/bodyText" }
+              "type": {
+                "const": "diagram"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "spec"
+            ],
+            "properties": {
+              "spec": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4000
+              },
+              "caption": {
+                "$ref": "#/definitions/bodyText"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "image"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "image"
+            ],
+            "properties": {
+              "image": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200
+              },
+              "caption": {
+                "$ref": "#/definitions/bodyText"
+              }
             }
           }
         }
       ]
     },
-
     "passage": {
       "type": "object",
-      "required": ["id", "type", "between"],
+      "required": [
+        "id",
+        "type",
+        "between"
+      ],
       "additionalProperties": false,
       "properties": {
-        "id": { "$ref": "#/definitions/kebabId" },
-        "type": { "type": "string", "description": "catalog: passage_types" },
+        "id": {
+          "$ref": "#/definitions/kebabId"
+        },
+        "type": {
+          "type": "string",
+          "description": "catalog: passage_types"
+        },
         "between": {
           "type": "array",
           "minItems": 2,
           "maxItems": 2,
-          "items": { "$ref": "#/definitions/kebabId" }
+          "items": {
+            "$ref": "#/definitions/kebabId"
+          }
         },
         "gate": {
           "type": "object",
-          "required": ["at", "prereqs"],
+          "required": [
+            "at",
+            "prereqs"
+          ],
           "additionalProperties": false,
           "properties": {
-            "at": { "$ref": "#/definitions/kebabId" },
+            "at": {
+              "$ref": "#/definitions/kebabId"
+            },
             "prereqs": {
               "type": "array",
               "minItems": 1,
-              "items": { "$ref": "#/definitions/kebabId" }
+              "items": {
+                "$ref": "#/definitions/kebabId"
+              }
             },
-            "persona": { "$ref": "#/definitions/bodyText" }
+            "persona": {
+              "$ref": "#/definitions/bodyText"
+            }
           }
         }
       }
     },
-
     "room": {
       "type": "object",
-      "required": ["id", "name", "wing", "size", "order", "exhibits"],
+      "required": [
+        "id",
+        "name",
+        "wing",
+        "size",
+        "order",
+        "exhibits"
+      ],
       "additionalProperties": false,
       "properties": {
-        "id": { "$ref": "#/definitions/kebabId" },
-        "name": { "$ref": "#/definitions/shortText" },
-        "wing": {
-          "oneOf": [{ "$ref": "#/definitions/kebabId" }, { "type": "null" }]
+        "id": {
+          "$ref": "#/definitions/kebabId"
         },
-        "size": { "type": "string", "description": "catalog: room_sizes" },
-        "palette": { "type": "string" },
-        "order": { "type": "integer", "minimum": 1, "maximum": 32 },
+        "name": {
+          "$ref": "#/definitions/shortText"
+        },
+        "wing": {
+          "oneOf": [
+            {
+              "$ref": "#/definitions/kebabId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "size": {
+          "type": "string",
+          "description": "catalog: room_sizes"
+        },
+        "palette": {
+          "type": "string"
+        },
+        "order": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 32
+        },
         "connections": {
           "type": "array",
-          "items": { "$ref": "#/definitions/kebabId" },
+          "items": {
+            "$ref": "#/definitions/kebabId"
+          },
           "maxItems": 8
         },
         "exhibits": {
           "type": "array",
           "minItems": 1,
           "maxItems": 8,
-          "items": { "$ref": "#/definitions/exhibit" }
+          "items": {
+            "$ref": "#/definitions/exhibit"
+          }
         }
       }
     },
-
     "world": {
       "type": "object",
-      "required": ["title", "hub", "wings"],
+      "required": [
+        "title",
+        "hub",
+        "wings"
+      ],
       "additionalProperties": false,
       "properties": {
-        "title": { "$ref": "#/definitions/shortText" },
-        "subtitle": { "$ref": "#/definitions/shortText" },
-        "hub": { "$ref": "#/definitions/kebabId" },
+        "title": {
+          "$ref": "#/definitions/shortText"
+        },
+        "subtitle": {
+          "$ref": "#/definitions/shortText"
+        },
+        "hub": {
+          "$ref": "#/definitions/kebabId"
+        },
         "levels": {
           "type": "array",
           "maxItems": 8,
           "items": {
             "type": "object",
-            "required": ["id", "name", "hub"],
+            "required": [
+              "id",
+              "name",
+              "hub"
+            ],
             "additionalProperties": false,
             "properties": {
-              "id": { "$ref": "#/definitions/kebabId" },
-              "name": { "$ref": "#/definitions/shortText" },
-              "hub": { "$ref": "#/definitions/kebabId" },
-              "tier": { "type": "integer", "minimum": -8, "maximum": 8 }
+              "id": {
+                "$ref": "#/definitions/kebabId"
+              },
+              "name": {
+                "$ref": "#/definitions/shortText"
+              },
+              "hub": {
+                "$ref": "#/definitions/kebabId"
+              },
+              "tier": {
+                "type": "integer",
+                "minimum": -8,
+                "maximum": 8
+              }
             }
           }
         },
         "passages": {
           "type": "array",
           "maxItems": 32,
-          "items": { "$ref": "#/definitions/passage" }
+          "items": {
+            "$ref": "#/definitions/passage"
+          }
         },
         "wings": {
           "type": "array",
@@ -173,36 +354,65 @@
           "maxItems": 32,
           "items": {
             "type": "object",
-            "required": ["id", "name", "palette"],
+            "required": [
+              "id",
+              "name",
+              "palette"
+            ],
             "additionalProperties": false,
             "properties": {
-              "id": { "$ref": "#/definitions/kebabId" },
-              "name": { "$ref": "#/definitions/shortText" },
-              "palette": { "type": "string" },
-              "level": { "$ref": "#/definitions/kebabId" }
+              "id": {
+                "$ref": "#/definitions/kebabId"
+              },
+              "name": {
+                "$ref": "#/definitions/shortText"
+              },
+              "palette": {
+                "type": "string"
+              },
+              "level": {
+                "$ref": "#/definitions/kebabId"
+              }
             }
           }
         }
       }
     },
-
     "graph": {
       "type": "object",
-      "required": ["concepts", "edges"],
+      "required": [
+        "concepts",
+        "edges"
+      ],
       "additionalProperties": false,
       "properties": {
         "concepts": {
           "type": "array",
           "items": {
             "type": "object",
-            "required": ["id", "name", "room", "summary"],
+            "required": [
+              "id",
+              "name",
+              "room",
+              "summary"
+            ],
             "additionalProperties": false,
             "properties": {
-              "id": { "$ref": "#/definitions/kebabId" },
-              "name": { "$ref": "#/definitions/shortText" },
-              "room": { "$ref": "#/definitions/kebabId" },
-              "exhibit": { "$ref": "#/definitions/kebabId" },
-              "summary": { "$ref": "#/definitions/bodyText" }
+              "id": {
+                "$ref": "#/definitions/kebabId"
+              },
+              "name": {
+                "$ref": "#/definitions/shortText"
+              },
+              "room": {
+                "$ref": "#/definitions/kebabId"
+              },
+              "exhibit": {
+                "$ref": "#/definitions/kebabId"
+              },
+              "summary": {
+                "$ref": "#/definitions/bodyText"
+              }
             }
           }
         },
@@ -210,75 +420,186 @@
           "type": "array",
           "items": {
             "type": "object",
-            "required": ["from", "to", "relation"],
+            "required": [
+              "from",
+              "to",
+              "relation"
+            ],
             "additionalProperties": false,
             "properties": {
-              "from": { "$ref": "#/definitions/kebabId" },
-              "to": { "$ref": "#/definitions/kebabId" },
-              "relation": { "type": "string" }
+              "from": {
+                "$ref": "#/definitions/kebabId"
+              },
+              "to": {
+                "$ref": "#/definitions/kebabId"
+              },
+              "relation": {
+                "type": "string"
+              }
             }
           }
         }
       }
     },
-
     "event": {
       "type": "object",
-      "required": ["id", "actor", "rarity", "cooldown_s", "duration_s"],
+      "required": [
+        "id",
+        "actor",
+        "rarity",
+        "cooldown_s",
+        "duration_s"
+      ],
       "additionalProperties": false,
       "properties": {
-        "id": { "$ref": "#/definitions/kebabId" },
-        "actor": { "type": "string", "description": "catalog: actors" },
-        "rarity": { "type": "number", "minimum": 0 },
-        "cooldown_s": { "type": "number", "exclusiveMinimum": 0 },
-        "duration_s": { "type": "number", "exclusiveMinimum": 0 },
+        "id": {
+          "$ref": "#/definitions/kebabId"
+        },
+        "actor": {
+          "type": "string",
+          "description": "catalog: actors"
+        },
+        "rarity": {
+          "type": "number",
+          "minimum": 0
+        },
+        "cooldown_s": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "duration_s": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
         "where": {
           "type": "object",
           "additionalProperties": false,
           "properties": {
-            "levels": { "type": "array", "items": { "$ref": "#/definitions/kebabId" } },
-            "wings": { "type": "array", "items": { "$ref": "#/definitions/kebabId" } },
+            "levels": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/kebabId"
+              }
+            },
+            "wings": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/kebabId"
+              }
+            },
             "kinds": {
               "type": "array",
-              "items": { "type": "string", "enum": ["room", "corridor"] }
+              "items": {
+                "type": "string",
+                "enum": [
+                  "room",
+                  "corridor"
+                ]
+              }
             },
-            "concepts": { "type": "array", "items": { "$ref": "#/definitions/kebabId" } }
+            "concepts": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/kebabId"
+              }
+            }
           }
         },
-        "opts": { "type": "object" },
+        "opts": {
+          "type": "object"
+        },
         "fx": {
           "type": "object",
           "additionalProperties": false,
           "properties": {
-            "light_dim": { "type": "number", "minimum": 0, "maximum": 1 },
-            "fog_pull": { "type": "number", "minimum": 0, "maximum": 1 },
-            "particles": { "type": "string", "enum": ["frost", "dust", "sparks"] }
+            "light_dim": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "fog_pull": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "particles": {
+              "type": "string",
+              "enum": [
+                "frost",
+                "dust",
+                "sparks"
+              ]
+            }
           }
         },
-        "toast": { "type": "string", "minLength": 1, "maxLength": 60 },
+        "toast": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 60
+        },
         "chains": {
           "type": "object",
-          "required": ["event", "p", "within_s"],
+          "required": [
+            "event",
+            "p",
+            "within_s"
+          ],
           "additionalProperties": false,
           "properties": {
-            "event": { "$ref": "#/definitions/kebabId" },
-            "p": { "type": "number", "minimum": 0, "maximum": 1 },
-            "within_s": { "type": "number", "exclusiveMinimum": 0 }
+            "event": {
+              "$ref": "#/definitions/kebabId"
+            },
+            "p": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "within_s": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            }
           }
         }
       }
     },
-
     "events": {
       "type": "object",
-      "required": ["events"],
+      "required": [
+        "events"
+      ],
       "additionalProperties": false,
       "properties": {
         "events": {
           "type": "array",
-          "items": { "$ref": "#/definitions/event" }
+          "items": {
+            "$ref": "#/definitions/event"
+          }
         }
       }
+    },
+    "floatWidget": {
+      "type": "object",
+      "description": "A floating animated diagram hovering above the display. `widget` names a builder in engine/widgets.js; remaining keys are that widget's params.",
+      "required": [
+        "widget"
+      ],
+      "properties": {
+        "widget": {
+          "type": "string",
+          "description": "catalog: widgets"
+        },
+        "scale": {
+          "type": "number",
+          "minimum": 0.4,
+          "maximum": 1.8
+        },
+        "speed": {
+          "type": "number",
+          "minimum": 0.05,
+          "maximum": 3
+        }
+      },
+      "additionalProperties": true
     }
   }
 }

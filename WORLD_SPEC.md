@@ -101,6 +101,41 @@ exp_log_sphere (a straight tangent vector wrapping onto a sphere as a geodesic �
 contrastive_lattice (an N×N similarity matrix of orbs alternating between a
 coupled row-softmax sweep and independent per-cell yes/no judgments).
 
+### Floating widgets — `float`
+
+Any exhibit may carry `"float": { "widget": "<name>", ...params }` — a small
+animated 3D diagram that hovers above the display. **Every text-only display
+(plaque / tome / static-prop artifact) should have one**; the motion carries the
+intuition the text compresses. `widget` must come from `widgets` in
+`world/catalog.json`; extra keys are that widget's params (all optional; common:
+`scale` 0.4–1.8, `speed`). The library (engine/widgets.js — extend it when no
+motion fits, then add the name to the catalog):
+
+| widget | motion | params | use for |
+|---|---|---|---|
+| `arrows_dot` | vector sweeps past a fixed one; bar = live dot product | `speed` | similarity, projections, cosine |
+| `softmax_bars` | wandering scores; bar heights are the live softmax | `n`, `temp`, `independent` (sigmoid gates, uncoupled) | attention weights, competition, softmax-vs-sigmoid |
+| `heat_grid` | score matrix; a bright reader walks each row | `n` (or `rows`×`cols`), `variant`: `row_softmax`\|`causal`\|`drift`\|`diagonal`\|`skew` | attention matrices, masks, covariance, cross-attention |
+| `token_stream` | a sentence written one token at a time; spoken tokens cool blue (cached K/V), a gold query orb rides the newest | `n`, `cache` | autoregression, KV cache, sequences |
+| `flow_nodes` | tiny network; pulses run its edges | `layers` e.g. `[2,3,1]` | MLPs, layer flow, architectures |
+| `curve_trace` | a named function in the air with a bead riding it | `fn`: relu\|gelu\|sigmoid\|tanh\|gauss\|sin\|bowl\|cos_decay\|exp_rise | activations, schedules, distributions |
+| `noise_morph` | a point-shape dissolves to noise and re-forms | `shape`: ring\|spiral\|smile\|grid | diffusion forward/reverse |
+| `pull_push` | matched pair pulled together, strangers pushed apart | `speed` | contrastive objectives |
+| `stack_rise` | slab tower; activation pulse climbs it | `n`, `skip` (residual arc) | depth, layers, residual stream |
+| `mask_tiles` | image tiles; the hidden subset keeps reshuffling | `n`, `ratio` | masked modeling, dropout, occlusion |
+| `orbit_phase` | hands spinning at geometric speeds | `speed`, `hands` (1–3) | positional encoding, frequency, wrapping angles |
+| `balance_tilt` | a balance tips between two glowing pans | `speed` | trade-offs, paired losses |
+| `funnel_flow` | many points pressed through a narrow ring | `reverse` | bottlenecks, compression, projection |
+| `field_warp` | a wireframe sheet of space, rippling | `amp` | manifolds, curvature, landscapes |
+| `descend_bowl` | a bead hops down a loss bowl in shrinking steps | `lr` | gradient descent, convergence |
+| `rain_bell` | random draws rain into a histogram that piles into a bell | `speed` | CLT, sampling, distributions emerging |
+| `bell_slide` | a live Gaussian; μ slides it, σ breathes it, area held | `speed` | mean/variance, reparameterization |
+| `circle_ellipse` | unit circle carried through rotate→stretch→rotate | `stages` (pause between motions) | SVD, linear maps, eigen-intuition |
+| `decay_bars` | a fast-decaying spectrum; a sweeping cut keeps the top few | `values` | singular values, low rank, truncation |
+| `slide_window` | a kernel bracket walks an input row; outputs light beneath | `n`, `speed` | convolution, receptive fields, weight sharing |
+| `tangent_touch` | twin beads walk a flat tangent and its curve, drifting apart | `speed` | tangent spaces, local flatness, linearization |
+| `lift_matrix` | three beads rise and unfold into a 3×3 skew matrix, and back | `speed` | hat/vee operators, vector↔matrix costumes |
+
 `diagram.spec` is standard Mermaid (`graph TD`, `graph LR`, `sequenceDiagram`).
 Keep diagrams ≤ ~12 nodes; they render on an in-world panel. **Always wrap node
 and edge labels in double quotes** — `A["Var(X) = 1"]`, `-->|"O(n^2)"| B` —

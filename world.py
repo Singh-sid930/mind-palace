@@ -118,6 +118,7 @@ def _inject_catalog_enums(schema, catalog):
     d["room"]["properties"]["size"]["enum"] = catalog["room_sizes"]
     d["passage"]["properties"]["type"]["enum"] = catalog["passage_types"]
     d["event"]["properties"]["actor"]["enum"] = catalog["actors"]
+    d["floatWidget"]["properties"]["widget"]["enum"] = catalog["widgets"]
     for clause in d["exhibit"].get("allOf", []):
         if clause["if"]["properties"]["type"]["const"] == "plaque":
             clause["then"]["properties"]["prop"]["enum"] = catalog["plaque_props"]

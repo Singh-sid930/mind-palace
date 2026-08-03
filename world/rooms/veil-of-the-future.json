@@ -11,28 +11,49 @@
       "title": "The Veiled Seer's Glass",
       "prop": "mirror",
       "scale": 1.2,
-      "text": "A seer's glass, but veiled — it shows the past and the present, never the future. This is the causal mask of a decoder. When a model generates text left to right, token 3 must not attend to tokens 4, 5, 6, for they do not yet exist. So before the softmax, the upper triangle of the score matrix is set to minus infinity. Since e^(-inf) = 0, those positions receive exactly zero weight. Token 1 may look only at itself; token 4 may look at everything before it. The veil enforces the arrow of time, and it is the single change that turns bidirectional attention into autoregressive generation."
+      "text": "A seer's glass, but veiled — it shows the past and the present, never the future. This is the causal mask of a decoder. When a model generates text left to right, token 3 must not attend to tokens 4, 5, 6, for they do not yet exist. So before the softmax, the upper triangle of the score matrix is set to minus infinity. Since e^(-inf) = 0, those positions receive exactly zero weight. Token 1 may look only at itself; token 4 may look at everything before it. The veil enforces the arrow of time, and it is the single change that turns bidirectional attention into autoregressive generation.",
+      "float": {
+        "widget": "heat_grid",
+        "n": 5,
+        "variant": "causal"
+      }
     },
     {
       "id": "forbidden-triangle",
       "type": "plaque",
       "prop": "pedestal",
       "title": "The Forbidden Triangle",
-      "text": "Mask the upper triangle, then soften each row. From a 4x4 score matrix, the masked weights become:\n  q1: [1.000, 0, 0, 0]\n  q2: [0.047, 0.953, 0, 0]\n  q3: [0.665, 0.090, 0.245, 0]\n  q4: [0.083, 0.224, 0.083, 0.610]\nEach row sums to one over only the positions it is allowed to see. A debugging charm worth tattooing: in code the mask is not literally minus infinity but a large negative number like -1e9 or float('-inf'). If NaNs appear in your attention weights, suspect a masked position leaking a finite value, or an entire row masked to -inf so softmax divides by zero."
+      "text": "Mask the upper triangle, then soften each row. From a 4x4 score matrix, the masked weights become:\n  q1: [1.000, 0, 0, 0]\n  q2: [0.047, 0.953, 0, 0]\n  q3: [0.665, 0.090, 0.245, 0]\n  q4: [0.083, 0.224, 0.083, 0.610]\nEach row sums to one over only the positions it is allowed to see. A debugging charm worth tattooing: in code the mask is not literally minus infinity but a large negative number like -1e9 or float('-inf'). If NaNs appear in your attention weights, suspect a masked position leaking a finite value, or an entire row masked to -inf so softmax divides by zero.",
+      "float": {
+        "widget": "heat_grid",
+        "n": 4,
+        "variant": "causal",
+        "speed": 0.45
+      }
     },
     {
       "id": "two-halves-of-2017",
       "type": "plaque",
       "prop": "lectern",
       "title": "Two Halves of 2017",
-      "text": "'Encoder-only' and 'decoder-only' name which half of the original 2017 Transformer a model keeps. An ENCODER block is self-attention with NO mask — every token sees every other, fully bidirectional (BERT). A DECODER block is self-attention with the CAUSAL mask — tokens see only the past (GPT, LLaMA, Claude). The original Transformer used both, plus cross-attention bridging them. 'Decoder-only is the norm' means causal masking with next-token prediction won the scaling race. But encoder-decoder never died: it powers summarisation (T5, BART), speech-to-text (Whisper), and many multimodal models — it was never merely for translation."
+      "text": "'Encoder-only' and 'decoder-only' name which half of the original 2017 Transformer a model keeps. An ENCODER block is self-attention with NO mask — every token sees every other, fully bidirectional (BERT). A DECODER block is self-attention with the CAUSAL mask — tokens see only the past (GPT, LLaMA, Claude). The original Transformer used both, plus cross-attention bridging them. 'Decoder-only is the norm' means causal masking with next-token prediction won the scaling race. But encoder-decoder never died: it powers summarisation (T5, BART), speech-to-text (Whisper), and many multimodal models — it was never merely for translation.",
+      "float": {
+        "widget": "heat_grid",
+        "n": 5,
+        "variant": "drift"
+      }
     },
     {
       "id": "reads-the-sentence",
       "type": "plaque",
       "prop": "pedestal",
       "title": "Self-Attention Reads the Sentence",
-      "text": "In self-attention, Q, K and V all come from the same tokens — the sentence attends to itself. For 'The cat sat on the mat' (6 tokens), the score matrix is (6, 6): every word weighing every word. When the model processes 'sat', it should attend heavily to 'cat', its subject. And because of the council of heads, different heads read the same sentence differently on the same pass: a syntactic head links 'sat' to 'cat' (subject-verb), a positional head leans on 'on' (what comes next), a determiner head ties 'The' into the noun phrase. One sentence, many simultaneous readings."
+      "text": "In self-attention, Q, K and V all come from the same tokens — the sentence attends to itself. For 'The cat sat on the mat' (6 tokens), the score matrix is (6, 6): every word weighing every word. When the model processes 'sat', it should attend heavily to 'cat', its subject. And because of the council of heads, different heads read the same sentence differently on the same pass: a syntactic head links 'sat' to 'cat' (subject-verb), a positional head leans on 'on' (what comes next), a determiner head ties 'The' into the noun phrase. One sentence, many simultaneous readings.",
+      "float": {
+        "widget": "token_stream",
+        "n": 6,
+        "cache": false
+      }
     },
     {
       "id": "causal-mask-diagram",

@@ -11,21 +11,32 @@
       "title": "The Frozen Tapestry and Its Thin Correction",
       "prop": "banner",
       "scale": 1.5,
-      "text": "A vast tapestry hangs the full height of the hall, its every thread already woven at ruinous cost in the arts below. This is W — a trained weight matrix, say of size d x d = 1000 x 1000 = 1,000,000 threads. The old way of attunement was to reweave the whole cloth: full fine-tuning learns an update matrix DELTA-W of the SAME shape as W (another 1,000,000 numbers), then hangs the new cloth W_new = W + DELTA-W in place of the old. For a work with hundreds of such matrices that is billions of threads to relearn and to store, and every adapted copy is as heavy as the original.\n\nLoRA makes a different wager. It does not touch the great tapestry at all. The tapestry is FROZEN — no thread of W is ever pulled. Instead a thin, luminous correction is laid OVER it, and only that correction is learned.\n\nThe wager is this: the meaningful UPDATE does not need to be full-rank. DELTA-W can be approximated by the product of two thin matrices,\n\n    DELTA-W  ~=  B . A\n\nwith an inner rank r (take r = 8). Then A is r x d = 8 x 1000, and B is d x r = 1000 x 8. Count the threads you must actually learn:\n\n    full DELTA-W:  1000 x 1000            = 1,000,000\n    B . A:         (1000 x 8) + (8 x 1000) =    16,000\n\nSixty-two times fewer. And because B . A multiplies out to a d x d array — the same 1000 x 1000 shape as DELTA-W — it slots straight into the seam:\n\n    W_new  =  W + B . A\n\nW stays frozen; only A and B are trained. That is the whole of LoRA, and the whole reason this wing exists."
+      "text": "A vast tapestry hangs the full height of the hall, its every thread already woven at ruinous cost in the arts below. This is W — a trained weight matrix, say of size d x d = 1000 x 1000 = 1,000,000 threads. The old way of attunement was to reweave the whole cloth: full fine-tuning learns an update matrix DELTA-W of the SAME shape as W (another 1,000,000 numbers), then hangs the new cloth W_new = W + DELTA-W in place of the old. For a work with hundreds of such matrices that is billions of threads to relearn and to store, and every adapted copy is as heavy as the original.\n\nLoRA makes a different wager. It does not touch the great tapestry at all. The tapestry is FROZEN — no thread of W is ever pulled. Instead a thin, luminous correction is laid OVER it, and only that correction is learned.\n\nThe wager is this: the meaningful UPDATE does not need to be full-rank. DELTA-W can be approximated by the product of two thin matrices,\n\n    DELTA-W  ~=  B . A\n\nwith an inner rank r (take r = 8). Then A is r x d = 8 x 1000, and B is d x r = 1000 x 8. Count the threads you must actually learn:\n\n    full DELTA-W:  1000 x 1000            = 1,000,000\n    B . A:         (1000 x 8) + (8 x 1000) =    16,000\n\nSixty-two times fewer. And because B . A multiplies out to a d x d array — the same 1000 x 1000 shape as DELTA-W — it slots straight into the seam:\n\n    W_new  =  W + B . A\n\nW stays frozen; only A and B are trained. That is the whole of LoRA, and the whole reason this wing exists.",
+      "float": {
+        "widget": "heat_grid",
+        "n": 6,
+        "variant": "drift"
+      }
     },
     {
       "id": "the-low-rank-bet",
       "type": "plaque",
       "prop": "pedestal",
       "title": "The Low-Rank Bet",
-      "text": "Why should the update be allowed to be low-rank at all? Because of an empirical truth about fine-tuning: when you bend an already-trained model toward a new task, the change it needs is small and directed. It does not rewrite the model's whole understanding — it nudges it along a handful of directions. In the language of matrices, the meaningful part of DELTA-W lives in a SMALL SUBSPACE: a few strong directions carry almost all of the correction, and the rest is near-nothing.\n\nA matrix whose action is concentrated in r directions HAS rank r. So writing DELTA-W ~= B . A with inner dimension r is not a crude compression forced on the model — it is a faithful match to the shape of the update the task actually wants. LoRA does not prove r is enough for every task; it BETS that it is, parameterises the update as rank r, and lets training confirm or deny the wager. Choose r too small and the correction cannot fit the task; choose it well and a few thousand numbers do the work of a million. The deeper reason the bet pays — that fine-tuning updates have fast-decaying singular values — is the study of a later chamber."
+      "text": "Why should the update be allowed to be low-rank at all? Because of an empirical truth about fine-tuning: when you bend an already-trained model toward a new task, the change it needs is small and directed. It does not rewrite the model's whole understanding — it nudges it along a handful of directions. In the language of matrices, the meaningful part of DELTA-W lives in a SMALL SUBSPACE: a few strong directions carry almost all of the correction, and the rest is near-nothing.\n\nA matrix whose action is concentrated in r directions HAS rank r. So writing DELTA-W ~= B . A with inner dimension r is not a crude compression forced on the model — it is a faithful match to the shape of the update the task actually wants. LoRA does not prove r is enough for every task; it BETS that it is, parameterises the update as rank r, and lets training confirm or deny the wager. Choose r too small and the correction cannot fit the task; choose it well and a few thousand numbers do the work of a million. The deeper reason the bet pays — that fine-tuning updates have fast-decaying singular values — is the study of a later chamber.",
+      "float": {
+        "widget": "decay_bars"
+      }
     },
     {
       "id": "frozen-and-cheap",
       "type": "plaque",
       "prop": "lectern",
       "title": "Frozen, Shared, and Cheap to Keep",
-      "text": "Freezing W is not a detail — it is the source of every saving. When the great tapestry is frozen, no gradient ever flows into its million threads: there is nothing to differentiate there, nothing to update, nothing to store as a changed copy. The one heavy W is trained ONCE, in the arts below, and thereafter SHARED unchanged by every attunement laid over it.\n\nWhat is trained, and what is stored, is only the pair A and B — sixteen thousand numbers where there were a million. So every adapted version of the model is not a fresh multi-gigabyte work; it is a tiny adapter, a few megabytes of A and B, resting against the same frozen base. You may keep a hundred such adapters for the cost of keeping one whole model. The expensive thing is made once and never moved; the cheap thing is what you learn, save, and carry. Freeze the base, whisper the delta: that is the economy of the whole workshop."
+      "text": "Freezing W is not a detail — it is the source of every saving. When the great tapestry is frozen, no gradient ever flows into its million threads: there is nothing to differentiate there, nothing to update, nothing to store as a changed copy. The one heavy W is trained ONCE, in the arts below, and thereafter SHARED unchanged by every attunement laid over it.\n\nWhat is trained, and what is stored, is only the pair A and B — sixteen thousand numbers where there were a million. So every adapted version of the model is not a fresh multi-gigabyte work; it is a tiny adapter, a few megabytes of A and B, resting against the same frozen base. You may keep a hundred such adapters for the cost of keeping one whole model. The expensive thing is made once and never moved; the cheap thing is what you learn, save, and carry. Freeze the base, whisper the delta: that is the economy of the whole workshop.",
+      "float": {
+        "widget": "funnel_flow"
+      }
     },
     {
       "id": "lora-decomp-diagram",
@@ -46,7 +57,14 @@
       "type": "plaque",
       "prop": "pedestal",
       "title": "Where the Correction Is Laid",
-      "text": "LoRA is not smeared across the whole model. The adapter is laid on SPECIFIC weight matrices — most often the attention projections learned in the Attention wing below: W_q, W_k, W_v, and the output projection W_o. Each chosen matrix keeps its frozen W and gains its own parallel pair A and B; the rest of the model is left entirely untouched. Sometimes the MLP weights are adapted too, when the task demands more reach, but the query-key-value-output projections are the standard and usually sufficient target.\n\nThis is why the two staircases climb here from Attention and from Diffusion: LoRA does not replace those arts, it attunes them, reaching precisely into their attention machinery. HOW the correction runs beside W without being a layer stacked after it — and how the rank r and the strength are chosen, merged, or plugged in — are the studies of the chambers ahead. (Upstairs of nothing: this is the top of the lineage; every art it adapts lies below.)"
+      "text": "LoRA is not smeared across the whole model. The adapter is laid on SPECIFIC weight matrices — most often the attention projections learned in the Attention wing below: W_q, W_k, W_v, and the output projection W_o. Each chosen matrix keeps its frozen W and gains its own parallel pair A and B; the rest of the model is left entirely untouched. Sometimes the MLP weights are adapted too, when the task demands more reach, but the query-key-value-output projections are the standard and usually sufficient target.\n\nThis is why the two staircases climb here from Attention and from Diffusion: LoRA does not replace those arts, it attunes them, reaching precisely into their attention machinery. HOW the correction runs beside W without being a layer stacked after it — and how the rank r and the strength are chosen, merged, or plugged in — are the studies of the chambers ahead. (Upstairs of nothing: this is the top of the lineage; every art it adapts lies below.)",
+      "float": {
+        "widget": "flow_nodes",
+        "layers": [
+          1,
+          3
+        ]
+      }
     }
   ]
 }

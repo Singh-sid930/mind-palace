@@ -11,21 +11,23 @@
       "title": "The Wheel of Frequencies",
       "prop": "frequency_wheel",
       "scale": 1.3,
-      "text": "An orrery of nested wheels, each turning at its own rate. Its mathematics is the SINUSOID — sin and cos, the pair of functions that trace a point steadily around a circle. A single sinusoid is fixed by its FREQUENCY: how many times it cycles as its input advances. A fast sinusoid repeats quickly; a slow one barely turns. Here is the useful trick: one sinusoid alone cannot tell you WHERE you are, because it returns to the same value every cycle — but STACK many sinusoids of different frequencies, fast to slow, and together they pin down a unique position, exactly the way a clock's second-, minute-, and hour-hands together fix one unique time. A common way to choose the ladder of frequencies is freq_i = 1 / 10000^(2i/d) — a smooth spread from fast hands to very slow ones. Feed any index — a position, a step number, any integer — through this family and you get a rich vector of sines and cosines that is different for every index: a fingerprint made of rotations. Pure trigonometry, and a surprisingly powerful way to turn a bare number into a distinctive code."
+      "text": "Nested wheels, each turning at its own rate — the SINUSOID family, sin and cos tracing a point around a circle. One sinusoid alone cannot name a position: it returns to the same value every cycle. But stack many frequencies, fast to slow, and together they pin down a unique position — exactly the way second, minute, and hour hands together fix one time. A standard ladder: freq_i = 1/10000^(2i/d), a smooth spread from fast hands to very slow ones. Feed any integer through the family and out comes a fingerprint of rotations, different for every index. Pure trigonometry, turning a bare number into a distinctive code."
     },
     {
       "id": "rotation-length",
       "type": "plaque",
       "prop": "pedestal",
       "title": "Rotation Preserves Length",
-      "text": "Spin a vector about the origin and its direction changes but its length does not. In two dimensions, rotating the point [x, y] by an angle phi gives [x·cos(phi) − y·sin(phi), x·sin(phi) + y·cos(phi)]. Compute the length of the result and the sines and cosines conspire — through sin² + cos² = 1 — to leave it exactly unchanged. This is worth holding onto because it means a rotation is a way to move information around WITHOUT distorting its magnitude: you can encode something in the ANGLE while leaving the LENGTH untouched. A rotation is the gentlest transformation there is — reversible, distance-preserving, and built entirely from the same sin and cos that turn the wheel."
+      "text": "Spin a vector about the origin: its direction changes, its length does not. Rotating [x, y] by φ gives [x·cosφ − y·sinφ, x·sinφ + y·cosφ]; compute the new length and sin² + cos² = 1 cancels everything — unchanged. The meaning: a rotation can carry information in the ANGLE while leaving the magnitude untouched. It is the gentlest transformation there is — reversible and distance-preserving. Above, both arrows keep their exact length however far they swing.",
+      "float": { "widget": "arrows_dot", "bar": false, "speed": 0.5 }
     },
     {
       "id": "angle-addition",
       "type": "plaque",
       "prop": "lectern",
       "title": "The Angle-Addition Identity",
-      "text": "One trigonometric identity does a startling amount of work: cos(A)·cos(B) + sin(A)·sin(B) = cos(A − B). Read the left side carefully: it is exactly the DOT PRODUCT of two unit vectors, one pointing at angle A and the other at angle B (recall the Loom next door — u·v with both lengths equal to 1). So the identity says something clean and strong: the dot product of two unit vectors depends only on the DIFFERENCE of their angles, A − B, not on where either sits absolutely. Rotate BOTH vectors by the same extra amount and their alignment does not change at all. That single fact — 'alignment sees only the relative angle' — is a quiet workhorse, and it falls straight out of the sinusoids on this wheel."
+      "text": "cos(A)·cos(B) + sin(A)·sin(B) = cos(A − B). The left side is exactly the DOT PRODUCT of two unit vectors at angles A and B (the Loom next door, with both lengths 1). So alignment depends only on the DIFFERENCE of angles: rotate BOTH vectors by the same extra amount and their dot product does not move. Watch above — the pair swings around the dial together while their mutual angle breathes, and the bar tracks only the gap, ignoring the shared swing entirely.",
+      "float": { "widget": "arrows_dot", "corotate": true }
     },
     {
       "id": "frequency-diagram",
@@ -39,14 +41,15 @@
       "type": "image",
       "title": "Hands of the Wheel, and Angles that Add",
       "image": "world/assets/sinusoids-rotation.png",
-      "caption": "On the left, a ladder of sinusoids at geometrically spaced frequencies — slow hands at the top that barely turn, fast hands at the bottom that cycle quickly. No single hand can name a position, because each returns to the same value every cycle; but read one index on ALL of them at once (the dashed line) and the collection of values is unique — a fingerprint of that index. On the right, the unit circle: rotate a vector by an angle theta, then again by phi, and you land exactly where a single rotation of theta plus phi would put you. The length never changes through any of it. A rotation carries information in the ANGLE while leaving the magnitude untouched — the gentlest, most reversible move there is."
+      "caption": "Left: sinusoids at geometrically spaced frequencies — slow hands that barely turn, fast hands that cycle quickly. No single hand can name a position, but read one index across ALL of them (the dashed line) and the collection of values is unique. Right: rotate by θ, then by φ, and you land exactly where one rotation of θ + φ would put you — length unchanged throughout."
     },
     {
       "id": "where-this-leads",
       "type": "plaque",
       "prop": "lectern",
       "title": "Where This Leads ↑",
-      "text": "This is pure trigonometry — but it is how the upper floors tell things apart in a sequence. UP IN ATTENTION: bare attention cannot see order, so POSITION must be injected. Sinusoidal positional encoding is exactly this wheel — a token's position run through the frequency ladder and ADDED to its embedding. RoPE instead ROTATES each query and key by an angle proportional to position; because 'rotation preserves length' it injects where without distorting what, and because of the angle-addition identity the dot product of two rotated vectors depends only on their RELATIVE distance. UP IN DIFFUSION: the same wheel builds the TIMESTEP embedding — the number t (which noise level) is turned into a fingerprint the denoiser can read. One wheel, three costumes; you will meet them all when you climb."
+      "text": "Upstairs, order in a sequence comes from this wheel. ATTENTION is order-blind, so position must be injected: sinusoidal positional encoding runs a token's index through the frequency ladder and ADDS the fingerprint to its embedding. RoPE instead ROTATES each query and key by an angle proportional to position — length preserved, so the content is undistorted, and by the angle-addition identity their dot product sees only RELATIVE distance. DIFFUSION borrows the same wheel to embed the timestep t for its denoiser. One wheel, three costumes.",
+      "float": { "widget": "orbit_phase" }
     }
   ]
 }
