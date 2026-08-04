@@ -50,10 +50,10 @@ def tower(x, y, w, h, palettes, title, sub, rooms):
                 [y + h - 0.28, y + h - 0.28], color=c, lw=3, alpha=0.9,
                 solid_capstyle="round")
     cx = x + w / 2
-    ax.text(cx, y + h - 0.62, title, ha="center", va="center",
-            color=INK, fontsize=12.5, fontweight="bold")
-    ax.text(cx, y + h / 2 - 0.12, sub, ha="center", va="center",
-            color=MUTED, fontsize=9.8, style="italic")
+    ax.text(cx, y + h - 0.58, title, ha="center", va="center",
+            color=INK, fontsize=11.5, fontweight="bold")
+    ax.text(cx, y + h / 2 - 0.28, sub, ha="center", va="center",
+            color=MUTED, fontsize=9.2, style="italic")
     ax.text(cx, y + 0.30, f"{rooms} rooms", ha="center", va="center",
             color=MUTED, fontsize=9)
     return cx, y, y + h  # center-x, bottom-y, top-y
@@ -69,16 +69,19 @@ def stair(x0, y0, x1, y1, bend=0.0, gated=True):
                    linewidth=1.4, zorder=3)
 
 H = 1.9
-# Tier +1 — three towers.
-att = tower(0.3, 6.6, 3.0, H, ["obsidian"],
-            "Workshop of Attunement", "LoRA — adapting a trained art\nwith small low-rank grafts",
+# Tier +1 — four towers.
+att = tower(0.12, 6.6, 2.7, H, ["obsidian"],
+            "Workshop of\nAttunement", "LoRA — small\nlow-rank grafts",
             per_level["attunement"])
-wm = tower(4.0, 6.6, 4.0, H, ["emerald", "crimson"],
-           "The Upper Floor", "World models (V-JEPA) &\nthe reforged transformer (DiT)",
+wm = tower(3.0, 6.6, 3.3, H, ["emerald", "crimson"],
+           "The Upper Floor", "World models (V-JEPA)\n& the DiT",
            per_level["world-models"])
-vid = tower(8.7, 6.6, 3.0, H, ["silver"],
-            "Gallery of Moving Portraits", "Video diffusion — pictures\ntaught to move",
+vid = tower(6.5, 6.6, 2.6, H, ["silver"],
+            "Gallery of\nMoving Portraits", "Video diffusion —\npictures taught to move",
             per_level["video"])
+vis = tower(9.28, 6.6, 2.6, H, ["verdigris"],
+            "Observatory\nof Sight", "Vision encoders —\nCLIP, SigLIP, DINO",
+            per_level["vision"])
 
 # Tier 0 — the ground floor.
 attn = tower(1.1, 3.7, 4.2, H, ["sapphire"],
@@ -98,12 +101,13 @@ und = tower(2.4, 0.8, 7.2, H, ["violet", "bronze"],
 # Stairs (every one kept by a Gatekeeper) + the sibling archway.
 stair(4.0, 2.7, 3.2, 3.7)              # undercroft -> attention
 stair(8.0, 2.7, 8.8, 3.7)              # undercroft -> diffusion
-stair(3.2, 5.6, 5.0, 6.6, bend=0.06)   # attention -> upper floor
-stair(8.8, 5.6, 7.0, 6.6, bend=-0.06)  # diffusion -> upper floor
-stair(2.2, 5.6, 1.8, 6.6)              # attention -> attunement
-stair(7.4, 5.6, 3.35, 7.1, bend=0.14)  # diffusion -> attunement
-stair(9.6, 5.6, 10.2, 6.6)             # diffusion -> video
-stair(4.6, 5.6, 8.65, 7.1, bend=-0.14) # attention -> video
+stair(3.2, 5.6, 4.2, 6.6, bend=0.06)   # attention -> upper floor
+stair(8.6, 5.6, 5.6, 6.6, bend=-0.1)   # diffusion -> upper floor
+stair(2.2, 5.6, 1.5, 6.6)              # attention -> attunement
+stair(7.2, 5.6, 2.9, 7.1, bend=0.16)   # diffusion -> attunement
+stair(9.4, 5.6, 7.9, 6.6, bend=-0.06)  # diffusion -> video
+stair(4.4, 5.6, 6.7, 7.0, bend=-0.12)  # attention -> video
+stair(5.1, 5.6, 10.5, 6.6, bend=-0.22) # attention -> observatory of sight
 ax.add_patch(FancyArrowPatch((5.3, 4.65), (6.7, 4.65),
              arrowstyle="<|-|>", mutation_scale=11, linewidth=1.3,
              color=MUTED, alpha=0.8, linestyle=(0, (4, 3))))
