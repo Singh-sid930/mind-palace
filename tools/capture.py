@@ -263,13 +263,19 @@ async def scene_gemma(page):
     await page.wait_for_timeout(900)
     await page.evaluate(
         "window.__cine.ask('why does the lantern pour more light on some keys than others?')")
-    # Wait for the streamed reply to finish (bubble text stops growing).
+    # Wait for the streamed reply to finish: first for the reply to APPEAR
+    # (the log must grow past the question + thinking dots — a cold model can
+    # take a while), then for the bubble text to stop growing.
     await page.wait_for_timeout(3000)
-    last, stable = "", 0
-    for _ in range(60):
+    base = await page.evaluate("document.getElementById('chat-log').innerText")
+    last, stable, grew = base, 0, False
+    for _ in range(90):
         txt = await page.evaluate(
             "document.getElementById('chat-log').innerText")
-        if txt == last:
+        if len(txt.replace("…", "").replace("...", "")) > \
+           len(base.replace("…", "").replace("...", "")) + 10:
+            grew = True
+        if grew and txt == last:
             stable += 1
             if stable >= 4:
                 break
@@ -296,7 +302,7 @@ GIF = {
     "study": (10, 680, 1.0),
     "constellation": (12, 680, 1.0),
     "footsteps": (12, 680, 1.0),
-    "gemma": (10, 760, 1.6),
+    "gemma": (9, 760, 3.2),
 }
 
 
