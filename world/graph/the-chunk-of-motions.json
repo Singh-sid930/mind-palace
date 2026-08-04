@@ -1,0 +1,29 @@
+{
+  "concepts": [
+    {
+      "id": "action-chunk",
+      "name": "Action chunk",
+      "room": "the-chunk-of-motions",
+      "exhibit": "the-chunk-of-motions",
+      "summary": "The data tensor a flow-matching robot policy generates: a block of shape (H, action_dim) holding H control steps of joint commands. For a 7-DOF arm with horizon 50 it is (50, 7) — 350 numbers. It slots into x₁ exactly where an image latent sat in image generation, and everything else is unchanged: x_t = (1−t)·x₀ + t·x₁ with x₀ Gaussian noise of the same shape, and the velocity target x₁ − x₀. Because the whole chunk is refined in a single forward pass, every element is conditioned on every other, which is what produces temporal consistency across the horizon rather than fifty independent decisions."
+    },
+    {
+      "id": "vlm-conditioning",
+      "name": "VLM hidden state as conditioning",
+      "room": "the-chunk-of-motions",
+      "exhibit": "the-conditioning-slot",
+      "summary": "In image generation the velocity field is conditioned on a text embedding: v_θ(x_t, t, text_embedding). In a VLA the same slot carries the hidden state of a vision-language model: v_θ(x_t, t, VLM_hidden_state). That hidden state has already fused three streams — camera images, the language instruction, and the robot's proprioception. The plumbing is identical to text-conditioned image generation; only the contents of the conditioning vector are richer."
+    }
+  ],
+  "edges": [
+    { "from": "action-chunk", "to": "straight-path", "relation": "builds-on" },
+    { "from": "action-chunk", "to": "velocity-field", "relation": "builds-on" },
+    { "from": "action-chunk", "to": "temporal-consistency", "relation": "relates-to" },
+    { "from": "action-chunk", "to": "mse-loss", "relation": "builds-on" },
+    { "from": "action-chunk", "to": "gaussian-normal", "relation": "builds-on" },
+    { "from": "vlm-conditioning", "to": "action-chunk", "relation": "part-of" },
+    { "from": "vlm-conditioning", "to": "cross-attention", "relation": "relates-to" },
+    { "from": "vlm-conditioning", "to": "classifier-free-guidance", "relation": "relates-to" },
+    { "from": "vlm-conditioning", "to": "world-action-models", "relation": "relates-to" }
+  ]
+}

@@ -43,6 +43,14 @@ export const PALETTES = {
     floor: 0x2e4a47, wall: 0x467a72, trim: 0x1c2f2c, accent: 0xd8b25a,
     glow: 0x7ff2d8, fog: 0x10201d, light: 0xcfeee4,
   },
+  cobalt: {
+    floor: 0x1e3550, wall: 0x2f5580, trim: 0x142338, accent: 0x9fd8e8,
+    glow: 0x5fd8ff, fog: 0x0b1626, light: 0xc2e8ff,
+  },
+  ember: {
+    floor: 0x4a2c22, wall: 0x7a4632, trim: 0x2a1810, accent: 0xd9a05a,
+    glow: 0xff8a4a, fog: 0x1e0f08, light: 0xffc296,
+  },
 };
 
 export function palette(name) {

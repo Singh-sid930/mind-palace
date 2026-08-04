@@ -15,8 +15,8 @@ nothing to install. (The Gemma companion stays home; everything else travels.)
 Artifacts are working metaphors, plaques carry the distilled mechanics with worked
 examples, tomes hold full source texts — and **every text display has a small animated
 diagram floating above it**, so the intuition moves even before you read. A knowledge
-graph keeps every idea connected to the ideas it builds on: **55 rooms across 7
-floors, 136 concepts, 249 typed edges**.
+graph keeps every idea connected to the ideas it builds on: **68 rooms across 9
+floors, 166 concepts, 339 typed edges**.
 
 **The core design:** the engine is code, built once; the world is pure data, grown
 forever. Any LLM can extend the palace by writing small JSON files against
@@ -50,9 +50,15 @@ everything higher is built from what stands below. Stairs follow the lineage —
 every stair is kept by a **Gatekeeper**, a quiz-ghost who asks about the prerequisite
 concepts before letting you climb. (You can always answer, skip, or walk away.)
 
+The lineage is the point, and it is load-bearing: the bell curve you meet in the
+basement is the noise diffusion adds two floors up; the dot product becomes
+attention's score; the singular values become LoRA's rank. The top floor —
+vision-language-action — is reached only by climbing through flow matching *and*
+through the vision encoders, because it genuinely needs both.
+
 <p align="center">
-  <img src="docs/media/palace-map.png" width="820"
-       alt="Elevation map: foundations below, attention and diffusion on the ground floor; LoRA, world models, video diffusion and vision encoders above">
+  <img src="docs/media/palace-map.png" width="860"
+       alt="Elevation map: foundations below, attention and diffusion on the ground floor; LoRA, world models, flow matching, video diffusion and vision encoders above; the hall of embodied motion at the top">
 </p>
 
 ## Exhibits that move like the mathematics

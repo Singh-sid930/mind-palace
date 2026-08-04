@@ -1,0 +1,78 @@
+{
+  "id": "the-plateau-that-lies",
+  "name": "The Plateau That Lies",
+  "wing": "riverworks",
+  "size": "medium",
+  "order": 5,
+  "connections": ["scales-of-error"],
+  "exhibits": [
+    {
+      "id": "the-scales-that-stop",
+      "type": "artifact",
+      "title": "The Scales That Stop Short",
+      "prop": "error_scales",
+      "scale": 1.35,
+      "text": "These scales settle, and then they refuse to go further. Velocity MSE falls, flattens somewhere around 1.0, and stays there for the rest of training.\n\nThat is CORRECT. It is not a stalled optimiser, not a bad learning rate, and not a bug — and people who assume otherwise start 'fixing' a perfectly healthy run.\n\nThe reason is the same averaging that bends the field two chambers back. Many different (noise, data) pairs produce lines that pass through the same point x_t. Standing at that point, the true target v = x₁ − x₀ is genuinely ambiguous: several different answers were correct for several different pairs. Squared error is minimised by the mean of the possibilities, so that is what the network learns to say. The spread of the possibilities it averaged over never goes away, and it lands on the loss as an IRREDUCIBLE FLOOR well above zero.\n\nA converged flow matching model therefore sits on a plateau, permanently. The number tells you almost nothing about how good the samples are.\n\n  Judge flow matching by SAMPLE QUALITY, never by loss magnitude.\n\nAnd note what this means for the reverse case: a loss that looks healthy proves nothing either. In the bimodal experiment upstairs, the regression baseline's action-MSE looked perfectly fine while it drove straight into an obstacle."
+    },
+    {
+      "id": "why-there-is-a-floor",
+      "type": "plaque",
+      "prop": "pedestal",
+      "title": "Where the Floor Comes From",
+      "text": "Work it through with two data points instead of a dataset. Suppose the demonstrator sometimes reaches LEFT and sometimes reaches RIGHT from the same observation, so x₁ is genuinely two-valued. Draw a noise sample x₀ and a time t and you can land on a point x_t that lies on both lines — the one going left and the one going right.\n\nAt that point the network is asked for the velocity. Two different answers were correct. It has one output, and squared error is minimised by their MEAN, so it answers with the average of a left-velocity and a right-velocity — a direction pointing between the two, which is a direction no training pair ever wanted.\n\nThe residual it can never remove is the variance of the targets it averaged over. That variance is a property of the data, not of the model, so no amount of capacity or training removes it.\n\nBut here is what saves the method: this averaging happens per-step, and the steps are re-decided as the sample moves. Early noise tips the trajectory toward one mode; once it is on that side, the ambiguity shrinks and the field commits. A high loss and multimodal samples are perfectly compatible.",
+      "float": {
+        "widget": "fork_paths"
+      }
+    },
+    {
+      "id": "the-silent-broadcast",
+      "type": "plaque",
+      "prop": "pedestal",
+      "title": "The Bug That Throws No Error",
+      "text": "t arrives from the sampler with shape (B,). The chunk you are interpolating has shape (B, H, A). Write x_t = (1−t)*x0 + t*x1 as it stands and PyTorch will broadcast t along the LAST axis, pairing each batch element's time with an action dimension. It is a legal operation. There is no exception, no warning, no shape error — only a training run that quietly optimises nonsense while the loss curve descends convincingly.\n\nThe fix is one line, before the interpolation:\n\n  tb = t.view(B, 1, 1)      # action chunk (B, H, A)\n  tb = t.view(B, 1, 1, 1)   # image latent (B, C, H, W)\n\nThe rank of the data tensor decides how many trailing ones you need. Get it right and t is constant across every element of a sample, which is what the maths says it must be: ONE scalar time for the whole point on the path.\n\nThis is the single most common implementation bug in flow matching, and it is common precisely because it is silent. Print the shape of the interpolation's operands once, at the top of training, and you will never lose a day to it.",
+      "float": {
+        "widget": "heat_grid",
+        "variant": "drift",
+        "rows": 3,
+        "cols": 6
+      }
+    },
+    {
+      "id": "sign-and-direction",
+      "type": "plaque",
+      "prop": "lectern",
+      "title": "Sign and Direction Must Agree",
+      "text": "The convention trap from the Straight Channel becomes a real bug here. Port code from a repository that indexes time the other way and you must flip BOTH things it touches: the sign of the velocity target, and the direction of integration. Flip one and not the other and the model trains against a target that is the negative of what the sampler assumes. The loss looks plausible — it is still regressing something — and the samples are noise.\n\nThe detection trick costs one minute and does not require a trained model. Take the network at INITIALISATION, integrate it, and watch where the samples go. Even an untrained field, once it has seen a few gradient steps, should move points TOWARD the data region. If they drift away, or spread outward, your convention and your integration direction disagree. Fix that before you tune anything else.\n\nA related habit worth keeping: the loss is on the VELOCITY, never on the action or the image. It is tempting to add a term comparing the integrated sample against the ground truth. That is a different objective, it is far more expensive, and it is not what this method is.",
+      "float": {
+        "widget": "field_flow"
+      }
+    },
+    {
+      "id": "normalise-then-denormalise",
+      "type": "plaque",
+      "prop": "pedestal",
+      "title": "Normalise In, Denormalise Out",
+      "text": "The path mixes data with N(0,1) noise, so the data had better live at that scale. Normalise PER DIMENSION, using each dimension's own mean and standard deviation, and clamp the standard deviation away from zero — a joint that never moves in your dataset has a std of 0 and will hand you a division by zero or an infinity.\n\nSkip this and one dimension eats the loss. A shoulder joint swinging over radians dominates the MSE while the gripper, which moves between 0 and 1, contributes almost nothing to the gradient and never learns. The model is not broken; you weighted the objective by accident.\n\nProprioception needs the same treatment, for the same reason.\n\nThen DENORMALISE at the output, before anything leaves the model. This is the one on the list that is genuinely dangerous rather than merely annoying: forget it and you send unit-scale numbers to hardware that expects radians. Normalisation constants belong in the checkpoint next to the weights, not in the training script, so the deployed policy cannot be separated from the statistics it was trained under.",
+      "float": {
+        "widget": "bell_slide"
+      }
+    },
+    {
+      "id": "start-as-identity",
+      "type": "plaque",
+      "prop": "lectern",
+      "title": "Start at Zero, Learn the Delta",
+      "text": "Zero-initialise the weights of the final output layer. Then at step zero the predicted velocity is exactly 0 everywhere, the ODE holds still instead of flinging samples across the space, and training begins from a stable, harmless starting point that the gradients can move away from deliberately.\n\nYou have met this trick twice already under other names. adaLN-Zero in the Reforged Transformer zero-initialises the scale-and-shift so each block starts as the identity. ControlNet's zero-convolutions do the same thing to an entire injected branch. All three are one idea: START AS A NO-OP AND LEARN THE DELTA. Adding a randomly-initialised component to a working system perturbs it; adding a zeroed one costs nothing until the gradients decide what it should do.\n\nOne more choice from the same family is worth keeping: inject the conditioning through adaLN-style scale and shift rather than by concatenation. It is the mechanism π0.5 uses to feed the integration time τ into every layer, and it composes cleanly with zero-init because a zeroed scale means the conditioning starts with no effect at all.",
+      "float": {
+        "widget": "descend_bowl"
+      }
+    },
+    {
+      "id": "debugging-diagram",
+      "type": "diagram",
+      "title": "Symptom to Cause",
+      "spec": "graph LR\n  A[\"loss plateaus high\"] --> A2[\"NORMAL — conditional mean of ambiguous targets\"]\n  B[\"loss fine, samples are noise\"] --> B2[\"convention or sign mismatch\"]\n  C[\"one joint learns, others do not\"] --> C2[\"missing per-dimension normalisation\"]\n  D[\"training silently learns nonsense\"] --> D2[\"t not reshaped to B,1,1\"]\n  E[\"too slow for the control loop\"] --> E2[\"conditioning recomputed inside the integration loop\"]\n  F[\"unstable early training\"] --> F2[\"zero-init the output layer\"]",
+      "caption": "The six symptoms worth recognising on sight. The first row is the one that costs the most time, because the natural response to a flat loss is to change something — and the flat loss is the method working correctly. The fourth costs the second most, because nothing about it looks like an error until you inspect the samples."
+    }
+  ]
+}

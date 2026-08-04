@@ -1,0 +1,93 @@
+{
+  "id": "the-hall-of-two-experts",
+  "name": "The Hall of Two Experts",
+  "wing": "action",
+  "size": "medium",
+  "order": 3,
+  "connections": [
+    "the-adaptive-sanctum",
+    "veil-of-the-future"
+  ],
+  "exhibits": [
+    {
+      "id": "the-single-transformer",
+      "type": "artifact",
+      "title": "One Transformer, Two Sets of Weights",
+      "prop": "attention_beams",
+      "scale": 1.4,
+      "text": "The beams above the plinth run between every token and every other token — one joint attention operation, exactly as in the Wing of Attention. What is unusual here is not the attention. It is that the tokens being mixed were computed by two different sets of weights.\n\nπ0 is built from PaliGemma 3B and a 300M ACTION EXPERT. They are not two models in a pipeline. They are two independent weight sets inside a SINGLE transformer, and the TOKEN TYPE decides which set is used:\n\n  image token   → PaliGemma's Wq, Wk, Wv and MLP\n  text token    → PaliGemma's Wq, Wk, Wv and MLP\n  state token   → the action expert's Wq, Wk, Wv and MLP\n  action token  → the action expert's Wq, Wk, Wv and MLP\n\nA small head bolted to a backbone's final layer must squeeze all action reasoning through whatever representation the backbone happened to produce. π0 refuses that constraint: the action side gets its own full stack of transformer weights, running alongside the vision-language weights, layer by layer, participating in every attention operation.\n\nThe totals are 3.3B parameters — 3B of vision-language backbone, 300M of action expert. The expert is small because it is not learning to see. It is learning what to do with what it can already look at.\n\nWhat it looks at, it reaches through attention alone, and that is the mechanism worth understanding next."
+    },
+    {
+      "id": "token-type-selects-weights",
+      "type": "plaque",
+      "prop": "pedestal",
+      "title": "Token Type Selects the Weights",
+      "text": "Inside one transformer layer, π0 keeps two parameter sets and routes each token to one of them by TYPE — not by position, not by a learned gate, just by what kind of thing the token is.\n\nImage and text tokens are processed by PaliGemma's projections and PaliGemma's MLP. State and action tokens are processed by the action expert's projections and the action expert's MLP. Both routes exist in every layer, and both run on every forward pass.\n\nThis is a mixture of experts in the literal sense of the phrase, with a trivial router: modality decides. The vision-language weights are never asked to represent a joint velocity; the action weights are never asked to recognise a towel. Each side keeps its own specialisation and its own capacity budget, which is why 300M of action expert can sit beside 3B of pretrained backbone without either overwhelming the other.\n\nThe MLP sub-layers stay separate all the way through. Only one sub-layer ever mixes the two populations, and it is the one on the next plinth.",
+      "float": {
+        "widget": "flow_nodes",
+        "layers": [
+          2,
+          4,
+          2
+        ]
+      }
+    },
+    {
+      "id": "they-meet-only-in-attention",
+      "type": "plaque",
+      "prop": "lectern",
+      "title": "They Meet Only in Attention",
+      "text": "The two experts interact through exactly one mechanism: self-attention. The rule is worth stating precisely, because the whole design hangs on it.\n\nEach token computes its Q, K and V using ITS OWN expert's projection weights. Then ALL tokens — image, text, state, action — attend to each other in one joint attention operation over the full sequence.\n\nThe consequence: an action token's query can attend to image tokens' keys and values. It reads visual content directly, at every layer, using attention weights it computed itself. The action expert therefore SEES THE VISUAL SCENE WITHOUT OWNING ANY VISION WEIGHTS. It never learned to encode a pixel; it learned what to ask for.\n\nAfter attention, the paths separate again. Each token goes through its own expert's MLP. So the division of labour is clean and repeats every layer: ATTENTION MIXES, MLPs SPECIALISE.\n\nThis is also why the action expert can be small. Representation is expensive and the backbone already paid for it. Querying a representation you did not build is cheap.",
+      "float": {
+        "widget": "heat_grid",
+        "n": 8,
+        "variant": "row_softmax"
+      }
+    },
+    {
+      "id": "actions-are-inputs",
+      "type": "plaque",
+      "prop": "pedestal",
+      "title": "Action Tokens Are Inputs, Not Outputs",
+      "text": "This is the crux, and it is where a flow-matching head stops resembling a normal action head.\n\nIn a discrete-token VLA — RT-2, OpenVLA — actions ARE outputs, generated autoregressively, one bin index after another. π0 does not do that. It works like image diffusion, where the noisy latent is an INPUT and the network emits a velocity for it.\n\n  INPUT:  the noisy action chunk x_τ → 50 tokens fed INTO the transformer\n  OUTPUT: the velocity for that chunk → shape (50, action_dim)\n\nAt every integration step you feed in your current guess, receive a direction, apply the update OUTSIDE the network, and feed the new version back in. Ten times.\n\nThe reasoning is short. The chunk is the thing being REFINED, and refinement requires the network to see what it is refining. So the chunk must be an input. Once it is an input it is a token sequence, and a token sequence needs weights to process it — hence an action expert rather than a head.\n\nAnd there is only ever ONE velocity, produced once per pass. The expert is not bolted onto the end; it IS the pathway, and its final hidden states for the 50 action tokens project to the velocity.",
+      "float": {
+        "widget": "noise_morph",
+        "shape": "grid"
+      }
+    },
+    {
+      "id": "the-timestep-in-every-layer",
+      "type": "plaque",
+      "prop": "lectern",
+      "title": "π0.5 and the Timestep in Every Layer",
+      "text": "π0 fuses the integration time τ with the noisy action chunk before it enters the transformer — one injection, at the input. π0.5 changes that.\n\nA separate MLP projects τ, and then ADAPTIVE RMSNORM injects the timestep into EACH LAYER of the action expert: the normalisation's scale and shift are predicted from τ rather than learned as free parameters. Every layer is told where along the path it currently is.\n\nYou have already met this mechanism. It is adaLN from the Wing of the Reforged Transformer, in its RMSNorm form — conditioning by modulating normalisation statistics instead of concatenating a conditioning vector. The same argument applies here as there: modulation touches every layer and costs almost nothing, while concatenation reaches only the input and consumes sequence length.\n\nπ0.5 also changes the execution policy. It runs 16 to 25 actions from a chunk before re-inferring, rather than replanning at every control step. The chunk is a commitment, and how long you honour it is a dial.",
+      "float": {
+        "widget": "stack_rise",
+        "n": 6
+      }
+    },
+    {
+      "id": "the-ten-passes",
+      "type": "tome",
+      "title": "The Ten Passes",
+      "text": "A step-by-step account of what actually happens inside π0 when a robot decides what to do next.\n\nI. THE PARTS. A PaliGemma 3B vision-language backbone, whose vision tower is SigLIP and whose language model is Gemma. A 300M action expert. Both live inside one transformer; token type selects which weight set processes a token. Total 3.3B parameters.\n\nII. WHAT GOES IN. Camera images become patch tokens through the vision encoder. The instruction becomes text tokens. Proprioception is concatenated with a noisy action chunk of length 50 and enters on the action-expert side. So the sequence is roughly [image patches][text tokens][state token][50 action tokens].\n\nIII. THE FIRST PASS. τ = 0. The 50 action tokens carry pure Gaussian noise, shape (50, action_dim). They are fed in, they attend to the image and text tokens, and the expert's final hidden states for those 50 positions project to a velocity of shape (50, action_dim). The Euler update x ← x + v·Δt is applied OUTSIDE the transformer.\n\nIV. THE PASSES AFTER. Only the first input is noise. Everything after is the current best guess, progressively refined.\n\n  pass 1   input = pure noise              τ = 0\n  pass 2   input = slightly cleaner        τ = 0.1\n  pass 5   input = half-formed actions     τ = 0.4\n  pass 10  input = nearly final            τ = 0.9\n  output   clean action chunk              τ = 1\n\nTen passes. Then the chunk is denormalised and sent to the controller.\n\nV. WHY THIS IS NOT AN AUTOREGRESSIVE DECODE. Nothing is being generated left to right. All 50 action tokens are present in every pass and all 50 are updated simultaneously. The loop is over NOISE LEVEL, not over time or sequence position. That is what keeps the whole horizon consistent, and it is also why the loop is short enough to be affordable.\n\nVI. TRAINING HAS NO LOOP. This surprises people who have watched inference.\n\n  training:   x_τ = (1−τ)·noise + τ·A_demo, target = A_demo − noise,\n              ONE forward pass, one MSE, backprop. τ sampled per example.\n  inference:  the 10-step integration loop.\n\nThe same asymmetry as image flow matching. Training visits random points along the path; sampling walks the whole path.\n\nVII. VERIFIED SPECIFICS. PaliGemma 3B plus a 300M action expert; two independent weight sets in a single transformer interacting only through self-attention; proprioception concatenated with a noisy 50-step chunk on the expert side; 10 integration steps; control frequencies up to 50 Hz, demonstrated on tasks including laundry folding. π0.5 injects τ into every layer by adaptive RMSNorm and executes 16 to 25 actions before re-inference.\n\nVIII. THE COST QUESTION. Ten passes over a 3.3B model would be far too slow for 50 Hz control. It is not what happens, and the chamber at the end of this wing explains what saves it.",
+      "float": {
+        "widget": "field_flow"
+      }
+    },
+    {
+      "id": "pi-zero-two-experts-figure",
+      "type": "image",
+      "title": "Two Weight Sets, One Transformer",
+      "image": "world/assets/vla-two-experts.png",
+      "caption": "π0's anatomy in one sweep. Image and text tokens are processed by PaliGemma's 3B weights; the state token and the fifty noisy action tokens are processed by the 300M action expert's weights — the token's TYPE selects the route, and both routes live in the same stack. They meet in exactly one place: the joint self-attention band, where each token computes Q, K and V with its own expert's projections and then all of them attend to one another, which is how an expert that owns no vision weights still sees the scene. The MLP sub-layers stay separate — attention mixes, MLPs specialise. Note what leaves at the bottom: a velocity for the chunk, not an action; and note why 50 Hz is reachable — the image and text keys and values do not depend on τ, so they are computed once and cached across all ten integration steps."
+    },
+    {
+      "id": "pi-zero-anatomy",
+      "type": "diagram",
+      "title": "The Anatomy of π0",
+      "spec": "graph TD\n  IMG[\"image tokens\"] --> PG[\"PaliGemma 3B weights: Wq Wk Wv and MLP\"]\n  TXT[\"text tokens\"] --> PG\n  STA[\"state token\"] --> AE[\"action expert 300M: Wq Wk Wv and MLP\"]\n  ACT[\"50 noisy action tokens at time τ\"] --> AE\n  PG --> ATT[\"ONE joint self-attention over all tokens\"]\n  AE --> ATT\n  ATT --> MLP1[\"PaliGemma MLP for image and text\"]\n  ATT --> MLP2[\"action expert MLP for state and action\"]\n  MLP2 --> V[\"velocity, shape 50 by action_dim\"]\n  V --> UP[\"Euler update applied OUTSIDE the network\"]\n  UP -.->|\"ten times\"| ACT",
+      "caption": "Two weight sets, one transformer. Token type routes each token to its own projections and its own MLP; the single place they meet is the joint self-attention, where an action token's query reaches image tokens' keys and values — which is how a 300M expert that owns no vision weights still sees the scene. The velocity comes out, the Euler update is applied outside the network, and the refined chunk is fed back in. Ten times."
+    }
+  ]
+}

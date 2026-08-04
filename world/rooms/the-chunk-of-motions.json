@@ -1,0 +1,71 @@
+{
+  "id": "the-chunk-of-motions",
+  "name": "The Chunk of Motions",
+  "wing": "action",
+  "size": "medium",
+  "order": 1,
+  "connections": [
+    "the-straight-channel",
+    "the-swappable-engine"
+  ],
+  "exhibits": [
+    {
+      "id": "the-chunk-of-motions",
+      "type": "artifact",
+      "title": "The Chunk That Denoises All At Once",
+      "prop": "reforming_cloud",
+      "scale": 1.4,
+      "text": "A cloud of three hundred and fifty loose numbers hangs over the plinth, and every few seconds it gathers into something that reads as a gesture — a wrist rolling over, a gripper closing.\n\nNothing on this floor is new mathematics. The straight path, the velocity target, the Euler walk: all of it was derived in the Riverworks below, and none of it changes here. Exactly one thing changes, and it is what x₁ IS.\n\nIn image generation x₁ was an image latent of shape (32, 32, 4). Here x₁ is an ACTION CHUNK — a block of shape (H, action_dim), H control steps of joint commands stacked in a row. Take a 7-DOF arm and a horizon of 50. Then x₁ is the ground-truth chunk (50, 7) the demonstrator actually performed, x₀ is Gaussian noise of the same shape (50, 7), and the interpolation is the one you already know:\n\n  x_t = (1−t)·x₀ + t·x₁      → (50, 7)\n  velocity target = x₁ − x₀   → (50, 7)\n\nThe field outputs a whole chunk of velocities at once. All 350 numbers move on every integration step together — the wrist at step 3 and the gripper at step 47 are refined in the same forward pass, each conditioned on the other. That joint refinement is what buys TEMPORAL CONSISTENCY across the horizon. A policy emitting 50 independent single-step actions has nothing holding them into one smooth motion; this one never faces that problem, because the chunk was never fifty separate decisions to begin with."
+    },
+    {
+      "id": "only-what-x-one-is",
+      "type": "plaque",
+      "prop": "pedestal",
+      "title": "Only What x₁ Is",
+      "text": "Set the two problems side by side and the swap is a single row.\n\n  x₁ (data)      image latent (32,32,4)  ↔  action chunk (H, action_dim)\n  x₀ (noise)     Gaussian, same shape    ↔  Gaussian, same shape\n  conditioning   text embedding          ↔  VLM hidden state\n  output         latent-shaped velocity  ↔  (H, action_dim)-shaped velocity\n\nEverything else carries over untouched: the straight path x_t = (1−t)·x₀ + t·x₁, the constant velocity target x₁ − x₀, the MSE taken on the VELOCITY rather than on the sample, the Euler integration from t=0 to t=1.\n\nTraining is still a single forward pass at one randomly sampled t. There is no loop at training time; the loop appears only at inference, when you integrate across all t. That asymmetry is inherited whole from the Riverworks.\n\nThis is why the floor below is a prerequisite and not a detour. A flow-matching action head is the Riverworks with a different tensor plugged into x₁.",
+      "float": {
+        "widget": "field_flow"
+      }
+    },
+    {
+      "id": "the-shape-of-a-chunk",
+      "type": "plaque",
+      "prop": "lectern",
+      "title": "The Shape of a Chunk",
+      "text": "An action chunk is a rectangle, not a vector, and the head must respect that.\n\nH is the HORIZON — how many control steps ahead the policy commits to in one shot. action_dim is the body's degrees of freedom: seven for a typical arm (six joints and a gripper), though the count is whatever the robot has. With H=50 and action_dim=7 the chunk is a (50, 7) block — 350 real numbers, each a joint command at a particular moment.\n\nThe head is SHAPE-PRESERVING on (H, action_dim): a (50,7) noisy chunk in, a (50,7) velocity out. Never pool over H. Pooling collapses the horizon into a single vector and throws away the one axis the chunk exists to model.\n\nNormalise per DIMENSION, not globally. A shoulder swinging through radians and a gripper moving a few centimetres do not share a scale; normalise them together and the shoulder dominates the squared error while the gripper never learns at all. Then denormalise before anything reaches hardware.",
+      "float": {
+        "widget": "heat_grid",
+        "rows": 10,
+        "cols": 7,
+        "variant": "drift"
+      }
+    },
+    {
+      "id": "the-conditioning-slot",
+      "type": "plaque",
+      "prop": "pedestal",
+      "title": "Where the Prompt Went",
+      "text": "The conditioning slot is unchanged; what sits in it is richer.\n\n  image diffusion:    v_θ(x_t, t, text_embedding)\n  VLA flow matching:  v_θ(x_t, t, VLM_hidden_state)\n\nThe observation enters exactly where the text prompt entered in image generation. The difference is content, not plumbing. Instead of a sentence encoded by a frozen text tower, the conditioning is the hidden state of a vision-language model that has already fused three streams: the camera images, the language instruction (\"fold the towel\"), and the robot's PROPRIOCEPTION — its own joint positions.\n\nSo at every integration step the field is asked a conditional question: given this scene, this instruction, this posture, and this half-formed chunk at time t, which direction moves the chunk toward what a demonstrator would have done?\n\nThe next chamber is about how that hidden state gets built, and the one after it about where the posture vector is allowed to enter.",
+      "float": {
+        "widget": "funnel_flow"
+      }
+    },
+    {
+      "id": "the-swap-ledger",
+      "type": "tome",
+      "title": "The Swap, Written Out in Full",
+      "text": "A complete accounting of what moved and what did not, for anyone arriving from the Riverworks.\n\nI. THE CLAIM. Flow matching for robot control is not a new generative method. It is the same objective, the same path, the same integrator, applied to a different data tensor. If you can state the image version you can state this one by substitution.\n\nII. THE SUBSTITUTION TABLE.\n\n                  image generation          VLA action head\n  x₁ (data)       image latent (32,32,4)    action chunk (H, action_dim)\n  x₀ (noise)      Gaussian, same shape      Gaussian, same shape\n  path            x_t = (1−t)·x₀ + t·x₁     identical\n  target          x₁ − x₀                   identical\n  conditioning    text embedding            VLM hidden state\n  velocity out    latent-shaped             (H, action_dim)-shaped\n\nIII. A WORKED SHAPE. A 7-DOF arm, horizon 50. Ground truth x₁ is (50,7); noise x₀ is (50,7); at t=0.25 the interpolant x_t = 0.75·x₀ + 0.25·x₁ is (50,7); the training target x₁ − x₀ is (50,7). The network consumes a (50,7) block and returns a (50,7) block. 350 numbers in, 350 out.\n\nIV. WHY THE CHUNK IS ONE OBJECT. All 350 numbers are refined in the same forward pass, so every element of the chunk is conditioned on every other. This is the mechanism behind temporal consistency: smoothness across the horizon is not a smoothing penalty bolted on afterwards, it is a consequence of denoising the horizon jointly. A per-step policy that emits one action at a time has to buy that consistency some other way, and usually cannot.\n\nV. FROZEN, MATHS, LEARNED. Frozen (often): the vision-language backbone, or large parts of it. Pure maths with zero parameters: the interpolation, the velocity target, and the Euler update. Learned: one velocity field, conditioned on the observation. The same three-way split as image flow matching, with the VAE's role played by the VLM.\n\nVI. THE ASYMMETRY, AGAIN. Training samples ONE t per example, builds x_t, takes one MSE against x₁ − x₀, and backpropagates. No loop. Inference runs the loop — a fixed number of Euler steps from t=0 to t=1. Every practical property of this floor, including the control-frequency argument at the far end of the wing, follows from how small that inference loop can be made.\n\nVII. WHAT IS STILL MISSING. Two things, and they are what the rest of the wing supplies. The robot's own posture has to get INTO the conditioning, which needs a state encoder. And the chunk has to get into a transformer that was built to consume tokens, which needs a decision about whether actions are inputs or outputs. That second question turns out to be the crux.",
+      "float": {
+        "widget": "stack_rise",
+        "n": 5
+      }
+    },
+    {
+      "id": "the-swap-diagram",
+      "type": "diagram",
+      "title": "One Method, Two Payloads",
+      "spec": "graph LR\n  A[\"image generation: x₁ = latent 32x32x4\"] --> C[\"same interpolation\"]\n  B[\"VLA: x₁ = action chunk 50x7\"] --> C\n  C --> D[\"x_t = 1-t times x₀ plus t times x₁\"]\n  D --> E[\"target v = x₁ − x₀\"]\n  E --> F[\"v_θ of x_t, t, conditioning\"]\n  G[\"text embedding\"] -.-> F\n  H[\"VLM hidden state: image + instruction + proprioception\"] -.-> F\n  F --> I[\"velocity, shaped 50x7\"]\n  I --> J[\"all 350 numbers move together\"]",
+      "caption": "The two problems share every box but the first. The path, the velocity target and the integrator are identical; only the payload in x₁ and the contents of the conditioning slot differ. Because the network emits a velocity for the entire (50,7) chunk in one pass, the whole horizon is refined jointly — which is where temporal consistency comes from."
+    }
+  ]
+}

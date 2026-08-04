@@ -44,6 +44,18 @@
       "name": "The Observatory of Sight — Vision Encoders",
       "hub": "observatory-atrium",
       "tier": 1
+    },
+    {
+      "id": "flow",
+      "name": "The Riverworks — Flow Matching",
+      "hub": "riverworks-atrium",
+      "tier": 1
+    },
+    {
+      "id": "embodiment",
+      "name": "The Hall of Embodied Motion — Vision-Language-Action",
+      "hub": "embodiment-atrium",
+      "tier": 2
     }
   ],
   "wings": [
@@ -100,113 +112,254 @@
       "name": "The Wing of the Watchful Eye",
       "palette": "verdigris",
       "level": "vision"
+    },
+    {
+      "id": "riverworks",
+      "name": "The Wing of the Straight Channel",
+      "palette": "cobalt",
+      "level": "flow"
+    },
+    {
+      "id": "action",
+      "name": "The Wing of Embodied Motion",
+      "palette": "ember",
+      "level": "embodiment"
     }
   ],
   "passages": [
     {
       "id": "found-attn",
       "type": "stair",
-      "between": ["undercroft", "attention-atrium"],
+      "between": [
+        "undercroft",
+        "attention-atrium"
+      ],
       "gate": {
         "at": "undercroft",
-        "prereqs": ["dot-product-math", "softmax-math", "sinusoid"],
+        "prereqs": [
+          "dot-product-math",
+          "softmax-math",
+          "sinusoid"
+        ],
         "persona": "You keep the stair to the halls of Attention; you care that a keeper knows the measure of similarity and the ladder of frequencies before they meet queries and keys."
       }
     },
     {
       "id": "found-diff",
       "type": "stair",
-      "between": ["undercroft", "diffusion-atrium"],
+      "between": [
+        "undercroft",
+        "diffusion-atrium"
+      ],
       "gate": {
         "at": "undercroft",
-        "prereqs": ["gaussian-normal", "variance-preservation", "mse-loss"],
+        "prereqs": [
+          "gaussian-normal",
+          "variance-preservation",
+          "mse-loss"
+        ],
         "persona": "You keep the stair to the halls of Diffusion; you care that a keeper knows the bell curve, why variance is preserved, and the squared loss before they try to noise and denoise."
       }
     },
     {
       "id": "attn-world",
       "type": "stair",
-      "between": ["attention-atrium", "atrium"],
+      "between": [
+        "attention-atrium",
+        "atrium"
+      ],
       "gate": {
         "at": "attention-atrium",
-        "prereqs": ["self-attention", "transformer-block", "cross-attention"],
+        "prereqs": [
+          "self-attention",
+          "transformer-block",
+          "cross-attention"
+        ],
         "persona": "You keep the stair to the Upper Floor of world models and the reforged transformer; you care that a keeper truly holds self-attention, the transformer block, and cross-attention."
       }
     },
     {
       "id": "diff-world",
       "type": "stair",
-      "between": ["diffusion-atrium", "atrium"],
+      "between": [
+        "diffusion-atrium",
+        "atrium"
+      ],
       "gate": {
         "at": "diffusion-atrium",
-        "prereqs": ["noise-predictor", "reverse-sampling", "latent-diffusion"],
+        "prereqs": [
+          "noise-predictor",
+          "reverse-sampling",
+          "latent-diffusion"
+        ],
         "persona": "You keep the stair to the Upper Floor; you care that a keeper understands the noise predictor, the backward walk, and latent diffusion before they climb to where these arts are reforged."
       }
     },
     {
       "id": "attn-diff",
       "type": "archway",
-      "between": ["the-two-gazes", "the-unet-cathedral"]
+      "between": [
+        "the-two-gazes",
+        "the-unet-cathedral"
+      ]
     },
     {
       "id": "attn-attune",
       "type": "stair",
-      "between": ["attention-atrium", "attunement-atrium"],
+      "between": [
+        "attention-atrium",
+        "attunement-atrium"
+      ],
       "gate": {
         "at": "attention-atrium",
-        "prereqs": ["qkv-projections", "self-attention", "low-rank-approximation"],
+        "prereqs": [
+          "qkv-projections",
+          "self-attention",
+          "low-rank-approximation"
+        ],
         "persona": "You keep the stair to the Workshop of Attunement, where a trained art is adapted without being remade whole. You ask that a keeper hold the query-key-value projections and the low-rank truth — that a weight update lives in a few directions — before they climb to graft small adapters onto great matrices."
       }
     },
     {
       "id": "diff-attune",
       "type": "stair",
-      "between": ["diffusion-atrium", "attunement-atrium"],
+      "between": [
+        "diffusion-atrium",
+        "attunement-atrium"
+      ],
       "gate": {
         "at": "diffusion-atrium",
-        "prereqs": ["latent-diffusion", "low-rank-approximation"],
+        "prereqs": [
+          "latent-diffusion",
+          "low-rank-approximation"
+        ],
         "persona": "You keep the other stair to the Workshop of Attunement. You care that a keeper knows latent diffusion and the low-rank truth before they learn to slip tiny adapters into a trained model's attention and steer it with a single dial."
       }
     },
     {
       "id": "diff-video",
       "type": "stair",
-      "between": ["the-latent-vault", "moving-gallery-atrium"],
+      "between": [
+        "the-latent-vault",
+        "moving-gallery-atrium"
+      ],
       "gate": {
         "at": "the-latent-vault",
-        "prereqs": ["latent-diffusion", "vae-compression", "convolution"],
+        "prereqs": [
+          "latent-diffusion",
+          "vae-compression",
+          "convolution"
+        ],
         "persona": "You keep the stair from the Latent Vault up to the Gallery of Moving Portraits, where diffusion learns to move. You ask that a keeper hold latent diffusion and the compressing VAE — for a video is compressed the same way, only in time as well as space, by a sliding kernel — before they climb to the moving image."
       }
     },
     {
       "id": "attn-video",
       "type": "stair",
-      "between": ["compass-and-clock", "moving-gallery-atrium"],
+      "between": [
+        "compass-and-clock",
+        "moving-gallery-atrium"
+      ],
       "gate": {
         "at": "compass-and-clock",
-        "prereqs": ["rope", "causal-masking", "self-attention"],
+        "prereqs": [
+          "rope",
+          "causal-masking",
+          "self-attention"
+        ],
         "persona": "You keep the other stair to the Gallery of Moving Portraits. You care that a keeper holds RoPE's relative-distance gift, the causal mask, and self-attention — for moving pictures are made by attention run along time, streamed with a rotating clock — before they ascend."
       }
     },
     {
       "id": "attn-vision",
       "type": "stair",
-      "between": ["forge-of-the-query", "observatory-atrium"],
+      "between": [
+        "forge-of-the-query",
+        "observatory-atrium"
+      ],
       "gate": {
         "at": "forge-of-the-query",
-        "prereqs": ["self-attention", "patchify", "softmax-math"],
+        "prereqs": [
+          "self-attention",
+          "patchify",
+          "softmax-math"
+        ],
         "persona": "You keep the stair to the Observatory of Sight, where the great eyes of the palace are trained. You ask that a keeper hold self-attention, the cutting of images into patch-tokens, and the softmax — for every encoder above is the same transformer eye, and what differs is only the oath it was trained under — before they climb to the lenses."
       }
     },
     {
       "id": "dit-vision",
       "type": "archway",
-      "between": ["the-patchwork-loom", "observatory-atrium"]
+      "between": [
+        "the-patchwork-loom",
+        "observatory-atrium"
+      ]
     },
     {
       "id": "vision-jepa",
       "type": "archway",
-      "between": ["the-echoed-gaze", "vicereg-corridor"]
+      "between": [
+        "the-echoed-gaze",
+        "vicereg-corridor"
+      ]
+    },
+    {
+      "id": "diff-flow",
+      "type": "stair",
+      "between": [
+        "the-backward-walk",
+        "riverworks-atrium"
+      ],
+      "gate": {
+        "at": "the-backward-walk",
+        "prereqs": [
+          "reverse-sampling",
+          "noise-predictor",
+          "mse-loss"
+        ],
+        "persona": "You keep the stair from the backward walk up to the Riverworks. You care that a traveller knows how a sample is walked back from noise, that the network predicts noise rather than the picture, and how a guess is weighed — before they meet a path that throws the schedule away entirely."
+      }
+    },
+    {
+      "id": "flow-dit",
+      "type": "archway",
+      "between": [
+        "the-swappable-engine",
+        "the-reforged-transformer"
+      ]
+    },
+    {
+      "id": "flow-embodiment",
+      "type": "stair",
+      "between": [
+        "riverworks-atrium",
+        "embodiment-atrium"
+      ],
+      "gate": {
+        "at": "riverworks-atrium",
+        "prereqs": [
+          "velocity-field",
+          "straight-path",
+          "euler-sampling"
+        ],
+        "persona": "You keep the stair to the Hall of Embodied Motion. You care that a traveller can name the velocity a straight path implies, and count the few steps that follow it, before they ask a machine to move a real arm at fifty times a second."
+      }
+    },
+    {
+      "id": "sight-embodiment",
+      "type": "stair",
+      "between": [
+        "the-twin-sighted-helm",
+        "embodiment-atrium"
+      ],
+      "gate": {
+        "at": "the-twin-sighted-helm",
+        "prereqs": [
+          "encoder-fusion",
+          "vision-encoder"
+        ],
+        "persona": "You keep the stair from the Observatory to the Hall of Embodied Motion. You care that a traveller knows what an encoder gives a model and how two kinds of sight are fused — for upstairs those features become a body's only eyes."
+      }
     }
   ]
 }

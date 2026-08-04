@@ -1,0 +1,78 @@
+{
+  "id": "the-proprioceptive-gate",
+  "name": "The Proprioceptive Gate",
+  "wing": "action",
+  "size": "small",
+  "order": 2,
+  "connections": [
+    "the-two-gazes"
+  ],
+  "exhibits": [
+    {
+      "id": "the-armour-that-knows-itself",
+      "type": "artifact",
+      "title": "The Armour That Knows Its Own Joints",
+      "prop": "statue",
+      "scale": 1.3,
+      "text": "A suit of articulated armour stands at the gate, and it is doing exactly one useful thing: reporting where its own limbs are. Eight numbers, refreshed continuously — six joint angles, a gripper width, a gripper force. That report is PROPRIOCEPTION, and a vision-language model has nowhere to put it.\n\nThis is the whole problem of attaching an action head. A VLM maps image + text → text. A robot policy needs two things the VLM does not have.\n\nA missing INPUT: proprioception. Where are my joints right now? No camera answers this reliably, and the model cannot plan a reach without it.\n\nA missing OUTPUT: continuous actions rather than text tokens. Joint commands are real numbers, not vocabulary entries.\n\nThe input side is solved by a small MLP. Eight continuous numbers cannot be tokenised — there is no word for 0.4271 radians, and forcing one through a text tokeniser produces digits, not geometry. So the state vector is projected straight to the model's token width:\n\n  robot state (8,) → MLP → (d_model,) → now it is a token\n\nOnce that vector is d_model wide it is indistinguishable, structurally, from an image patch embedding or a word embedding. Concatenate it into the sequence and self-attention fuses it with vision and language for free — no new fusion mechanism, no cross-modal loss, nothing to design. The gate is a projection, and the transformer does the rest.",
+      "float": {
+        "widget": "flow_nodes",
+        "layers": [
+          2,
+          6,
+          6
+        ]
+      }
+    },
+    {
+      "id": "two-things-missing",
+      "type": "plaque",
+      "prop": "pedestal",
+      "title": "Two Things a VLM Lacks",
+      "text": "Start from what a vision-language model already does: image + text → text. It grounds language in pixels, and it is very good at it. To make it a vision-language-ACTION model, exactly two gaps must be filled.\n\nMISSING INPUT — proprioception. The policy must know the robot's current configuration. Roughly eight continuous numbers for a typical arm: joint angles and gripper state. Nothing in the VLM's input pipeline accepts them, because that pipeline takes patches and tokens.\n\nMISSING OUTPUT — continuous actions. The VLM's head projects to a vocabulary and samples a discrete token. A joint command is a real number, and precision in that number is the difference between grasping a mug and knocking it over.\n\nEverything else — the visual grounding, the instruction following, the common-sense priors bought with internet-scale pretraining — is exactly what you want to keep, and exactly why you attach to a VLM instead of training a policy from scratch. The attachment problem is narrow: get the state in, get real numbers out, disturb the backbone as little as possible.",
+      "float": {
+        "widget": "balance_tilt"
+      }
+    },
+    {
+      "id": "the-state-token",
+      "type": "plaque",
+      "prop": "lectern",
+      "title": "The State Token",
+      "text": "The state encoder is the smallest interesting module in a VLA, and it is a two-layer MLP.\n\n  robot state (8,) → MLP → (d_model,)\n\nThat is the entire mechanism. The point is not the MLP's capacity — eight numbers need very little — but the WIDTH it lands on. Once the projection output is d_model wide, it is shaped exactly like every other token in the sequence, and the transformer has no way to tell it apart from an image patch or a word.\n\nSo it is concatenated in:\n\n  [image patches][text tokens][state token] → transformer\n\nand self-attention fuses the modalities for free. A text token's query can attend to the state token's key; an action-side query can attend to both. No dedicated fusion architecture is written, no alignment objective is trained. The cost of admitting a new modality to a transformer is one linear projection to d_model.\n\nNormalise the state before projecting, per dimension, exactly as you normalise actions. A joint reported in radians and a gripper width reported in metres arrive on wildly different scales.",
+      "float": {
+        "widget": "heat_grid",
+        "n": 8,
+        "variant": "row_softmax"
+      }
+    },
+    {
+      "id": "three-families-of-heads",
+      "type": "plaque",
+      "prop": "pedestal",
+      "title": "Three Families of Action Head",
+      "text": "The output side has three established answers, and they are genuinely different designs.\n\nDISCRETE TOKENS. Bin each joint's range — say 256 bins per dimension — and predict bin indices with the existing language head. RT-2 and OpenVLA do this. It reuses the VLM's machinery wholesale and inherits a real generative distribution over actions, so multiple valid behaviours survive. The costs: binning discards precision inside each bin, and decoding is autoregressive, one token at a time.\n\nMLP REGRESSION. Take the final hidden state and project it to a continuous action. Fast, simple, continuous. It has one fatal property, examined at the far end of this wing: it can only output one action per observation, so when the demonstrations contain several valid behaviours it returns their AVERAGE.\n\nFLOW OR DIFFUSION HEAD. A small generative network conditioned on the hidden state, producing the chunk by iterative refinement. This is π0's choice, and the rest of the wing is about how it is built and why it won.\n\nThe families differ on three axes: multimodality, precision, and latency. No design scores well on all three by accident.",
+      "float": {
+        "widget": "softmax_bars",
+        "n": 8
+      }
+    },
+    {
+      "id": "the-attachment-ledger",
+      "type": "tome",
+      "title": "The Attachment Ledger",
+      "text": "How an action head attaches to a vision-language model, from the generic pattern outward.\n\nI. THE GENERIC PATTERN. A VLM is a transformer over a sequence of tokens: image patches from a vision encoder, word pieces from a tokeniser. It maps image + text → text. Converting it into a policy means adding one input stream and replacing the output stage. Everything in between is left alone.\n\nII. THE STATE ENCODER. Proprioception is a short vector of continuous numbers, around eight for a single arm. It cannot be tokenised: tokenisers map symbols to indices, and a joint angle is not a symbol. Any attempt to serialise it into digits wastes tokens and destroys the numeric structure the policy needs. The fix is a projection — a small MLP from state_dim to d_model — after which the result is simply another token in the sequence. Normalise per dimension first, and clamp the standard deviations, or a dimension that never varies in the dataset divides by zero.\n\nIII. WHY THE PROJECTION SUFFICES. Self-attention is modality-blind. It computes queries, keys and values from whatever d_model-wide vectors it is handed and mixes them by similarity. Give it a state token and it will fuse posture with vision and language using the same weights it already uses for everything else. This is the same principle that lets modern vision-language models concatenate image patches directly into the text stream instead of building a separate cross-attention tower — the mechanism you met in the Two Gazes.\n\nIV. THE ASSEMBLY.\n\n  [image patches][text tokens][state token]\n        → transformer\n        → hidden states\n        → action head\n        → actions\n\nV. THE THREE HEADS, WITH THEIR TRADE-OFFS.\n\n  Discrete tokens   bin each joint, predict indices (RT-2, OpenVLA)\n                    keeps multimodality; loses precision to binning; autoregressive decode is slow\n  MLP regression    hidden state → continuous action\n                    fast and continuous; collapses multiple valid actions to their mean\n  Flow / diffusion  small generative net conditioned on the hidden state (π0)\n                    multimodal and continuous; costs several forward passes per chunk\n\nVI. WHERE THIS BREAKS DOWN. The generic pattern has a bolted-on head at the very end, which means every bit of action reasoning has to squeeze through whatever representation the VLM happened to produce at its final layer. The head sees a summary, never the intermediate computation. π0 declines that constraint entirely, and the next chamber is about how.",
+      "float": {
+        "widget": "stack_rise",
+        "n": 5
+      }
+    },
+    {
+      "id": "assembly-diagram",
+      "type": "diagram",
+      "title": "Assembling a VLA",
+      "spec": "graph TD\n  S[\"robot state, 8 continuous numbers\"] --> M[\"small MLP\"]\n  M --> ST[\"state token, d_model wide\"]\n  P[\"camera images through the vision encoder to patch tokens\"] --> SEQ[\"sequence: patches, text, state\"]\n  L[\"instruction: fold the towel\"] --> TT[\"text tokens\"]\n  TT --> SEQ\n  ST --> SEQ\n  SEQ --> TR[\"transformer, self-attention fuses all three\"]\n  TR --> HS[\"hidden states\"]\n  HS --> H1[\"discrete token head: bin each joint\"]\n  HS --> H2[\"MLP regression head\"]\n  HS --> H3[\"flow matching head: refines an action chunk\"]",
+      "caption": "The two additions a VLM needs. On the input side, a small MLP lifts eight proprioceptive numbers to d_model so they become an ordinary token and self-attention fuses them with vision and language at no design cost. On the output side, one of three head families converts hidden states into continuous commands. The three heads differ on multimodality, precision and latency — the trade-off the rest of the wing turns on."
+    }
+  ]
+}

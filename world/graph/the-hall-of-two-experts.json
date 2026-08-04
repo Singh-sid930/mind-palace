@@ -1,0 +1,38 @@
+{
+  "concepts": [
+    {
+      "id": "pi-zero",
+      "name": "π0",
+      "room": "the-hall-of-two-experts",
+      "exhibit": "the-single-transformer",
+      "summary": "A flow-matching vision-language-action model: PaliGemma 3B (SigLIP vision tower plus Gemma) for image and text tokens, and a 300M action expert for the state token and a noisy 50-step action chunk — 3.3B parameters in total. The two are independent weight sets inside a SINGLE transformer, and the token TYPE decides which set processes a token. It runs 10 Euler integration steps per chunk and reaches control frequencies up to 50 Hz. π0.5 projects the integration time τ through its own MLP and injects it into every layer of the expert by adaptive RMSNorm, then executes 16 to 25 actions before re-inference."
+    },
+    {
+      "id": "action-expert",
+      "name": "Action expert (joined by self-attention)",
+      "room": "the-hall-of-two-experts",
+      "exhibit": "they-meet-only-in-attention",
+      "summary": "The 300M weight set that processes state and action tokens inside π0's transformer. It interacts with the vision-language weights through exactly one mechanism: each token computes its Q, K and V with its OWN expert's projections, then all tokens attend to each other in one joint self-attention over the full sequence. An action token's query can therefore reach image tokens' keys and values, so the expert sees the visual scene without owning any vision weights. The MLP sub-layers stay separate — attention mixes, MLPs specialise. This is why the expert can be small: the backbone already paid for representation, and querying it is cheap."
+    },
+    {
+      "id": "actions-as-inputs",
+      "name": "Action tokens are inputs, not outputs",
+      "room": "the-hall-of-two-experts",
+      "exhibit": "actions-are-inputs",
+      "summary": "The crux separating a flow-matching head from a discrete-token VLA. In RT-2 or OpenVLA actions are OUTPUTS, decoded autoregressively. π0 works like image diffusion: the noisy action chunk is fed IN as 50 tokens and the network emits a velocity of shape (50, action_dim). The Euler update is applied outside the network and the refined chunk is fed back in, ten times. Only the first input is noise — pass 1 is pure noise at τ=0, pass 5 is half-formed at τ=0.4, pass 10 is nearly final at τ=0.9. The chunk must be an input because it is the thing being refined, and refinement requires the network to see it. Training has no loop at all: one τ per example, one forward pass, one MSE."
+    }
+  ],
+  "edges": [
+    { "from": "pi-zero", "to": "action-chunk", "relation": "builds-on" },
+    { "from": "pi-zero", "to": "action-head", "relation": "builds-on" },
+    { "from": "pi-zero", "to": "siglip", "relation": "builds-on" },
+    { "from": "pi-zero", "to": "adaln-zero", "relation": "relates-to" },
+    { "from": "action-expert", "to": "pi-zero", "relation": "part-of" },
+    { "from": "action-expert", "to": "self-attention", "relation": "builds-on" },
+    { "from": "action-expert", "to": "state-encoder", "relation": "relates-to" },
+    { "from": "actions-as-inputs", "to": "pi-zero", "relation": "part-of" },
+    { "from": "actions-as-inputs", "to": "euler-sampling", "relation": "builds-on" },
+    { "from": "actions-as-inputs", "to": "reverse-sampling", "relation": "relates-to" },
+    { "from": "actions-as-inputs", "to": "action-head", "relation": "contrasts-with" }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "concepts": [
+    {
+      "id": "euler-sampling",
+      "name": "Euler integration as sampling",
+      "room": "the-ferrymans-count",
+      "exhibit": "the-ferrymans-pole",
+      "summary": "Generating a sample means solving dx/dt = v_θ(x,t) forward from t=0 to t=1, and the simplest solver is one line: x ← x + v_θ(x,t)·Δt. Ask the field for a direction, move that far, ask again. From x=1.0 with a field answering 4.0 and Δt=0.25, the four steps read 1.0 → 2.0 → 3.0 → 4.0 → 5.0, arriving exactly. Euler's only assumption is that the velocity measured at the start of a step holds across it — exactly true on a straight path at constant velocity, so step size costs no accuracy. There is no schedule, no variance term and no re-noising, unlike diffusion's reverse step."
+    },
+    {
+      "id": "few-step-sampling",
+      "name": "Why few steps suffice",
+      "room": "the-ferrymans-count",
+      "exhibit": "why-big-steps-are-safe",
+      "summary": "A curved path makes the direction measured at the start of a step stale by the middle of it, so large steps cut the corner and the error compounds through subsequent steps; the only remedy is steps small enough that the curve is locally straight. Straightening the path removes that constraint, and the step budgets show it: DDPM needs ~1000 steps, DDIM 20–50, flow matching 5–20 (π0 uses 10). Each step is a full forward pass, so this is a direct multiplier on sampling cost. The honest caveat: a trained field is not perfectly constant, because many (x₀,x₁) pairings cross the same x_t and the model can only answer with their average, which bends the effective field — hence 5–20 steps rather than one."
+    }
+  ],
+  "edges": [
+    { "from": "euler-sampling", "to": "velocity-field", "relation": "builds-on" },
+    { "from": "euler-sampling", "to": "euler-step", "relation": "builds-on" },
+    { "from": "euler-sampling", "to": "reverse-sampling", "relation": "contrasts-with" },
+    { "from": "euler-sampling", "to": "ode-vs-sde", "relation": "relates-to" },
+    { "from": "few-step-sampling", "to": "euler-sampling", "relation": "builds-on" },
+    { "from": "few-step-sampling", "to": "straight-path", "relation": "builds-on" }
+  ]
+}

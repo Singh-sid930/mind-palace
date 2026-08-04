@@ -1,0 +1,34 @@
+{
+  "id": "riverworks-atrium",
+  "name": "The Atrium of the Riverworks",
+  "wing": null,
+  "size": "grand",
+  "palette": "cobalt",
+  "order": 1,
+  "exhibits": [
+    {
+      "id": "lockkeeper-portrait",
+      "type": "portrait",
+      "title": "Lockkeeper Ilva Reyn",
+      "subtitle": "Warden of the Straight Channel",
+      "text": "You have climbed from the Hall of Diffusion, and that is the right way in — everything here is a re-answer to a question you already know. Down there, generation asks 'what noise was added? remove a little, re-noise, repeat', and the answer is walked back along a curved path that a schedule of βs and ᾱs decides for you.\n\nThe Riverworks asks a different question at the same moment: 'I am somewhere on a path from noise to data — which DIRECTION do I move?' Answer that everywhere and you have a velocity field; generation becomes the plain act of following it. And if you are free to choose the path, choose the straight one, because a straight path has constant velocity, and constant velocity forgives enormous steps.\n\nThat is the whole floor. A straight line, its derivative, and the courage to take ten steps where a thousand were taken before.",
+      "float": { "widget": "field_flow" }
+    },
+    {
+      "id": "riverworks-welcome",
+      "type": "plaque",
+      "prop": "pedestal",
+      "title": "This Floor — Flow Matching",
+      "text": "Flow matching learns a VELOCITY FIELD, and generation is an ODE solve along it. The recipe is startlingly short:\n\n  path      x_t = (1−t)·x₀ + t·x₁      a straight line, noise to data\n  velocity  v   = x₁ − x₀              constant; just data minus noise\n  training  minimise ‖(x₁ − x₀) − v_θ(x_t, t)‖²\n  sampling  x ← x + v_θ(x, t)·Δt,  integrate t from 0 to 1\n\nThere is no β schedule, no ᾱ table, no square roots. Five chambers open from this atrium: the straight path and the velocity it implies; the training loop; the count of steps; the network — which turns out to be the diffusion denoiser unchanged; and the practitioner's chamber of plateaus and traps. Read them in order.\n\nOne warning that has cost real debugging hours: on this floor **t = 0 is noise and t = 1 is data**, the opposite of the diffusion wing's indexing. Papers differ. Always check.",
+      "float": { "widget": "path_race" }
+    },
+    {
+      "id": "how-to-walk-riverworks",
+      "type": "plaque",
+      "prop": "lectern",
+      "title": "How to Walk This Floor",
+      "text": "Move with W A S D; look with the mouse. Walk up to any display and press E to study it — diagrams and figures unfold large in the room. E or Esc steps back. M: this floor's map. G: the constellation of every idea in the palace. F: travel to any room by name. N: music. P: footstep trails.\n\nTwo passages leave this floor besides the stair you climbed. An ARCHWAY joins the Swappable Engine to the Wing of the Reforged Transformer — a sideways step, because a DiT is a sibling of this art, not a parent of it. And a STAIR rises to the Hall of Embodied Motion, the highest floor in the palace, where this velocity field is asked to move a real arm. The Gatekeeper on that stair asks about the straight path, the velocity, and the count of steps — the three things this floor exists to teach.",
+      "float": { "widget": "flow_nodes", "layers": [2, 3, 2] }
+    }
+  ]
+}

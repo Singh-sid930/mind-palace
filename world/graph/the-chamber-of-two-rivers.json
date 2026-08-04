@@ -1,0 +1,31 @@
+{
+  "concepts": [
+    {
+      "id": "vector-field",
+      "name": "Vector field",
+      "room": "the-chamber-of-two-rivers",
+      "exhibit": "what-a-field-is",
+      "summary": "An assignment of a velocity to every point in space (and possibly every time): at x, at t, the field f hands you an arrow. A field is a RULE, not a route — it turns any starting point into a path by the act of following the arrows. Written dx/dt = f(x,t), this is an ordinary differential equation: nothing random enters, so a starting point determines the entire future. Worked purely: with the constant field f = 4 and start x = 1, one unit of time carries you to 5."
+    },
+    {
+      "id": "euler-step",
+      "name": "Euler integration",
+      "room": "the-chamber-of-two-rivers",
+      "exhibit": "the-euler-step",
+      "summary": "The plainest way to follow a field by hand: x ← x + f(x,t)·Δt — read the arrow where you stand, move that far, read again. With f = 4 from x = 1, four steps of Δt = 0.25 give 1.0 → 2.0 → 3.0 → 4.0 → 5.0, exactly. The error depends entirely on how much the field turns along the path: when the field is constant the path is straight and a few coarse steps are exact, but when it turns, each straight step cuts the corner off the true curve and only smaller steps recover accuracy. This is why step count is a property of the PATH, not of the method."
+    },
+    {
+      "id": "ode-vs-sde",
+      "name": "ODE versus SDE",
+      "room": "the-chamber-of-two-rivers",
+      "exhibit": "the-random-kick",
+      "summary": "Two ways to travel the same field. An ODE, dx/dt = f(x,t), is deterministic — a ball on a smooth ramp, one start giving one path. An SDE adds a random increment at every instant, dx = f(x,t)·dt + g(t)·dW with dW Brownian motion — a pollen grain in water, one start giving a whole cloud of paths. Neither is more correct; they answer different questions ('where does this point end up?' versus 'what is the spread of where it might?'). Many generative processes can be sampled either way, and the choice of channel is exactly that."
+    }
+  ],
+  "edges": [
+    { "from": "euler-step", "to": "vector-field", "relation": "builds-on" },
+    { "from": "ode-vs-sde", "to": "vector-field", "relation": "builds-on" },
+    { "from": "ode-vs-sde", "to": "gaussian-normal", "relation": "relates-to" },
+    { "from": "vector-field", "to": "smooth-manifold", "relation": "relates-to" }
+  ]
+}

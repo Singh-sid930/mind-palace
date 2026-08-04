@@ -1,0 +1,57 @@
+{
+  "id": "the-chamber-of-two-rivers",
+  "name": "The Chamber of Two Rivers",
+  "wing": "math",
+  "size": "medium",
+  "order": 9,
+  "exhibits": [
+    {
+      "id": "the-two-rivers",
+      "type": "artifact",
+      "title": "The Two Rivers",
+      "prop": "table",
+      "scale": 1.3,
+      "text": "A long sand table cut with two channels, both fed from the same source. Above it hangs the thing that drives them: a FIELD — at every point in space, an arrow saying which way to move and how fast. A field is not a path. It is a rule that turns any starting point into a path, by the simple act of following the arrows.\n\nThe two channels differ in one detail. In the first, a float set down at the head glides exactly where the arrows send it, and set it down twice in the same spot and it traces the same line twice. In the second, the water is restless: the same arrows push the float along, but at every instant something also jostles it sideways. Set that float down twice and you get two different lines.\n\nThose are the two ways to travel a field, and this chamber is about the difference. The first is an ORDINARY differential equation; the second is a STOCHASTIC one. Same arrows, same start — one answer, or a cloud of answers.",
+      "float": { "widget": "field_flow" }
+    },
+    {
+      "id": "what-a-field-is",
+      "type": "plaque",
+      "prop": "pedestal",
+      "title": "A Field, and the Path It Implies",
+      "text": "Write the first channel down and it is one line:\n\n  dx/dt = f(x, t)\n\nRead it plainly: at whatever point x you occupy, at whatever time t, the field f hands you a velocity, and you move at that velocity. This is an ORDINARY DIFFERENTIAL EQUATION — 'ordinary' because there is nothing random in it. Give it a starting point and the entire future is determined.\n\nThe simplest possible case: let f be the constant 4, and start at x = 1. Every instant you move at speed 4, so after one unit of time you are at 5. No cleverness, no bookkeeping — the field said 4 everywhere, and you obeyed it for a duration of 1.\n\nA field can of course vary with position and with time; then the velocity you obey changes as you travel, and the path bends. The arrows above are such a field: watch a bead enter at the left and simply do what the local arrow tells it.",
+      "float": { "widget": "field_flow" }
+    },
+    {
+      "id": "the-euler-step",
+      "type": "plaque",
+      "prop": "lectern",
+      "title": "Following a Field by Hand",
+      "text": "To follow a field on paper you take finite steps:\n\n  x ← x + f(x, t)·Δt\n\nRead the arrow where you stand, move that far, read again. This is EULER INTEGRATION, the plainest numerical method there is. With the constant field f = 4, starting at x = 1, in four steps of Δt = 0.25:\n\n  1.0 → 2.0 → 3.0 → 4.0 → 5.0\n\nFour steps, exact arrival. Nothing was approximated, because the field never changed along the way — the arrow at 1.0 was the same as the arrow at 3.7, so a big step could not go wrong.\n\nThat is the whole rule for how many steps you need. When the field is constant along the path, the path is straight and a few coarse steps land you exactly right. When the field turns as you travel, each straight step leaves the true curve slightly — it cuts the corner — and the only remedy is to take smaller ones. Above: the same four steps on a straight path and on a curved one, with the ghost showing where the curved traveller should have been.",
+      "float": { "widget": "path_race" }
+    },
+    {
+      "id": "the-random-kick",
+      "type": "plaque",
+      "prop": "pedestal",
+      "title": "The Second Channel — a Kick at Every Instant",
+      "text": "The restless channel adds one term:\n\n  dx = f(x,t)·dt + g(t)·dW\n         └ drift ┘   └ noise ┘\n\nThe first term is the field you already know. The second is a fresh random nudge at every instant (dW is Brownian motion, the mathematics of ceaseless jostling). This is a STOCHASTIC differential equation.\n\nThe two pictures are worth keeping:\n\n  ODE — a ball rolling down a smooth ramp. One start, one path, every time.\n  SDE — a pollen grain in water. It drifts where the current takes it, but molecules bump it endlessly, so one start gives a CLOUD of paths.\n\nNeither is the 'correct' one; they answer different questions. Ask 'where does this starting point end up?' and you want the ramp. Ask 'what is the spread of places it might end up?' and you want the pollen. Above is the same field as the first plaque — with the jostling switched on.",
+      "float": { "widget": "field_flow", "stochastic": true }
+    },
+    {
+      "id": "two-rivers-diagram",
+      "type": "diagram",
+      "title": "One Field, Two Ways to Travel It",
+      "spec": "graph TD\n  F[\"a field f(x,t): an arrow at every point\"] --> O[\"ODE: dx/dt = f\"]\n  F --> S[\"SDE: dx = f·dt + g·dW\"]\n  O --> OP[\"one start, ONE path (deterministic)\"]\n  S --> SP[\"one start, a CLOUD of paths\"]\n  O --> E[\"follow by hand: x ← x + f·Δt\"]\n  E --> C[\"straight path: few big steps are exact\"]\n  E --> B[\"curved path: big steps cut the corner\"]",
+      "caption": "A field is a rule, not a route. Travel it without noise and one start gives one path; add a kick at every instant and one start gives a spread of them. Either way, following it by hand means stepping along the local arrow — and how many steps you need depends entirely on how much the arrow turns as you go."
+    },
+    {
+      "id": "where-this-leads",
+      "type": "plaque",
+      "prop": "lectern",
+      "title": "Where This Leads ↑",
+      "text": "Nothing above needed a machine. But two floors up, both channels are running.\n\nWhen a generative model turns noise into a picture, it is travelling a field from one to the other. Some methods add a random kick at every step and so take the restless channel — the same start gives a different picture each time. Others drop the kick entirely and take the smooth one, where a start determines the answer completely. It is not that these are rival theories: the same model can usually be sampled either way, and the choice is exactly the choice of channel made here.\n\nThe step-count lesson follows the traveller upstairs too. A method whose path curves must take many small steps; a method engineered so the path is STRAIGHT can take a handful of large ones and still land where it meant to. When a floor above this one advertises that it generates in ten steps rather than a thousand, this chamber is the reason.",
+      "float": { "widget": "noise_morph", "shape": "smile" }
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "concepts": [
+    {
+      "id": "flow-matching",
+      "name": "Flow matching",
+      "room": "riverworks-atrium",
+      "exhibit": "riverworks-welcome",
+      "summary": "A generative method that learns a VELOCITY FIELD rather than a noise predictor, so that generation is an ODE solve: x ← x + v_θ(x,t)·Δt, integrated from t=0 (noise) to t=1 (data). The path is chosen to be a straight line, x_t = (1−t)·x₀ + t·x₁, which makes the velocity target trivially x₁ − x₀ — constant, with no β schedule, no ᾱ table and no square roots. Because a straight path has constant velocity, large integration steps stay accurate, so sampling needs roughly 5–20 steps rather than diffusion's hundreds. Note the convention flip against the diffusion wing: here t=0 is noise and t=1 is data."
+    }
+  ],
+  "edges": [
+    { "from": "flow-matching", "to": "reverse-sampling", "relation": "contrasts-with" },
+    { "from": "flow-matching", "to": "ode-vs-sde", "relation": "builds-on" },
+    { "from": "flow-matching", "to": "mse-loss", "relation": "builds-on" }
+  ]
+}

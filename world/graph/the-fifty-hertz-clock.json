@@ -1,0 +1,38 @@
+{
+  "concepts": [
+    {
+      "id": "control-frequency",
+      "name": "The control-frequency argument",
+      "room": "the-fifty-hertz-clock",
+      "exhibit": "the-fifty-hertz-clock",
+      "summary": "Why flow matching won for robot policies: it is a latency argument, not an expressiveness one. Manipulation needs 30 to 50 Hz, about 20 ms per decision. A diffusion head is expressive enough but needs roughly 100 denoising steps per chunk and cannot fit the budget; flow matching integrates a straight path in about 10 steps (π0 uses exactly 10) and does. Of the four candidate heads, discrete tokens decode too slowly, MLP regression is fast but collapses multimodal actions to their mean, diffusion is too many steps, and flow matching alone is multimodal, continuous and fast."
+    },
+    {
+      "id": "kv-cache-integration",
+      "name": "KV caching across integration steps",
+      "room": "the-fifty-hertz-clock",
+      "exhibit": "the-cache-that-buys-the-hertz",
+      "summary": "What makes 50 Hz actually achievable. Image and text tokens do not depend on the integration time τ — the scene is unchanged at τ=0 and τ=0.9 — so their keys and values are computed once and cached across all 10 steps. Only the roughly 51 action-side tokens (the state token plus a 50-step chunk) re-run each pass. The cost is one 3B forward pass plus ten 300M forward passes, not ten 3.3B passes. It is the same KV cache as autoregressive decoding, hoisted along a different axis: cached across noise levels rather than across sequence positions. The general rule is to compute the conditioning once, outside the integration loop."
+    },
+    {
+      "id": "mode-collapse",
+      "name": "Mode collapse in regression policies",
+      "room": "the-fifty-hertz-clock",
+      "exhibit": "the-bimodal-experiment",
+      "summary": "On a deliberately bimodal task — identical observation, demonstrator sometimes reaching LEFT and sometimes RIGHT, target magnitude 1.0 — flow matching reached |x_end| 0.243 at 1 step, 0.833 at 2, 0.964 at 5, 0.988 at 10 and 0.998 at 50, splitting about 45/55 between the two modes: it samples a mode and commits. An MLP regression baseline reached 0.418, collapsed to the middle, driving straight into the obstacle both demonstrators avoided. That is not a bug but the correct minimiser of squared error against an ambiguous target — the conditional mean. Its action-MSE looked perfectly healthy throughout, so multimodal tasks must be judged by the distribution of rollouts, never by mean error."
+    }
+  ],
+  "edges": [
+    { "from": "control-frequency", "to": "euler-sampling", "relation": "builds-on" },
+    { "from": "control-frequency", "to": "action-head", "relation": "builds-on" },
+    { "from": "control-frequency", "to": "reverse-sampling", "relation": "contrasts-with" },
+    { "from": "control-frequency", "to": "pi-zero", "relation": "relates-to" },
+    { "from": "kv-cache-integration", "to": "kv-cache", "relation": "builds-on" },
+    { "from": "kv-cache-integration", "to": "pi-zero", "relation": "part-of" },
+    { "from": "kv-cache-integration", "to": "control-frequency", "relation": "part-of" },
+    { "from": "mode-collapse", "to": "mse-loss", "relation": "builds-on" },
+    { "from": "mode-collapse", "to": "control-frequency", "relation": "relates-to" },
+    { "from": "mode-collapse", "to": "action-chunk", "relation": "relates-to" },
+    { "from": "mode-collapse", "to": "actions-as-inputs", "relation": "relates-to" }
+  ]
+}

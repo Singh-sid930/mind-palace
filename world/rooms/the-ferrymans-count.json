@@ -1,0 +1,69 @@
+{
+  "id": "the-ferrymans-count",
+  "name": "The Ferryman's Count",
+  "wing": "riverworks",
+  "size": "medium",
+  "order": 3,
+  "connections": ["the-chamber-of-two-rivers", "the-backward-walk"],
+  "exhibits": [
+    {
+      "id": "the-ferrymans-pole",
+      "type": "artifact",
+      "title": "The Ferryman's Pole",
+      "prop": "statue",
+      "scale": 1.35,
+      "text": "Sampling is integration, and the simplest integrator is one line:\n\n  x ← x + v_θ(x, t)·Δt\n\nAsk the field where to go, go that far, ask again. That is the Euler method, and it is all the machinery flow matching needs at generation time — no schedule, no variance term, no re-noising.\n\nFour strokes across the channel, Δt = 0.25, starting at x = 1.0 with a field that answers 4.0:\n\n  t=0.00, x=1.0 → 1.0 + 4.0·0.25 = 2.0\n  t=0.25, x=2.0 → 2.0 + 4.0·0.25 = 3.0\n  t=0.50, x=3.0 → 3.0 + 4.0·0.25 = 4.0\n  t=0.75, x=4.0 → 4.0 + 4.0·0.25 = 5.0\n\nFour steps, exact arrival. Not approximately 5.0 — exactly 5.0, because the path really is a straight line and the velocity really is constant, so a big step commits no error at all.\n\nCompare the Backward Walk in the diffusion wing, where each reverse step carries its own ᾱₜ coefficients and its own noise draw, and a thousand of them are needed to arrive anywhere. Same journey, a different count of strokes.",
+      "float": {
+        "widget": "path_race"
+      }
+    },
+    {
+      "id": "why-big-steps-are-safe",
+      "type": "plaque",
+      "prop": "pedestal",
+      "title": "Why Large Steps Do Not Miss",
+      "text": "Euler integration always makes the same assumption: that the velocity measured at the current point holds for the whole step. Every error it commits comes from that assumption being wrong.\n\nOn a straight path travelled at constant velocity, the assumption is exactly right. The direction at the start of the step is the direction throughout it, so a step of Δt = 0.25 lands precisely where a thousand steps of 0.00025 would. Step size costs nothing.\n\nOn a curved path it is wrong everywhere. The direction measured at the start is already stale by the middle of the step, so a large step cuts the corner and lands off the true trajectory — and the next step measures the field at that wrong place, so the error compounds. The only remedy is to make the steps small enough that the curve is locally straight, which is precisely why diffusion needs so many.\n\nOverhead, the same four big steps run on both paths. The straight bead lands on the mark; the curved one drifts off the dim ghost of where it should have been.",
+      "float": {
+        "widget": "path_race"
+      }
+    },
+    {
+      "id": "the-step-budget",
+      "type": "plaque",
+      "prop": "lectern",
+      "title": "The Step Budget",
+      "text": "The count is the practical difference between these frameworks, and it is worth memorising.\n\n  DDPM            ~1000 steps\n  DDIM              20–50 steps\n  flow matching      5–20 steps  (π0 uses 10)\n\nEach step is one full forward pass of the network, so this is a straight multiplier on the cost of producing a sample. Two orders of magnitude between the top and bottom rows is not a tuning detail; it decides whether a model can sit inside a control loop at all.\n\nDDIM's improvement, worth noting, comes from the same insight rather than a different one: it drops the stochastic re-noising and integrates diffusion's probability flow ODE instead, which permits larger steps. Flow matching goes further by making the path itself straight, so there is little curvature left to resolve.\n\nThe bars overhead fall the way the counts do, and the sweeping cut keeps only the few that matter.",
+      "float": {
+        "widget": "decay_bars"
+      }
+    },
+    {
+      "id": "the-field-is-not-quite-straight",
+      "type": "plaque",
+      "prop": "pedestal",
+      "title": "The Honest Caveat",
+      "text": "If the velocity is constant along a path, why not take ONE step of Δt = 1 and be done?\n\nBecause the constant velocity belongs to a single pair (x₀, x₁), and the trained network never sees a single pair. During training, many different noise draws are matched with many different data points, and a great many of those straight lines cross near the same x_t. At that crossing the network is asked for several different velocities and can only answer with their average. The effective field it learns is therefore a blend, and a blend of straight lines is not itself straight — it bends.\n\nSo the practical field is nearly constant, not exactly constant, and Euler's assumption is nearly right rather than exactly right. That is the gap between the clean scalar arithmetic on the pole behind you and the 5–20 steps real models use.\n\nThis averaging is not a defect to be trained away. It is the same fact that puts a floor under the loss in the Plateau That Lies, at the end of this wing.",
+      "float": {
+        "widget": "fork_paths"
+      }
+    },
+    {
+      "id": "one-path-or-a-cloud",
+      "type": "plaque",
+      "prop": "pedestal",
+      "title": "One Path, or a Cloud of Them",
+      "text": "Rearrange the update x ← x + v·Δt and you have dx/dt = v_θ(x, t) — an ordinary differential equation, with the velocity field playing the part of f. There is no noise term anywhere in it. Start at x₀ = 1.0 and you arrive at 5.0 every time you run it: a ball rolling down a smooth ramp.\n\nDDPM's sampling step carries an extra + σₜ·z, a fresh random draw at every step. That is a stochastic differential equation — a pollen grain in water, drift plus constant molecular bumping. Two runs from the same starting noise give two different images.\n\nOne nuance matters. Diffusion is not inherently stochastic at sampling time. Its FORWARD process is an SDE, but sampling may be run either way: DDPM stochastically, DDIM deterministically through the corresponding probability flow ODE. Seen from far enough back, diffusion is one particular choice of path inside the flow matching framework, not a different animal.\n\nThe Chamber of Two Rivers, down in the undercroft, teaches the two equations as pure mathematics, with no generative model attached.",
+      "float": {
+        "widget": "field_flow",
+        "stochastic": true
+      }
+    },
+    {
+      "id": "sampling-diagram",
+      "type": "diagram",
+      "title": "Four Strokes to the Far Bank",
+      "spec": "graph LR\n  S[\"x = 1.0 at t=0, pure noise\"] --> E1[\"ask field: v=4.0, step 0.25\"]\n  E1 --> A[\"x = 2.0\"]\n  A --> E2[\"ask again, step\"]\n  E2 --> B[\"x = 3.0\"]\n  B --> E3[\"ask again, step\"]\n  E3 --> C[\"x = 4.0\"]\n  C --> E4[\"ask again, step\"]\n  E4 --> D[\"x = 5.0 at t=1, exact\"]\n  D --> N[\"straight path, so no error to accumulate\"]\n  N -.-> R[\"real fields bend a little: use 5-20 steps\"]",
+      "caption": "The Euler loop, unrolled. Every box between the banks is one forward pass of the network, and each does the same thing: ask for a direction, move that far. On the ideal straight channel four strokes arrive exactly. Because a trained field averages over many noise-data pairings it bends slightly, so real samplers spend 5 to 20 strokes rather than one."
+    }
+  ]
+}

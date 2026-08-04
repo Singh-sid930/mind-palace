@@ -81,6 +81,16 @@ function smooth(x) {
   const c = Math.min(1, Math.max(0, x));
   return c * c * (3 - 2 * c);
 }
+// setInst with a spin about +Z; _Q is shared, so it is restored to identity.
+const _AXIS_Z = new THREE.Vector3(0, 0, 1);
+function setInstRot(mesh, i, x, y, sx, sy, angle) {
+  _P.set(x, y, 0); _S.set(sx, sy, sx);   // depth tracks width — never leave z at 1
+
+  _Q.setFromAxisAngle(_AXIS_Z, angle);
+  _M.compose(_P, _Q, _S);
+  mesh.setMatrixAt(i, _M);
+  _Q.identity();
+}
 // Deterministic per-index pseudo-random in [0,1) — stable across frames.
 function hash(i, k = 0) {
   const s = Math.sin(i * 127.1 + k * 311.7) * 43758.5453;
@@ -882,7 +892,172 @@ function tangentTouch(p) {
   return { group: g, update };
 }
 
+// --- field_flow: a velocity field, and beads that ride it ------------------
+// The emblem of flow matching: arrows ARE the learned field, and generation is
+// just following them. `stochastic: true` adds a random kick per step — the
+// same field sampled as an SDE (pollen in water) rather than an ODE (a ball on
+// a ramp), so one start becomes a cloud of paths.
+function fieldFlow(p) {
+  const NX = 7, NY = 5, N = NX * NY;
+  const arrows = instanced('cone', N, BLUE);
+  const g = new THREE.Group();
+  g.add(arrows);
+  const NB = 14;
+  const beads = pointsCloud(NB, 0.06, GOLD);
+  g.add(beads);
+  const X0 = -0.46, X1 = 0.46, Y0 = -0.3, Y1 = 0.3;
+  const jitter = p.stochastic ? 0.02 : 0;
+  // The field itself: a rightward drift that swells and leans over time.
+  const vx = (x, y, t) => 0.55 + 0.3 * Math.sin(y * 4.5 + t * 0.5);
+  const vy = (x, y, t) => 0.34 * Math.sin(x * 3.2 - t * 0.4);
+  // Seed the beads down the left edge.
+  {
+    const arr = beads.geometry.attributes.position.array;
+    for (let i = 0; i < NB; i++) {
+      arr[i * 3] = X0 + hash(i, 2) * 0.15;
+      arr[i * 3 + 1] = Y0 + hash(i, 5) * (Y1 - Y0);
+      arr[i * 3 + 2] = 0.01;
+    }
+  }
+  const speed = p.speed || 1;
+  const update = (t) => {
+    for (let r = 0; r < NY; r++) {
+      for (let c = 0; c < NX; c++) {
+        const x = X0 + (c / (NX - 1)) * (X1 - X0);
+        const y = Y0 + (r / (NY - 1)) * (Y1 - Y0);
+        const u = vx(x, y, t), v = vy(x, y, t);
+        const mag = Math.hypot(u, v);
+        setInstRot(arrows, r * NX + c, x, y,
+          0.035, 0.075 + 0.05 * mag, Math.atan2(v, u) - Math.PI / 2);
+        _C.set(BLUE).multiplyScalar(0.5 + 0.5 * mag);
+        arrows.setColorAt(r * NX + c, _C);
+      }
+    }
+    arrows.instanceMatrix.needsUpdate = true;
+    arrows.instanceColor.needsUpdate = true;
+    const arr = beads.geometry.attributes.position.array;
+    const dt = 0.016 * speed;
+    for (let i = 0; i < NB; i++) {
+      let x = arr[i * 3], y = arr[i * 3 + 1];
+      x += vx(x, y, t) * dt + (jitter ? (Math.random() - 0.5) * jitter : 0);
+      y += vy(x, y, t) * dt + (jitter ? (Math.random() - 0.5) * jitter : 0);
+      if (x > X1 || y < Y0 - 0.12 || y > Y1 + 0.12) {   // reached data: respawn as noise
+        x = X0; y = Y0 + Math.random() * (Y1 - Y0);
+      }
+      arr[i * 3] = x; arr[i * 3 + 1] = y;
+    }
+    beads.geometry.attributes.position.needsUpdate = true;
+  };
+  return { group: g, update };
+}
+
+// --- path_race: why a straight path forgives big steps ---------------------
+// Both beads take the SAME four big Euler steps. On the straight path the
+// bead lands exactly on target; on the curved one each step follows the local
+// tangent and cuts the corner, so it drifts off (a dim ghost marks where it
+// should have been). Hence: straight path → few steps; curved → many.
+function pathRace(p) {
+  const AX = -0.42, BX = 0.42, TOP = 0.2, BOT = -0.22;
+  const straight = new THREE.Line(
+    new THREE.BufferGeometry().setFromPoints([
+      new THREE.Vector3(AX, TOP, 0), new THREE.Vector3(BX, TOP, 0)]),
+    new THREE.LineBasicMaterial({ color: GOLD, transparent: true, opacity: 0.85 }));
+  // The curved path: a bowed arc from A to B.
+  const curveY = (u) => BOT + 0.3 * Math.sin(u * Math.PI);
+  const cpts = [];
+  for (let i = 0; i <= 40; i++) {
+    const u = i / 40;
+    cpts.push(new THREE.Vector3(AX + (BX - AX) * u, curveY(u), 0));
+  }
+  const curved = new THREE.Line(
+    new THREE.BufferGeometry().setFromPoints(cpts),
+    new THREE.LineBasicMaterial({ color: BLUE, transparent: true, opacity: 0.75 }));
+  const beadS = new THREE.Mesh(G.sphere, bas(GOLD));
+  beadS.scale.setScalar(0.04);
+  const beadC = new THREE.Mesh(G.sphere, bas(BLUE));
+  beadC.scale.setScalar(0.04);
+  const ghost = new THREE.Mesh(G.sphere, bas(CREAMY, { transparent: true, opacity: 0.4 }));
+  ghost.scale.setScalar(0.03);
+  const g = new THREE.Group();
+  g.add(straight, curved, beadS, beadC, ghost);
+  const STEPS = p.steps || 4;
+  // Precompute the curved bead's Euler trail: step along the local tangent.
+  const trail = [];
+  {
+    let x = AX, y = curveY(0);
+    trail.push([x, y]);
+    const du = 1 / STEPS, dx = (BX - AX) * du;
+    for (let k = 0; k < STEPS; k++) {
+      const u = k / STEPS;
+      const slope = (curveY(u + 0.004) - curveY(u - 0.004)) / (0.008 * (BX - AX));
+      x += dx; y += slope * dx;          // tangent step — cuts the corner
+      trail.push([x, y]);
+    }
+  }
+  const period = p.speed ? 5 / p.speed : 5;
+  const update = (t) => {
+    const f = (t % period) / period;
+    const k = Math.min(STEPS, f * (STEPS + 0.9));   // hop, then rest
+    const i = Math.min(STEPS - 1, Math.floor(k));
+    const frac = smooth(Math.min(1, (k - i) * 1.7));
+    const u0 = i / STEPS, u1 = (i + 1) / STEPS, u = u0 + (u1 - u0) * frac;
+    beadS.position.set(AX + (BX - AX) * u, TOP, 0.01);
+    const a = trail[i], b = trail[i + 1];
+    beadC.position.set(a[0] + (b[0] - a[0]) * frac, a[1] + (b[1] - a[1]) * frac, 0.01);
+    ghost.position.set(AX + (BX - AX) * u, curveY(u), 0.005);
+  };
+  return { group: g, update };
+}
+
+// --- fork_paths: commit to a mode, or average into the wall ----------------
+// One observation, two valid answers. The gold bead SAMPLES one branch and
+// commits (alternating between them); the grey bead takes the mean of both
+// and drives straight into the obstacle between them.
+function forkPaths(p) {
+  const X0 = -0.42, X1 = 0.4, SPREAD = 0.26;
+  const branch = (sign) => {
+    const pts = [];
+    for (let i = 0; i <= 24; i++) {
+      const u = i / 24;
+      pts.push(new THREE.Vector3(X0 + (X1 - X0) * u, sign * SPREAD * smooth(u), 0));
+    }
+    return pts;
+  };
+  const up = branch(1), down = branch(-1);
+  const g = new THREE.Group();
+  for (const pts of [up, down]) {
+    g.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),
+      new THREE.LineBasicMaterial({ color: GOLD, transparent: true, opacity: 0.4 })));
+  }
+  const wall = new THREE.Mesh(G.box, bas(0xd06a5a, { transparent: true, opacity: 0.65 }));
+  wall.scale.set(0.07, 0.16, 0.05);
+  wall.position.set(0.16, 0, 0);
+  const bead = new THREE.Mesh(G.sphere, bas(GOLD));
+  bead.scale.setScalar(0.045);
+  const mean = new THREE.Mesh(G.sphere, bas(0x8f8f8f));
+  mean.scale.setScalar(0.04);
+  g.add(wall, bead, mean);
+  const period = p.speed ? 4 / p.speed : 4;
+  const update = (t) => {
+    const lap = Math.floor(t / period);
+    const f = (t % period) / period;
+    const u = Math.min(1, f * 1.25);
+    const pts = (lap % 2 === 0) ? up : down;        // sample a mode, then commit
+    const i = Math.min(23, Math.floor(u * 24)), fr = u * 24 - i;
+    const a = pts[i], b = pts[i + 1];
+    bead.position.set(a.x + (b.x - a.x) * fr, a.y + (b.y - a.y) * fr, 0.01);
+    mean.position.set(X0 + (X1 - X0) * u, 0, 0.01);  // the average of both modes
+    const hit = mean.position.x > wall.position.x - 0.05;
+    mean.material.color.set(hit ? 0xd06a5a : 0x8f8f8f);
+    wall.material.opacity = hit ? 0.9 : 0.55;
+  };
+  return { group: g, update };
+}
+
 export const WIDGET_BUILDERS = {
+  field_flow: fieldFlow,
+  path_race: pathRace,
+  fork_paths: forkPaths,
   rain_bell: rainBell,
   bell_slide: bellSlide,
   circle_ellipse: circleEllipse,

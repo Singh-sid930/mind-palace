@@ -15,7 +15,9 @@
     "obsidian",
     "silver",
     "bronze",
-    "verdigris"
+    "verdigris",
+    "cobalt",
+    "ember"
   ],
   "exhibit_types": [
     "plaque",
@@ -103,6 +105,9 @@
     "decay_bars",
     "slide_window",
     "tangent_touch",
-    "lift_matrix"
+    "lift_matrix",
+    "field_flow",
+    "path_race",
+    "fork_paths"
   ]
 }

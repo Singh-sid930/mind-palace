@@ -1,0 +1,68 @@
+{
+  "id": "the-straight-channel",
+  "name": "The Straight Channel",
+  "wing": "riverworks",
+  "size": "grand",
+  "order": 1,
+  "connections": [
+    "the-shortcut-shrine"
+  ],
+  "exhibits": [
+    {
+      "id": "the-channel-table",
+      "type": "artifact",
+      "title": "The Channel Table",
+      "prop": "table",
+      "scale": 1.4,
+      "text": "Diffusion asks one question at every step: what noise was added here? Remove some, put a little back, repeat. Flow matching asks a different question: I am standing at a point on a path from noise to data — which DIRECTION do I move? The answer is a velocity field, and generating a sample is nothing more than following it.\n\nChanging the question buys a change of path. Diffusion's trajectory is curved, bent by the β/ᾱ schedule. Flow matching draws a straight line between the two endpoints and calls that the path:\n\n  x_t = (1−t)·x₀ + t·x₁\n\nx₀ is noise at t=0, x₁ is data at t=1. One scalar channel, cut dead straight, surveyed on this table. Take x₀ = 1.0, x₁ = 5.0 and walk it:\n\n  t=0.00 → 1.00·1.0 + 0.00·5.0 = 1.0\n  t=0.25 → 0.75·1.0 + 0.25·5.0 = 2.0\n  t=0.50 → 0.50·1.0 + 0.50·5.0 = 3.0\n  t=0.75 → 0.25·1.0 + 0.75·5.0 = 4.0\n  t=1.00 → 0.00·1.0 + 1.00·5.0 = 5.0\n\nEqual steps of 1.0 all the way down — constant speed, because it is a straight line. Nothing in that table came from a schedule, an ᾱ lookup, or a square root. Only the two endpoints and t. The arrows overhead are the field; the beads only ride it.",
+      "float": {
+        "widget": "field_flow"
+      }
+    },
+    {
+      "id": "two-questions",
+      "type": "plaque",
+      "prop": "lectern",
+      "title": "The Same Algorithm, Two Swaps",
+      "text": "Written side by side, the two frameworks are one algorithm with two ingredients exchanged.\n\n  Diffusion:      x_t = √ᾱₜ·x₀ + √(1−ᾱₜ)·ε      target = ε\n  Flow matching:  x_t = (1−t)·x₀ + t·x₁          target = x₁ − x₀\n\nThe shape is identical: build a corrupted point, ask a network for something about it, take an MSE. What differs is the interpolation and what the network is asked for. Diffusion's coefficients come out of a precomputed table — the ᾱₜ of the Shortcut Shrine — and the network predicts the noise that was mixed in. Flow matching's coefficients are t and 1−t, which fit on your hand, and the network predicts a direction of travel.\n\nLosing the schedule is the point, not a side effect. There is no β to tune, no ᾱ to precompute, no square roots to keep straight, and no chance of a sampler's schedule quietly disagreeing with the trainer's. The interpolation IS the whole specification of the path.",
+      "float": {
+        "widget": "noise_morph",
+        "shape": "ring"
+      }
+    },
+    {
+      "id": "one-line-of-algebra",
+      "type": "plaque",
+      "prop": "pedestal",
+      "title": "One Line of Algebra",
+      "text": "The velocity is the path's derivative, and the path is linear, so the derivation is one line:\n\n  x_t = (1−t)·x₀ + t·x₁\n  dx_t/dt = −x₀ + x₁ = x₁ − x₀\n\nWith the channel's numbers, v = 5.0 − 1.0 = 4.0. Two properties follow, and together they are the entire appeal of the method.\n\nCONSTANT. The t cancelled — it does not appear in the answer. The velocity along this path is 4.0 at t=0.1 and 4.0 at t=0.9. Compare diffusion's reverse step, whose coefficients keep changing with t through ᾱₜ.\n\nTRIVIAL. The target is data minus noise. That is all of it: no schedule to look up, no √, no variance bookkeeping.\n\nA velocity field is a rule that hands every point in space, at every time, a direction: v_θ(x, t). The network learns ONE such field for the whole dataset. The arrows above are that field drawn out — drop a bead anywhere and it has already been told where to go next.",
+      "float": {
+        "widget": "field_flow"
+      }
+    },
+    {
+      "id": "the-convention-flip",
+      "type": "plaque",
+      "prop": "pedestal",
+      "title": "t=0 Is Noise Here — Check Every Time",
+      "text": "In this wing t=0 is NOISE and t=1 is DATA. That is the opposite of diffusion's indexing, where t=0 is the clean image and t=T is the noise pool. Neither is correct; both are conventions, and a convention is something you check rather than assume.\n\nPapers genuinely disagree. At least one flow-matching VLA paper runs it the other way — t=0 clean, t=1 noise, path written x_t = (1−t)·A + t·ε. The mathematics is identical under the relabelling, which is exactly what makes it dangerous: nothing crashes. Port a velocity target from a repo with the opposite convention and you get a sign error in the target and an integration that runs the wrong way, while the loss curve looks entirely reasonable and the samples are noise.\n\nSo fix the convention before writing anything else, then make the training target AND the integration direction agree with it. The Plateau That Lies, at the end of this wing, carries the trick for detecting the mismatch when you have already made it.",
+      "float": {
+        "widget": "arrows_dot"
+      }
+    },
+    {
+      "id": "the-path-and-its-velocity",
+      "type": "image",
+      "title": "The Straight Path, Its Velocity, and Four Steps",
+      "image": "world/assets/flow-straight-path.png",
+      "caption": "(a) The path itself, on the channel's own numbers: x_t = (1−t)·x₀ + t·x₁ from 1.0 to 5.0, marked at t = 0, ¼, ½, ¾, 1 — the values 1.0, 2.0, 3.0, 4.0, 5.0 in equal jumps, because a straight line has constant speed. The dashed curve runs between the SAME two endpoints on a schedule-shaped path, for contrast. (b) The velocity each implies: differentiate the straight path and t cancels, leaving the flat line v = x₁ − x₀ = 4.0, while the curved path's speed changes the whole way along. (c) The same four Euler steps on both. On the straight path they land exactly on 5.0; on the curve each step follows the local tangent, cuts the corner, and misses the target. That is the entire reason one method needs a thousand steps and the other needs ten."
+    },
+    {
+      "id": "channel-diagram",
+      "type": "diagram",
+      "title": "Straight Path, Constant Velocity",
+      "spec": "graph LR\n  X0[\"x₀ = 1.0 — noise at t=0\"] -->|\"t=0.25 gives 2.0\"| A[\"x_t = (1−t)·x₀ + t·x₁\"]\n  A -->|\"t=0.75 gives 4.0\"| X1[\"x₁ = 5.0 — data at t=1\"]\n  A --> V[\"differentiate: v = x₁ − x₀ = 4.0\"]\n  V --> C[\"constant in t, no schedule\"]\n  C --> FT[\"target = x₁ − x₀\"]\n  DF[\"diffusion: x_t = √ᾱₜ·x₀ + √(1−ᾱₜ)·ε\"] --> DT[\"target = ε, needs the ᾱ table\"]\n  DT -.->|\"same algorithm, two swaps\"| FT",
+      "caption": "The straight path in the middle, its derivative on the right. Because the interpolation is linear, the velocity is x₁ − x₀ = 4.0 and does not depend on t at all. Along the bottom, diffusion's version of the same two boxes: a curved path built from the ᾱ schedule and a target of ε. Swap the interpolation and swap the target, and one framework becomes the other."
+    }
+  ]
+}

@@ -57,6 +57,13 @@
       "summary": "MQA keeps h independent query heads but a SINGLE shared Wk, Wv across all of them \u2014 eight researchers, one library \u2014 collapsing the KV cache up to 8-fold. It is the g=1 extreme of grouped-query attention, decided before training, not a post-hoc optimisation."
     },
     {
+      "id": "vla-model",
+      "name": "Vision-language-action model (VLA)",
+      "room": "embodiment-atrium",
+      "exhibit": "embodiment-welcome",
+      "summary": "A vision-language model extended so it can act. Two things must be added: a missing INPUT \u2014 proprioception, the robot's own joint state, which is not language and so cannot be tokenised directly \u2014 and a missing OUTPUT \u2014 continuous action commands rather than text tokens. The action output must be generative rather than a point estimate, because demonstrations are genuinely multimodal (a valid detour may go left or right, and their average goes through the obstacle), and it must be fast, because control loops want 30\u201350 Hz. Those two demands together are what select a flow-matching action head."
+    },
+    {
       "id": "scaled-dot-product-attention",
       "name": "Scaled dot-product attention",
       "room": "forge-of-the-query",
@@ -288,6 +295,13 @@
       "summary": "ICLR 2025: the projection head is secretly an information bottleneck \u2014 it compresses out information irrelevant to the SSL objective and attenuates the gradient signal reaching the encoder, which sits upstream of the compression and so retains the broader signal."
     },
     {
+      "id": "flow-matching",
+      "name": "Flow matching",
+      "room": "riverworks-atrium",
+      "exhibit": "riverworks-welcome",
+      "summary": "A generative method that learns a VELOCITY FIELD rather than a noise predictor, so that generation is an ODE solve: x \u2190 x + v_\u03b8(x,t)\u00b7\u0394t, integrated from t=0 (noise) to t=1 (data). The path is chosen to be a straight line, x_t = (1\u2212t)\u00b7x\u2080 + t\u00b7x\u2081, which makes the velocity target trivially x\u2081 \u2212 x\u2080 \u2014 constant, with no \u03b2 schedule, no \u1fb1 table and no square roots. Because a straight path has constant velocity, large integration steps stay accurate, so sampling needs roughly 5\u201320 steps rather than diffusion's hundreds. Note the convention flip against the diffusion wing: here t=0 is noise and t=1 is data."
+    },
+    {
       "id": "mse-loss",
       "name": "Mean squared error",
       "room": "scales-of-error",
@@ -363,6 +377,41 @@
       "summary": "Because a causal VAE decodes frame t using only its past, decoding can proceed through a small sliding window rather than holding the whole reel at once, keeping VRAM bounded even on long (e.g. 60-second) clips. The same future-free structure enables streaming autoregressive generation and clean chunk handovers, though chunked generation still accumulates drift across segments that the VAE alone cannot fix."
     },
     {
+      "id": "vector-field",
+      "name": "Vector field",
+      "room": "the-chamber-of-two-rivers",
+      "exhibit": "what-a-field-is",
+      "summary": "An assignment of a velocity to every point in space (and possibly every time): at x, at t, the field f hands you an arrow. A field is a RULE, not a route \u2014 it turns any starting point into a path by the act of following the arrows. Written dx/dt = f(x,t), this is an ordinary differential equation: nothing random enters, so a starting point determines the entire future. Worked purely: with the constant field f = 4 and start x = 1, one unit of time carries you to 5."
+    },
+    {
+      "id": "euler-step",
+      "name": "Euler integration",
+      "room": "the-chamber-of-two-rivers",
+      "exhibit": "the-euler-step",
+      "summary": "The plainest way to follow a field by hand: x \u2190 x + f(x,t)\u00b7\u0394t \u2014 read the arrow where you stand, move that far, read again. With f = 4 from x = 1, four steps of \u0394t = 0.25 give 1.0 \u2192 2.0 \u2192 3.0 \u2192 4.0 \u2192 5.0, exactly. The error depends entirely on how much the field turns along the path: when the field is constant the path is straight and a few coarse steps are exact, but when it turns, each straight step cuts the corner off the true curve and only smaller steps recover accuracy. This is why step count is a property of the PATH, not of the method."
+    },
+    {
+      "id": "ode-vs-sde",
+      "name": "ODE versus SDE",
+      "room": "the-chamber-of-two-rivers",
+      "exhibit": "the-random-kick",
+      "summary": "Two ways to travel the same field. An ODE, dx/dt = f(x,t), is deterministic \u2014 a ball on a smooth ramp, one start giving one path. An SDE adds a random increment at every instant, dx = f(x,t)\u00b7dt + g(t)\u00b7dW with dW Brownian motion \u2014 a pollen grain in water, one start giving a whole cloud of paths. Neither is more correct; they answer different questions ('where does this point end up?' versus 'what is the spread of where it might?'). Many generative processes can be sampled either way, and the choice of channel is exactly that."
+    },
+    {
+      "id": "action-chunk",
+      "name": "Action chunk",
+      "room": "the-chunk-of-motions",
+      "exhibit": "the-chunk-of-motions",
+      "summary": "The data tensor a flow-matching robot policy generates: a block of shape (H, action_dim) holding H control steps of joint commands. For a 7-DOF arm with horizon 50 it is (50, 7) \u2014 350 numbers. It slots into x\u2081 exactly where an image latent sat in image generation, and everything else is unchanged: x_t = (1\u2212t)\u00b7x\u2080 + t\u00b7x\u2081 with x\u2080 Gaussian noise of the same shape, and the velocity target x\u2081 \u2212 x\u2080. Because the whole chunk is refined in a single forward pass, every element is conditioned on every other, which is what produces temporal consistency across the horizon rather than fifty independent decisions."
+    },
+    {
+      "id": "vlm-conditioning",
+      "name": "VLM hidden state as conditioning",
+      "room": "the-chunk-of-motions",
+      "exhibit": "the-conditioning-slot",
+      "summary": "In image generation the velocity field is conditioned on a text embedding: v_\u03b8(x_t, t, text_embedding). In a VLA the same slot carries the hidden state of a vision-language model: v_\u03b8(x_t, t, VLM_hidden_state). That hidden state has already fused three streams \u2014 camera images, the language instruction, and the robot's proprioception. The plumbing is identical to text-conditioned image generation; only the contents of the conditioning vector are richer."
+    },
+    {
       "id": "siglip",
       "name": "SigLIP",
       "room": "the-court-of-yes-and-no",
@@ -424,6 +473,41 @@
       "room": "the-echoed-gaze",
       "exhibit": "dino-chapter",
       "summary": "The scaled successor to DINO: a much larger curated dataset (LVD-142M), bigger models, and DINO's image-level objective combined with iBOT's patch-level masked objective. The result is a general-purpose visual backbone \u2014 the go-to self-supervised encoder for dense features and spatial precision, used in depth, segmentation, correspondence, and robotics perception. Spatially precise and semantically structured, but with no language alignment, so no zero-shot classification. DINOv3 scales it further."
+    },
+    {
+      "id": "euler-sampling",
+      "name": "Euler integration as sampling",
+      "room": "the-ferrymans-count",
+      "exhibit": "the-ferrymans-pole",
+      "summary": "Generating a sample means solving dx/dt = v_\u03b8(x,t) forward from t=0 to t=1, and the simplest solver is one line: x \u2190 x + v_\u03b8(x,t)\u00b7\u0394t. Ask the field for a direction, move that far, ask again. From x=1.0 with a field answering 4.0 and \u0394t=0.25, the four steps read 1.0 \u2192 2.0 \u2192 3.0 \u2192 4.0 \u2192 5.0, arriving exactly. Euler's only assumption is that the velocity measured at the start of a step holds across it \u2014 exactly true on a straight path at constant velocity, so step size costs no accuracy. There is no schedule, no variance term and no re-noising, unlike diffusion's reverse step."
+    },
+    {
+      "id": "few-step-sampling",
+      "name": "Why few steps suffice",
+      "room": "the-ferrymans-count",
+      "exhibit": "why-big-steps-are-safe",
+      "summary": "A curved path makes the direction measured at the start of a step stale by the middle of it, so large steps cut the corner and the error compounds through subsequent steps; the only remedy is steps small enough that the curve is locally straight. Straightening the path removes that constraint, and the step budgets show it: DDPM needs ~1000 steps, DDIM 20\u201350, flow matching 5\u201320 (\u03c00 uses 10). Each step is a full forward pass, so this is a direct multiplier on sampling cost. The honest caveat: a trained field is not perfectly constant, because many (x\u2080,x\u2081) pairings cross the same x_t and the model can only answer with their average, which bends the effective field \u2014 hence 5\u201320 steps rather than one."
+    },
+    {
+      "id": "control-frequency",
+      "name": "The control-frequency argument",
+      "room": "the-fifty-hertz-clock",
+      "exhibit": "the-fifty-hertz-clock",
+      "summary": "Why flow matching won for robot policies: it is a latency argument, not an expressiveness one. Manipulation needs 30 to 50 Hz, about 20 ms per decision. A diffusion head is expressive enough but needs roughly 100 denoising steps per chunk and cannot fit the budget; flow matching integrates a straight path in about 10 steps (\u03c00 uses exactly 10) and does. Of the four candidate heads, discrete tokens decode too slowly, MLP regression is fast but collapses multimodal actions to their mean, diffusion is too many steps, and flow matching alone is multimodal, continuous and fast."
+    },
+    {
+      "id": "kv-cache-integration",
+      "name": "KV caching across integration steps",
+      "room": "the-fifty-hertz-clock",
+      "exhibit": "the-cache-that-buys-the-hertz",
+      "summary": "What makes 50 Hz actually achievable. Image and text tokens do not depend on the integration time \u03c4 \u2014 the scene is unchanged at \u03c4=0 and \u03c4=0.9 \u2014 so their keys and values are computed once and cached across all 10 steps. Only the roughly 51 action-side tokens (the state token plus a 50-step chunk) re-run each pass. The cost is one 3B forward pass plus ten 300M forward passes, not ten 3.3B passes. It is the same KV cache as autoregressive decoding, hoisted along a different axis: cached across noise levels rather than across sequence positions. The general rule is to compute the conditioning once, outside the integration loop."
+    },
+    {
+      "id": "mode-collapse",
+      "name": "Mode collapse in regression policies",
+      "room": "the-fifty-hertz-clock",
+      "exhibit": "the-bimodal-experiment",
+      "summary": "On a deliberately bimodal task \u2014 identical observation, demonstrator sometimes reaching LEFT and sometimes RIGHT, target magnitude 1.0 \u2014 flow matching reached |x_end| 0.243 at 1 step, 0.833 at 2, 0.964 at 5, 0.988 at 10 and 0.998 at 50, splitting about 45/55 between the two modes: it samples a mode and commits. An MLP regression baseline reached 0.418, collapsed to the middle, driving straight into the obstacle both demonstrators avoided. That is not a bug but the correct minimiser of squared error against an ambiguous target \u2014 the conditional mean. Its action-MSE looked perfectly healthy throughout, so multimodal tasks must be judged by the distribution of rollouts, never by mean error."
     },
     {
       "id": "tangent-space",
@@ -493,6 +577,27 @@
       "room": "the-hall-of-directions",
       "exhibit": "the-elbow",
       "summary": "The effective rank of an update is the number of dominant singular directions before the elbow where the singular-value spectrum collapses toward zero. It sets how large r must be: fast-decaying sigmas (steep cliff) mean a tiny subspace and a tiny r suffices; slow decay (a broad, flat spectrum) means the change is spread across many directions and r must grow. Not a pre-computed formula but the shape of the spectrum the useful update would have."
+    },
+    {
+      "id": "pi-zero",
+      "name": "\u03c00",
+      "room": "the-hall-of-two-experts",
+      "exhibit": "the-single-transformer",
+      "summary": "A flow-matching vision-language-action model: PaliGemma 3B (SigLIP vision tower plus Gemma) for image and text tokens, and a 300M action expert for the state token and a noisy 50-step action chunk \u2014 3.3B parameters in total. The two are independent weight sets inside a SINGLE transformer, and the token TYPE decides which set processes a token. It runs 10 Euler integration steps per chunk and reaches control frequencies up to 50 Hz. \u03c00.5 projects the integration time \u03c4 through its own MLP and injects it into every layer of the expert by adaptive RMSNorm, then executes 16 to 25 actions before re-inference."
+    },
+    {
+      "id": "action-expert",
+      "name": "Action expert (joined by self-attention)",
+      "room": "the-hall-of-two-experts",
+      "exhibit": "they-meet-only-in-attention",
+      "summary": "The 300M weight set that processes state and action tokens inside \u03c00's transformer. It interacts with the vision-language weights through exactly one mechanism: each token computes its Q, K and V with its OWN expert's projections, then all tokens attend to each other in one joint self-attention over the full sequence. An action token's query can therefore reach image tokens' keys and values, so the expert sees the visual scene without owning any vision weights. The MLP sub-layers stay separate \u2014 attention mixes, MLPs specialise. This is why the expert can be small: the backbone already paid for representation, and querying it is cheap."
+    },
+    {
+      "id": "actions-as-inputs",
+      "name": "Action tokens are inputs, not outputs",
+      "room": "the-hall-of-two-experts",
+      "exhibit": "actions-are-inputs",
+      "summary": "The crux separating a flow-matching head from a discrete-token VLA. In RT-2 or OpenVLA actions are OUTPUTS, decoded autoregressively. \u03c00 works like image diffusion: the noisy action chunk is fed IN as 50 tokens and the network emits a velocity of shape (50, action_dim). The Euler update is applied outside the network and the refined chunk is fed back in, ten times. Only the first input is noise \u2014 pass 1 is pure noise at \u03c4=0, pass 5 is half-formed at \u03c4=0.4, pass 10 is nearly final at \u03c4=0.9. The chunk must be an input because it is the thing being refined, and refinement requires the network to see it. Training has no loop at all: one \u03c4 per example, one forward pass, one MSE."
     },
     {
       "id": "hat-operator",
@@ -604,6 +709,41 @@
       "name": "Patchify",
       "room": "the-patchwork-loom",
       "summary": "Turn a latent grid into a token sequence for a transformer: a 32x32x4 latent with patch 2x2 gives 16x16=256 patches, each flattened (16 values) and projected to d_model \u2014 exactly ViT/SmolVLM tokenization. Unpatchify mirrors it at the end. Positional embeddings are added because a transformer sees tokens as an unordered set."
+    },
+    {
+      "id": "velocity-loss-plateau",
+      "name": "The irreducible loss floor",
+      "room": "the-plateau-that-lies",
+      "exhibit": "the-scales-that-stop",
+      "summary": "Velocity MSE falls, flattens around 1.0, and stays there \u2014 and that is correct, not a training failure. Many different (noise, data) pairs produce lines through the same x_t, so the target v = x\u2081 \u2212 x\u2080 is genuinely ambiguous at that point and squared error is minimised by the conditional MEAN of the possible velocities. The residual is the variance of the targets averaged over, a property of the data rather than the model, so no capacity or training removes it. Judge flow matching by SAMPLE QUALITY, never by loss magnitude \u2014 and note the converse: in the bimodal experiment the regression baseline's action-MSE looked healthy while its samples drove into an obstacle."
+    },
+    {
+      "id": "broadcast-reshape-trap",
+      "name": "Reshaping t before interpolation",
+      "room": "the-plateau-that-lies",
+      "exhibit": "the-silent-broadcast",
+      "summary": "t arrives with shape (B,) while the data has shape (B,H,A) or (B,C,H,W). Writing the interpolation without reshaping lets PyTorch broadcast t along the wrong axis \u2014 a legal operation that raises no error and trains on nonsense while the loss curve descends convincingly. The fix is t.view(B,1,1) for an action chunk and t.view(B,1,1,1) for an image latent; the rank of the data tensor determines the number of trailing ones. Correctly reshaped, t is constant across every element of a sample, which is what the mathematics requires: one scalar time per point on the path."
+    },
+    {
+      "id": "zero-init-output",
+      "name": "Zero-initialising the output layer",
+      "room": "the-plateau-that-lies",
+      "exhibit": "start-as-identity",
+      "summary": "Zero-initialise the final output layer so the predicted velocity is exactly 0 at step zero: the ODE holds still instead of flinging samples across the space, and training starts from a stable no-op the gradients can move away from deliberately. It is the same idea as adaLN-Zero in the DiT and zero-convolutions in ControlNet \u2014 start as an identity or a no-op and learn the delta, since adding a randomly-initialised component perturbs a working system while adding a zeroed one costs nothing until gradients decide otherwise. It composes with adaLN-style scale/shift conditioning, the mechanism \u03c00.5 uses to inject the integration time into every layer."
+    },
+    {
+      "id": "state-encoder",
+      "name": "State encoder (proprioception token)",
+      "room": "the-proprioceptive-gate",
+      "exhibit": "the-state-token",
+      "summary": "A vision-language model has no input path for proprioception \u2014 roughly eight continuous numbers giving joint angles and gripper state. They cannot be tokenised, because a tokeniser maps symbols to indices and a joint angle is not a symbol. A small MLP projects the state vector to the model's token width, state (8,) \u2192 (d_model,), after which it is structurally an ordinary token. Concatenated into the sequence, self-attention fuses it with vision and language at no extra design cost. Normalise the state per dimension before projecting."
+    },
+    {
+      "id": "action-head",
+      "name": "Action head families",
+      "room": "the-proprioceptive-gate",
+      "exhibit": "three-families-of-heads",
+      "summary": "The three ways to turn a VLM's hidden states into continuous robot commands. DISCRETE TOKENS bin each joint's range and predict bin indices with the existing language head (RT-2, OpenVLA) \u2014 multimodal, but binning loses precision and autoregressive decoding is slow. MLP REGRESSION projects the hidden state to a continuous action \u2014 fast and continuous, but it collapses multiple valid actions to their mean. A FLOW OR DIFFUSION HEAD is a small generative network conditioned on the hidden state (\u03c00) \u2014 multimodal and continuous at the cost of several forward passes. Assembly in all three cases: [image patches][text tokens][state token] \u2192 transformer \u2192 hidden states \u2192 head."
     },
     {
       "id": "rank-hyperparameter",
@@ -729,6 +869,62 @@
       "summary": "The classic, weaker length-extension method: slide a window of overlapping clips and average where they overlap. Documented failure mode \u2014 fine over static backgrounds, but where the background itself moves, latent-space averaging in the overlap regions smears motion into BLUR and inconsistency, a likely reason motion-heavy long Wan videos degrade worst. Contrast with autoregressive chunking, which conditions each chunk on the previous tail instead of averaging overlaps. A related approach is fine-tuned continuation models trained to extend from a few initial frames."
     },
     {
+      "id": "straight-path",
+      "name": "The straight probability path",
+      "room": "the-straight-channel",
+      "exhibit": "the-channel-table",
+      "summary": "Flow matching connects noise to data along a straight line: x_t = (1\u2212t)\u00b7x\u2080 + t\u00b7x\u2081, with x\u2080 the noise sample at t=0 and x\u2081 the data point at t=1. With x\u2080=1.0 and x\u2081=5.0 the path reads 1.0, 2.0, 3.0, 4.0, 5.0 at t = 0, 0.25, 0.5, 0.75, 1 \u2014 equal steps of 1.0, because a straight line is travelled at constant speed. It replaces diffusion's curved, schedule-dependent path x_t = \u221a\u1fb1\u209c\u00b7x\u2080 + \u221a(1\u2212\u1fb1\u209c)\u00b7\u03b5, and it needs no \u03b2 schedule, no \u1fb1 table and no square roots: the interpolation alone specifies the path."
+    },
+    {
+      "id": "velocity-field",
+      "name": "The velocity field v_\u03b8",
+      "room": "the-straight-channel",
+      "exhibit": "one-line-of-algebra",
+      "summary": "Differentiating the straight path gives dx_t/dt = x\u2081 \u2212 x\u2080; for x\u2080=1.0 and x\u2081=5.0 the velocity is 4.0. Two properties follow: it is CONSTANT (t cancels entirely, unlike diffusion's reverse step whose coefficients vary with t through \u1fb1\u209c), and the regression target is trivially data minus noise, with no schedule in it. A velocity field is a rule assigning a direction to every point in space at every time, v_\u03b8(x,t), and the network learns exactly one such field for the whole dataset. Generation is following that field, which makes sampling an ODE solve rather than a stochastic reverse chain."
+    },
+    {
+      "id": "time-convention-flip",
+      "name": "The t=0 convention flip",
+      "room": "the-straight-channel",
+      "exhibit": "the-convention-flip",
+      "summary": "In flow matching t=0 is NOISE and t=1 is DATA \u2014 the opposite of diffusion's indexing, where t=0 is the clean image. Neither is canonical; some flow-matching VLA papers invert it and write x_t = (1\u2212t)\u00b7A + t\u00b7\u03b5 with t=0 clean. The mathematics is identical under relabelling, which makes the mismatch silent: porting a velocity target across conventions without also flipping the integration direction produces a plausible loss curve and garbage samples. Fix the convention first, then make the training target and the integration direction agree with it."
+    },
+    {
+      "id": "velocity-training-loop",
+      "name": "The flow matching training loop",
+      "room": "the-surveyors-table",
+      "exhibit": "the-mixing-cauldron",
+      "summary": "Five lines: sample data x\u2081, sample noise x\u2080 ~ N(0,1), sample a time t, build x_t = (1\u2212t)\u00b7x\u2080 + t\u00b7x\u2081, and take \u2016(x\u2081 \u2212 x\u2080) \u2212 net(x_t, t)\u2016\u00b2. Worked: x\u2081=5.0, x\u2080=1.0, t=0.25 gives x_t=2.0 and target 4.0; a network answering 3.7 pays a loss of 0.09. Sorted into three bins, the VAE and text encoder are FROZEN, the interpolation and velocity target are ARITHMETIC with zero parameters, and exactly ONE thing is LEARNED \u2014 the velocity field. At image scale nothing changes but the shapes: x\u2081 is a (32,32,4) latent, the interpolation runs element-wise over all 4,096 elements, and t stays a single scalar shared by all of them."
+    },
+    {
+      "id": "non-uniform-timestep-sampling",
+      "name": "Non-uniform sampling of t",
+      "room": "the-surveyors-table",
+      "exhibit": "t-is-not-uniform",
+      "summary": "The textbook loop draws t ~ U(0,1); production systems do not. \u03c00 uses its own noise-level sampling strategy, and the Lipman flow matching guide confirms that drawing t from a non-uniform distribution \u2014 mathematically equivalent to reweighting the loss \u2014 performs better at scale. The reason is that different times pose different problems: near t=0 the point is dominated by the noise draw, near t=1 the field is resolving fine detail, so equal effort everywhere is not the best allocation. Implementations that use Beta(1.5, 1.0) are demonstrating the idea, not reproducing any published schedule."
+    },
+    {
+      "id": "latent-caching",
+      "name": "Caching frozen latents",
+      "room": "the-surveyors-table",
+      "exhibit": "the-cached-larder",
+      "summary": "Because the VAE encoder and text encoder are frozen, they recompute identical outputs every epoch, so pipelines precompute all latents and embeddings once and let training load tensors \u2014 removing the two heaviest forward passes from the loop. Two caveats: augmentation breaks it, because a random crop or flip changes the image and therefore the latent, so a cached latent silently disables the augmentation; and the VAE encoder is stochastic, emitting a distribution rather than a point, so caching one sample discards that variation. The usual fix for the second is to cache mean and standard deviation and re-sample each epoch. Text embeddings have neither problem."
+    },
+    {
+      "id": "velocity-network",
+      "name": "v_\u03b8 \u2014 the velocity network",
+      "room": "the-swappable-engine",
+      "exhibit": "the-engine-mount",
+      "summary": "v_\u03b8 takes a noisy input, a scalar t and conditioning, and returns a velocity of the SAME shape \u2014 (32,32,4) in, (32,32,4) out. It is a U-Net or a DiT, architecturally identical to the diffusion noise-predictor; SD3 uses a DiT. Only two things changed from diffusion: the target (velocity x\u2081 \u2212 x\u2080 instead of noise \u03b5) and the path (linear instead of the \u1fb1 schedule). The architecture must satisfy three requirements \u2014 shape-preserving, accepts a scalar t through a scaled sinusoidal timestep embedding, and accepts conditioning via cross-attention or adaLN \u2014 which is exactly the interface a noise-predictor already exposes, so the two are interchangeable."
+    },
+    {
+      "id": "velocity-guidance",
+      "name": "Classifier-free guidance on velocities",
+      "room": "the-swappable-engine",
+      "exhibit": "guidance-in-velocity-form",
+      "summary": "The same extrapolation as classifier-free guidance in diffusion, performed on velocities: \u1e7d = v_\u03b8(x,t,\u2205) + w\u00b7[v_\u03b8(x,t,c) \u2212 v_\u03b8(x,t,\u2205)]. Start at the unconditional velocity, measure the difference the condition makes, and travel w times further along it; w=1 recovers the conditional velocity exactly and larger w pushes harder toward the prompt at the cost of saturation and diversity. Training still requires dropping the conditioning on about 10% of examples so one network learns both fields, and sampling still costs two forward passes per step \u2014 affordable here because flow matching takes about 10 steps rather than 1000."
+    },
+    {
       "id": "encoder-fusion",
       "name": "Encoder Fusion (SigLIP + DINOv2)",
       "room": "the-twin-sighted-helm",
@@ -741,6 +937,20 @@
       "room": "the-twin-sighted-helm",
       "exhibit": "landscape-chapter",
       "summary": "A self-supervised vision encoder trained by reconstructing masked-out image patches \u2014 the reconstruction-based road away from collapse, distinct from DINO's distillation and VICReg's regularization. A good pretraining initialization, but its features are weaker off-the-shelf than DINO's and usually need fine-tuning to shine. Like the other encoders it is a ViT, so swapping it in is mostly a projector/dimension change."
+    },
+    {
+      "id": "smolvla",
+      "name": "SmolVLA",
+      "room": "the-two-couriers",
+      "exhibit": "the-two-standards",
+      "summary": "A flow-matching VLA with the same objective as \u03c00 and a different conditioning design: 0.45B parameters in total against \u03c00's 3.3B, with an action expert of about 100M against 300M. Its backbone is SmolVLM-2 (SigLIP plus SmolLM2) run with LAYER SKIPPING \u2014 features are taken at layer N = L/2 and the upper half of the stack never runs. The expert is a SEPARATE transformer stack that reads VLM features from outside, alternating cross-attention layers (actions attend to VLM features) with causal self-attention layers (actions attend to each other). The paper ablates the interleaving as load-bearing."
+    },
+    {
+      "id": "state-placement",
+      "name": "Which side of the bridge the state sits on",
+      "room": "the-two-couriers",
+      "exhibit": "opposite-sides-of-the-bridge",
+      "summary": "\u03c00 and SmolVLA place proprioception on opposite sides of the VLM/action boundary. SmolVLA projects the state to one token with a linear layer and concatenates it into the VLM PREFIX alongside image and text, so every feature the expert later reads is already state-aware \u2014 perception itself is posture-conditioned. \u03c00 keeps the state on the ACTION EXPERT side, concatenated with the noisy chunk, where it meets vision only through the joint self-attention. The design question underneath is whether posture should inform how the scene is perceived or only how it is acted on; moving the state token when porting code changes the model's information flow, not just its plumbing."
     },
     {
       "id": "cross-attention",
@@ -1022,6 +1232,26 @@
       "relation": "relates-to"
     },
     {
+      "from": "vla-model",
+      "to": "flow-matching",
+      "relation": "builds-on"
+    },
+    {
+      "from": "vla-model",
+      "to": "encoder-fusion",
+      "relation": "builds-on"
+    },
+    {
+      "from": "vla-model",
+      "to": "world-action-models",
+      "relation": "relates-to"
+    },
+    {
+      "from": "vla-model",
+      "to": "modern-vlm-concat",
+      "relation": "builds-on"
+    },
+    {
       "from": "dot-product-similarity",
       "to": "scaled-dot-product-attention",
       "relation": "part-of"
@@ -1257,6 +1487,21 @@
       "relation": "relates-to"
     },
     {
+      "from": "flow-matching",
+      "to": "reverse-sampling",
+      "relation": "contrasts-with"
+    },
+    {
+      "from": "flow-matching",
+      "to": "ode-vs-sde",
+      "relation": "builds-on"
+    },
+    {
+      "from": "flow-matching",
+      "to": "mse-loss",
+      "relation": "builds-on"
+    },
+    {
       "from": "gradient-descent",
       "to": "mse-loss",
       "relation": "relates-to"
@@ -1377,6 +1622,71 @@
       "relation": "relates-to"
     },
     {
+      "from": "euler-step",
+      "to": "vector-field",
+      "relation": "builds-on"
+    },
+    {
+      "from": "ode-vs-sde",
+      "to": "vector-field",
+      "relation": "builds-on"
+    },
+    {
+      "from": "ode-vs-sde",
+      "to": "gaussian-normal",
+      "relation": "relates-to"
+    },
+    {
+      "from": "vector-field",
+      "to": "smooth-manifold",
+      "relation": "relates-to"
+    },
+    {
+      "from": "action-chunk",
+      "to": "straight-path",
+      "relation": "builds-on"
+    },
+    {
+      "from": "action-chunk",
+      "to": "velocity-field",
+      "relation": "builds-on"
+    },
+    {
+      "from": "action-chunk",
+      "to": "temporal-consistency",
+      "relation": "relates-to"
+    },
+    {
+      "from": "action-chunk",
+      "to": "mse-loss",
+      "relation": "builds-on"
+    },
+    {
+      "from": "action-chunk",
+      "to": "gaussian-normal",
+      "relation": "builds-on"
+    },
+    {
+      "from": "vlm-conditioning",
+      "to": "action-chunk",
+      "relation": "part-of"
+    },
+    {
+      "from": "vlm-conditioning",
+      "to": "cross-attention",
+      "relation": "relates-to"
+    },
+    {
+      "from": "vlm-conditioning",
+      "to": "classifier-free-guidance",
+      "relation": "relates-to"
+    },
+    {
+      "from": "vlm-conditioning",
+      "to": "world-action-models",
+      "relation": "relates-to"
+    },
+    {
       "from": "siglip",
       "to": "clip",
       "relation": "builds-on"
@@ -1477,6 +1787,91 @@
       "relation": "builds-on"
     },
     {
+      "from": "euler-sampling",
+      "to": "velocity-field",
+      "relation": "builds-on"
+    },
+    {
+      "from": "euler-sampling",
+      "to": "euler-step",
+      "relation": "builds-on"
+    },
+    {
+      "from": "euler-sampling",
+      "to": "reverse-sampling",
+      "relation": "contrasts-with"
+    },
+    {
+      "from": "euler-sampling",
+      "to": "ode-vs-sde",
+      "relation": "relates-to"
+    },
+    {
+      "from": "few-step-sampling",
+      "to": "euler-sampling",
+      "relation": "builds-on"
+    },
+    {
+      "from": "few-step-sampling",
+      "to": "straight-path",
+      "relation": "builds-on"
+    },
+    {
+      "from": "control-frequency",
+      "to": "euler-sampling",
+      "relation": "builds-on"
+    },
+    {
+      "from": "control-frequency",
+      "to": "action-head",
+      "relation": "builds-on"
+    },
+    {
+      "from": "control-frequency",
+      "to": "reverse-sampling",
+      "relation": "contrasts-with"
+    },
+    {
+      "from": "control-frequency",
+      "to": "pi-zero",
+      "relation": "relates-to"
+    },
+    {
+      "from": "kv-cache-integration",
+      "to": "kv-cache",
+      "relation": "builds-on"
+    },
+    {
+      "from": "kv-cache-integration",
+      "to": "pi-zero",
+      "relation": "part-of"
+    },
+    {
+      "from": "kv-cache-integration",
+      "to": "control-frequency",
+      "relation": "part-of"
+    },
+    {
+      "from": "mode-collapse",
+      "to": "mse-loss",
+      "relation": "builds-on"
+    },
+    {
+      "from": "mode-collapse",
+      "to": "control-frequency",
+      "relation": "relates-to"
+    },
+    {
+      "from": "mode-collapse",
+      "to": "action-chunk",
+      "relation": "relates-to"
+    },
+    {
+      "from": "mode-collapse",
+      "to": "actions-as-inputs",
+      "relation": "relates-to"
+    },
+    {
       "from": "tangent-space",
       "to": "smooth-manifold",
       "relation": "builds-on"
@@ -1565,6 +1960,61 @@
       "from": "effective-rank",
       "to": "singular-values",
       "relation": "relates-to"
+    },
+    {
+      "from": "pi-zero",
+      "to": "action-chunk",
+      "relation": "builds-on"
+    },
+    {
+      "from": "pi-zero",
+      "to": "action-head",
+      "relation": "builds-on"
+    },
+    {
+      "from": "pi-zero",
+      "to": "siglip",
+      "relation": "builds-on"
+    },
+    {
+      "from": "pi-zero",
+      "to": "adaln-zero",
+      "relation": "relates-to"
+    },
+    {
+      "from": "action-expert",
+      "to": "pi-zero",
+      "relation": "part-of"
+    },
+    {
+      "from": "action-expert",
+      "to": "self-attention",
+      "relation": "builds-on"
+    },
+    {
+      "from": "action-expert",
+      "to": "state-encoder",
+      "relation": "relates-to"
+    },
+    {
+      "from": "actions-as-inputs",
+      "to": "pi-zero",
+      "relation": "part-of"
+    },
+    {
+      "from": "actions-as-inputs",
+      "to": "euler-sampling",
+      "relation": "builds-on"
+    },
+    {
+      "from": "actions-as-inputs",
+      "to": "reverse-sampling",
+      "relation": "relates-to"
+    },
+    {
+      "from": "actions-as-inputs",
+      "to": "action-head",
+      "relation": "contrasts-with"
     },
     {
       "from": "vee-operator",
@@ -1709,6 +2159,76 @@
     {
       "from": "patchify",
       "to": "positional-encoding",
+      "relation": "builds-on"
+    },
+    {
+      "from": "velocity-loss-plateau",
+      "to": "velocity-training-loop",
+      "relation": "builds-on"
+    },
+    {
+      "from": "velocity-loss-plateau",
+      "to": "mse-loss",
+      "relation": "relates-to"
+    },
+    {
+      "from": "velocity-loss-plateau",
+      "to": "few-step-sampling",
+      "relation": "relates-to"
+    },
+    {
+      "from": "broadcast-reshape-trap",
+      "to": "velocity-training-loop",
+      "relation": "part-of"
+    },
+    {
+      "from": "broadcast-reshape-trap",
+      "to": "time-convention-flip",
+      "relation": "relates-to"
+    },
+    {
+      "from": "zero-init-output",
+      "to": "adaln-zero",
+      "relation": "relates-to"
+    },
+    {
+      "from": "zero-init-output",
+      "to": "velocity-network",
+      "relation": "part-of"
+    },
+    {
+      "from": "state-encoder",
+      "to": "self-attention",
+      "relation": "builds-on"
+    },
+    {
+      "from": "state-encoder",
+      "to": "modern-vlm-concat",
+      "relation": "relates-to"
+    },
+    {
+      "from": "state-encoder",
+      "to": "vlm-conditioning",
+      "relation": "part-of"
+    },
+    {
+      "from": "action-head",
+      "to": "action-chunk",
+      "relation": "relates-to"
+    },
+    {
+      "from": "action-head",
+      "to": "state-encoder",
+      "relation": "relates-to"
+    },
+    {
+      "from": "action-head",
+      "to": "world-action-models",
+      "relation": "builds-on"
+    },
+    {
+      "from": "action-head",
+      "to": "vision-encoder",
       "relation": "builds-on"
     },
     {
@@ -1887,6 +2407,101 @@
       "relation": "relates-to"
     },
     {
+      "from": "straight-path",
+      "to": "variance-preservation",
+      "relation": "contrasts-with"
+    },
+    {
+      "from": "straight-path",
+      "to": "gaussian-normal",
+      "relation": "builds-on"
+    },
+    {
+      "from": "velocity-field",
+      "to": "straight-path",
+      "relation": "builds-on"
+    },
+    {
+      "from": "velocity-field",
+      "to": "noise-predictor",
+      "relation": "contrasts-with"
+    },
+    {
+      "from": "velocity-field",
+      "to": "vector-field",
+      "relation": "relates-to"
+    },
+    {
+      "from": "time-convention-flip",
+      "to": "straight-path",
+      "relation": "part-of"
+    },
+    {
+      "from": "velocity-training-loop",
+      "to": "velocity-field",
+      "relation": "builds-on"
+    },
+    {
+      "from": "velocity-training-loop",
+      "to": "mse-loss",
+      "relation": "builds-on"
+    },
+    {
+      "from": "velocity-training-loop",
+      "to": "straight-path",
+      "relation": "builds-on"
+    },
+    {
+      "from": "velocity-training-loop",
+      "to": "latent-diffusion",
+      "relation": "relates-to"
+    },
+    {
+      "from": "non-uniform-timestep-sampling",
+      "to": "velocity-training-loop",
+      "relation": "part-of"
+    },
+    {
+      "from": "latent-caching",
+      "to": "velocity-training-loop",
+      "relation": "part-of"
+    },
+    {
+      "from": "latent-caching",
+      "to": "vae-compression",
+      "relation": "relates-to"
+    },
+    {
+      "from": "velocity-network",
+      "to": "velocity-field",
+      "relation": "builds-on"
+    },
+    {
+      "from": "velocity-network",
+      "to": "noise-predictor",
+      "relation": "contrasts-with"
+    },
+    {
+      "from": "velocity-network",
+      "to": "dit",
+      "relation": "relates-to"
+    },
+    {
+      "from": "velocity-network",
+      "to": "dit-vs-unet",
+      "relation": "relates-to"
+    },
+    {
+      "from": "velocity-guidance",
+      "to": "classifier-free-guidance",
+      "relation": "builds-on"
+    },
+    {
+      "from": "velocity-guidance",
+      "to": "velocity-network",
+      "relation": "part-of"
+    },
+    {
       "from": "encoder-fusion",
       "to": "siglip",
       "relation": "builds-on"
@@ -1915,6 +2530,51 @@
       "from": "mae",
       "to": "mse-loss",
       "relation": "relates-to"
+    },
+    {
+      "from": "smolvla",
+      "to": "pi-zero",
+      "relation": "contrasts-with"
+    },
+    {
+      "from": "smolvla",
+      "to": "action-chunk",
+      "relation": "builds-on"
+    },
+    {
+      "from": "smolvla",
+      "to": "cross-attention",
+      "relation": "builds-on"
+    },
+    {
+      "from": "smolvla",
+      "to": "siglip",
+      "relation": "builds-on"
+    },
+    {
+      "from": "smolvla",
+      "to": "vision-encoder",
+      "relation": "builds-on"
+    },
+    {
+      "from": "state-placement",
+      "to": "state-encoder",
+      "relation": "builds-on"
+    },
+    {
+      "from": "state-placement",
+      "to": "action-expert",
+      "relation": "contrasts-with"
+    },
+    {
+      "from": "state-placement",
+      "to": "encoder-fusion",
+      "relation": "relates-to"
+    },
+    {
+      "from": "state-placement",
+      "to": "smolvla",
+      "relation": "part-of"
     },
     {
       "from": "cross-attention",

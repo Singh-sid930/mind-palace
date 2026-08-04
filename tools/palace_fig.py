@@ -34,6 +34,8 @@ WING = {
     "silver":   {"accent": "#c4ceda", "warm": "#d9c07a", "cool": "#8fb0d0"},
     "bronze":   {"accent": "#e8c26a", "warm": "#d98a4a", "cool": "#9fb87a"},
     "verdigris":{"accent": "#7ff2d8", "warm": "#d8b25a", "cool": "#6fb8a8"},
+    "cobalt":   {"accent": "#5fd8ff", "warm": "#e8c07a", "cool": "#7fa8d8"},
+    "ember":    {"accent": "#ff8a4a", "warm": "#ffb06a", "cool": "#9fb0c8"},
 }
 
 # Diverging/sequential colormaps that read well on the dark ground.

@@ -130,6 +130,9 @@ motion fits, then add the name to the catalog):
 | `descend_bowl` | a bead hops down a loss bowl in shrinking steps | `lr` | gradient descent, convergence |
 | `rain_bell` | random draws rain into a histogram that piles into a bell | `speed` | CLT, sampling, distributions emerging |
 | `bell_slide` | a live Gaussian; μ slides it, σ breathes it, area held | `speed` | mean/variance, reparameterization |
+| `field_flow` | an arrow grid IS a velocity field; beads ride it left→right | `stochastic` (random kick per step = SDE) | flow matching, velocity fields, ODE vs SDE |
+| `path_race` | same 4 big steps on a straight vs a curved path; the curved bead cuts corners and drifts off (ghost shows truth) | `steps` | why straight paths need few steps, Euler error |
+| `fork_paths` | one start, two valid modes: a bead samples one and commits while the mean path drives into the wall between them | `speed` | multimodality, why regression collapses |
 | `circle_ellipse` | unit circle carried through rotate→stretch→rotate | `stages` (pause between motions) | SVD, linear maps, eigen-intuition |
 | `decay_bars` | a fast-decaying spectrum; a sweeping cut keeps the top few | `values` | singular values, low rank, truncation |
 | `slide_window` | a kernel bracket walks an input row; outputs light beneath | `n`, `speed` | convolution, receptive fields, weight sharing |

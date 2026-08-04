@@ -1,0 +1,34 @@
+{
+  "concepts": [
+    {
+      "id": "velocity-loss-plateau",
+      "name": "The irreducible loss floor",
+      "room": "the-plateau-that-lies",
+      "exhibit": "the-scales-that-stop",
+      "summary": "Velocity MSE falls, flattens around 1.0, and stays there — and that is correct, not a training failure. Many different (noise, data) pairs produce lines through the same x_t, so the target v = x₁ − x₀ is genuinely ambiguous at that point and squared error is minimised by the conditional MEAN of the possible velocities. The residual is the variance of the targets averaged over, a property of the data rather than the model, so no capacity or training removes it. Judge flow matching by SAMPLE QUALITY, never by loss magnitude — and note the converse: in the bimodal experiment the regression baseline's action-MSE looked healthy while its samples drove into an obstacle."
+    },
+    {
+      "id": "broadcast-reshape-trap",
+      "name": "Reshaping t before interpolation",
+      "room": "the-plateau-that-lies",
+      "exhibit": "the-silent-broadcast",
+      "summary": "t arrives with shape (B,) while the data has shape (B,H,A) or (B,C,H,W). Writing the interpolation without reshaping lets PyTorch broadcast t along the wrong axis — a legal operation that raises no error and trains on nonsense while the loss curve descends convincingly. The fix is t.view(B,1,1) for an action chunk and t.view(B,1,1,1) for an image latent; the rank of the data tensor determines the number of trailing ones. Correctly reshaped, t is constant across every element of a sample, which is what the mathematics requires: one scalar time per point on the path."
+    },
+    {
+      "id": "zero-init-output",
+      "name": "Zero-initialising the output layer",
+      "room": "the-plateau-that-lies",
+      "exhibit": "start-as-identity",
+      "summary": "Zero-initialise the final output layer so the predicted velocity is exactly 0 at step zero: the ODE holds still instead of flinging samples across the space, and training starts from a stable no-op the gradients can move away from deliberately. It is the same idea as adaLN-Zero in the DiT and zero-convolutions in ControlNet — start as an identity or a no-op and learn the delta, since adding a randomly-initialised component perturbs a working system while adding a zeroed one costs nothing until gradients decide otherwise. It composes with adaLN-style scale/shift conditioning, the mechanism π0.5 uses to inject the integration time into every layer."
+    }
+  ],
+  "edges": [
+    { "from": "velocity-loss-plateau", "to": "velocity-training-loop", "relation": "builds-on" },
+    { "from": "velocity-loss-plateau", "to": "mse-loss", "relation": "relates-to" },
+    { "from": "velocity-loss-plateau", "to": "few-step-sampling", "relation": "relates-to" },
+    { "from": "broadcast-reshape-trap", "to": "velocity-training-loop", "relation": "part-of" },
+    { "from": "broadcast-reshape-trap", "to": "time-convention-flip", "relation": "relates-to" },
+    { "from": "zero-init-output", "to": "adaln-zero", "relation": "relates-to" },
+    { "from": "zero-init-output", "to": "velocity-network", "relation": "part-of" }
+  ]
+}

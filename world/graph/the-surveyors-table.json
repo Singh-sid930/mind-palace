@@ -1,0 +1,34 @@
+{
+  "concepts": [
+    {
+      "id": "velocity-training-loop",
+      "name": "The flow matching training loop",
+      "room": "the-surveyors-table",
+      "exhibit": "the-mixing-cauldron",
+      "summary": "Five lines: sample data x₁, sample noise x₀ ~ N(0,1), sample a time t, build x_t = (1−t)·x₀ + t·x₁, and take ‖(x₁ − x₀) − net(x_t, t)‖². Worked: x₁=5.0, x₀=1.0, t=0.25 gives x_t=2.0 and target 4.0; a network answering 3.7 pays a loss of 0.09. Sorted into three bins, the VAE and text encoder are FROZEN, the interpolation and velocity target are ARITHMETIC with zero parameters, and exactly ONE thing is LEARNED — the velocity field. At image scale nothing changes but the shapes: x₁ is a (32,32,4) latent, the interpolation runs element-wise over all 4,096 elements, and t stays a single scalar shared by all of them."
+    },
+    {
+      "id": "non-uniform-timestep-sampling",
+      "name": "Non-uniform sampling of t",
+      "room": "the-surveyors-table",
+      "exhibit": "t-is-not-uniform",
+      "summary": "The textbook loop draws t ~ U(0,1); production systems do not. π0 uses its own noise-level sampling strategy, and the Lipman flow matching guide confirms that drawing t from a non-uniform distribution — mathematically equivalent to reweighting the loss — performs better at scale. The reason is that different times pose different problems: near t=0 the point is dominated by the noise draw, near t=1 the field is resolving fine detail, so equal effort everywhere is not the best allocation. Implementations that use Beta(1.5, 1.0) are demonstrating the idea, not reproducing any published schedule."
+    },
+    {
+      "id": "latent-caching",
+      "name": "Caching frozen latents",
+      "room": "the-surveyors-table",
+      "exhibit": "the-cached-larder",
+      "summary": "Because the VAE encoder and text encoder are frozen, they recompute identical outputs every epoch, so pipelines precompute all latents and embeddings once and let training load tensors — removing the two heaviest forward passes from the loop. Two caveats: augmentation breaks it, because a random crop or flip changes the image and therefore the latent, so a cached latent silently disables the augmentation; and the VAE encoder is stochastic, emitting a distribution rather than a point, so caching one sample discards that variation. The usual fix for the second is to cache mean and standard deviation and re-sample each epoch. Text embeddings have neither problem."
+    }
+  ],
+  "edges": [
+    { "from": "velocity-training-loop", "to": "velocity-field", "relation": "builds-on" },
+    { "from": "velocity-training-loop", "to": "mse-loss", "relation": "builds-on" },
+    { "from": "velocity-training-loop", "to": "straight-path", "relation": "builds-on" },
+    { "from": "velocity-training-loop", "to": "latent-diffusion", "relation": "relates-to" },
+    { "from": "non-uniform-timestep-sampling", "to": "velocity-training-loop", "relation": "part-of" },
+    { "from": "latent-caching", "to": "velocity-training-loop", "relation": "part-of" },
+    { "from": "latent-caching", "to": "vae-compression", "relation": "relates-to" }
+  ]
+}

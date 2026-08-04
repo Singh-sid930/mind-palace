@@ -1,0 +1,17 @@
+{
+  "concepts": [
+    {
+      "id": "vla-model",
+      "name": "Vision-language-action model (VLA)",
+      "room": "embodiment-atrium",
+      "exhibit": "embodiment-welcome",
+      "summary": "A vision-language model extended so it can act. Two things must be added: a missing INPUT — proprioception, the robot's own joint state, which is not language and so cannot be tokenised directly — and a missing OUTPUT — continuous action commands rather than text tokens. The action output must be generative rather than a point estimate, because demonstrations are genuinely multimodal (a valid detour may go left or right, and their average goes through the obstacle), and it must be fast, because control loops want 30–50 Hz. Those two demands together are what select a flow-matching action head."
+    }
+  ],
+  "edges": [
+    { "from": "vla-model", "to": "flow-matching", "relation": "builds-on" },
+    { "from": "vla-model", "to": "encoder-fusion", "relation": "builds-on" },
+    { "from": "vla-model", "to": "world-action-models", "relation": "relates-to" },
+    { "from": "vla-model", "to": "modern-vlm-concat", "relation": "builds-on" }
+  ]
+}

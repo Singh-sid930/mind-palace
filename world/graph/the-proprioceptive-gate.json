@@ -1,0 +1,27 @@
+{
+  "concepts": [
+    {
+      "id": "state-encoder",
+      "name": "State encoder (proprioception token)",
+      "room": "the-proprioceptive-gate",
+      "exhibit": "the-state-token",
+      "summary": "A vision-language model has no input path for proprioception — roughly eight continuous numbers giving joint angles and gripper state. They cannot be tokenised, because a tokeniser maps symbols to indices and a joint angle is not a symbol. A small MLP projects the state vector to the model's token width, state (8,) → (d_model,), after which it is structurally an ordinary token. Concatenated into the sequence, self-attention fuses it with vision and language at no extra design cost. Normalise the state per dimension before projecting."
+    },
+    {
+      "id": "action-head",
+      "name": "Action head families",
+      "room": "the-proprioceptive-gate",
+      "exhibit": "three-families-of-heads",
+      "summary": "The three ways to turn a VLM's hidden states into continuous robot commands. DISCRETE TOKENS bin each joint's range and predict bin indices with the existing language head (RT-2, OpenVLA) — multimodal, but binning loses precision and autoregressive decoding is slow. MLP REGRESSION projects the hidden state to a continuous action — fast and continuous, but it collapses multiple valid actions to their mean. A FLOW OR DIFFUSION HEAD is a small generative network conditioned on the hidden state (π0) — multimodal and continuous at the cost of several forward passes. Assembly in all three cases: [image patches][text tokens][state token] → transformer → hidden states → head."
+    }
+  ],
+  "edges": [
+    { "from": "state-encoder", "to": "self-attention", "relation": "builds-on" },
+    { "from": "state-encoder", "to": "modern-vlm-concat", "relation": "relates-to" },
+    { "from": "state-encoder", "to": "vlm-conditioning", "relation": "part-of" },
+    { "from": "action-head", "to": "action-chunk", "relation": "relates-to" },
+    { "from": "action-head", "to": "state-encoder", "relation": "relates-to" },
+    { "from": "action-head", "to": "world-action-models", "relation": "builds-on" },
+    { "from": "action-head", "to": "vision-encoder", "relation": "builds-on" }
+  ]
+}
