@@ -12,6 +12,7 @@ import { palette } from './palettes.js';
 import { Player, EYE } from './player.js';
 import { Hud } from './hud.js';
 import { Companion } from './companion.js';
+import { setGatekeepersVisible } from './passages.js';
 import { CompanionChat } from './chat.js';
 import { Constellation } from './constellation.js';
 import { AmbientEvents } from './events.js';
@@ -185,6 +186,7 @@ async function boot() {
       chat.setOffline(true);
       chat.close();
       companion.group.visible = false;
+      setGatekeepersVisible(false);   // same backend voices them: nothing to ask
       document.body.classList.add('no-gemma');
     }
   })();
@@ -401,7 +403,7 @@ async function boot() {
       // concepts and hand them to the chat so pressing T opens a quiz.
       const gate = target && (target.kind === 'stair' || target.kind === 'archway') && target.gate
         ? target.gate : null;
-      chat.setGate(gate ? {
+      chat.setGate(gate && !gemmaAbsent ? {
         dest: target.focus.title,
         persona: gate.persona || '',
         prereqs: (gate.prereqs || []).map((id) => conceptsById[id]).filter(Boolean)

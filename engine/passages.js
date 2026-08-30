@@ -289,6 +289,18 @@ function signboard(kind, destName, pal, anchor) {
 
 // Build a passage MOUTH (stair up/down or lateral archway) at its placement.
 // Returns { group, update?, hit, record } — record is the interactable payload.
+// Gatekeepers are voiced by the same backend as Gemma. On a static host there
+// is nothing behind /api, so they are hidden rather than left standing as mute
+// sentries over stairs that open anyway. Floors build lazily, so this keeps a
+// registry for the ones already raised AND a flag for the ones raised later.
+const _spectres = [];
+let _spectresVisible = true;
+
+export function setGatekeepersVisible(v) {
+  _spectresVisible = v;
+  for (const g of _spectres) g.visible = v;
+}
+
 export function buildMouth(mouth, pal, roomsById) {
   const g = new THREE.Group();
   g.position.set(mouth.x, 0, mouth.z);
@@ -326,9 +338,11 @@ export function buildMouth(mouth, pal, roomsById) {
   if (mouth.gate) {
     const gk = gatekeeper();
     gk.group.position.set(1.6, 0, 0.6);
+    gk.group.visible = _spectresVisible;
+    _spectres.push(gk.group);
     g.add(gk.group);
     const base = update;
-    update = (t) => { if (base) base(t); gk.update(t); };
+    update = (t) => { if (base) base(t); if (gk.group.visible) gk.update(t); };
   }
 
   const record = {
