@@ -1,7 +1,6 @@
-// Parametric furniture catalog. Every prop is built from primitives at runtime —
-// no mesh files, no textures except procedural canvases. Each builder returns
+// Parametric furniture catalog. Every prop is built from primitives at runtime, // no mesh files, no textures except procedural canvases. Each builder returns
 // { group, update? } where update(t) animates (flames, orbits, sand).
-// Content models reference these by name — the legal names are catalog.json's
+// Content models reference these by name. The legal names are catalog.json's
 // "props" list, which must match BUILDERS below; they can configure scale,
 // never geometry. Passage structures (stairs, archways, the Gatekeeper) are
 // engine-internal and live in passages.js, not here.
@@ -46,7 +45,7 @@ function lectern(pal) {
   foot.position.y = 0.06;
   const post = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.12, 1.05, 8), lam(WOOD));
   post.position.y = 0.62;
-  // Slope faces +z — the exhibit slot convention's "into the room" direction.
+  // Slope faces +z, the exhibit slot convention's "into the room" direction.
   const desk = new THREE.Mesh(new THREE.BoxGeometry(0.78, 0.06, 0.56), lam(WOOD));
   desk.position.y = 1.18;
   desk.rotation.x = 0.42;

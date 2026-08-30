@@ -11,32 +11,49 @@
       "title": "The Sphere of Turns",
       "prop": "orrery",
       "scale": 1.5,
-      "text": "The wing's climax: nested brass rings, each free to swing within the last, together able to carry a pointer to face ANY direction. The machine of all orientations. Lock it to one ring and it has a single freedom — an ANGLE that wraps: the turns of the plane, the circle called SO(2), written as a 2×2 grid of sines and cosines. Release all three rings and the pointer can face anywhere and twist once it arrives — three genuine freedoms: SO(3), the turns of space, written with nine numbers of which only three are ever free. Each turn on these rings is born the same way: HAT a few bare numbers into a skew matrix, EXPONENTIATE it onto the brass. The metal remembers what the algebra proposes.",
-      "float": { "widget": "orbit_phase" }
+      "text": "The wing's climax: nested brass rings, each free to swing within the last, together able to carry a pointer to face ANY direction. The machine of all orientations. Lock it to one ring and it has a single freedom, an ANGLE that wraps: the turns of the plane, the circle called SO(2), written as a 2×2 grid of sines and cosines. Release all three rings and the pointer can face anywhere and twist once it arrives, three genuine freedoms: SO(3), the turns of space, written with nine numbers of which only three are ever free. Each turn on these rings is born the same way: HAT a few bare numbers into a skew matrix, EXPONENTIATE it onto the brass. The metal remembers what the algebra proposes.",
+      "float": {
+        "widget": "orbit_phase"
+      }
     },
     {
       "id": "the-circle-so2",
       "type": "plaque",
       "prop": "pedestal",
       "title": "SO(2): The Circle of Turns",
-      "text": "A planar turn is a 2×2 grid built from one angle: R(θ) = [[cos θ, −sin θ], [sin θ, cos θ]]. Sweep θ to 2π and you are back where you began — the family of planar turns is a CIRCLE: the group SO(2). Its Lie algebra so(2) is the 2×2 skew matrices [[0, −a], [a, 0]] — one free number, matching the one freedom — and the bridge is exp: exp([[0, −θ], [θ, 0]]) = R(θ). Composing turns just ADDS angles: R(α)·R(β) = R(α + β) — the angle-addition identity of the Wheel of Frequencies, now read as a group law. Worked: R(π/6) = [[0.866, −0.5], [0.5, 0.866]]; turn twice and the angles add to π/3, a clean 60°.",
-      "float": { "widget": "orbit_phase", "hands": 1, "speed": 0.5 }
+      "text": "A planar turn is a 2×2 grid built from one angle: R(θ) = [[cos θ, −sin θ], [sin θ, cos θ]]. Sweep θ to 2π and you are back where you began. The family of planar turns is a CIRCLE: the group SO(2). Its Lie algebra so(2) is the 2×2 skew matrices [[0, −a], [a, 0]], one free number, matching the one freedom, and the bridge is exp: exp([[0, −θ], [θ, 0]]) = R(θ). Composing turns just ADDS angles: R(α)·R(β) = R(α + β), the angle-addition identity of the Wheel of Frequencies, now read as a group law. Worked: R(π/6) = [[0.866, −0.5], [0.5, 0.866]]; turn twice and the angles add to π/3, a clean 60°.",
+      "float": {
+        "widget": "orbit_phase",
+        "hands": 1,
+        "speed": 0.5
+      }
     },
     {
       "id": "the-manifold-so3",
       "type": "plaque",
       "prop": "lectern",
       "title": "SO(3): The Surface of 3D Turns",
-      "text": "A spatial turn is a 3×3 grid that must be ORTHOGONAL (columns unit-length, mutually square) with DETERMINANT +1 (a true turn, no reflection). All such grids form SO(3): a smooth, closed, three-dimensional curved surface. Its algebra so(3) is the 3×3 skew matrices — exactly three free numbers. Name a turn by AXIS and ANGLE fused into one vector ω ∈ ℝ³: direction = axis, length = angle θ. Hat it into [ω]× and exponentiate: R = exp([ω]×), with the closed-form RODRIGUES formula R = I + sin θ·K + (1 − cos θ)·K², K = [ω]×/θ. Honesty about pictures: SO(3) is genuinely three-dimensional and cannot be drawn — a sphere is only a proxy.",
-      "float": { "widget": "arrows_dot", "bar": false, "speed": 0.45 }
+      "text": "A spatial turn is a 3×3 grid that must be ORTHOGONAL (columns unit-length, mutually square) with DETERMINANT +1 (a true turn, no reflection). All such grids form SO(3): a smooth, closed, three-dimensional curved surface. Its algebra so(3) is the 3×3 skew matrices, exactly three free numbers. Name a turn by AXIS and ANGLE fused into one vector ω ∈ ℝ³: direction = axis, length = angle θ. Hat it into [ω]× and exponentiate: R = exp([ω]×), with the closed-form RODRIGUES formula R = I + sin θ·K + (1 − cos θ)·K², K = [ω]×/θ. Honesty about pictures: SO(3) is genuinely three-dimensional and cannot be drawn. A sphere is only a proxy.",
+      "float": {
+        "widget": "arrows_dot",
+        "bar": false,
+        "speed": 0.45
+      }
     },
     {
       "id": "hat-then-exp",
       "type": "plaque",
       "prop": "pedestal",
-      "title": "Hat, Then Exp — the Recipe of the Wing",
-      "text": "One recipe, the same in every dimension. FORWARD: start with an axis-angle vector v in ℝⁿ (n = 1 for the plane, 3 for space); HAT it into a skew matrix — the flat, additive world of directions; EXP it onto the curved surface — an honest rotation. BACKWARD: LOG the rotation into the algebra, VEE it down to bare numbers. vec →hat→ skew →exp→ TURN, and TURN →log→ skew →vee→ vec. Master this loop and you may LEAVE the curved surface for a flat patch, do ordinary arithmetic, and RETURN — the whole art of walking the manifold of turns, running as pulses above.",
-      "float": { "widget": "flow_nodes", "layers": [1, 1, 1] }
+      "title": "Hat, Then Exp, the Recipe of the Wing",
+      "text": "One recipe, the same in every dimension. FORWARD: start with an axis-angle vector v in ℝⁿ (n = 1 for the plane, 3 for space); HAT it into a skew matrix, the flat, additive world of directions; EXP it onto the curved surface, an honest rotation. BACKWARD: LOG the rotation into the algebra, VEE it down to bare numbers. vec →hat→ skew →exp→ TURN, and TURN →log→ skew →vee→ vec. Master this loop and you may LEAVE the curved surface for a flat patch, do ordinary arithmetic, and RETURN, the whole art of walking the manifold of turns, running as pulses above.",
+      "float": {
+        "widget": "flow_nodes",
+        "layers": [
+          1,
+          1,
+          1
+        ]
+      }
     },
     {
       "id": "so-diagram",
@@ -50,15 +67,17 @@
       "type": "image",
       "title": "Two Groups of Turns, Worked",
       "image": "world/assets/lie-so2-so3.png",
-      "caption": "LEFT — SO(2): a vector swept round the unit circle; each turn is R(θ) = [[cos θ, −sin θ], [sin θ, cos θ]], and hatting θ into [[0, −θ], [θ, 0]] then exponentiating lands exactly on R(θ). CENTRE — the dashed line is the flat algebra so(2), tangent at the identity: walk arc-length θ along the straight, additive line and exp wraps it round the curved group. RIGHT — SO(3): a turn named by axis and angle carries v to Rv; hat ω ∈ ℝ³ into [ω]×, exponentiate, and Rodrigues gives the closed form R = I + sin θ·K + (1 − cos θ)·K². The drawn sphere is only a proxy — the true shape of SO(3) cannot be drawn."
+      "caption": "LEFT, SO(2): a vector swept round the unit circle; each turn is R(θ) = [[cos θ, −sin θ], [sin θ, cos θ]], and hatting θ into [[0, −θ], [θ, 0]] then exponentiating lands exactly on R(θ). CENTRE. The dashed line is the flat algebra so(2), tangent at the identity: walk arc-length θ along the straight, additive line and exp wraps it round the curved group. RIGHT, SO(3): a turn named by axis and angle carries v to Rv; hat ω ∈ ℝ³ into [ω]×, exponentiate, and Rodrigues gives the closed form R = I + sin θ·K + (1 − cos θ)·K². The drawn sphere is only a proxy, the true shape of SO(3) cannot be drawn."
     },
     {
       "id": "where-this-leads",
       "type": "plaque",
       "prop": "lectern",
       "title": "Where This Leads ↑",
-      "text": "These turns, composed and OPTIMISED as they slide across their curved ground, are the mathematics of orientation and motion — how anything tracked through space reports which way it faces without its nine numbers drifting off the three-dimensional surface of valid turns. That craft belongs to a hall not yet raised above this cellar. The geometry itself is old and pure: continuous symmetry was worked out some hundred and fifty years ago, and the turns you decomposed here are its first and friendliest citizens. Master the sphere of turns; the stair, when it is built, will already make sense.",
-      "float": { "widget": "descend_bowl" }
+      "text": "These turns, composed and OPTIMISED as they slide across their curved ground, are the mathematics of orientation and motion, how anything tracked through space reports which way it faces without its nine numbers drifting off the three-dimensional surface of valid turns. That craft belongs to a hall not yet raised above this cellar. The geometry itself is old and pure: continuous symmetry was worked out some hundred and fifty years ago, and the turns you decomposed here are its first and friendliest citizens. Master the sphere of turns; the stair, when it is built, will already make sense.",
+      "float": {
+        "widget": "descend_bowl"
+      }
     }
   ]
 }

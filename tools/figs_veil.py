@@ -92,7 +92,7 @@ def causal_mask():
             transform=ax.transAxes, ha="center", color=WARM, fontsize=12,
             style="italic")
 
-    # (c) softmaxed lower-triangular weights — room's EXACT values
+    # (c) softmaxed lower-triangular weights, room's EXACT values
     W = np.array([
         [1.000, 0.000, 0.000, 0.000],
         [0.047, 0.953, 0.000, 0.000],
@@ -157,9 +157,9 @@ def encoder_vs_decoder():
     full = np.ones((n, n), dtype=bool)
     causal = np.tril(np.ones((n, n), dtype=bool))
 
-    draw(axes[0], full, "ENCODER  —  bidirectional",
+    draw(axes[0], full, "ENCODER, bidirectional",
          "every token sees every token  (BERT)", ACCENT)
-    draw(axes[1], causal, "DECODER  —  causal",
+    draw(axes[1], causal, "DECODER, causal",
          "only the past & itself: lower triangle  (GPT, LLaMA, Claude)", WARM)
 
     f.subplots_adjust(left=0.07, right=0.97, top=0.86, bottom=0.15, wspace=0.30)

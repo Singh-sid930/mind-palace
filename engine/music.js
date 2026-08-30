@@ -1,4 +1,4 @@
-// Procedural score for the palace — pure synthesis, no audio assets. Every
+// Procedural score for the palace, pure synthesis, no audio assets. Every
 // voice is the WebAudio translation of a formula worked out and tuned in
 // tools/music_lab.py: a breathing harmonic drone, distant FM bells struck on
 // {k·φ mod 1}, a 1/f air bed, a subliminal binaural layer that rotates
@@ -16,7 +16,7 @@ const MIX = {
   drone: 0.34,
   air: 0.10,
   bells: 0.56,
-  binaural: 0.17,   // subliminal — works on phase, not loudness
+  binaural: 0.17,   // subliminal, works on phase, not loudness
   sting: 0.9,
 };
 // Binaural rotation: EEG-band targets and how long each is held. Real cadence
@@ -179,7 +179,7 @@ export class PalaceMusic {
   }
 
   _scheduleBells() {
-    // A sparse, ever-changing stream: one distant FM bell every ~3–5s.
+    // A sparse, ever-changing stream: one distant FM bell every ~3, 5s.
     let k = 0;
     const ring = () => {
       if (!this.started) return;

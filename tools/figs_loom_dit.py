@@ -1,4 +1,4 @@
-"""Concept figure for The Patchwork Loom (DiT wing) — patchify.
+"""Concept figure for The Patchwork Loom (DiT wing), patchify.
 
 Run:  ~/anaconda3/envs/lrm/bin/python tools/figs_loom_dit.py
 """
@@ -40,7 +40,7 @@ def fig_patchify():
                         hspace=0.42, wspace=0.30,
                         left=0.055, right=0.972, top=0.85, bottom=0.075)
 
-    P.suptitle(f, "The Patchwork Loom  —  cut the latent grid into a thread of tokens")
+    P.suptitle(f, "The Patchwork Loom, cut the latent grid into a thread of tokens")
     f.text(0.5, 0.905,
            "A transformer eats only a SEQUENCE. The loom cuts a 32×32×4 latent "
            "into 2×2 patches → (32/2)² = 256 tokens.",

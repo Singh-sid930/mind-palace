@@ -69,42 +69,42 @@ def stair(x0, y0, x1, y1, bend=0.0, gated=True):
                    linewidth=1.4, zorder=3)
 
 H = 1.9
-# Tier +2 — the highest floor, built on flow matching and on sight.
+# Tier +2, the highest floor, built on flow matching and on sight.
 emb = tower(3.4, 9.5, 5.2, H, ["ember"],
             "The Hall of Embodied Motion",
-            "Vision-language-action — flow matching\nthat moves a real arm at 50 Hz",
+            "Vision-language-action, flow matching\nthat moves a real arm at 50 Hz",
             per_level["embodiment"])
 
-# Tier +1 — five towers.
+# Tier +1, five towers.
 att = tower(0.08, 6.6, 2.24, H, ["obsidian"],
-            "Workshop of\nAttunement", "LoRA — small\nlow-rank grafts",
+            "Workshop of\nAttunement", "LoRA, small\nlow-rank grafts",
             per_level["attunement"])
 wm = tower(2.42, 6.6, 2.6, H, ["emerald", "crimson"],
            "The Upper Floor", "World models\n& the DiT",
            per_level["world-models"])
 flw = tower(5.12, 6.6, 2.24, H, ["cobalt"],
-            "The Riverworks", "Flow matching —\na straight path",
+            "The Riverworks", "Flow matching, \na straight path",
             per_level["flow"])
 vid = tower(7.46, 6.6, 2.2, H, ["silver"],
-            "Gallery of\nMoving Portraits", "Video diffusion —\npictures that move",
+            "Gallery of\nMoving Portraits", "Video diffusion, \npictures that move",
             per_level["video"])
 vis = tower(9.76, 6.6, 2.16, H, ["verdigris"],
-            "Observatory\nof Sight", "Vision encoders —\nCLIP, SigLIP, DINO",
+            "Observatory\nof Sight", "Vision encoders, \nCLIP, SigLIP, DINO",
             per_level["vision"])
 
-# Tier 0 — the ground floor.
+# Tier 0, the ground floor.
 attn = tower(1.1, 3.7, 4.2, H, ["sapphire"],
-             "Hall of Attention", "Queries, keys & values —\nthe transformer's gaze",
+             "Hall of Attention", "Queries, keys & values, \nthe transformer's gaze",
              per_level["attention"])
 diff = tower(6.7, 3.7, 4.2, H, ["amber"],
-             "Hall of Diffusion", "Noise walked backward —\nimages out of static",
+             "Hall of Diffusion", "Noise walked backward, \nimages out of static",
              per_level["diffusion"])
 
-# Tier -1 — the basement.
+# Tier -1, the basement.
 und = tower(2.4, 0.8, 7.2, H, ["violet", "bronze"],
             "The Undercroft (foundations)",
-            "Arithmancy — probability, variance, similarity, frequency, SVD\n"
-            "Continuous Motion — manifolds, exp/log maps, rotations",
+            "Arithmancy, probability, variance, similarity, frequency, SVD\n"
+            "Continuous Motion, manifolds, exp/log maps, rotations",
             per_level["foundations"])
 
 # Stairs (every one kept by a Gatekeeper) + the sibling archway.
@@ -132,14 +132,14 @@ ax.add_patch(FancyArrowPatch((5.3, 4.65), (6.7, 4.65),
 ax.text(6.0, 4.85, "archway", ha="center", color=MUTED, fontsize=8.5)
 
 # Tier labels, tucked into the left margin of each band.
-for y, t in [(11.52, "TIER +2 — BUILT UPON THE FLOORS ABOVE THE GROUND"),
-             (8.62, "TIER +1 — BUILT UPON THE GROUND"),
-             (5.72, "TIER 0 — THE GROUND FLOOR"),
-             (2.82, "TIER −1 — MATHEMATICAL FOUNDATIONS")]:
+for y, t in [(11.52, "TIER +2, BUILT UPON THE FLOORS ABOVE THE GROUND"),
+             (8.62, "TIER +1, BUILT UPON THE GROUND"),
+             (5.72, "TIER 0, THE GROUND FLOOR"),
+             (2.82, "TIER −1, MATHEMATICAL FOUNDATIONS")]:
     ax.text(0.12, y, t, ha="left", va="center",
             color=MUTED, fontsize=7.6, alpha=0.9)
 
-ax.text(6.0, 12.52, "THE PALACE OF MIND — FLOORS AS KNOWLEDGE LINEAGE",
+ax.text(6.0, 12.52, "THE PALACE OF MIND. FLOORS AS KNOWLEDGE LINEAGE",
         ha="center", color=INK, fontsize=15, fontweight="bold")
 ax.text(6.0, 12.06, "every floor is built from what lies below · every stair is kept by a Gatekeeper (◆) who quizzes you on the prerequisites",
         ha="center", color=MUTED, fontsize=9.5, style="italic")

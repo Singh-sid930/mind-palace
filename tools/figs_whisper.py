@@ -44,14 +44,14 @@ def fig_branch():
     gs = f.add_gridspec(1, 2, width_ratios=[1.35, 1.0], wspace=0.16,
                         left=0.03, right=0.975, top=0.80, bottom=0.10)
 
-    P.suptitle(f, "The Parallel Whisper  —  y = W.x + B.A.x,  one input, two paths")
+    P.suptitle(f, "The Parallel Whisper, y = W.x + B.A.x,  one input, two paths")
     f.text(0.5, 0.885,
            "The LoRA branch runs BESIDE the frozen W on the same input x, "
            "not after it.   d = 1000,  r = 8.",
            ha="center", color=P.MUTED, fontsize=13.5)
 
     # ------------------------------------------------------------------ (a)
-    # dataflow — node widths encode dimension (wide d, narrow r)
+    # dataflow, node widths encode dimension (wide d, narrow r)
     ax = f.add_subplot(gs[0, 0]); P.style_ax(ax, WING, grid=False)
     ax.set_xlim(0, 12); ax.set_ylim(0, 10)
     ax.set_xticks([]); ax.set_yticks([])
@@ -132,7 +132,7 @@ def fig_branch():
     ax.set_xticks(xpos)
     ax.set_xticklabels(stages, fontsize=13)
     ax.set_ylim(3, 3000)
-    ax.set_ylabel("width  (numbers carried)  — log scale", fontsize=12.5)
+    ax.set_ylabel("width  (numbers carried), log scale", fontsize=12.5)
     ax.set_title("(b)  The shape trace: squeeze to r, expand to d",
                  color=P.INK, fontsize=14, pad=10)
     # highlight the bottleneck bar

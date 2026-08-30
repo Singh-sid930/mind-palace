@@ -1,4 +1,4 @@
-"""Concept figure for The Inkwell (diffusion wing) — the forward noising march.
+"""Concept figure for The Inkwell (diffusion wing), the forward noising march.
 
 A structured distribution melts, step by step, into a standard Gaussian, while
 its total spread stays pinned at 1 (variance preservation).
@@ -54,9 +54,9 @@ def main():
                         hspace=0.42, wspace=0.30,
                         left=0.055, right=0.975, top=0.855, bottom=0.085)
 
-    P.suptitle(f, "The Inkwell  —  The Forward March: a Droplet Dissolves into the Grey")
+    P.suptitle(f, "The Inkwell, The Forward March: a Droplet Dissolves into the Grey")
     f.text(0.5, 0.912,
-           "x_t = √ᾱ_t · x₀ + √(1−ᾱ_t) · ε      —      structure melts, "
+           "x_t = √ᾱ_t · x₀ + √(1−ᾱ_t) · ε, structure melts, "
            "but the spread never leaves Var = 1  (variance-preserving)",
            ha="center", color=P.MUTED, fontsize=14)
 
@@ -108,7 +108,7 @@ def main():
                 fontweight="bold",
                 arrowprops=dict(arrowstyle="-|>", color=WARM, lw=1.8))
 
-    # --- bottom-right: the droplet forgotten — mode centers collapse -----
+    # --- bottom-right: the droplet forgotten, mode centers collapse -----
     ax = f.add_subplot(gs[1, 2:5]); P.style_ax(ax, WING)
     center = np.sqrt(abar) * m
     ax.fill_between(t_axis, center - 1, center + 1, color=COOL, alpha=0.14,

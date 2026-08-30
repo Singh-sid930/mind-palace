@@ -1,6 +1,6 @@
 // A large diagram panel that materializes in world space when you study an
 // exhibit's visual. Unlike the flat focus overlay, this hangs in the actual 3D
-// room — you keep walking and can step back or around it. The Mermaid diagram
+// room. You keep walking and can step back or around it. The Mermaid diagram
 // is rasterized to a texture (see mermaid.js) and shown on a framed plane,
 // placed in front of you, clamped inside the room, facing you.
 

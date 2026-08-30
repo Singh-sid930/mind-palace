@@ -14,7 +14,7 @@
       "title": "The Janus Sentinel",
       "prop": "statue",
       "scale": 1.4,
-      "text": "A two-faced sentinel: one face reads words, the other watches an image, and between them passes a single gaze. This is cross-attention. In self-attention a sequence looks into itself; in cross-attention it looks into ANOTHER source. A captioner shows it plainly — the text decoder asks the questions while the image encoder holds the answers. The unifying law is carved on the plinth: K and V always come from wherever you are looking INTO. Look into yourself and it is self-attention; look into another modality and it is cross-attention. The arithmetic of the rite never changes — only where the keys and values are drawn from.",
+      "text": "A two-faced sentinel: one face reads words, the other watches an image, and between them passes a single gaze. This is cross-attention. In self-attention a sequence looks into itself; in cross-attention it looks into ANOTHER source. A captioner shows it plainly, the text decoder asks the questions while the image encoder holds the answers. The unifying law is carved on the plinth: K and V always come from wherever you are looking INTO. Look into yourself and it is self-attention; look into another modality and it is cross-attention. The arithmetic of the rite never changes, only where the keys and values are drawn from.",
       "float": {
         "widget": "flow_nodes",
         "layers": [
@@ -28,7 +28,7 @@
       "type": "plaque",
       "prop": "pedestal",
       "title": "Cross-Attention Wiring",
-      "text": "The wiring differs from self-attention in exactly one way — the keys and values come from somewhere else. Captioning an image of a cat on a mat: an image encoder (a ViT) yields patch embeddings; a text decoder generates 'A cat on a mat.' Then: Q from the text decoder (n_text, d_k); K from the image encoder (n_patches, d_k); V from the image encoder (n_patches, d_v). The score matrix Q.K^T is (n_text, n_patches) = (5, 4) — NOT SQUARE, because the two sides have different lengths. When generating 'cat' the model should attend to the cat patch; for 'mat', the mat patch. Output is (n_text, d_v): each text token now carries the visual information from the patches it attended to.",
+      "text": "The wiring differs from self-attention in exactly one way. The keys and values come from somewhere else. Captioning an image of a cat on a mat: an image encoder (a ViT) yields patch embeddings; a text decoder generates 'A cat on a mat.' Then: Q from the text decoder (n_text, d_k); K from the image encoder (n_patches, d_k); V from the image encoder (n_patches, d_v). The score matrix Q.K^T is (n_text, n_patches) = (5, 4). NOT SQUARE, because the two sides have different lengths. When generating 'cat' the model should attend to the cat patch; for 'mat', the mat patch. Output is (n_text, d_v): each text token now carries the visual information from the patches it attended to.",
       "float": {
         "widget": "heat_grid",
         "rows": 3,
@@ -39,7 +39,7 @@
     {
       "id": "vit-attention-figure",
       "type": "image",
-      "title": "ViT Image Attention — CLS to Patches",
+      "title": "ViT Image Attention. CLS to Patches",
       "image": "world/assets/vit_attention_overlay.png",
       "caption": "A Vision Transformer splits the image into a 14x14 grid (196 patches); the attention matrix is (196, 196). Pick one query (here the CLS token), take its 196 weights, reshape to 14x14, and overlay. Different heads light up different things: Head A finds the 'cat', Head B finds the 'ball', Head C traces edges, Head D holds both objects. The very same head-diversity you met at the Council, now made visible on pixels."
     },
@@ -48,14 +48,14 @@
       "type": "image",
       "title": "Text → Image Cross-Attention",
       "image": "world/assets/cross_attention_text_image.png",
-      "caption": "The (n_text, n_patches) weight matrix, one panel per generated word. 'cat' pours its attention onto the cat region; 'ball' onto the ball; the function words 'A', 'and', 'a' spread thin and diffuse, having little to ground in the image. This is the heatmap from which captioning models are debugged — if 'cat' lights the ball, the grounding is wrong."
+      "caption": "The (n_text, n_patches) weight matrix, one panel per generated word. 'cat' pours its attention onto the cat region; 'ball' onto the ball; the function words 'A', 'and', 'a' spread thin and diffuse, having little to ground in the image. This is the heatmap from which captioning models are debugged, if 'cat' lights the ball, the grounding is wrong."
     },
     {
       "id": "where-you-look",
       "type": "plaque",
       "prop": "lectern",
       "title": "Modern VLMs Skip the Bridge",
-      "text": "Curiously, most modern vision-language models — SmolVLM, LLaVA, PaliGemma, Qwen-VL — use NO explicit cross-attention. Instead they project image patches into the language model's embedding space, CONCATENATE them with the text tokens, and let ordinary self-attention do the cross-modal mixing within one sequence. The trade: a far simpler architecture that works with any off-the-shelf decoder LM, paid for by image tokens consuming KV-cache and sequence-length budget. Cross-attention is not gone — it is just folded back into self-attention, the gaze turned inward over a sequence that now contains both worlds.",
+      "text": "Curiously, most modern vision-language models, SmolVLM, LLaVA, PaliGemma, Qwen-VL, use NO explicit cross-attention. Instead they project image patches into the language model's embedding space, CONCATENATE them with the text tokens, and let ordinary self-attention do the cross-modal mixing within one sequence. The trade: a far simpler architecture that works with any off-the-shelf decoder LM, paid for by image tokens consuming KV-cache and sequence-length budget. Cross-attention is not gone. It is just folded back into self-attention, the gaze turned inward over a sequence that now contains both worlds.",
       "float": {
         "widget": "token_stream",
         "n": 8,
@@ -67,7 +67,7 @@
       "type": "image",
       "title": "The shape of the score matrix: square vs rectangular",
       "image": "world/assets/attention-shapes.png",
-      "caption": "Two gazes, two shapes, drawn to the same scale. On the left, self-attention's score matrix Q.K^T is a perfect 6x6 SQUARE — because Q, K, and V are all drawn from the same n tokens, queries and keys share one length, giving (n, n). On the right, cross-attention is a 5x4 RECTANGLE: the queries come from the text decoder (n_text rows) while the keys and values come from the image encoder (n_patches columns), so the matrix is (n_text, n_patches) and need not be square at all — here 5 text tokens looking into 4 image patches. The cell size is identical in both panels, so the difference you see is the real difference in shape. And the law beneath both, carved on the Sentinel's plinth: K and V always come from whatever you look INTO. Look into yourself and the matrix squares up; look into another source and it stretches to fit."
+      "caption": "Two gazes, two shapes, drawn to the same scale. On the left, self-attention's score matrix Q.K^T is a perfect 6x6 SQUARE, because Q, K, and V are all drawn from the same n tokens, queries and keys share one length, giving (n, n). On the right, cross-attention is a 5x4 RECTANGLE: the queries come from the text decoder (n_text rows) while the keys and values come from the image encoder (n_patches columns), so the matrix is (n_text, n_patches) and need not be square at all, here 5 text tokens looking into 4 image patches. The cell size is identical in both panels, so the difference you see is the real difference in shape. And the law beneath both, carved on the Sentinel's plinth: K and V always come from whatever you look INTO. Look into yourself and the matrix squares up; look into another source and it stretches to fit."
     }
   ]
 }

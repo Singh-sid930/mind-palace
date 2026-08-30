@@ -11,24 +11,37 @@
       "type": "portrait",
       "title": "Professor Septima Vector",
       "subtitle": "Mistress of Arithmancy",
-      "text": "Welcome. You are starting in the Undercroft — the mathematics everything upstairs is built from. Two wings open here. ARITHMANCY holds the numbers: probability and the bell curve, variance, similarity, frequency, error. CONTINUOUS MOTION holds the geometry of smooth change: curved spaces, the flat tangent planes that touch them, and the exp/log maps that carry you between. Learn a thing down here and you will meet it again upstairs wearing a costume — the bell curve returns as the noise diffusion adds; the dot product returns as attention's score. When the ground feels solid, take a staircase up. The Gatekeeper may ask a question first.",
-      "float": { "widget": "stack_rise", "n": 6 }
+      "text": "Welcome. You are starting in the Undercroft. The mathematics everything upstairs is built from. Two wings open here. ARITHMANCY holds the numbers: probability and the bell curve, variance, similarity, frequency, error. CONTINUOUS MOTION holds the geometry of smooth change: curved spaces, the flat tangent planes that touch them, and the exp/log maps that carry you between. Learn a thing down here and you will meet it again upstairs wearing a costume. The bell curve returns as the noise diffusion adds; the dot product returns as attention's score. When the ground feels solid, take a staircase up. The Gatekeeper may ask a question first.",
+      "float": {
+        "widget": "stack_rise",
+        "n": 6
+      }
     },
     {
       "id": "undercroft-welcome",
       "type": "plaque",
       "prop": "pedestal",
-      "title": "The Undercroft — Foundations",
-      "text": "The palace grows upward from this floor: every level is built from the one below it. Down here the ideas are pure — no machine learning yet, just the math itself. That is deliberate: an idea learned clean is easy to recognize in disguise. Example: the sliding kernel in this wing is plain convolution; two floors up it reappears moving frames of video. Read a chamber, then follow its staircase to watch the same equation doing a job.",
-      "float": { "widget": "curve_trace", "fn": "gauss" }
+      "title": "The Undercroft, Foundations",
+      "text": "The palace grows upward from this floor: every level is built from the one below it. Down here the ideas are pure, no machine learning yet, just the math itself. That is deliberate: an idea learned clean is easy to recognize in disguise. Example: the sliding kernel in this wing is plain convolution; two floors up it reappears moving frames of video. Read a chamber, then follow its staircase to watch the same equation doing a job.",
+      "float": {
+        "widget": "curve_trace",
+        "fn": "gauss"
+      }
     },
     {
       "id": "how-to-walk",
       "type": "plaque",
       "prop": "lectern",
       "title": "How to Walk the Palace",
-      "text": "Move with W A S D; look with the mouse. Walk up to any display and press E to study it — diagrams and figures unfold large in the room. E or Esc steps back. M: this floor's map. G: the constellation of every idea in the palace. F: travel to any room by name. N: music. P: footstep trails. Signposts at each doorway point the way; staircases go up toward what is built on this floor. A Gatekeeper ghost may quiz you at a stair — answer, skip, or simply walk on.",
-      "float": { "widget": "flow_nodes", "layers": [2, 3, 2] }
+      "text": "Move with W A S D; look with the mouse. Walk up to any display and press E to study it, diagrams and figures unfold large in the room. E or Esc steps back. M: this floor's map. G: the constellation of every idea in the palace. F: travel to any room by name. N: music. P: footstep trails. Signposts at each doorway point the way; staircases go up toward what is built on this floor. A Gatekeeper ghost may quiz you at a stair, answer, skip, or simply walk on.",
+      "float": {
+        "widget": "flow_nodes",
+        "layers": [
+          2,
+          3,
+          2
+        ]
+      }
     }
   ]
 }

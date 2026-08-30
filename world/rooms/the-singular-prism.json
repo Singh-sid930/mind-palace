@@ -11,54 +11,71 @@
       "title": "The Singular Prism",
       "prop": "orrery",
       "scale": 1.3,
-      "text": "A matrix is not a table of numbers — it is a MOTION. Feed it a vector and it moves that vector somewhere new, bending all of space one consistent way. This prism splits any such motion, as glass splits light, into three simpler ones performed in turn. That is the SINGULAR VALUE DECOMPOSITION: every matrix M = U · Σ · Vᵀ — a rotation (Vᵀ), a pure stretch along the axes (Σ), another rotation (U). Rotate, stretch, rotate; nothing more. Watch the ring of points above ride through all three: only the middle step spoils the roundness. Example: M = [[2,1],[1,2]] carries the unit circle onto an ellipse with semi-axes 3 and 1 — and those two numbers are its SINGULAR VALUES, the whole character of the map laid bare.",
-      "float": { "widget": "circle_ellipse" }
+      "text": "A matrix is not a table of numbers. It is a MOTION. Feed it a vector and it moves that vector somewhere new, bending all of space one consistent way. This prism splits any such motion, as glass splits light, into three simpler ones performed in turn. That is the SINGULAR VALUE DECOMPOSITION: every matrix M = U · Σ · Vᵀ, a rotation (Vᵀ), a pure stretch along the axes (Σ), another rotation (U). Rotate, stretch, rotate; nothing more. Watch the ring of points above ride through all three: only the middle step spoils the roundness. Example: M = [[2,1],[1,2]] carries the unit circle onto an ellipse with semi-axes 3 and 1, and those two numbers are its SINGULAR VALUES, the whole character of the map laid bare.",
+      "float": {
+        "widget": "circle_ellipse"
+      }
     },
     {
       "id": "the-three-motions",
       "type": "plaque",
       "prop": "pedestal",
       "title": "The Three Motions",
-      "text": "M = U · Σ · Vᵀ, read right to left — the order the motion acts. Vᵀ: the first rotation; its rows are the special input directions. Σ: the stretch — a diagonal of singular values σ₁ ≥ σ₂ ≥ … ≥ 0, each scaling its own axis. This is the ONLY step that changes lengths. U: the second rotation, swinging the stretched axes to their final orientation. Every matrix, square or oblong, has this decomposition, and the σ are unique. Since rotations preserve all lengths and angles, everything the map magnifies or crushes lives in Σ alone. Above, the three motions play one at a time — watch which one breaks the circle.",
-      "float": { "widget": "circle_ellipse", "stages": true, "speed": 0.75 }
+      "text": "M = U · Σ · Vᵀ, read right to left, the order the motion acts. Vᵀ: the first rotation; its rows are the special input directions. Σ: the stretch, a diagonal of singular values σ₁ ≥ σ₂ ≥ … ≥ 0, each scaling its own axis. This is the ONLY step that changes lengths. U: the second rotation, swinging the stretched axes to their final orientation. Every matrix, square or oblong, has this decomposition, and the σ are unique. Since rotations preserve all lengths and angles, everything the map magnifies or crushes lives in Σ alone. Above, the three motions play one at a time. Watch which one breaks the circle.",
+      "float": {
+        "widget": "circle_ellipse",
+        "stages": true,
+        "speed": 0.75
+      }
     },
     {
       "id": "the-ranked-importances",
       "type": "plaque",
       "prop": "lectern",
       "title": "The Ranked Importances",
-      "text": "Singular values come sorted: σ₁ ≥ σ₂ ≥ … ≥ 0, largest first. Each measures how much energy the motion carries along its direction. The precious empirical fact: for many real matrices the spectrum DECAYS FAST — read σ: 8.2, 5.1, 3.7, 0.9, 0.3, 0.08. There is an elbow after the third value; above it the motion's substance, below it a whisper. Truer still for DIFFERENCES of two nearby matrices: they agreed almost everywhere and parted in just a few directions, so only a handful of σ survive. A fast-decaying spectrum means a matrix is secretly simpler than its size suggests. The sweeping line above is the cut: gold survives, grey is the tail you can drop.",
-      "float": { "widget": "decay_bars" }
+      "text": "Singular values come sorted: σ₁ ≥ σ₂ ≥ … ≥ 0, largest first. Each measures how much energy the motion carries along its direction. The precious empirical fact: for many real matrices the spectrum DECAYS FAST, read σ: 8.2, 5.1, 3.7, 0.9, 0.3, 0.08. There is an elbow after the third value; above it the motion's substance, below it a whisper. Truer still for DIFFERENCES of two nearby matrices: they agreed almost everywhere and parted in just a few directions, so only a handful of σ survive. A fast-decaying spectrum means a matrix is secretly simpler than its size suggests. The sweeping line above is the cut: gold survives, grey is the tail you can drop.",
+      "float": {
+        "widget": "decay_bars"
+      }
     },
     {
       "id": "best-few",
       "type": "plaque",
       "prop": "pedestal",
       "title": "The Best Few",
-      "text": "If the tail of σ is nearly zero, don't carry it. Keep the top r values and rebuild: M ≈ U_r · Σ_r · V_rᵀ, with thin factors (d×r) and (r×d). The ECKART–YOUNG theorem makes this exact: among ALL rank-r matrices, the truncated SVD is THE closest to M, and the error you pay is set precisely by the σ you discarded. The saving is real: a 1000×1000 matrix is a million numbers; its rank-8 version is two thin factors totaling 16,000 — a sliver, with a proof that no rank-8 stand-in is closer. Above: many directions pressed through a narrow ring — what survives the waist is the best few.",
-      "float": { "widget": "funnel_flow" }
+      "text": "If the tail of σ is nearly zero, don't carry it. Keep the top r values and rebuild: M ≈ U_r · Σ_r · V_rᵀ, with thin factors (d×r) and (r×d). The ECKART. YOUNG theorem makes this exact: among ALL rank-r matrices, the truncated SVD is THE closest to M, and the error you pay is set precisely by the σ you discarded. The saving is real: a 1000×1000 matrix is a million numbers; its rank-8 version is two thin factors totaling 16,000, a sliver, with a proof that no rank-8 stand-in is closer. Above: many directions pressed through a narrow ring, what survives the waist is the best few.",
+      "float": {
+        "widget": "funnel_flow"
+      }
     },
     {
       "id": "svd-diagram",
       "type": "diagram",
-      "title": "Rotate, Stretch, Rotate — and the Best Few",
-      "spec": "graph LR\n  X[input vector] --> VT[Vᵀ: rotate input axes]\n  VT --> SIG[Σ: stretch by σ₁≥σ₂≥…]\n  SIG --> U[U: rotate to output]\n  U --> M[M·x]\n  SIG -.keep top r σ.-> TR[Σ_r: zero the tail]\n  TR --> APX[U_r Σ_r V_rᵀ: best rank-r approx]\n  APX --> EY[Eckart–Young: provably closest]",
-      "caption": "Every matrix is rotate (Vᵀ), stretch by the singular values (Σ), rotate (U). Keep only the top r singular values and you get the provably best rank-r approximation — tiny when the spectrum decays fast."
+      "title": "Rotate, Stretch, Rotate, and the Best Few",
+      "spec": "graph LR\n  X[input vector] --> VT[Vᵀ: rotate input axes]\n  VT --> SIG[Σ: stretch by σ₁≥σ₂≥…]\n  SIG --> U[U: rotate to output]\n  U --> M[M·x]\n  SIG -.keep top r σ.-> TR[Σ_r: zero the tail]\n  TR --> APX[U_r Σ_r V_rᵀ: best rank-r approx]\n  APX --> EY[Eckart, Young: provably closest]",
+      "caption": "Every matrix is rotate (Vᵀ), stretch by the singular values (Σ), rotate (U). Keep only the top r singular values and you get the provably best rank-r approximation, tiny when the spectrum decays fast."
     },
     {
       "id": "the-ellipse-of-a-map",
       "type": "image",
       "title": "The Oval a Matrix Leaves Behind",
       "image": "world/assets/svd-prism.png",
-      "caption": "Left: M = [[2,1],[1,2]] carries the unit circle onto an ellipse — the rotations only turn the picture; the stretch alone spoils the roundness; the semi-axes σ₁ = 3, σ₂ = 1 are the map's whole character. Centre: the spectrum ranked largest-first with its elbow after the third value — the top three hold 99.2% of the energy. Right: rebuild from only r directions and the reconstruction error falls steeply then flattens; by Eckart–Young each truncation is the provably closest rank-r matrix there is."
+      "caption": "Left: M = [[2,1],[1,2]] carries the unit circle onto an ellipse. The rotations only turn the picture; the stretch alone spoils the roundness; the semi-axes σ₁ = 3, σ₂ = 1 are the map's whole character. Centre: the spectrum ranked largest-first with its elbow after the third value. The top three hold 99.2% of the energy. Right: rebuild from only r directions and the reconstruction error falls steeply then flattens; by Eckart, Young each truncation is the provably closest rank-r matrix there is."
     },
     {
       "id": "where-this-leads",
       "type": "plaque",
       "prop": "lectern",
       "title": "Where This Leads ↑",
-      "text": "One floor up, in the Workshop of Attunement, live enormous trained matrices, and the craft is to nudge them — to add a correction to weights already learned. A correction is a DIFFERENCE of matrices, and you just saw that differences hoard their energy in a few singular values. So instead of storing a whole d×d update, the workshop stores two thin factors — exactly the U_r and V_rᵀ shapes from the Best Few. They call it LOW-RANK ADAPTATION. Here there are no weights and no training — only matrices, singular values, and the theorem that the best few directions are provably enough. The thin waist above is the same d → r → d bottleneck you will climb to meet.",
-      "float": { "widget": "flow_nodes", "layers": [4, 1, 4] }
+      "text": "One floor up, in the Workshop of Attunement, live enormous trained matrices, and the craft is to nudge them, to add a correction to weights already learned. A correction is a DIFFERENCE of matrices, and you just saw that differences hoard their energy in a few singular values. So instead of storing a whole d×d update, the workshop stores two thin factors, exactly the U_r and V_rᵀ shapes from the Best Few. They call it LOW-RANK ADAPTATION. Here there are no weights and no training, only matrices, singular values, and the theorem that the best few directions are provably enough. The thin waist above is the same d → r → d bottleneck you will climb to meet.",
+      "float": {
+        "widget": "flow_nodes",
+        "layers": [
+          4,
+          1,
+          4
+        ]
+      }
     }
   ]
 }

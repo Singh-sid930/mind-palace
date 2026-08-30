@@ -49,7 +49,7 @@ def fig_singular_prism():
                         left=0.045, right=0.985, top=0.83, bottom=0.11,
                         wspace=0.28)
 
-    P.suptitle(f, "The Singular Prism  —  rotate, stretch, rotate, "
+    P.suptitle(f, "The Singular Prism, rotate, stretch, rotate, "
                   "and the best few directions")
     f.text(0.5, 0.895,
            "M = U · Σ · V$^{\\mathrm{T}}$    every matrix is a motion: split it into "
@@ -117,7 +117,7 @@ def fig_singular_prism():
     ax.set_xticklabels(["σ%d" % k for k in x], fontsize=12)
     ax.set_ylim(0, 9.6)
     ax.set_ylabel("singular value  σ", fontsize=12.5)
-    ax.set_title("(b)  the spectrum decays fast — an elbow", color=P.INK)
+    ax.set_title("(b)  the spectrum decays fast, an elbow", color=P.INK)
 
     # elbow marker after the 3rd value
     ax.axvline(3.5, color=WARM, ls="--", lw=1.6, alpha=0.9, zorder=2)
@@ -170,7 +170,7 @@ def fig_singular_prism():
     ax.set_ylim(-4, 108)
     ax.set_xlabel("rank r  (directions kept)", fontsize=12.5)
     ax.set_ylabel("reconstruction error  ‖M − M$_r$‖ / ‖M‖  (%)", fontsize=12)
-    ax.set_title("(c)  best rank-r approximation (Eckart–Young)", color=P.INK)
+    ax.set_title("(c)  best rank-r approximation (Eckart, Young)", color=P.INK)
     ax.text(0.5, -0.145,
             "Truncated SVD is provably the closest rank-r matrix; the error is\n"
             "set exactly by the discarded σ. Fast decay ⇒ a small r suffices.",

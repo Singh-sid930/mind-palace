@@ -1,6 +1,6 @@
 // All 2D UI: start screen, interaction prompt, focus panel (with lazy-loaded
 // Mermaid rendering), the palace map (M) and Floo travel (F). Pure DOM +
-// canvas; styled in index.html. (The constellation is 3D — constellation.js.)
+// canvas; styled in index.html. (The constellation is 3D, constellation.js.)
 
 import { loadMermaid } from './mermaid.js';
 import { spaceAt } from './layout.js';
@@ -46,8 +46,7 @@ export class Hud {
     if (!space) { el.textContent = ''; return; }
     const wing = this.world.wings.find((w) => w.id === space.wing);
     el.textContent = space.kind === 'corridor'
-      ? `${wing ? wing.name : ''} — passage`
-      : `${space.room ? space.room.name : space.id}${wing ? ' · ' + wing.name : ''}`;
+      ? `${wing ? wing.name : ''}, passage`: `${space.room ? space.room.name : space.id}${wing ? ' · ' + wing.name : ''}`;
   }
 
   setPrompt(record) {
@@ -55,18 +54,18 @@ export class Hud {
     if (!record) { el.style.display = 'none'; return; }
     el.style.display = 'block';
     if (record.kind === 'portal') {
-      el.textContent = `E — step through to “${record.focus.title}”`;
+      el.textContent = `E, step through to “${record.focus.title}”`;
     } else if (record.kind === 'stair') {
       const verb = record.dir === 'down' ? 'descend to' : record.dir === 'up' ? 'ascend to' : 'take the staircase to';
-      el.textContent = `E — ${verb} “${record.focus.title}”`
-        + (record.gate ? '   ·   T — the Gatekeeper will test you' : '');
+      el.textContent = `E, ${verb} “${record.focus.title}”`
+        + (record.gate ? '   ·   T. The Gatekeeper will test you': '');
     } else if (record.kind === 'archway') {
-      el.textContent = `E — step through to “${record.focus.title}”`
-        + (record.gate ? '   ·   T — the Gatekeeper will test you' : '');
+      el.textContent = `E, step through to “${record.focus.title}”`
+        + (record.gate ? '   ·   T. The Gatekeeper will test you': '');
     } else if (record.kind === 'sign') {
-      el.textContent = `E — ${record.prompt}`;
+      el.textContent = `E, ${record.prompt}`;
     } else {
-      el.textContent = `E — study “${record.focus.title}”`;
+      el.textContent = `E. Study “${record.focus.title}”`;
     }
   }
 

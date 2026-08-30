@@ -9,9 +9,9 @@
     {
       "id": "welcome-plaque",
       "type": "plaque",
-      "title": "The Upper Floor — World Models",
+      "title": "The Upper Floor, World Models",
       "prop": "pedestal",
-      "text": "The Upper Floor: world models, the predictive arts. The Divination Wing studies how a model learns to predict what is HIDDEN — I-JEPA's prediction in latent space, VICReg's three laws against collapse, the projector's guillotine, and the state of the wider JEPA realm. These arts stand a floor above Attention for good reason: their encoders are built from the very mechanism kept downstairs. Nothing here is decoration — every mirror, cauldron and statue is a working metaphor for something real.",
+      "text": "The Upper Floor: world models, the predictive arts. The Divination Wing studies how a model learns to predict what is HIDDEN, I-JEPA's prediction in latent space, VICReg's three laws against collapse, the projector's guillotine, and the state of the wider JEPA realm. These arts stand a floor above Attention for good reason: their encoders are built from the very mechanism kept downstairs. Nothing here is decoration. Every mirror, cauldron and statue is a working metaphor for something real.",
       "float": {
         "widget": "mask_tiles",
         "n": 5,
@@ -23,7 +23,7 @@
       "type": "plaque",
       "title": "How to Walk",
       "prop": "lectern",
-      "text": "Move with W, A, S, D and look with the mouse. Approach any exhibit and press E to study it closely; press E again or Escape to step back. Press M for the map of this floor, G for the constellation of ideas, and F to travel by Floo to any chamber you know the name of. The staircase down returns you to the Ground Floor — the Atrium of Attention these world models are built upon.",
+      "text": "Move with W, A, S, D and look with the mouse. Approach any exhibit and press E to study it closely; press E again or Escape to step back. Press M for the map of this floor, G for the constellation of ideas, and F to travel by Floo to any chamber you know the name of. The staircase down returns you to the Ground Floor, the Atrium of Attention these world models are built upon.",
       "float": {
         "widget": "flow_nodes",
         "layers": [

@@ -1,4 +1,4 @@
-"""Concept figure for The Adaptive Sanctum (DiT wing) — adaLN-Zero.
+"""Concept figure for The Adaptive Sanctum (DiT wing), adaLN-Zero.
 
 Run:  ~/anaconda3/envs/lrm/bin/python tools/figs_sanctum.py
 """
@@ -31,7 +31,7 @@ def fig_adaln():
                         hspace=0.40, wspace=0.20,
                         left=0.055, right=0.972, top=0.85, bottom=0.115)
 
-    P.suptitle(f, "The Adaptive Sanctum  —  adaLN-Zero pours the block's dials from (t, c)")
+    P.suptitle(f, "The Adaptive Sanctum, adaLN-Zero pours the block's dials from (t, c)")
     f.text(0.5, 0.905,
            "One conditioning vector cond = t_embed + c_embed is spun by an MLP "
            "into per-block (γ, β, α). The α gate starts at ZERO.",
@@ -65,7 +65,7 @@ def fig_adaln():
                 arrowprops=dict(arrowstyle="-|>", color=WARM, lw=2.0))
     ax.annotate("", xy=(7.1, 2.8), xytext=(6.82, 3.6),
                 arrowprops=dict(arrowstyle="-|>", color=COOL, lw=2.0))
-    ax.text(5.0, 1.35, "γ scales · β shifts · α gates the residual — "
+    ax.text(5.0, 1.35, "γ scales · β shifts · α gates the residual, "
             "regenerated fresh for every (t, c)",
             ha="center", color=P.INK, fontsize=11.5, fontstyle="italic")
 
@@ -94,17 +94,17 @@ def fig_adaln():
     ax.set_ylim(0, 0.46)
     ax.set_xlabel("feature value", fontsize=12)
     ax.set_ylabel("density", fontsize=12)
-    ax.set_title("(b)  same LN formula — but γ, β poured from (t, c)",
+    ax.set_title("(b)  same LN formula, but γ, β poured from (t, c)",
                  color=P.INK, fontsize=13.5)
     ax.legend(facecolor=P.PANEL, edgecolor=P.GRID, labelcolor=P.INK,
               fontsize=10.5, loc="upper left")
 
     # --- (c) α fades in from zero over training ----------------------------
-    ax = f.add_subplot(gs[1, :]); P.style_ax(ax, WING)
+    ax = f.add_subplot(gs[1,:]); P.style_ax(ax, WING)
     steps = np.linspace(0, 100, 400)
     taus = [16, 30, 52, 80]
     labels = ["block 4 (shallow)", "block 12", "block 20",
-              "block 28 (deep) — opens last"]
+              "block 28 (deep), opens last"]
     cols = [ACC, WARM, COOL, "#c98fb0"]
     for tau, lab, col in zip(taus, labels, cols):
         alpha = 1 - np.exp(-steps / tau)

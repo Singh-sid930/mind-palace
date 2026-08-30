@@ -1,8 +1,8 @@
 """Concept figure for The Hall of Flickering Frames (video wing, silver).
 
-Panel (a): naive per-frame vs joint denoising — independent frames flicker
+Panel (a): naive per-frame vs joint denoising, independent frames flicker
            (blob jitters in position/colour), jointly denoised frames stay put.
-Panel (b): the data-shape gain — image tensor (H,W,C) vs video tensor
+Panel (b): the data-shape gain, image tensor (H,W,C) vs video tensor
            (T,H,W,C) as frames stacked along a new T axis.
 
 Run:  ~/anaconda3/envs/lrm/bin/python tools/figs_flicker.py
@@ -34,7 +34,7 @@ def main():
     gs = f.add_gridspec(2, 1, height_ratios=[1.05, 1.0], hspace=0.34,
                         left=0.055, right=0.965, top=0.835, bottom=0.085)
 
-    P.suptitle(f, "Scaling Diffusion to Video  —  denoise the frames JOINTLY",
+    P.suptitle(f, "Scaling Diffusion to Video, denoise the frames JOINTLY",
                WING)
     f.text(0.5, 0.905,
            "The framework is unchanged; only the data shape grows a time axis.",
@@ -141,7 +141,7 @@ def main():
     ax2.text(5.05, ay + 0.28, "stack\nalong T", ha="center", va="bottom",
              color=WARM, fontsize=11.5, fontweight="bold", linespacing=1.2)
 
-    # --- right: video tensor — frames stacked along a new T axis ---
+    # --- right: video tensor, frames stacked along a new T axis ---
     T = 5
     vx0, vy0, vw = 6.35, 0.95, 1.55
     sx, sy = 0.52, 0.44           # offset per frame along the T axis
@@ -174,8 +174,8 @@ def main():
 
     # framework-unchanged banner, safely below the axes
     f.text(0.5, 0.028,
-           "The framework is unchanged — forward noising, ε-prediction, VAE "
-           "latents, CFG, the U-Net/DiT denoiser — the whole story is the "
+           "The framework is unchanged, forward noising, ε-prediction, VAE "
+           "latents, CFG, the U-Net/DiT denoiser, the whole story is the "
            "extra T axis.",
            ha="center", va="bottom", color=P.INK, fontsize=12.5,
            style="italic")

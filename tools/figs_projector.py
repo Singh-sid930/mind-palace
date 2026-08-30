@@ -51,7 +51,7 @@ def panel_a(ax):
     ax.set_xlim(-0.65, 1.65)
     ax.tick_params(axis="x", length=0)
     ax.text(0.5, -0.30, "Cutting the head off after training\n"
-            "RAISES downstream performance — the characteristic pattern\n"
+            "RAISES downstream performance, the characteristic pattern\n"
             "(Bordes et al., NeurIPS 2023)",
             transform=ax.transAxes, ha="center", va="top",
             fontsize=10.5, color=P.MUTED)
@@ -91,9 +91,9 @@ def panel_b(ax):
                      color=WARM, lw=1.5, alpha=0.85, zorder=2))
 
     # two boxes (sit below the migration band)
-    _box(ax, 0.6, 2.9, 3.6, 4.0, ENC_C, "ENCODER", "the body — kept")
+    _box(ax, 0.6, 2.9, 3.6, 4.0, ENC_C, "ENCODER", "the body, kept")
     _box(ax, 5.8, 2.9, 3.6, 4.0, HEAD_C, "PROJECTOR HEAD",
-         "the funnel — cut off", title_fs=12.5)
+         "the funnel, cut off", title_fs=12.5)
 
     # flow arrow between them
     ax.add_patch(FancyArrowPatch((4.3, 4.9), (5.7, 4.9),
@@ -136,12 +136,12 @@ def panel_c(ax):
     ax.set_ylim(0, 10)
     ax.axis("off")
 
-    # Encoder slab (upstream, broad signal retained) — left
+    # Encoder slab (upstream, broad signal retained), left
     _box(ax, 0.5, 3.7, 2.6, 3.8, ENC_C, "ENCODER", "upstream")
     ax.text(1.8, 4.25, "retains the\nbroader signal", ha="center", va="center",
             color=P.INK, fontsize=10, zorder=5)
 
-    # Funnel (information bottleneck) — narrowing toward the loss
+    # Funnel (information bottleneck), narrowing toward the loss
     fx0, fx1 = 3.6, 7.4
     ytop0, ybot0 = 7.4, 3.8         # wide mouth (info-rich)
     ytop1, ybot1 = 6.0, 5.2         # narrow waist (compressed)

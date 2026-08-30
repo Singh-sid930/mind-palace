@@ -2,25 +2,49 @@
   "concepts": [
     {
       "id": "velocity-network",
-      "name": "v_θ — the velocity network",
+      "name": "v_θ, the velocity network",
       "room": "the-swappable-engine",
       "exhibit": "the-engine-mount",
-      "summary": "v_θ takes a noisy input, a scalar t and conditioning, and returns a velocity of the SAME shape — (32,32,4) in, (32,32,4) out. It is a U-Net or a DiT, architecturally identical to the diffusion noise-predictor; SD3 uses a DiT. Only two things changed from diffusion: the target (velocity x₁ − x₀ instead of noise ε) and the path (linear instead of the ᾱ schedule). The architecture must satisfy three requirements — shape-preserving, accepts a scalar t through a scaled sinusoidal timestep embedding, and accepts conditioning via cross-attention or adaLN — which is exactly the interface a noise-predictor already exposes, so the two are interchangeable."
+      "summary": "v_θ takes a noisy input, a scalar t and conditioning, and returns a velocity of the SAME shape: (32,32,4) in, (32,32,4) out. It is a U-Net or a DiT, architecturally identical to the diffusion noise-predictor; SD3 uses a DiT. Only two things changed from diffusion: the target (velocity x₁ − x₀ instead of noise ε) and the path (linear instead of the ᾱ schedule). The architecture must satisfy three requirements, shape-preserving, accepts a scalar t through a scaled sinusoidal timestep embedding, and accepts conditioning via cross-attention or adaLN, which is exactly the interface a noise-predictor already exposes, so the two are interchangeable."
     },
     {
       "id": "velocity-guidance",
       "name": "Classifier-free guidance on velocities",
       "room": "the-swappable-engine",
       "exhibit": "guidance-in-velocity-form",
-      "summary": "The same extrapolation as classifier-free guidance in diffusion, performed on velocities: ṽ = v_θ(x,t,∅) + w·[v_θ(x,t,c) − v_θ(x,t,∅)]. Start at the unconditional velocity, measure the difference the condition makes, and travel w times further along it; w=1 recovers the conditional velocity exactly and larger w pushes harder toward the prompt at the cost of saturation and diversity. Training still requires dropping the conditioning on about 10% of examples so one network learns both fields, and sampling still costs two forward passes per step — affordable here because flow matching takes about 10 steps rather than 1000."
+      "summary": "The same extrapolation as classifier-free guidance in diffusion, performed on velocities: ṽ = v_θ(x,t,∅) + w·[v_θ(x,t,c) − v_θ(x,t,∅)]. Start at the unconditional velocity, measure the difference the condition makes, and travel w times further along it; w=1 recovers the conditional velocity exactly and larger w pushes harder toward the prompt at the cost of saturation and diversity. Training still requires dropping the conditioning on about 10% of examples so one network learns both fields, and sampling still costs two forward passes per step, affordable here because flow matching takes about 10 steps rather than 1000."
     }
   ],
   "edges": [
-    { "from": "velocity-network", "to": "velocity-field", "relation": "builds-on" },
-    { "from": "velocity-network", "to": "noise-predictor", "relation": "contrasts-with" },
-    { "from": "velocity-network", "to": "dit", "relation": "relates-to" },
-    { "from": "velocity-network", "to": "dit-vs-unet", "relation": "relates-to" },
-    { "from": "velocity-guidance", "to": "classifier-free-guidance", "relation": "builds-on" },
-    { "from": "velocity-guidance", "to": "velocity-network", "relation": "part-of" }
+    {
+      "from": "velocity-network",
+      "to": "velocity-field",
+      "relation": "builds-on"
+    },
+    {
+      "from": "velocity-network",
+      "to": "noise-predictor",
+      "relation": "contrasts-with"
+    },
+    {
+      "from": "velocity-network",
+      "to": "dit",
+      "relation": "relates-to"
+    },
+    {
+      "from": "velocity-network",
+      "to": "dit-vs-unet",
+      "relation": "relates-to"
+    },
+    {
+      "from": "velocity-guidance",
+      "to": "classifier-free-guidance",
+      "relation": "builds-on"
+    },
+    {
+      "from": "velocity-guidance",
+      "to": "velocity-network",
+      "relation": "part-of"
+    }
   ]
 }

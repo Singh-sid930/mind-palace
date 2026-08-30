@@ -11,7 +11,7 @@
       "title": "The Round Table of Heads",
       "prop": "table",
       "scale": 1.4,
-      "text": "A round table where many councillors deliberate the same sentence at once — this is multi-head attention. One head is rarely enough: a single set of Q, K, V can express only one notion of relevance. So the embedding is split across h heads, each given its own slice and its own learned Wq, Wk, Wv, each performing the full atomic rite (score, scale, soften, blend) in its own subspace. With d_model = 4 and h = 2, a token's embedding [3, 1, 0, 2] is split — Head 1 receives [3, 1], Head 2 receives [0, 2]. The heads attend in parallel, their outputs are concatenated back to d_model, and a final matrix Wo mixes them. MultiHead(Q, K, V) = Concat(head_1, ..., head_h) . Wo. A council, not a lone oracle.",
+      "text": "A round table where many councillors deliberate the same sentence at once. This is multi-head attention. One head is rarely enough: a single set of Q, K, V can express only one notion of relevance. So the embedding is split across h heads, each given its own slice and its own learned Wq, Wk, Wv, each performing the full atomic rite (score, scale, soften, blend) in its own subspace. With d_model = 4 and h = 2, a token's embedding [3, 1, 0, 2] is split, Head 1 receives [3, 1], Head 2 receives [0, 2]. The heads attend in parallel, their outputs are concatenated back to d_model, and a final matrix Wo mixes them. MultiHead(Q, K, V) = Concat(head_1, ..., head_h) . Wo. A council, not a lone oracle.",
       "float": {
         "widget": "flow_nodes",
         "layers": [
@@ -25,8 +25,8 @@
       "id": "the-weaver-wo",
       "type": "plaque",
       "prop": "pedestal",
-      "title": "The Weaver — Wo",
-      "text": "Concatenation alone stacks the heads side by side but never lets them speak to one another. Say Head 1 reports [0.8, 0.3] ('cat is the subject') and Head 2 reports [0.1, 0.9] ('on is the preposition'); concatenated, that is [0.8, 0.3, 0.1, 0.9], but dimensions 0-1 and 2-3 never interact. The weaver Wo — a (d_model x d_model) matrix — fixes this: every output dimension becomes a weighted blend of ALL head outputs. Wo is how the council's separate insights are woven into one cloth. A practical rule lives here too: d_model must be divisible by h, because h x d_k must rebuild d_model exactly. 512 / 8 = 64 works; 512 / 7 = 73.14 does not.",
+      "title": "The Weaver, Wo",
+      "text": "Concatenation alone stacks the heads side by side but never lets them speak to one another. Say Head 1 reports [0.8, 0.3] ('cat is the subject') and Head 2 reports [0.1, 0.9] ('on is the preposition'); concatenated, that is [0.8, 0.3, 0.1, 0.9], but dimensions 0-1 and 2-3 never interact. The weaver Wo, a (d_model x d_model) matrix, fixes this: every output dimension becomes a weighted blend of ALL head outputs. Wo is how the council's separate insights are woven into one cloth. A practical rule lives here too: d_model must be divisible by h, because h x d_k must rebuild d_model exactly. 512 / 8 = 64 works; 512 / 7 = 73.14 does not.",
       "float": {
         "widget": "flow_nodes",
         "layers": [
@@ -40,7 +40,7 @@
       "type": "plaque",
       "prop": "lectern",
       "title": "Why the Heads Differ",
-      "text": "Are heads forced to learn different things? No — there is no diversity loss, no rule of order. Difference EMERGES: from random initialisation, from gradient pressure through Wo (redundant heads waste parameters the optimiser would rather spend), and from operating in different subspaces. In trained models the heads do specialise — a previous-token head, a subject-verb head, an induction head — yet they also end up partly redundant: 20-40% can often be pruned with little loss. That very redundancy is the opening the next councillors exploit, sharing keys and values to save memory.",
+      "text": "Are heads forced to learn different things? No. There is no diversity loss, no rule of order. Difference EMERGES: from random initialisation, from gradient pressure through Wo (redundant heads waste parameters the optimiser would rather spend), and from operating in different subspaces. In trained models the heads do specialise, a previous-token head, a subject-verb head, an induction head, yet they also end up partly redundant: 20-40% can often be pruned with little loss. That very redundancy is the opening the next councillors exploit, sharing keys and values to save memory.",
       "float": {
         "widget": "mask_tiles",
         "n": 4,
@@ -51,8 +51,8 @@
       "id": "shared-libraries",
       "type": "plaque",
       "prop": "pedestal",
-      "title": "Shared Libraries — MHA to GQA to MQA",
-      "text": "If keys and values are partly redundant across heads, why store h copies? Multi-Head Attention (MHA) gives every head its own Wk, Wv — 8 heads, 8 KV caches. Multi-Query Attention (MQA) keeps h separate queries but a SINGLE shared Wk, Wv — eight researchers, one library — collapsing the KV cache 8-fold. Grouped-Query Attention (GQA) is the middle road: h query heads split into g groups, each group sharing one K, V. With d_k = 64 and h = 8 the KV cache per token is: MHA (g=8) 1024 values; GQA (g=4) 512; GQA (g=2) 256; MQA (g=1) 128. MHA and MQA are just the extremes of GQA. Crucial: this is an architectural choice made BEFORE training — the model learns with shared KV from day one (LLaMA 2 70B used g=8; it was the rare exception, trained MHA then converted).",
+      "title": "Shared Libraries. MHA to GQA to MQA",
+      "text": "If keys and values are partly redundant across heads, why store h copies? Multi-Head Attention (MHA) gives every head its own Wk, Wv, 8 heads, 8 KV caches. Multi-Query Attention (MQA) keeps h separate queries but a SINGLE shared Wk, Wv, eight researchers, one library, collapsing the KV cache 8-fold. Grouped-Query Attention (GQA) is the middle road: h query heads split into g groups, each group sharing one K, V. With d_k = 64 and h = 8 the KV cache per token is: MHA (g=8) 1024 values; GQA (g=4) 512; GQA (g=2) 256; MQA (g=1) 128. MHA and MQA are just the extremes of GQA. Crucial: this is an architectural choice made BEFORE training, the model learns with shared KV from day one (LLaMA 2 70B used g=8; it was the rare exception, trained MHA then converted).",
       "float": {
         "widget": "funnel_flow"
       }
@@ -69,14 +69,14 @@
       "type": "image",
       "title": "Shared libraries: the KV-cache from MHA to GQA to MQA",
       "image": "world/assets/kv-sharing.png",
-      "caption": "How much memory does each token cost to remember? With head dimension d_k = 64 and h = 8 query heads, the KV-cache per token is exactly g x 2 x d_k. Multi-Head Attention (MHA, g=8) gives every head its own key and value: 8 x 2 x 64 = 1024 values per token. Grouped-Query Attention shares one K,V across a group of query heads: g=4 halves it to 512, g=2 to 256. Multi-Query Attention (MQA, g=1) lets all eight queries read from a single shared library: 128 values, an 8-fold collapse. The schematic on the right shows the same idea structurally — in MHA each Q head owns a K,V pair; in GQA g=2 the eight queries fan into two K,V groups; in MQA all eight share one. MHA and MQA are simply the two extremes of GQA. This is an architectural choice fixed BEFORE training, so the model learns with shared keys and values from day one; LLaMA 2 70B is the rare exception, using full MHA (g=8)."
+      "caption": "How much memory does each token cost to remember? With head dimension d_k = 64 and h = 8 query heads, the KV-cache per token is exactly g x 2 x d_k. Multi-Head Attention (MHA, g=8) gives every head its own key and value: 8 x 2 x 64 = 1024 values per token. Grouped-Query Attention shares one K,V across a group of query heads: g=4 halves it to 512, g=2 to 256. Multi-Query Attention (MQA, g=1) lets all eight queries read from a single shared library: 128 values, an 8-fold collapse. The schematic on the right shows the same idea structurally: in MHA each Q head owns a K,V pair; in GQA g=2 the eight queries fan into two K,V groups; in MQA all eight share one. MHA and MQA are simply the two extremes of GQA. This is an architectural choice fixed BEFORE training, so the model learns with shared keys and values from day one; LLaMA 2 70B is the rare exception, using full MHA (g=8)."
     },
     {
       "id": "fig-multihead-flow",
       "type": "image",
       "title": "Multi-head attention: split, attend, concat, project",
       "image": "world/assets/multihead-flow.png",
-      "caption": "The whole rite of the council in one sweep. A token's embedding of width d_model is split across h heads. Each head receives its own learned Wq, Wk, Wv and runs the full scaled-dot-product attention inside its own d_k = d_model/h subspace — all heads attending in parallel, each chasing a different notion of relevance. Their outputs are concatenated back to width d_model, stacked side by side but not yet speaking to one another. The weaver Wo then mixes everything: every output dimension becomes a blend of ALL heads, so dimensions that were separate finally interact, and the result has shape n x d_model. One constraint governs the geometry: d_model must be divisible by h, because h heads of width d_k must rebuild d_model exactly (512/8 = 64 works; 512/7 does not)."
+      "caption": "The whole rite of the council in one sweep. A token's embedding of width d_model is split across h heads. Each head receives its own learned Wq, Wk, Wv and runs the full scaled-dot-product attention inside its own d_k = d_model/h subspace, all heads attending in parallel, each chasing a different notion of relevance. Their outputs are concatenated back to width d_model, stacked side by side but not yet speaking to one another. The weaver Wo then mixes everything: every output dimension becomes a blend of ALL heads, so dimensions that were separate finally interact, and the result has shape n x d_model. One constraint governs the geometry: d_model must be divisible by h, because h heads of width d_k must rebuild d_model exactly (512/8 = 64 works; 512/7 does not)."
     }
   ]
 }

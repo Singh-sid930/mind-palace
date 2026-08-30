@@ -5,14 +5,14 @@
       "name": "Variable-Length Generation",
       "room": "the-reel-of-lengths",
       "exhibit": "t-is-a-sequence-length",
-      "summary": "The frame count T is a SEQUENCE LENGTH, not a value hard-coded into the weights — temporal attention runs over however many frame-tokens it is handed, exactly as a text transformer reads variable-length sentences. Hand the model a longer temporal axis and attention simply attends over more tokens, so one trained model generates video of many lengths. What makes this real is training on VARIED clip lengths below the maximum (sometimes mixed with static images at T=1); that varied-length training is the cause and variable-length inference the effect."
+      "summary": "The frame count T is a SEQUENCE LENGTH, not a value hard-coded into the weights, temporal attention runs over however many frame-tokens it is handed, exactly as a text transformer reads variable-length sentences. Hand the model a longer temporal axis and attention simply attends over more tokens, so one trained model generates video of many lengths. What makes this real is training on VARIED clip lengths below the maximum (sometimes mixed with static images at T=1); that varied-length training is the cause and variable-length inference the effect."
     },
     {
       "id": "temporal-length-ceiling",
       "name": "The Trained-Length Ceiling",
       "room": "the-reel-of-lengths",
       "exhibit": "the-trained-horizon",
-      "summary": "T_max is the longest clip a video model was trained on (Wan: ~5 s, ~81 frames at 16 FPS) — its effective CONTEXT LENGTH. Running past T_max is the same failure as running an LLM past its trained context window: temporal attention never learned patterns that long, the temporal positional encoding was never trained at those positions, and error accumulates frame over frame, so temporal consistency breaks into drift. The degradation is a GRADUAL slide, not a cliff, because generation is chunked/autoregressive and errors compound smoothly."
+      "summary": "T_max is the longest clip a video model was trained on (Wan: ~5 s, ~81 frames at 16 FPS), its effective CONTEXT LENGTH. Running past T_max is the same failure as running an LLM past its trained context window: temporal attention never learned patterns that long, the temporal positional encoding was never trained at those positions, and error accumulates frame over frame, so temporal consistency breaks into drift. The degradation is a GRADUAL slide, not a cliff, because generation is chunked/autoregressive and errors compound smoothly."
     }
   ],
   "edges": [

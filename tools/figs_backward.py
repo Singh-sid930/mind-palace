@@ -1,4 +1,4 @@
-"""Concept figure for The Backward Walk (diffusion wing) — reverse sampling.
+"""Concept figure for The Backward Walk (diffusion wing), reverse sampling.
 
 A 2D point cloud walked backward from pure Gaussian noise (x_T) to a structured
 shape (two moons) across denoise snapshots t = T … 0, with the flow direction
@@ -54,7 +54,7 @@ def main():
     gs = f.add_gridspec(1, 5, wspace=0.14,
                         left=0.03, right=0.985, top=0.74, bottom=0.15)
 
-    P.suptitle(f, "The Backward Walk  —  From Pure Noise, an Image is Un-Mixed")
+    P.suptitle(f, "The Backward Walk: From Pure Noise, an Image is Un-Mixed")
     f.text(0.5, 0.87,
            "Generation runs the arrow of time backward:  x_T ~ N(0,1)  →  "
            "x_{T-1}  →  …  →  x₀      predict ε̂, rearrange to x₀_est, step one rung down",

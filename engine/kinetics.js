@@ -1,5 +1,5 @@
 // Kinetic concept props: animated centerpieces whose MOTION is the lesson.
-// Same contract as props.js builders — (pal) => { group, update(t) } — and
+// Same contract as props.js builders, (pal) => { group, update(t) }, and
 // referenced by content through the catalog like any other prop. Rules kept
 // throughout: updates only mutate transforms, material params and one Points
 // buffer; nothing allocates or repaints a canvas per frame, so a whole floor
@@ -97,7 +97,7 @@ function attentionBeams(pal) {
 
 // --- similarity_dial: a sweeping angle and its live cosine ------------------
 // Vector u stands still; v sweeps past it. The bar under the dial stretches
-// with u·v — long and warm when aligned, vanishing at 90°, cold when opposed.
+// with u·v, long and warm when aligned, vanishing at 90°, cold when opposed.
 function similarityDial(pal) {
   const g = new THREE.Group();
   g.add(smallPedestal(pal));
@@ -134,7 +134,7 @@ function similarityDial(pal) {
 }
 
 // --- frequency_wheel: nested hands, each twice as fast ----------------------
-// A vertical clock of four concentric hands at speeds 1x, 2x, 4x, 8x — the
+// A vertical clock of four concentric hands at speeds 1x, 2x, 4x, 8x, the
 // ladder of frequencies turning in stone: slow hands to coarse position,
 // fast hands to fine.
 function frequencyWheel(pal) {
@@ -221,7 +221,7 @@ function errorScales(pal) {
 }
 
 // --- variance_balance: the budget that always sums to one -------------------
-// Two columns — surviving signal (gold) and admitted static (blue) — trade
+// Two columns, surviving signal (gold) and admitted static (blue), trade
 // heights as the mixing knob sweeps, while the cap line never moves: however
 // beta wanders, the total variance stays exactly one.
 function varianceBalance(pal) {
@@ -385,7 +385,7 @@ function patchShuttle(pal) {
 // --- guidance_arrows: extrapolating past the prompt -------------------------
 // Dim blue: the unconditional pull. Warm: the prompted pull. Gold: the guided
 // prediction u + w(c - u), stretching farther past the prompt as w climbs
-// toward 7.5 and easing back — steering by exaggerated difference, in motion.
+// toward 7.5 and easing back, steering by exaggerated difference, in motion.
 function guidanceArrows(pal) {
   const g = new THREE.Group();
   g.add(smallPedestal(pal));
@@ -423,8 +423,7 @@ function guidanceArrows(pal) {
 // --- low_rank_bottleneck: the LoRA parallel branch, animated -----------------
 // d inputs on the left, d outputs on the right, and a thin waist of r nodes
 // between them. Motes of signal converge through the narrow r bottleneck and
-// fan back out — the squeeze-to-r-expand-to-d that FORCES the update low-rank —
-// beside a faint frozen slab (W). Teal, to match the obsidian Workshop.
+// fan back out, the squeeze-to-r-expand-to-d that FORCES the update low-rank, // beside a faint frozen slab (W). Teal, to match the obsidian Workshop.
 function lowRankBottleneck(pal) {
   const g = new THREE.Group();
   g.add(smallPedestal(pal));
@@ -486,7 +485,7 @@ function lowRankBottleneck(pal) {
 // --- exp_log_sphere: the exponential/logarithm map, animated -----------------
 // A curved manifold (sphere) with a flat tangent plane at its pole. A straight
 // vector on the plane grows out (a Lie-algebra element) while, in lockstep, a
-// geodesic of the SAME length wraps down the sphere from the pole — that is the
+// geodesic of the SAME length wraps down the sphere from the pole. That is the
 // exponential map. Then it retracts (the logarithm). Straight-in-the-flat becomes
 // curved-on-the-manifold: the whole point of Lie theory in one motion.
 function expLogSphere(pal) {
@@ -556,9 +555,9 @@ function expLogSphere(pal) {
 
 // A 4x4 similarity matrix as floating orbs (rows = images, cols = captions,
 // diagonal = true pairs). Alternates between the two contrastive judgments:
-// CLIP phase — a bracket sweeps row by row and the row's cells COMPETE, softmax
+// CLIP phase, a bracket sweeps row by row and the row's cells COMPETE, softmax
 // weights sharpening until the diagonal wins while the row's total light stays
-// constant (batch coupling made visible). SigLIP phase — the bracket fades and
+// constant (batch coupling made visible). SigLIP phase, the bracket fades and
 // every cell settles independently toward its own yes/no, each on its own clock.
 function contrastiveLattice(pal) {
   const g = new THREE.Group();

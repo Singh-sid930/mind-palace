@@ -1,5 +1,5 @@
 // The Constellation of Ideas, in 3D. Press G: the palace dissolves into an
-// astral projection of itself — each floor a layer of stars at its true tier
+// astral projection of itself, each floor a layer of stars at its true tier
 // (foundations below, derived arts above), each room a glowing node at its
 // real place in the layout, each concept a small star clustered round its
 // room. Edges are the knowledge graph (colored by relation); golden and

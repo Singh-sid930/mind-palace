@@ -15,7 +15,7 @@ export const METAL = 0xb08428;
 // Passage identity colors. Vertical stairs wear a fixed COOL sapphire so they
 // pop against any room palette; lateral archways wear warm GOLD so a sideways
 // crossing reads differently from an up/down one. Props and signboards share
-// these — change them here and every portal + sign changes together.
+// these, change them here and every portal + sign changes together.
 export const STAIR_GLOW = 0x6ea8ff;   // sapphire glow
 export const STAIR_EDGE = 0xcfe6ff;   // pale-blue tread/arch edges
 export const STAIR_SIGN_TRIM = 0x14233a;

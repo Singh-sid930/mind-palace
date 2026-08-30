@@ -1,7 +1,7 @@
 // In-world wayfinding signposts. For every doorway leading out of a room, a
 // carved wooden signpost is raised just inside that room, naming the chamber
 // that lies beyond and how it relates to the one you stand in. Everything is
-// derived from the solved layout + the knowledge graph — no content authoring.
+// derived from the solved layout + the knowledge graph, no content authoring.
 //
 // Direction word comes from the layout (deeper into a wing = Onward, back
 // toward the hub = Back, the hub itself = Atrium, another wing = Across).

@@ -12,7 +12,7 @@
       "name": "The Causal 3D VAE",
       "room": "the-causal-cauldron",
       "exhibit": "what-causal-means",
-      "summary": "A 3D VAE whose temporal convolutions look ONLY at the current and past frames, never the future: the causal kernel spans [t-2, t-1, t] rather than the bilateral [t-2, t-1, t, t+1, t+2]. This is the decoder's causal mask from attention applied to temporal convolution; the first frame pads and conditions on itself. It fixes the bilateral 3D conv's fatal flaws — needing future frames (so the whole video must sit in memory, no streaming) and breaking on variable length — and thereby unlocks sliding-window decoding, autoregressive/streaming generation, variable length, and clean chunk handovers."
+      "summary": "A 3D VAE whose temporal convolutions look ONLY at the current and past frames, never the future: the causal kernel spans [t-2, t-1, t] rather than the bilateral [t-2, t-1, t, t+1, t+2]. This is the decoder's causal mask from attention applied to temporal convolution; the first frame pads and conditions on itself. It fixes the bilateral 3D conv's fatal flaws, needing future frames (so the whole video must sit in memory, no streaming) and breaking on variable length, and thereby unlocks sliding-window decoding, autoregressive/streaming generation, variable length, and clean chunk handovers."
     },
     {
       "id": "sliding-window-decode",
@@ -23,13 +23,45 @@
     }
   ],
   "edges": [
-    { "from": "video-vae-3d", "to": "convolution", "relation": "builds-on" },
-    { "from": "video-vae-3d", "to": "vae-compression", "relation": "builds-on" },
-    { "from": "video-vae-3d", "to": "latent-diffusion", "relation": "relates-to" },
-    { "from": "causal-3d-vae", "to": "video-vae-3d", "relation": "builds-on" },
-    { "from": "causal-3d-vae", "to": "convolution", "relation": "builds-on" },
-    { "from": "causal-3d-vae", "to": "causal-masking", "relation": "builds-on" },
-    { "from": "sliding-window-decode", "to": "causal-3d-vae", "relation": "part-of" },
-    { "from": "causal-3d-vae", "to": "autoregressive-chunking", "relation": "relates-to" }
+    {
+      "from": "video-vae-3d",
+      "to": "convolution",
+      "relation": "builds-on"
+    },
+    {
+      "from": "video-vae-3d",
+      "to": "vae-compression",
+      "relation": "builds-on"
+    },
+    {
+      "from": "video-vae-3d",
+      "to": "latent-diffusion",
+      "relation": "relates-to"
+    },
+    {
+      "from": "causal-3d-vae",
+      "to": "video-vae-3d",
+      "relation": "builds-on"
+    },
+    {
+      "from": "causal-3d-vae",
+      "to": "convolution",
+      "relation": "builds-on"
+    },
+    {
+      "from": "causal-3d-vae",
+      "to": "causal-masking",
+      "relation": "builds-on"
+    },
+    {
+      "from": "sliding-window-decode",
+      "to": "causal-3d-vae",
+      "relation": "part-of"
+    },
+    {
+      "from": "causal-3d-vae",
+      "to": "autoregressive-chunking",
+      "relation": "relates-to"
+    }
   ]
 }

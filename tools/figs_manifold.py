@@ -27,7 +27,7 @@ def fig_manifold():
                         hspace=0.30, wspace=0.16,
                         left=0.02, right=0.975, top=0.865, bottom=0.06)
 
-    P.suptitle(f, "The Curved Ground  —  globally curved, locally flat; "
+    P.suptitle(f, "The Curved Ground, globally curved, locally flat; "
                   "the turns as a surface")
 
     # =====================================================================
@@ -132,7 +132,7 @@ def fig_manifold():
     axc.set_xlim(-1.5, 1.5); axc.set_ylim(-1.62, 1.35)
     axc.set_aspect("equal")
     axc.set_xticks([]); axc.set_yticks([])
-    axc.set_title("(b)  2D turns form a circle  —  1 degree of freedom",
+    axc.set_title("(b)  2D turns form a circle, 1 degree of freedom",
                   color=P.INK, fontsize=14)
     axc.text(0, -1.52, "one number θ, and it wraps: sweep a full turn and "
              "you return to the start", color=P.MUTED, fontsize=11,

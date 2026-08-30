@@ -15,7 +15,7 @@ def freqs(d):
 
 
 # ---------------------------------------------------------------------------
-# FIGURE 1 — Sinusoidal positional encoding
+# FIGURE 1, Sinusoidal positional encoding
 # ---------------------------------------------------------------------------
 def fig_sinusoidal():
     d = 64
@@ -32,7 +32,7 @@ def fig_sinusoidal():
     f, (axA, axB) = P.fig(13.5, 6.2, wing="sapphire", ncols=2,
                           gridspec_kw={"width_ratios": [1.15, 1.0],
                                        "wspace": 0.28})
-    P.suptitle(f, "Sinusoidal Positional Encoding  —  a clock of many hands")
+    P.suptitle(f, "Sinusoidal Positional Encoding, a clock of many hands")
 
     # (a) heatmap: x = position, y = dimension
     im = axA.imshow(PE.T, aspect="auto", origin="lower",
@@ -49,9 +49,9 @@ def fig_sinusoidal():
     cb.outline.set_edgecolor(P.GRID)
 
     # (b) a few dimension curves vs position: fast (low dim) vs slow (high dim)
-    sel = [(0, "dim 0  sin, freq 1.00  — fast 'second-hand'", P.WING["sapphire"]["accent"]),
-           (8, "dim 8  sin, freq 0.10  — minute-hand", P.HOT),
-           (40, "dim 40 sin, freq 0.0006 — slow 'hour-hand'", P.WING["sapphire"]["cool"])]
+    sel = [(0, "dim 0  sin, freq 1.00, fast 'second-hand'", P.WING["sapphire"]["accent"]),
+           (8, "dim 8  sin, freq 0.10, minute-hand", P.HOT),
+           (40, "dim 40 sin, freq 0.0006, slow 'hour-hand'", P.WING["sapphire"]["cool"])]
     fine = np.linspace(0, L - 1, 600)
     for dim, lab, c in sel:
         pair = dim // 2
@@ -75,12 +75,12 @@ def fig_sinusoidal():
 
 
 # ---------------------------------------------------------------------------
-# FIGURE 2 — RoPE: rotation carries relative distance
+# FIGURE 2, RoPE: rotation carries relative distance
 # ---------------------------------------------------------------------------
 def fig_rope():
     f, (axA, axB) = P.fig(13.5, 6.2, wing="sapphire", ncols=2,
                           gridspec_kw={"wspace": 0.30})
-    P.suptitle(f, "RoPE  —  rotation encodes RELATIVE distance")
+    P.suptitle(f, "RoPE, rotation encodes RELATIVE distance")
 
     # (a) a query vector rotated by m*theta at several positions m
     q = np.array([3.0, 1.0])

@@ -11,24 +11,38 @@
       "type": "portrait",
       "title": "Professor Aurelius Bramblestoke",
       "subtitle": "Keeper of the Predictive Arts",
-      "text": "Welcome. The castle grows as you learn, and it grows UPWARD from its foundations: descend toward the groundwork an idea rests on, climb toward what is built from it. You stand on the Ground Floor — the halls of Attention, the mechanism every higher art borrows. The Wing of Attention opens from here, and the Grand Staircase climbs to the world models that put attention to work. The signposts at each door remember where every idea leads. When you learn something new in the wider world, send word — the masons will raise another chamber by morning.",
-      "float": { "widget": "stack_rise", "n": 6 }
+      "text": "Welcome. The castle grows as you learn, and it grows UPWARD from its foundations: descend toward the groundwork an idea rests on, climb toward what is built from it. You stand on the Ground Floor, the halls of Attention, the mechanism every higher art borrows. The Wing of Attention opens from here, and the Grand Staircase climbs to the world models that put attention to work. The signposts at each door remember where every idea leads. When you learn something new in the wider world, send word. The masons will raise another chamber by morning.",
+      "float": {
+        "widget": "stack_rise",
+        "n": 6
+      }
     },
     {
       "id": "ground-welcome",
       "type": "plaque",
-      "title": "The Ground Floor — Attention",
+      "title": "The Ground Floor, Attention",
       "prop": "pedestal",
-      "text": "Attention is the mechanism that lets a model decide what to listen to. Six chambers off this atrium build the transformer piece by piece: from a single dot product, through multi-head attention, the KV cache and Flash, to positional schemes like RoPE. Everything on the floors above borrows what is taught here — that is why Attention sits at the ground. Follow the signposts in order and the machine assembles itself around you. The matrix above is the destination: every token scoring every other, one bright reader per row.",
-      "float": { "widget": "heat_grid", "n": 5, "variant": "row_softmax" }
+      "text": "Attention is the mechanism that lets a model decide what to listen to. Six chambers off this atrium build the transformer piece by piece: from a single dot product, through multi-head attention, the KV cache and Flash, to positional schemes like RoPE. Everything on the floors above borrows what is taught here. That is why Attention sits at the ground. Follow the signposts in order and the machine assembles itself around you. The matrix above is the destination: every token scoring every other, one bright reader per row.",
+      "float": {
+        "widget": "heat_grid",
+        "n": 5,
+        "variant": "row_softmax"
+      }
     },
     {
       "id": "how-to-attend",
       "type": "plaque",
       "title": "How to Walk This Palace",
       "prop": "lectern",
-      "text": "Move with W A S D; look with the mouse. Walk up to any display and press E to study it — diagrams and figures unfold large in the room. E or Esc steps back. M: this floor's map. G: the constellation of every idea in the palace. F: travel to any room by name. N: music. P: footstep trails. Follow the signposts at each doorway (E to travel), and read the wisp's nudge when you pause. Staircases mark the lineage: up to what builds on this floor, down to its foundations.",
-      "float": { "widget": "flow_nodes", "layers": [2, 3, 2] }
+      "text": "Move with W A S D; look with the mouse. Walk up to any display and press E to study it, diagrams and figures unfold large in the room. E or Esc steps back. M: this floor's map. G: the constellation of every idea in the palace. F: travel to any room by name. N: music. P: footstep trails. Follow the signposts at each doorway (E to travel), and read the wisp's nudge when you pause. Staircases mark the lineage: up to what builds on this floor, down to its foundations.",
+      "float": {
+        "widget": "flow_nodes",
+        "layers": [
+          2,
+          3,
+          2
+        ]
+      }
     }
   ]
 }

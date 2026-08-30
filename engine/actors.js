@@ -1,4 +1,4 @@
-// Ambient-event actors: the palace's fleeting inhabitants — a rat along the
+// Ambient-event actors: the palace's fleeting inhabitants, a rat along the
 // baseboards, the Grey Lady drifting through a wall, an owl on post, a dementor
 // gliding the ceiling. Each is a factory (ctx) => { group, update, dispose },
 // spawned by the scheduler (events.js) into the active space and torn down after
@@ -8,7 +8,7 @@
 // despawn never pops.
 //
 // Geometries and materials are cached at module scope (CACHE) and reused across
-// spawns — never disposed. At most ONE event is live, so mutating a shared
+// spawns, never disposed. At most ONE event is live, so mutating a shared
 // material's opacity per-spawn is safe. Budget: ~40 low-poly geometries + ~30
 // tiny materials, well under 1 MB. Per-spawn meshes are just removed with the
 // group; the cached geometry/material behind them lives on.
@@ -28,7 +28,7 @@ const envelope = (t, dur) => smooth(Math.min(1, t / 0.8, Math.max(0, (dur - t) /
 const fade = (mats, e) => { for (const it of mats) it.m.opacity = it.base * e; };
 const wrap = (v, m) => ((v % m) + m) % m;
 
-// Module temp vectors — no allocation inside update().
+// Module temp vectors, no allocation inside update().
 const _v = new THREE.Vector3(), _w = new THREE.Vector3(), _look = new THREE.Vector3();
 // Size of the shared particle pool (events.js builds its Points from this too,
 // so actor scratch and pool can never drift apart).
@@ -42,7 +42,7 @@ function rng(seed) { let s = (seed >>> 0) || 1; return () => { s = (s * 1664525 
 const gauss = (r) => (r() + r() + r() + r() - 2); // ~N(0, ~0.58), bounded to [-2, 2]
 
 // Perimeter walk: point + facing yaw at arclength s around an inset rectangle.
-// Writes into a module scratch (called per frame — no allocation allowed).
+// Writes into a module scratch (called per frame, no allocation allowed).
 const _per = { x: 0, z: 0, a: 0 };
 function perimeter(s, x0, x1, z0, z1) {
   const wx = x1 - x0, wz = z1 - z0;
@@ -74,8 +74,7 @@ function crossing(rect, pad) {
   return { alongX, a, b, fixed };
 }
 const placeCross = (obj, alongX, p, y, fixed) => alongX ? obj.position.set(p, y, fixed) : obj.position.set(fixed, y, p);
-// Peak-above-`base` for a crossing arc that crests near 60% of room height —
-// below the eyeline-to-ceiling gap where the earlier arcs disappeared.
+// Peak-above-`base` for a crossing arc that crests near 60% of room height, // below the eyeline-to-ceiling gap where the earlier arcs disappeared.
 const arcAmp = (h, base) => Math.max(0.6, 0.6 * h - base);
 
 // A pair of flapping wing planes on a body (owl, snitch). flap(ph) drives them.
@@ -419,7 +418,7 @@ function rumble(ctx) {
     _px[i] = ccx[c] + (r() - 0.5) * 0.45; _py[i] = h - 0.2;
     _pz[i] = ccz[c] + (r() - 0.5) * 0.45; _pk[i] = r();
   }
-  // A wrapper offset added in update and subtracted on dispose — restores the
+  // A wrapper offset added in update and subtracted on dispose, restores the
   // camera exactly, never accumulates. Only x/z (player.update owns y = EYE).
   const off = new THREE.Vector3();
   let roll = 0;
@@ -479,7 +478,7 @@ function time_glint(ctx) {
     frame.rotation.y = -t * 2.6;                    // the glass turns BACKWARD, faster
     fade(mats, e);
     pool.begin(0xffd98a, 0.05);
-    // A tight, flat ring orbiting backward — legibly circular, not a loose swirl.
+    // A tight, flat ring orbiting backward, legibly circular, not a loose swirl.
     for (let i = 0; i < N; i++) {
       const a = -t * 2.0 - (i / N) * Math.PI * 2;
       pool.set(i, rect.cx + Math.cos(a) * 0.5, 1.5 + Math.sin(t * 2 + i) * 0.03, rect.cz + Math.sin(a) * 0.5);

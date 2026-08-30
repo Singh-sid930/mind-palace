@@ -66,7 +66,7 @@ CINE_JS = """
         });
       }
     },
-    // Hold W and steer toward (x, z) — real player movement with collision.
+    // Hold W and steer toward (x, z), real player movement with collision.
     async walkTo(x, z, maxMs = 10000, arrive = 1.2) {
       this.key('KeyW');
       const t0 = performance.now();
@@ -244,9 +244,9 @@ async def scene_footsteps(page):
         "(k) => window.__cine.glide(k)",
         [{"x": cx + 1.5, "z": cz + d * 0.32, "yaw": -14, "pitch": -16, "ms": 0},
          {"x": cx - 1.5, "z": cz + d * 0.30, "yaw": 14, "pitch": -14, "ms": 5200}])
-    await page.keyboard.press("KeyP")   # toggle off — toast confirms
+    await page.keyboard.press("KeyP")   # toggle off, toast confirms
     await page.wait_for_timeout(1700)
-    await page.keyboard.press("KeyP")   # back on — prints return
+    await page.keyboard.press("KeyP")   # back on, prints return
     await page.wait_for_timeout(2600)
 
 
@@ -264,7 +264,7 @@ async def scene_gemma(page):
     await page.evaluate(
         "window.__cine.ask('why does the lantern pour more light on some keys than others?')")
     # Wait for the streamed reply to finish: first for the reply to APPEAR
-    # (the log must grow past the question + thinking dots — a cold model can
+    # (the log must grow past the question + thinking dots. A cold model can
     # take a while), then for the bubble text to stop growing.
     await page.wait_for_timeout(3000)
     base = await page.evaluate("document.getElementById('chat-log').innerText")

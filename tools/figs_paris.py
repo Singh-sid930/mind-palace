@@ -35,7 +35,7 @@ def fig_realm():
     for ax in (a_grasp, a_plan, a_ladder, a_law):
         P.style_ax(ax, "emerald")
 
-    P.suptitle(f, "The Paris Cauldron — State of the JEPA Realm, May 2026")
+    P.suptitle(f, "The Paris Cauldron, State of the JEPA Realm, May 2026")
     f.text(0.5, 0.915,
            "The Mirror learns to act: V-JEPA 2 → 2.1, the model ladder, "
            "and the scaling law the realm still lacks",
@@ -55,7 +55,7 @@ def fig_realm():
     # draw the 65-80% reported band for V-JEPA 2
     a_grasp.bar(0, base_hi - base_lo, bottom=base_lo, width=0.52,
                 color=COOL, edgecolor=P.BG, lw=1.2, zorder=3, alpha=0.92)
-    a_grasp.text(0, (base_lo + base_hi) / 2, "65–80%", ha="center",
+    a_grasp.text(0, (base_lo + base_hi) / 2, "65, 80%", ha="center",
                  va="center", color=P.BG, fontsize=14, fontweight="bold",
                  zorder=5)
     # V-JEPA 2.1 as a point estimate (+20 over the midpoint)
@@ -143,7 +143,7 @@ def fig_realm():
     pp = np.logspace(np.log10(pmin), np.log10(pmax), 50)
     tokens = 20 * pp
     a_law.plot(pp, tokens, color=WARM, lw=3.0, zorder=4,
-               label="LLMs — Chinchilla: ~20 tokens / parameter")
+               label="LLMs, Chinchilla: ~20 tokens / parameter")
     # mark a couple of points on the law
     for pv in (1e9, 1e10, 7e10):
         a_law.scatter(pv, 20 * pv, s=70, color=WARM, edgecolor=P.BG, lw=1.3,
@@ -156,7 +156,7 @@ def fig_realm():
     a_law.fill_between(pp, 1e8, 4e12, color=COOL, alpha=0.07, zorder=1)
     a_law.text(2.4e9, 5e11, "?", ha="center", va="center", color=COOL,
                fontsize=72, fontweight="bold", zorder=3, alpha=0.85)
-    a_law.text(2.4e9, 7e10, "JEPA —\nno scaling law yet", ha="center",
+    a_law.text(2.4e9, 7e10, "JEPA, \nno scaling law yet", ha="center",
                va="center", color=COOL, fontsize=12, fontweight="bold",
                zorder=3)
 

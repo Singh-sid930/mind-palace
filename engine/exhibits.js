@@ -344,6 +344,6 @@ export function buildExhibits(scene, layout, roomsById, levelId = null) {
 }
 
 function typeLabel(type) {
-  return { plaque: 'Plaque', tome: 'Tome — full text', portrait: 'Portrait',
+  return { plaque: 'Plaque', tome: 'Tome, full text', portrait: 'Portrait',
            artifact: 'Artifact', diagram: 'Diagram', image: 'Figure' }[type] || '';
 }

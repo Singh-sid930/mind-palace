@@ -5,7 +5,7 @@
       "name": "The straight probability path",
       "room": "the-straight-channel",
       "exhibit": "the-channel-table",
-      "summary": "Flow matching connects noise to data along a straight line: x_t = (1−t)·x₀ + t·x₁, with x₀ the noise sample at t=0 and x₁ the data point at t=1. With x₀=1.0 and x₁=5.0 the path reads 1.0, 2.0, 3.0, 4.0, 5.0 at t = 0, 0.25, 0.5, 0.75, 1 — equal steps of 1.0, because a straight line is travelled at constant speed. It replaces diffusion's curved, schedule-dependent path x_t = √ᾱₜ·x₀ + √(1−ᾱₜ)·ε, and it needs no β schedule, no ᾱ table and no square roots: the interpolation alone specifies the path."
+      "summary": "Flow matching connects noise to data along a straight line: x_t = (1−t)·x₀ + t·x₁, with x₀ the noise sample at t=0 and x₁ the data point at t=1. With x₀=1.0 and x₁=5.0 the path reads 1.0, 2.0, 3.0, 4.0, 5.0 at t = 0, 0.25, 0.5, 0.75, 1, equal steps of 1.0, because a straight line is travelled at constant speed. It replaces diffusion's curved, schedule-dependent path x_t = √ᾱₜ·x₀ + √(1−ᾱₜ)·ε, and it needs no β schedule, no ᾱ table and no square roots: the interpolation alone specifies the path."
     },
     {
       "id": "velocity-field",
@@ -19,15 +19,39 @@
       "name": "The t=0 convention flip",
       "room": "the-straight-channel",
       "exhibit": "the-convention-flip",
-      "summary": "In flow matching t=0 is NOISE and t=1 is DATA — the opposite of diffusion's indexing, where t=0 is the clean image. Neither is canonical; some flow-matching VLA papers invert it and write x_t = (1−t)·A + t·ε with t=0 clean. The mathematics is identical under relabelling, which makes the mismatch silent: porting a velocity target across conventions without also flipping the integration direction produces a plausible loss curve and garbage samples. Fix the convention first, then make the training target and the integration direction agree with it."
+      "summary": "In flow matching t=0 is NOISE and t=1 is DATA, the opposite of diffusion's indexing, where t=0 is the clean image. Neither is canonical; some flow-matching VLA papers invert it and write x_t = (1−t)·A + t·ε with t=0 clean. The mathematics is identical under relabelling, which makes the mismatch silent: porting a velocity target across conventions without also flipping the integration direction produces a plausible loss curve and garbage samples. Fix the convention first, then make the training target and the integration direction agree with it."
     }
   ],
   "edges": [
-    { "from": "straight-path", "to": "variance-preservation", "relation": "contrasts-with" },
-    { "from": "straight-path", "to": "gaussian-normal", "relation": "builds-on" },
-    { "from": "velocity-field", "to": "straight-path", "relation": "builds-on" },
-    { "from": "velocity-field", "to": "noise-predictor", "relation": "contrasts-with" },
-    { "from": "velocity-field", "to": "vector-field", "relation": "relates-to" },
-    { "from": "time-convention-flip", "to": "straight-path", "relation": "part-of" }
+    {
+      "from": "straight-path",
+      "to": "variance-preservation",
+      "relation": "contrasts-with"
+    },
+    {
+      "from": "straight-path",
+      "to": "gaussian-normal",
+      "relation": "builds-on"
+    },
+    {
+      "from": "velocity-field",
+      "to": "straight-path",
+      "relation": "builds-on"
+    },
+    {
+      "from": "velocity-field",
+      "to": "noise-predictor",
+      "relation": "contrasts-with"
+    },
+    {
+      "from": "velocity-field",
+      "to": "vector-field",
+      "relation": "relates-to"
+    },
+    {
+      "from": "time-convention-flip",
+      "to": "straight-path",
+      "relation": "part-of"
+    }
   ]
 }

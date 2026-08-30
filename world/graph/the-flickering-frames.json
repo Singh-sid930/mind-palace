@@ -5,14 +5,14 @@
       "name": "Video Diffusion",
       "room": "the-flickering-frames",
       "exhibit": "the-flickering-frames",
-      "summary": "Scaling image diffusion to moving pictures. A video is a stack of T frames, a tensor (T, H, W, C) compressed to a latent (T, h, w, c); the one governing law is that all T frames must be denoised JOINTLY so they stay consistent over time. The entire diffusion framework is inherited unchanged — forward noising, reverse denoising, ε-prediction MSE, latent diffusion (VAE), classifier-free guidance, and a U-Net or DiT denoiser. What changes is only the DATA SHAPE, which gains a new time axis T, plus one new attention axis (temporal). That extra T dimension is the whole story."
+      "summary": "Scaling image diffusion to moving pictures. A video is a stack of T frames, a tensor (T, H, W, C) compressed to a latent (T, h, w, c); the one governing law is that all T frames must be denoised JOINTLY so they stay consistent over time. The entire diffusion framework is inherited unchanged, forward noising, reverse denoising, ε-prediction MSE, latent diffusion (VAE), classifier-free guidance, and a U-Net or DiT denoiser. What changes is only the DATA SHAPE, which gains a new time axis T, plus one new attention axis (temporal). That extra T dimension is the whole story."
     },
     {
       "id": "temporal-consistency",
       "name": "Temporal Consistency",
       "room": "the-flickering-frames",
       "exhibit": "the-flicker-problem",
-      "summary": "The property that a video's frames agree with one another over time — an object that is red and in place stays red and in place from frame to frame. Denoising each frame INDEPENDENTLY destroys it: frame 5 has no idea what frame 4 looked like, so although each frame is individually plausible, the sequence flickers (colours drift, objects jitter and morph, backgrounds shift). Restoring temporal consistency by denoising all frames jointly is the reason video diffusion exists."
+      "summary": "The property that a video's frames agree with one another over time. An object that is red and in place stays red and in place from frame to frame. Denoising each frame INDEPENDENTLY destroys it: frame 5 has no idea what frame 4 looked like, so although each frame is individually plausible, the sequence flickers (colours drift, objects jitter and morph, backgrounds shift). Restoring temporal consistency by denoising all frames jointly is the reason video diffusion exists."
     }
   ],
   "edges": [

@@ -11,23 +11,28 @@
       "title": "The Two Maps",
       "prop": "exp_log_sphere",
       "scale": 1.4,
-      "text": "A brass sphere with a flat pane of glass touching its north pole — and the instrument breathes. OUT: a straight arrow grows on the flat window, and as it lengthens its tip is laid down onto the curved brass as a great-circle arc — a GEODESIC, the straightest road the surface allows — travelling exactly the arrow's length, in exactly the arrow's direction. A flat straight step becomes a curved move that never leaves the surface: the EXPONENTIAL MAP. Then the reverse: the arc gathers itself back up onto the glass, leaving only the straight arrow pointing at where the journey ended — the LOGARITHM MAP. Arrow to arc, arc to arrow: the whole secret of arithmetic on a curved world is in that breathing."
+      "text": "A brass sphere with a flat pane of glass touching its north pole, and the instrument breathes. OUT: a straight arrow grows on the flat window, and as it lengthens its tip is laid down onto the curved brass as a great-circle arc, a GEODESIC, the straightest road the surface allows, travelling exactly the arrow's length, in exactly the arrow's direction. A flat straight step becomes a curved move that never leaves the surface: the EXPONENTIAL MAP. Then the reverse: the arc gathers itself back up onto the glass, leaving only the straight arrow pointing at where the journey ended, the LOGARITHM MAP. Arrow to arc, arc to arrow: the whole secret of arithmetic on a curved world is in that breathing."
     },
     {
       "id": "the-exponential",
       "type": "plaque",
       "prop": "pedestal",
       "title": "The Exponential Map",
-      "text": "Stand at a point p and lay the flat tangent plane there. Pick a tangent vector v — a direction and a length. exp_p(v) answers one question: 'if I set off from p along v and walk the SURFACE a distance equal to v's length, where do I land?' The road is a geodesic — the curved world's honest imitation of a straight line. Direction of departure: kept. Length: kept, now measured along the surface. Straightness: traded away. And the landing point is guaranteed to lie ON the surface, never beside it — that guarantee is why the map is treasured. Above: the gold bead takes the straight step; the blue bead walks the same length along the curve.",
-      "float": { "widget": "tangent_touch" }
+      "text": "Stand at a point p and lay the flat tangent plane there. Pick a tangent vector v, a direction and a length. exp_p(v) answers one question: 'if I set off from p along v and walk the SURFACE a distance equal to v's length, where do I land?' The road is a geodesic, the curved world's honest imitation of a straight line. Direction of departure: kept. Length: kept, now measured along the surface. Straightness: traded away. And the landing point is guaranteed to lie ON the surface, never beside it. That guarantee is why the map is treasured. Above: the gold bead takes the straight step; the blue bead walks the same length along the curve.",
+      "float": {
+        "widget": "tangent_touch"
+      }
     },
     {
       "id": "the-logarithm",
       "type": "plaque",
       "prop": "lectern",
       "title": "The Logarithm Map",
-      "text": "The logarithm runs the exponential backwards: give it a surface point q near p and it returns the straight tangent vector that reaches it — log_p(q) = v, the v for which exp_p(v) = q. Its direction says which way q lies; its length is the geodesic distance. Together the two maps are a BRIDGE, and the crossing is a pattern you will use again and again: (1) LOG nearby points onto the flat window, turning them into ordinary vectors. (2) RECKON there — add, average, step — where vectors obey. (3) EXP back along a geodesic to a point that is once again perfectly valid. One honest caveat: the bridge is trustworthy near p and grows unreliable far away; for the small local moves arithmetic needs, exp and log are faithful inverses.",
-      "float": { "widget": "tangent_touch", "speed": 0.6 }
+      "text": "The logarithm runs the exponential backwards: give it a surface point q near p and it returns the straight tangent vector that reaches it, log_p(q) = v, the v for which exp_p(v) = q. Its direction says which way q lies; its length is the geodesic distance. Together the two maps are a BRIDGE, and the crossing is a pattern you will use again and again: (1) LOG nearby points onto the flat window, turning them into ordinary vectors. (2) RECKON there, add, average, step, where vectors obey. (3) EXP back along a geodesic to a point that is once again perfectly valid. One honest caveat: the bridge is trustworthy near p and grows unreliable far away; for the small local moves arithmetic needs, exp and log are faithful inverses.",
+      "float": {
+        "widget": "tangent_touch",
+        "speed": 0.6
+      }
     },
     {
       "id": "exp-log-diagram",
@@ -41,15 +46,17 @@
       "type": "image",
       "title": "Wrap and Unwrap, Measured Out",
       "image": "world/assets/lie-exp-log.png",
-      "caption": "The simplest curved world — the unit circle of planar turns — with its flat tangent window at p. (a) The exponential as a promise about length: a straight step of length θ on the tangent becomes a geodesic arc of exactly length θ along the circle (here θ = 1.0 radian, landing at angle 1.0). (b) The loop closed: exp carries v = 1.0 to q = (cos 1, sin 1) ≈ (0.540, 0.841); log reads it back to 1.0, unchanged. Out to the flat, reckon in straight lines, back along a geodesic — always landing exactly on the surface."
+      "caption": "The simplest curved world, the unit circle of planar turns, with its flat tangent window at p. (a) The exponential as a promise about length: a straight step of length θ on the tangent becomes a geodesic arc of exactly length θ along the circle (here θ = 1.0 radian, landing at angle 1.0). (b) The loop closed: exp carries v = 1.0 to q = (cos 1, sin 1) ≈ (0.540, 0.841); log reads it back to 1.0, unchanged. Out to the flat, reckon in straight lines, back along a geodesic, always landing exactly on the surface."
     },
     {
       "id": "where-this-leads",
       "type": "plaque",
       "prop": "pedestal",
       "title": "Where This Leads ↑",
-      "text": "Imagine every valid state is a point on a curved surface, and any move must land ON the surface, never beside it. You cannot add a straight vector to a curved point — the sum falls off the world. But you have the bridge: LOG the current point to the flat window, take the ordinary straight step there (a gradient step downhill, or a small nudge of uncertainty), and EXP back along a geodesic to a state that is perfectly valid. That is how gradient descent and tracking-through-time are done when the space of answers is curved — the daily craft of a hall not yet raised above this cellar. Master the two maps as pure geometry; the machinery will feel familiar the day the stair is built.",
-      "float": { "widget": "descend_bowl" }
+      "text": "Imagine every valid state is a point on a curved surface, and any move must land ON the surface, never beside it. You cannot add a straight vector to a curved point. The sum falls off the world. But you have the bridge: LOG the current point to the flat window, take the ordinary straight step there (a gradient step downhill, or a small nudge of uncertainty), and EXP back along a geodesic to a state that is perfectly valid. That is how gradient descent and tracking-through-time are done when the space of answers is curved, the daily craft of a hall not yet raised above this cellar. Master the two maps as pure geometry; the machinery will feel familiar the day the stair is built.",
+      "float": {
+        "widget": "descend_bowl"
+      }
     }
   ]
 }

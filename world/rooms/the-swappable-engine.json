@@ -4,7 +4,10 @@
   "wing": "riverworks",
   "size": "medium",
   "order": 4,
-  "connections": ["the-reforged-transformer", "the-guidance-forge"],
+  "connections": [
+    "the-reforged-transformer",
+    "the-guidance-forge"
+  ],
   "exhibits": [
     {
       "id": "the-engine-mount",
@@ -12,10 +15,14 @@
       "title": "The Engine Mount",
       "prop": "orrery",
       "scale": 1.3,
-      "text": "Everything so far has been arithmetic. This is the one place a network appears, and the surprise is how little there is to say about it.\n\n  v_θ(x_t, t, text) → velocity\n  in:  (32,32,4) noisy latent + a scalar t + conditioning\n  out: (32,32,4) velocity — the SAME shape\n\nv_θ is a U-Net or a DiT. Not something like one: architecturally identical to the diffusion noise-predictor sitting in the U-Net Cathedral. Same blocks, same conditioning path, same shape in and out. SD3 mounts a DiT here.\n\nWhat changed is not the engine but what it is asked to produce and where it is asked to produce it:\n\n  the TARGET changed — velocity x₁ − x₀ instead of noise ε\n  the PATH changed  — linear interpolation instead of the ᾱ schedule\n\nThat is the complete list. The training loop, the loss function, the checkpoint format and the parameter count are otherwise untouched. A team can swap a diffusion model to flow matching without redesigning the network at all, which is a large part of why the method spread so quickly: it is a change to two lines of the training script, not a change of architecture.",
+      "text": "Everything so far has been arithmetic. This is the one place a network appears, and the surprise is how little there is to say about it.\n\n  v_θ(x_t, t, text) → velocity\n  in:  (32,32,4) noisy latent + a scalar t + conditioning\n  out: (32,32,4) velocity. The SAME shape\n\nv_θ is a U-Net or a DiT. Not something like one: architecturally identical to the diffusion noise-predictor sitting in the U-Net Cathedral. Same blocks, same conditioning path, same shape in and out. SD3 mounts a DiT here.\n\nWhat changed is not the engine but what it is asked to produce and where it is asked to produce it:\n\n  the TARGET changed, velocity x₁ − x₀ instead of noise ε\n  the PATH changed, linear interpolation instead of the ᾱ schedule\n\nThat is the complete list. The training loop, the loss function, the checkpoint format and the parameter count are otherwise untouched. A team can swap a diffusion model to flow matching without redesigning the network at all, which is a large part of why the method spread so quickly: it is a change to two lines of the training script, not a change of architecture.",
       "float": {
         "widget": "flow_nodes",
-        "layers": [4, 2, 4]
+        "layers": [
+          4,
+          2,
+          4
+        ]
       }
     },
     {
@@ -23,7 +30,7 @@
       "type": "plaque",
       "prop": "pedestal",
       "title": "Three Requirements, and Nothing Else",
-      "text": "Any architecture may be mounted here provided it satisfies three conditions.\n\nSHAPE-PRESERVING. The output is a velocity for every element of the input, so the shapes must match exactly. This is why a U-Net works — its skip connections carry full-resolution detail past the bottleneck — and why anything that pools away the spatial axes does not.\n\nTAKES A SCALAR t. The field is a function of time as well as position, so t must reach every layer that needs it. In practice t goes through a sinusoidal timestep embedding, scaled up first, because raw t in [0,1] produces angles too small to distinguish. From there it is injected either as an added token or as adaLN scale-and-shift.\n\nTAKES CONDITIONING. Text, an image, a robot's observation — whatever steers generation. U-Nets take it through cross-attention; DiTs take it through adaLN.\n\nThat is the full interface, and it is exactly the interface a diffusion noise-predictor already exposes. The two are interchangeable because the contract between the framework and the network never mentioned noise in the first place.",
+      "text": "Any architecture may be mounted here provided it satisfies three conditions.\n\nSHAPE-PRESERVING. The output is a velocity for every element of the input, so the shapes must match exactly. This is why a U-Net works, its skip connections carry full-resolution detail past the bottleneck, and why anything that pools away the spatial axes does not.\n\nTAKES A SCALAR t. The field is a function of time as well as position, so t must reach every layer that needs it. In practice t goes through a sinusoidal timestep embedding, scaled up first, because raw t in [0,1] produces angles too small to distinguish. From there it is injected either as an added token or as adaLN scale-and-shift.\n\nTAKES CONDITIONING. Text, an image, a robot's observation, whatever steers generation. U-Nets take it through cross-attention; DiTs take it through adaLN.\n\nThat is the full interface, and it is exactly the interface a diffusion noise-predictor already exposes. The two are interchangeable because the contract between the framework and the network never mentioned noise in the first place.",
       "float": {
         "widget": "stack_rise",
         "skip": true
@@ -34,7 +41,7 @@
       "type": "plaque",
       "prop": "lectern",
       "title": "What Carries Over Untouched",
-      "text": "Flow matching replaces the forward and reverse processes. It replaces nothing else, and it is worth being explicit about how much that leaves standing.\n\nLATENT SPACE stays. Training still runs on (32,32,4) latents rather than pixels, for exactly the reasons the Latent Vault gives.\n\nTHE FROZEN VAE stays. It is one VAE, encoder and decoder trained together as a unit before the generative model exists, then frozen. The flow model produces latents that look like real encoded latents, and the decoder — which already inverts that encoder expertly — turns them into pixels. Off-manifold latents still produce artifacts; KL regularisation still keeps the space smooth enough that small errors do not blow up.\n\nCLASSIFIER-FREE GUIDANCE stays, in the form beside you.\n\nTHE ARCHITECTURE stays: U-Net or DiT, unmodified.\n\nSo the honest summary of the change is small. Two lines of the training loop compute a different corrupted input and a different target. Everything else in the pipeline never learns that anything happened.",
+      "text": "Flow matching replaces the forward and reverse processes. It replaces nothing else, and it is worth being explicit about how much that leaves standing.\n\nLATENT SPACE stays. Training still runs on (32,32,4) latents rather than pixels, for exactly the reasons the Latent Vault gives.\n\nTHE FROZEN VAE stays. It is one VAE, encoder and decoder trained together as a unit before the generative model exists, then frozen. The flow model produces latents that look like real encoded latents, and the decoder, which already inverts that encoder expertly, turns them into pixels. Off-manifold latents still produce artifacts; KL regularisation still keeps the space smooth enough that small errors do not blow up.\n\nCLASSIFIER-FREE GUIDANCE stays, in the form beside you.\n\nTHE ARCHITECTURE stays: U-Net or DiT, unmodified.\n\nSo the honest summary of the change is small. Two lines of the training loop compute a different corrupted input and a different target. Everything else in the pipeline never learns that anything happened.",
       "float": {
         "widget": "funnel_flow"
       }
@@ -45,14 +52,14 @@
       "title": "Guidance, Rewritten as Velocities",
       "prop": "guidance_arrows",
       "scale": 1.2,
-      "text": "The Guidance Forge builds its extrapolation in noise space: run the network twice, once with the prompt and once with nothing, then push past the conditional prediction along the difference between them. Flow matching keeps the identical move and simply changes what is being extrapolated.\n\n  ṽ = v_θ(x, t, ∅) + w·[ v_θ(x, t, c) − v_θ(x, t, ∅) ]\n\nRead it as the Forge's arrows: start at the unconditional velocity, measure the difference the prompt makes, and go w times further in that direction. At w = 1 the conditional velocity comes back exactly. At w > 1 the sample is pushed harder toward whatever the prompt asked for, at the usual cost — saturation and lost diversity when w climbs too high.\n\nThe training requirement is unchanged too: drop the conditioning on roughly 10% of examples so a single network learns both the conditional and unconditional fields. And the cost is unchanged: two forward passes per step instead of one. With flow matching taking 10 steps rather than 1000, two passes each is a bill you can actually pay."
+      "text": "The Guidance Forge builds its extrapolation in noise space: run the network twice, once with the prompt and once with nothing, then push past the conditional prediction along the difference between them. Flow matching keeps the identical move and simply changes what is being extrapolated.\n\n  ṽ = v_θ(x, t, ∅) + w·[ v_θ(x, t, c) − v_θ(x, t, ∅) ]\n\nRead it as the Forge's arrows: start at the unconditional velocity, measure the difference the prompt makes, and go w times further in that direction. At w = 1 the conditional velocity comes back exactly. At w > 1 the sample is pushed harder toward whatever the prompt asked for, at the usual cost, saturation and lost diversity when w climbs too high.\n\nThe training requirement is unchanged too: drop the conditioning on roughly 10% of examples so a single network learns both the conditional and unconditional fields. And the cost is unchanged: two forward passes per step instead of one. With flow matching taking 10 steps rather than 1000, two passes each is a bill you can actually pay."
     },
     {
       "id": "the-archway-to-the-dit",
       "type": "plaque",
       "prop": "lectern",
       "title": "Through the Archway",
-      "text": "The archway from this chamber opens onto the Reforged Transformer, where the DiT is built from patches, self-attention and adaLN-Zero conditioning. Walk through it and nothing you learned here needs adjusting.\n\nThat is the point worth carrying away. The DiT was designed as a diffusion denoiser: an image cut into patches, a scalar timestep folded in through adaptive layer norm, a conditioning vector steering every block. Mount it here and it predicts velocity instead of noise, and neither the model nor the framework notices. SD3 does precisely this.\n\nThe reason the swap is invisible is that the framework only ever asked for three things — same shape out, a scalar t, and a conditioning channel. Noise prediction was never part of the contract; it was one particular thing to put on the right-hand side of the loss. Change the right-hand side and the same engine turns.\n\nSo the denoisers of the diffusion wing and the velocity fields of this one are one family of networks with two training objectives.",
+      "text": "The archway from this chamber opens onto the Reforged Transformer, where the DiT is built from patches, self-attention and adaLN-Zero conditioning. Walk through it and nothing you learned here needs adjusting.\n\nThat is the point worth carrying away. The DiT was designed as a diffusion denoiser: an image cut into patches, a scalar timestep folded in through adaptive layer norm, a conditioning vector steering every block. Mount it here and it predicts velocity instead of noise, and neither the model nor the framework notices. SD3 does precisely this.\n\nThe reason the swap is invisible is that the framework only ever asked for three things, same shape out, a scalar t, and a conditioning channel. Noise prediction was never part of the contract; it was one particular thing to put on the right-hand side of the loss. Change the right-hand side and the same engine turns.\n\nSo the denoisers of the diffusion wing and the velocity fields of this one are one family of networks with two training objectives.",
       "float": {
         "widget": "heat_grid",
         "variant": "row_softmax",
@@ -63,8 +70,8 @@
       "id": "engine-diagram",
       "type": "diagram",
       "title": "One Engine, Two Objectives",
-      "spec": "graph TD\n  IN[\"noisy input, 32x32x4\"] --> NET[\"U-Net or DiT — same architecture either way\"]\n  T[\"scalar t, sinusoidal embedding, scaled\"] --> NET\n  C[\"conditioning: cross-attention or adaLN\"] --> NET\n  NET --> OUT[\"output, 32x32x4 — shape preserved\"]\n  OUT --> D1[\"read as ε: diffusion noise-predictor\"]\n  OUT --> D2[\"read as v: flow matching velocity field\"]\n  D2 --> G[\"guidance: ṽ = v_∅ + w·(v_c − v_∅)\"]",
-      "caption": "The same three inputs and the same shape-preserving output serve both frameworks. What the number coming out MEANS is decided by the training target, not by the architecture — which is why a DiT built for diffusion runs a flow matching model unmodified. Guidance is the same extrapolation in both cases, performed on whichever quantity the network emits."
+      "spec": "graph TD\n  IN[\"noisy input, 32x32x4\"] --> NET[\"U-Net or DiT, same architecture either way\"]\n  T[\"scalar t, sinusoidal embedding, scaled\"] --> NET\n  C[\"conditioning: cross-attention or adaLN\"] --> NET\n  NET --> OUT[\"output, 32x32x4, shape preserved\"]\n  OUT --> D1[\"read as ε: diffusion noise-predictor\"]\n  OUT --> D2[\"read as v: flow matching velocity field\"]\n  D2 --> G[\"guidance: ṽ = v_∅ + w·(v_c − v_∅)\"]",
+      "caption": "The same three inputs and the same shape-preserving output serve both frameworks. What the number coming out MEANS is decided by the training target, not by the architecture, which is why a DiT built for diffusion runs a flow matching model unmodified. Guidance is the same extrapolation in both cases, performed on whichever quantity the network emits."
     }
   ]
 }

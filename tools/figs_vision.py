@@ -2,13 +2,12 @@
 its basement companion The Two Judgments (wing `math`, violet).
 
 Three figures:
-  1. vision-emergent-wing.png  (verdigris) — bird-wing & plane-wing crops land
+  1. vision-emergent-wing.png  (verdigris), bird-wing & plane-wing crops land
      at nearby points in a sketched feature space; the compression-pressure
      mechanism annotated.
-  2. vision-fusion.png         (verdigris) — the SigLIP + DINOv2 fusion flow
+  2. vision-fusion.png         (verdigris), the SigLIP + DINOv2 fusion flow
      (the OpenVLA pattern) with a selection-heuristic side table.
-  3. two-judgments.png         (violet, basement — PURE MATH labels only) —
-     softmax coupling a score vector into rival probabilities vs sigmoid+BCE
+  3. two-judgments.png         (violet, basement, PURE MATH labels only), softmax coupling a score vector into rival probabilities vs sigmoid+BCE
      giving each score its own independent yes/no.
 
 Run:  ~/anaconda3/envs/lrm/bin/python tools/figs_vision.py
@@ -28,7 +27,7 @@ def _hex(h):
 
 
 # ===========================================================================
-# Figure 1 — vision-emergent-wing.png  (verdigris)
+# Figure 1, vision-emergent-wing.png  (verdigris)
 # ===========================================================================
 def fig_emergent_wing():
     WING = "verdigris"
@@ -41,11 +40,11 @@ def fig_emergent_wing():
     gs = f.add_gridspec(1, 2, width_ratios=[1.02, 1.0], wspace=0.14,
                         left=0.035, right=0.975, top=0.80, bottom=0.075)
 
-    P.suptitle(f, "How “wing” emerges without labels  —  "
+    P.suptitle(f, "How “wing” emerges without labels, "
                   "compression, not supervision", WING)
     f.text(0.5, 0.885,
            "A local crop must predict its global context. Two parts that share "
-           "silhouette and context must predict the same whole — so the "
+           "silhouette and context must predict the same whole, so the "
            "efficient code gives them one shared address.",
            ha="center", color=P.MUTED, fontsize=13.5)
 
@@ -158,14 +157,14 @@ def fig_emergent_wing():
 
     f.text(0.5, 0.028,
            "Honest caveat: nothing names these codes. They align with human "
-           "categories only where visual statistics happen to — often, not always.",
+           "categories only where visual statistics happen to, often, not always.",
            ha="center", color=P.MUTED, fontsize=11.5, style="italic")
 
     return P.save(f, "vision-emergent-wing.png")
 
 
 # ===========================================================================
-# Figure 2 — vision-fusion.png  (verdigris)
+# Figure 2, vision-fusion.png  (verdigris)
 # ===========================================================================
 def fig_fusion():
     WING = "verdigris"
@@ -178,7 +177,7 @@ def fig_fusion():
     gs = f.add_gridspec(1, 2, width_ratios=[1.5, 1.0], wspace=0.10,
                         left=0.035, right=0.975, top=0.80, bottom=0.07)
 
-    P.suptitle(f, "Two eyes, fused  —  the OpenVLA pattern", WING)
+    P.suptitle(f, "Two eyes, fused, the OpenVLA pattern", WING)
     f.text(0.5, 0.885,
            "Manipulation needs both “what is it” (semantic) and "
            "“where exactly is it” (spatial). Run both encoders and "
@@ -263,7 +262,7 @@ def fig_fusion():
 
     f.text(0.5, 0.028,
            "Nuance: semantic-vs-spatial is a strength gradient, not a hard "
-           "boundary — SigLIP has some spatial signal; DINOv2's features "
+           "boundary, SigLIP has some spatial signal; DINOv2's features "
            "are semantically structured, just not language-aligned.",
            ha="center", color=P.MUTED, fontsize=11.5, style="italic")
 
@@ -271,7 +270,7 @@ def fig_fusion():
 
 
 # ===========================================================================
-# Figure 3 — two-judgments.png  (violet, BASEMENT, pure math only)
+# Figure 3, two-judgments.png  (violet, BASEMENT, pure math only)
 # ===========================================================================
 def fig_two_judgments():
     WING = "violet"
@@ -299,7 +298,7 @@ def fig_two_judgments():
     ax.set_xticks([]); ax.set_yticks([])
     for sp in ax.spines.values():
         sp.set_color(P.GRID)
-    ax.set_title("(a)  RELATIVE  —  softmax over rivals",
+    ax.set_title("(a)  RELATIVE, softmax over rivals",
                  color=P.INK, fontsize=15.5, pad=10)
 
     ax.text(5.0, 9.05, r"$p_i \;=\; e^{\,s_i}\,/\,\sum_j e^{\,s_j}$",
@@ -334,7 +333,7 @@ def fig_two_judgments():
     ax.add_patch(FancyArrowPatch((4.35, 4.0), (5.45, 4.0), arrowstyle="-|>",
                  mutation_scale=20, color=WARM, lw=2.2))
     ax.text(5.0, 0.7,
-            "always sums to 1  —  one winner;\n"
+            "always sums to 1, one winner;\n"
             "nudge any score and every other moves.",
             color=ACC, fontsize=12.5, fontweight="bold", ha="center",
             va="center")
@@ -345,7 +344,7 @@ def fig_two_judgments():
     ax2.set_xticks([]); ax2.set_yticks([])
     for sp in ax2.spines.values():
         sp.set_color(P.GRID)
-    ax2.set_title("(b)  ABSOLUTE  —  a sigmoid gate per score",
+    ax2.set_title("(b)  ABSOLUTE, a sigmoid gate per score",
                   color=P.INK, fontsize=15.5, pad=10)
 
     ax2.text(5.0, 9.05, r"$\sigma(s+b)=\dfrac{1}{1+e^{-(s+b)}}$",
@@ -377,7 +376,7 @@ def fig_two_judgments():
                  fontsize=11, ha="left", fontweight="bold")
 
     ax2.text(5.0, 7.7,
-             "each score gets its own yes/no  —  no rivals, no sum-to-1",
+             "each score gets its own yes/no, no rivals, no sum-to-1",
              color=P.INK, fontsize=12, ha="center", fontweight="bold")
 
     # BCE box

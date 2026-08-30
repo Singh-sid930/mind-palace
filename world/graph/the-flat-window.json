@@ -5,18 +5,26 @@
       "name": "The Tangent Space",
       "room": "the-flat-window",
       "exhibit": "the-touching-plane",
-      "summary": "At any point of a curved surface one can lay a flat plane that touches it there — the tangent space. Near the touch point, short straight steps on this flat plane closely approximate moving along the curved surface, and the smaller the step the better the agreement. It is genuinely flat: an ordinary vector space where arrows add, scale, and measure, so ordinary arithmetic and calculus apply. Every point carries its own tangent plane. (Upstairs: where gradients and small uncertainties are computed.)"
+      "summary": "At any point of a curved surface one can lay a flat plane that touches it there, the tangent space. Near the touch point, short straight steps on this flat plane closely approximate moving along the curved surface, and the smaller the step the better the agreement. It is genuinely flat: an ordinary vector space where arrows add, scale, and measure, so ordinary arithmetic and calculus apply. Every point carries its own tangent plane. (Upstairs: where gradients and small uncertainties are computed.)"
     },
     {
       "id": "lie-algebra",
       "name": "The Lie Algebra",
       "room": "the-flat-window",
       "exhibit": "the-algebra-at-the-origin",
-      "summary": "The Lie algebra is the tangent space at the identity/origin point (the do-nothing turn) — the one privileged flat window. It is a true flat vector space where ordinary calculus lives, and it is isomorphic to ℝⁿ, where n is the surface's number of degrees of freedom: ℝ¹ (a line) for planar turns, ℝ³ for turns in space. To reckon on the curved surface, one steps onto this flat window and does plain linear arithmetic. (Upstairs: the flat space where change and error for curved-living things are computed.)"
+      "summary": "The Lie algebra is the tangent space at the identity/origin point (the do-nothing turn), the one privileged flat window. It is a true flat vector space where ordinary calculus lives, and it is isomorphic to ℝⁿ, where n is the surface's number of degrees of freedom: ℝ¹ (a line) for planar turns, ℝ³ for turns in space. To reckon on the curved surface, one steps onto this flat window and does plain linear arithmetic. (Upstairs: the flat space where change and error for curved-living things are computed.)"
     }
   ],
   "edges": [
-    { "from": "tangent-space", "to": "smooth-manifold", "relation": "builds-on" },
-    { "from": "lie-algebra", "to": "tangent-space", "relation": "part-of" }
+    {
+      "from": "tangent-space",
+      "to": "smooth-manifold",
+      "relation": "builds-on"
+    },
+    {
+      "from": "lie-algebra",
+      "to": "tangent-space",
+      "relation": "part-of"
+    }
   ]
 }

@@ -1,4 +1,4 @@
-"""Concept figure for The Noise Oracle (diffusion wing) — one training step.
+"""Concept figure for The Noise Oracle (diffusion wing), one training step.
 
 Pick a t, mix a clean rune with known noise ε, the network predicts ε̂, and the
 loss is ‖ε − ε̂‖². Shown as a row of panels over a simple 16×16 rune.
@@ -65,7 +65,7 @@ def main():
     gs = f.add_gridspec(1, 5, wspace=0.30,
                         left=0.035, right=0.985, top=0.72, bottom=0.135)
 
-    P.suptitle(f, "The Noise Oracle  —  One Turn of the Globe (a single training step)")
+    P.suptitle(f, "The Noise Oracle. One Turn of the Globe (a single training step)")
     f.text(0.5, 0.855,
            f"Draw t = {t}  ·  ᾱ_t = {abar:.2f}  →  build  x_t = √ᾱ_t·x₀ + "
            f"√(1−ᾱ_t)·ε   ·   the Oracle sees only (x_t, t) and names the noise",

@@ -76,7 +76,7 @@ def fig_bell_and_sum():
     ax.set_ylim(0, 0.47)
     ax.set_xlim(-4.2, 4.2)
     ax.set_ylabel("probability density", fontsize=12.5)
-    ax.set_title("(a)  one standard bell — where the draws land", color=P.INK)
+    ax.set_title("(a)  one standard bell, where the draws land", color=P.INK)
     ax.annotate("σ = spread\n(std. deviation)", xy=(1, gauss(1)),
                 xytext=(2.35, 0.30), color=COOL, fontsize=11.5, ha="center",
                 arrowprops=dict(arrowstyle="-|>", color=COOL, lw=1.6))

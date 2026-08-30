@@ -15,7 +15,7 @@ WARM = P.WING["sapphire"]["warm"]
 
 
 # ---------------------------------------------------------------------------
-# Figure 1: kv-sharing.png  —  MHA -> GQA -> MQA
+# Figure 1: kv-sharing.png. MHA -> GQA -> MQA
 # ---------------------------------------------------------------------------
 def fig_kv_sharing():
     f = plt.figure(figsize=(13.5, 7.4))
@@ -112,7 +112,7 @@ def fig_kv_sharing():
 
 
 # ---------------------------------------------------------------------------
-# Figure 2: multihead-flow.png  —  split / attend / concat / project
+# Figure 2: multihead-flow.png, split / attend / concat / project
 # ---------------------------------------------------------------------------
 def fig_multihead_flow():
     f = plt.figure(figsize=(13.5, 7.6))

@@ -30,10 +30,10 @@ def fig_rank_alpha():
                         left=0.065, right=0.955, top=0.83, bottom=0.12,
                         wspace=0.24)
 
-    P.suptitle(f, "The Plateau Found  —  turn the dial to the smallest r that "
+    P.suptitle(f, "The Plateau Found, turn the dial to the smallest r that "
                   "clears the elbow, set α apart")
     f.text(0.5, 0.895,
-           "representative sweep — the SHAPE is the lesson: r sets how many "
+           "representative sweep, the SHAPE is the lesson: r sets how many "
            "directions, α sets how loud",
            ha="center", color=P.MUTED, fontsize=13)
 
@@ -42,10 +42,10 @@ def fig_rank_alpha():
     # shaded regions
     ax.axvspan(-0.4, plateau_i - 0.5, color=WARM, alpha=0.10, zorder=0)
     ax.axvspan(plateau_i + 0.5, len(ranks) - 0.6, color=COOL, alpha=0.10, zorder=0)
-    ax.text(0.75, 0.635, "UNDERFIT\nr too small —\ncan't capture\nthe update",
+    ax.text(0.75, 0.635, "UNDERFIT\nr too small, \ncan't capture\nthe update",
             color=WARM, fontsize=11.5, ha="center", va="center",
             fontweight="bold", linespacing=1.4)
-    ax.text(4.5, 0.72, "DIMINISHING RETURNS\nr too large — more params,\n"
+    ax.text(4.5, 0.72, "DIMINISHING RETURNS\nr too large, more params,\n"
             "compute, overfit risk;\nno better than full tune",
             color=COOL, fontsize=11.5, ha="center", va="center",
             fontweight="bold", linespacing=1.4)
@@ -66,7 +66,7 @@ def fig_rank_alpha():
     # bracket showing flat plateau
     ax.annotate("", xy=(plateau_i, 0.928), xytext=(len(ranks) - 1, 0.928),
                 arrowprops=dict(arrowstyle="<->", color=P.MUTED, lw=1.4))
-    ax.text((plateau_i + len(ranks) - 1) / 2, 0.945, "flat — no gain",
+    ax.text((plateau_i + len(ranks) - 1) / 2, 0.945, "flat, no gain",
             color=P.MUTED, fontsize=11, ha="center", style="italic")
 
     ax.set_xticks(xi)
@@ -75,7 +75,7 @@ def fig_rank_alpha():
     ax.set_xlim(-0.4, len(ranks) - 0.6)
     ax.set_xlabel("rank  r  (swept, doubling)", fontsize=13)
     ax.set_ylabel("validation performance", fontsize=13)
-    ax.set_title("(a)  Sweep r, watch validation — take the smallest on the plateau",
+    ax.set_title("(a)  Sweep r, watch validation, take the smallest on the plateau",
                  color=P.INK, fontsize=13.5, pad=10)
 
     # -- (b) alpha / r scaling -----------------------------------------------
@@ -101,7 +101,7 @@ def fig_rank_alpha():
             color=WARM, fontsize=12.5, fontweight="bold", ha="right", va="bottom")
     ax.text(xj[-1], 2.0 + 0.35, "α = 2r  →  α/r = 2  (steady, louder)",
             color=ACC, fontsize=12.5, fontweight="bold", ha="right", va="bottom")
-    ax.annotate("fixed α (rank NOT tied in):\nα/r LURCHES with every r —\n"
+    ax.annotate("fixed α (rank NOT tied in):\nα/r LURCHES with every r, \n"
                 "raise r and the update\nquietly changes strength",
                 xy=(0, eff_fixed[0]), xytext=(1.05, 6.4),
                 color=P.MUTED, fontsize=11.5, ha="left", fontweight="bold",
@@ -112,7 +112,7 @@ def fig_rank_alpha():
     ax.set_xticklabels([f"r={int(r)}" for r in rr], fontsize=12.5)
     ax.set_ylim(0, 8.6)
     ax.set_xlabel("rank  r  (changing the dial)", fontsize=13)
-    ax.set_ylabel("update strength  —  the (α/r) factor on B·A", fontsize=13)
+    ax.set_ylabel("update strength, the (α/r) factor on B·A", fontsize=13)
     ax.set_title("(b)  The α/r factor decouples magnitude from rank",
                  color=P.INK, fontsize=13.5, pad=10)
     ax.text(0.5, -0.165,

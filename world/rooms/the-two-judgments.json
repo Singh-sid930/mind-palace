@@ -11,23 +11,30 @@
       "title": "The Scales of Judgment",
       "prop": "error_scales",
       "scale": 1.3,
-      "text": "One instrument, two honest ways to turn a list of scores into probabilities — and choosing the way is the whole lesson. The RELATIVE way (softmax): exponentiate every score, normalize so they sum to one. A single distribution over rivals; only the GAPS between scores matter; and the beam is coupled — press any pan down and every other pan must rise, because the total is pinned at one. It answers 'which of these is best?'. The ABSOLUTE way (sigmoid): push each score through its own private gate into a standalone yes/no probability — no denominator, no rivals, any number of gates may open. It answers 'is THIS one a yes?'. Same scores, two verdicts. Feel which question you are actually asking; the mathematics follows from it entirely."
+      "text": "One instrument, two honest ways to turn a list of scores into probabilities, and choosing the way is the whole lesson. The RELATIVE way (softmax): exponentiate every score, normalize so they sum to one. A single distribution over rivals; only the GAPS between scores matter; and the beam is coupled. Press any pan down and every other pan must rise, because the total is pinned at one. It answers 'which of these is best?'. The ABSOLUTE way (sigmoid): push each score through its own private gate into a standalone yes/no probability, no denominator, no rivals, any number of gates may open. It answers 'is THIS one a yes?'. Same scores, two verdicts. Feel which question you are actually asking; the mathematics follows from it entirely."
     },
     {
       "id": "relative-verdict",
       "type": "plaque",
       "prop": "pedestal",
       "title": "The Relative Verdict",
-      "text": "p_i = e^(s_i) / Σ_j e^(s_j) — exponentiate, then divide by the total. Three defining properties. ONLY GAPS MATTER: add the same constant to every score and nothing changes; a raw score means nothing except against its rivals. COUPLED: every weight sits over the same denominator, so raising any one score lifts its share and forces EVERY other share down — the pans are chained. NEEDS RIVALS: with a single candidate, p = 1 always, carrying no information. Regret when candidate k is the truth: −log(p_k). The bars above are chained exactly this way — watch one rise force the rest down.",
-      "float": { "widget": "softmax_bars", "n": 4 }
+      "text": "p_i = e^(s_i) / Σ_j e^(s_j), exponentiate, then divide by the total. Three defining properties. ONLY GAPS MATTER: add the same constant to every score and nothing changes; a raw score means nothing except against its rivals. COUPLED: every weight sits over the same denominator, so raising any one score lifts its share and forces EVERY other share down. The pans are chained. NEEDS RIVALS: with a single candidate, p = 1 always, carrying no information. Regret when candidate k is the truth: −log(p_k). The bars above are chained exactly this way. Watch one rise force the rest down.",
+      "float": {
+        "widget": "softmax_bars",
+        "n": 4
+      }
     },
     {
       "id": "absolute-verdict",
       "type": "plaque",
       "prop": "pedestal",
       "title": "The Absolute Verdict",
-      "text": "p = 1 / (1 + e^(−s)) squashes a single score into (0, 1): a standalone probability of 'yes'. No denominator, no rivals — p depends on its own score ALONE. Consequences: INDEPENDENCE — change one score and only its own verdict moves; any number of gates may read yes at once, and the probabilities need not sum to anything. A LEARNED THRESHOLD — judge sigmoid(t·s + b): the factor t sharpens or softens, the bias b sets where the boundary falls. A NEGATIVE b makes 'no' the default, exactly right when a true yes is rare. Regret per gate (truth y ∈ {0,1}): −[y·log p + (1−y)·log(1−p)]. The bars above rise and fall each on its own — none owes the others anything.",
-      "float": { "widget": "softmax_bars", "n": 4, "independent": true }
+      "text": "p = 1 / (1 + e^(−s)) squashes a single score into (0, 1): a standalone probability of 'yes'. No denominator, no rivals, p depends on its own score ALONE. Consequences: INDEPENDENCE, change one score and only its own verdict moves; any number of gates may read yes at once, and the probabilities need not sum to anything. A LEARNED THRESHOLD, judge sigmoid(t·s + b): the factor t sharpens or softens, the bias b sets where the boundary falls. A NEGATIVE b makes 'no' the default, exactly right when a true yes is rare. Regret per gate (truth y ∈ {0,1}): −[y·log p + (1−y)·log(1−p)]. The bars above rise and fall each on its own, none owes the others anything.",
+      "float": {
+        "widget": "softmax_bars",
+        "n": 4,
+        "independent": true
+      }
     },
     {
       "id": "two-judgments-diagram",
@@ -40,23 +47,28 @@
       "id": "worked-verdicts",
       "type": "tome",
       "title": "The Two Verdicts, Worked by Hand",
-      "text": "Take one item with three candidate scores:\n\n    s = ( 0.82,  0.15,  -0.20 )\n\nRead the same list both ways and watch the difference appear in the arithmetic.\n\n=== THE RELATIVE VERDICT (softmax) ===\n\nStep 1 — exponentiate each score:\n    e^(0.82)  = 2.2705\n    e^(0.15)  = 1.1618\n    e^(-0.20) = 0.8187\n\nStep 2 — sum them: 2.2705 + 1.1618 + 0.8187 = 4.2511\n\nStep 3 — divide each by the sum:\n    p1 = 2.2705 / 4.2511 = 0.534\n    p2 = 1.1618 / 4.2511 = 0.273\n    p3 = 0.8187 / 4.2511 = 0.193\n    (they sum to 1.000, as they must)\n\nNow feel the COUPLING. Raise ONLY the first score, 0.82 → 1.82, leaving the others exactly where they were:\n\n    e^(1.82)  = 6.1719\n    e^(0.15)  = 1.1618  (unchanged)\n    e^(-0.20) = 0.8187  (unchanged)\n    sum       = 8.1524\n\n    p1 = 6.1719 / 8.1524 = 0.757   (rose,  0.534 -> 0.757)\n    p2 = 1.1618 / 8.1524 = 0.143   (FELL,  0.273 -> 0.143)\n    p3 = 0.8187 / 8.1524 = 0.100   (FELL,  0.193 -> 0.100)\n\nThe second and third weights dropped though their own scores never moved. The shared denominator grew, so every share shrank except the one that pushed it.\n\nCompanion fact — ONLY GAPS MATTER. Add 5 to all three scores:\n\n    softmax(5.82, 5.15, 4.80) = (0.534, 0.273, 0.193)\n\nIdentical. A common shift cancels top and bottom; only distance from rivals counts.\n\n=== THE ABSOLUTE VERDICT (sigmoid, then regret) ===\n\nEach score answers alone. Rescale by t and shift by b to set the threshold; take t = 10, b = -5 (negative, because a 'yes' is rare here — the default should lean 'no'):\n\n    logit = t * s + b\n    0.82 * 10 - 5 =  3.20\n    0.15 * 10 - 5 = -3.50\n    -0.20 * 10 - 5 = -7.00\n\nSquash each with p = 1 / (1 + e^(-logit)):\n    sigmoid( 3.20) = 0.961\n    sigmoid(-3.50) = 0.029\n    sigmoid(-7.00) = 0.001\n\nEach is a standalone yes-probability — no sum, no rival consulted. The regret, with the first truly yes (y = 1) and the others no (y = 0), by binary cross-entropy -[y*log(p) + (1-y)*log(1-p)]:\n\n    yes, first:  -log(0.961)     = 0.040\n    no,  second: -log(1 - 0.029) = 0.030\n    no,  third:  -log(1 - 0.001) = 0.001\n\nEvery number computed from ITS OWN score and nothing else. Raise the first score and only the first probability and regret move — the exact opposite of the softmax above, on the very same list.\n\n=== THE ONE-LINE CONTRAST ===\n\n    RELATIVE: exponentiate + normalise -> weights sum to 1 -> coupled -> 'which is best?' -> needs rivals.\n    ABSOLUTE: squash each alone (+ a bias to set the threshold) -> independent yes/no -> 'is this one a yes?' -> stands on its own.\n\nSame scores. The question you ask decides the verdict — and the entire shape of the arithmetic that follows.",
-      "float": { "widget": "curve_trace", "fn": "sigmoid" }
+      "text": "Take one item with three candidate scores:\n\n    s = ( 0.82,  0.15,  -0.20 )\n\nRead the same list both ways and watch the difference appear in the arithmetic.\n\n=== THE RELATIVE VERDICT (softmax) ===\n\nStep 1, exponentiate each score:\n    e^(0.82)  = 2.2705\n    e^(0.15)  = 1.1618\n    e^(-0.20) = 0.8187\n\nStep 2, sum them: 2.2705 + 1.1618 + 0.8187 = 4.2511\n\nStep 3, divide each by the sum:\n    p1 = 2.2705 / 4.2511 = 0.534\n    p2 = 1.1618 / 4.2511 = 0.273\n    p3 = 0.8187 / 4.2511 = 0.193\n    (they sum to 1.000, as they must)\n\nNow feel the COUPLING. Raise ONLY the first score, 0.82 → 1.82, leaving the others exactly where they were:\n\n    e^(1.82)  = 6.1719\n    e^(0.15)  = 1.1618  (unchanged)\n    e^(-0.20) = 0.8187  (unchanged)\n    sum       = 8.1524\n\n    p1 = 6.1719 / 8.1524 = 0.757   (rose,  0.534 -> 0.757)\n    p2 = 1.1618 / 8.1524 = 0.143   (FELL,  0.273 -> 0.143)\n    p3 = 0.8187 / 8.1524 = 0.100   (FELL,  0.193 -> 0.100)\n\nThe second and third weights dropped though their own scores never moved. The shared denominator grew, so every share shrank except the one that pushed it.\n\nCompanion fact. ONLY GAPS MATTER. Add 5 to all three scores:\n\n    softmax(5.82, 5.15, 4.80) = (0.534, 0.273, 0.193)\n\nIdentical. A common shift cancels top and bottom; only distance from rivals counts.\n\n=== THE ABSOLUTE VERDICT (sigmoid, then regret) ===\n\nEach score answers alone. Rescale by t and shift by b to set the threshold; take t = 10, b = -5 (negative, because a 'yes' is rare here. The default should lean 'no'):\n\n    logit = t * s + b\n    0.82 * 10 - 5 =  3.20\n    0.15 * 10 - 5 = -3.50\n    -0.20 * 10 - 5 = -7.00\n\nSquash each with p = 1 / (1 + e^(-logit)):\n    sigmoid( 3.20) = 0.961\n    sigmoid(-3.50) = 0.029\n    sigmoid(-7.00) = 0.001\n\nEach is a standalone yes-probability, no sum, no rival consulted. The regret, with the first truly yes (y = 1) and the others no (y = 0), by binary cross-entropy -[y*log(p) + (1-y)*log(1-p)]:\n\n    yes, first:  -log(0.961)     = 0.040\n    no,  second: -log(1 - 0.029) = 0.030\n    no,  third:  -log(1 - 0.001) = 0.001\n\nEvery number computed from ITS OWN score and nothing else. Raise the first score and only the first probability and regret move, the exact opposite of the softmax above, on the very same list.\n\n=== THE ONE-LINE CONTRAST ===\n\n    RELATIVE: exponentiate + normalise -> weights sum to 1 -> coupled -> 'which is best?' -> needs rivals.\n    ABSOLUTE: squash each alone (+ a bias to set the threshold) -> independent yes/no -> 'is this one a yes?' -> stands on its own.\n\nSame scores. The question you ask decides the verdict, and the entire shape of the arithmetic that follows.",
+      "float": {
+        "widget": "curve_trace",
+        "fn": "sigmoid"
+      }
     },
     {
       "id": "two-judgments-figure",
       "type": "image",
       "title": "Coupled Versus Independent",
       "image": "world/assets/two-judgments.png",
-      "caption": "One list of scores rendered two ways. Left, softmax: exponentiate and normalise — one distribution summing to one; press a bar up and the others give way. Right, sigmoid: each score squashed on its own private curve into an independent yes/no; the bars owe nothing to one another. Comparative and coupled versus absolute and independent — pure arithmetic."
+      "caption": "One list of scores rendered two ways. Left, softmax: exponentiate and normalise, one distribution summing to one; press a bar up and the others give way. Right, sigmoid: each score squashed on its own private curve into an independent yes/no; the bars owe nothing to one another. Comparative and coupled versus absolute and independent, pure arithmetic."
     },
     {
       "id": "where-this-leads",
       "type": "plaque",
       "prop": "lectern",
       "title": "Where This Leads ↑",
-      "text": "Up in the Observatory of Sight, this fork is the difference between two ways of teaching a machine to match pictures to words. CLIP takes the RELATIVE verdict — softmax over every rival in the batch — and its coupling is exactly why it must gather the whole batch and craves enormous ones. SigLIP takes the ABSOLUTE verdict — a private sigmoid per pair, with a learned negative bias because true matches are rare — and its independence is exactly why it thrives without batch-wide gathering. Two scales, new names, same arithmetic.",
-      "float": { "widget": "pull_push" }
+      "text": "Up in the Observatory of Sight, this fork is the difference between two ways of teaching a machine to match pictures to words. CLIP takes the RELATIVE verdict, softmax over every rival in the batch, and its coupling is exactly why it must gather the whole batch and craves enormous ones. SigLIP takes the ABSOLUTE verdict, a private sigmoid per pair, with a learned negative bias because true matches are rare, and its independence is exactly why it thrives without batch-wide gathering. Two scales, new names, same arithmetic.",
+      "float": {
+        "widget": "pull_push"
+      }
     }
   ]
 }

@@ -11,45 +11,54 @@
       "title": "The Wheel of Frequencies",
       "prop": "frequency_wheel",
       "scale": 1.3,
-      "text": "Nested wheels, each turning at its own rate — the SINUSOID family, sin and cos tracing a point around a circle. One sinusoid alone cannot name a position: it returns to the same value every cycle. But stack many frequencies, fast to slow, and together they pin down a unique position — exactly the way second, minute, and hour hands together fix one time. A standard ladder: freq_i = 1/10000^(2i/d), a smooth spread from fast hands to very slow ones. Feed any integer through the family and out comes a fingerprint of rotations, different for every index. Pure trigonometry, turning a bare number into a distinctive code."
+      "text": "Nested wheels, each turning at its own rate, the SINUSOID family, sin and cos tracing a point around a circle. One sinusoid alone cannot name a position: it returns to the same value every cycle. But stack many frequencies, fast to slow, and together they pin down a unique position, exactly the way second, minute, and hour hands together fix one time. A standard ladder: freq_i = 1/10000^(2i/d), a smooth spread from fast hands to very slow ones. Feed any integer through the family and out comes a fingerprint of rotations, different for every index. Pure trigonometry, turning a bare number into a distinctive code."
     },
     {
       "id": "rotation-length",
       "type": "plaque",
       "prop": "pedestal",
       "title": "Rotation Preserves Length",
-      "text": "Spin a vector about the origin: its direction changes, its length does not. Rotating [x, y] by φ gives [x·cosφ − y·sinφ, x·sinφ + y·cosφ]; compute the new length and sin² + cos² = 1 cancels everything — unchanged. The meaning: a rotation can carry information in the ANGLE while leaving the magnitude untouched. It is the gentlest transformation there is — reversible and distance-preserving. Above, both arrows keep their exact length however far they swing.",
-      "float": { "widget": "arrows_dot", "bar": false, "speed": 0.5 }
+      "text": "Spin a vector about the origin: its direction changes, its length does not. Rotating [x, y] by φ gives [x·cosφ − y·sinφ, x·sinφ + y·cosφ]; compute the new length and sin² + cos² = 1 cancels everything, unchanged. The meaning: a rotation can carry information in the ANGLE while leaving the magnitude untouched. It is the gentlest transformation there is, reversible and distance-preserving. Above, both arrows keep their exact length however far they swing.",
+      "float": {
+        "widget": "arrows_dot",
+        "bar": false,
+        "speed": 0.5
+      }
     },
     {
       "id": "angle-addition",
       "type": "plaque",
       "prop": "lectern",
       "title": "The Angle-Addition Identity",
-      "text": "cos(A)·cos(B) + sin(A)·sin(B) = cos(A − B). The left side is exactly the DOT PRODUCT of two unit vectors at angles A and B (the Loom next door, with both lengths 1). So alignment depends only on the DIFFERENCE of angles: rotate BOTH vectors by the same extra amount and their dot product does not move. Watch above — the pair swings around the dial together while their mutual angle breathes, and the bar tracks only the gap, ignoring the shared swing entirely.",
-      "float": { "widget": "arrows_dot", "corotate": true }
+      "text": "cos(A)·cos(B) + sin(A)·sin(B) = cos(A − B). The left side is exactly the DOT PRODUCT of two unit vectors at angles A and B (the Loom next door, with both lengths 1). So alignment depends only on the DIFFERENCE of angles: rotate BOTH vectors by the same extra amount and their dot product does not move. Watch above, the pair swings around the dial together while their mutual angle breathes, and the bar tracks only the gap, ignoring the shared swing entirely.",
+      "float": {
+        "widget": "arrows_dot",
+        "corotate": true
+      }
     },
     {
       "id": "frequency-diagram",
       "type": "diagram",
       "title": "One Index, Many Frequencies",
       "spec": "graph TD\n  I[\"any index n\"] --> F[\"frequencies 1/10000^(2i/d)\"]\n  F --> H1[\"fast hand: changes quickly\"]\n  F --> H2[\"slow hand: changes slowly\"]\n  H1 --> P[\"a unique vector of sines and cosines\"]\n  H2 --> P\n  P --> U[\"a distinctive fingerprint for n\"]",
-      "caption": "A ladder of frequencies turns a single number into a unique, rich fingerprint — fast and slow hands together."
+      "caption": "A ladder of frequencies turns a single number into a unique, rich fingerprint, fast and slow hands together."
     },
     {
       "id": "hands-and-rotation",
       "type": "image",
       "title": "Hands of the Wheel, and Angles that Add",
       "image": "world/assets/sinusoids-rotation.png",
-      "caption": "Left: sinusoids at geometrically spaced frequencies — slow hands that barely turn, fast hands that cycle quickly. No single hand can name a position, but read one index across ALL of them (the dashed line) and the collection of values is unique. Right: rotate by θ, then by φ, and you land exactly where one rotation of θ + φ would put you — length unchanged throughout."
+      "caption": "Left: sinusoids at geometrically spaced frequencies, slow hands that barely turn, fast hands that cycle quickly. No single hand can name a position, but read one index across ALL of them (the dashed line) and the collection of values is unique. Right: rotate by θ, then by φ, and you land exactly where one rotation of θ + φ would put you, length unchanged throughout."
     },
     {
       "id": "where-this-leads",
       "type": "plaque",
       "prop": "lectern",
       "title": "Where This Leads ↑",
-      "text": "Upstairs, order in a sequence comes from this wheel. ATTENTION is order-blind, so position must be injected: sinusoidal positional encoding runs a token's index through the frequency ladder and ADDS the fingerprint to its embedding. RoPE instead ROTATES each query and key by an angle proportional to position — length preserved, so the content is undistorted, and by the angle-addition identity their dot product sees only RELATIVE distance. DIFFUSION borrows the same wheel to embed the timestep t for its denoiser. One wheel, three costumes.",
-      "float": { "widget": "orbit_phase" }
+      "text": "Upstairs, order in a sequence comes from this wheel. ATTENTION is order-blind, so position must be injected: sinusoidal positional encoding runs a token's index through the frequency ladder and ADDS the fingerprint to its embedding. RoPE instead ROTATES each query and key by an angle proportional to position, length preserved, so the content is undistorted, and by the angle-addition identity their dot product sees only RELATIVE distance. DIFFUSION borrows the same wheel to embed the timestep t for its denoiser. One wheel, three costumes.",
+      "float": {
+        "widget": "orbit_phase"
+      }
     }
   ]
 }

@@ -1,7 +1,7 @@
 // The guiding wisp: a faint will-o'-the-wisp that appears only when you stand
 // still or look toward the way onward, then drifts to the doorway that leads
 // deeper along the learning path. A gentle nudge layered on top of the always-
-// present signposts (see wayfinding.js) — it never clutters ordinary walking.
+// present signposts (see wayfinding.js), it never clutters ordinary walking.
 //
 // Recommendation = the next chamber in the wing by `order` (from the hub, the
 // first chamber of a wing). Purely layout-derived; no content authoring.

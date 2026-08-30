@@ -1,9 +1,9 @@
 // The Marauder's footsteps: a trail of glowing prints that marches ahead of the
 // keeper along the LEARNING path. Two scales, one seamless trail:
-//   • inside a room  — walk the exhibits in study order (the room's exhibit
+//   • inside a room. Walk the exhibits in study order (the room's exhibit
 //     order: central metaphor first, then plaques/diagrams/figures), so the
 //     prints show which module to attend to first;
-//   • between rooms  — once the room is toured, lead out through the doorway
+//   • between rooms, once the room is toured, lead out through the doorway
 //     that advances the wing's order (order 1 → 2 → 3 …), the same forward rule
 //     the guiding wisp uses.
 // Purely layout- + order-derived; no content authoring. Created once and lives
@@ -46,8 +46,7 @@ export class Footsteps {
     this.getTour = getTour || (() => null);
     this._room = null;
     this._queue = null;   // remaining waypoints: [{x,z,reach}]
-    // Guidance is a toggle (P). Persisted, so it stays how the keeper left it —
-    // on for a guided walk, off to roam or head straight somewhere of your own.
+    // Guidance is a toggle (P). Persisted, so it stays how the keeper left it: // on for a guided walk, off to roam or head straight somewhere of your own.
     this.enabled = !(typeof localStorage !== 'undefined' && localStorage.getItem('palace-footsteps') === 'off');
 
     this.group = new THREE.Group();
@@ -76,7 +75,7 @@ export class Footsteps {
   }
 
   // The forward doorway from a room (into the next-order chamber, or from the
-  // hub into a wing's first chamber) — mirrors the wisp's recommendation.
+  // hub into a wing's first chamber), mirrors the wisp's recommendation.
   _forwardDoor(roomId) {
     const here = this.roomsById[roomId];
     if (!here) return null;
@@ -112,7 +111,7 @@ export class Footsteps {
   }
 
   // Called on the throttled tick with the room the keeper stands in (null in a
-  // corridor — we keep the existing queue so the trail keeps leading onward).
+  // corridor. We keep the existing queue so the trail keeps leading onward).
   setRoom(roomId) {
     if (roomId && roomId !== this._room) {
       this._room = roomId;

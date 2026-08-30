@@ -3,7 +3,7 @@
 // the active space, runs it for a fixed duration with optional fx (light dim /
 // fog pull / a particle burst near the keeper), despawns cleanly, then maybe
 // chains a sequel. Idle cost is ~0: no geometry and no per-frame work until an
-// event is live. Discipline mirrors kinetics.js — update(t, dt) only mutates
+// event is live. Discipline mirrors kinetics.js, update(t, dt) only mutates
 // transforms, material params and the ONE shared particle pool buffer; module
 // temp state; no allocation while an event runs.
 
@@ -16,7 +16,7 @@ const FOG_NEAR = 3, FOG_FAR = 20; // fog_pull targets (lerped toward, restored)
 const smooth = (x) => { const c = Math.min(1, Math.max(0, x)); return c * c * (3 - 2 * c); };
 const rng = (seed) => { let s = (seed >>> 0) || 1; return () => { s = (s * 1664525 + 1013904223) >>> 0; return s / 0xffffffff; }; };
 
-// Scratch for a particle burst — base position + velocity per mote. Module-level
+// Scratch for a particle burst, base position + velocity per mote. Module-level
 // so a burst never allocates; only one burst is ever live at a time.
 const _bx = new Float32Array(POOL_N), _by = new Float32Array(POOL_N), _bz = new Float32Array(POOL_N);
 const _bvx = new Float32Array(POOL_N), _bvy = new Float32Array(POOL_N), _bvz = new Float32Array(POOL_N);
@@ -119,7 +119,7 @@ export class AmbientEvents {
     if (this._timer <= 0) {
       const ctx = this.getContext();
       // Reading an exhibit, an open panel, or a fresh teleport holds events.
-      // Don't burn the whole delay on a blocked roll — retry shortly, so the
+      // Don't burn the whole delay on a blocked roll, retry shortly, so the
       // event arrives just after the keeper looks up instead of vanishing.
       if (!ctx || ctx.paused) { this._timer = 0.6; return; }
       this._timer = this._delay(false);

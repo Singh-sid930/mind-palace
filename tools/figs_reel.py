@@ -31,9 +31,9 @@ def fig_length_degradation():
                         wspace=0.24, left=0.065, right=0.975,
                         top=0.80, bottom=0.135)
 
-    P.suptitle(f, "The Reel of Lengths  —  variable length, and the drift beyond the horizon", wing=WING)
+    P.suptitle(f, "The Reel of Lengths, variable length, and the drift beyond the horizon", wing=WING)
     f.text(0.5, 0.885,
-           "Frame count T is a sequence length, not a fixed weight — so quality holds within the trained span, "
+           "Frame count T is a sequence length, not a fixed weight, so quality holds within the trained span, "
            "then drifts.  The same curve governs an LLM past its context.",
            ha="center", color=P.MUTED, fontsize=13)
 

@@ -1,6 +1,6 @@
 """Concept figures for the Corridor of the Three Vows (VICReg).
 
-VICReg — Variance-Invariance-Covariance Regularization
+VICReg, Variance-Invariance-Covariance Regularization
 (Bardes, Ponce & LeCun, ICLR 2022).
 
 Run:  ~/anaconda3/envs/lrm/bin/python tools/figs_vicreg.py
@@ -19,12 +19,12 @@ ACC = P.WING["emerald"]["accent"]
 
 
 # ===========================================================================
-# FIGURE 1 — the three terms
+# FIGURE 1, the three terms
 # ===========================================================================
 def fig_three_terms():
     f, axes = P.fig(15.0, 5.4, wing="emerald", ncols=3)
     a_inv, a_var, a_cov = axes
-    P.suptitle(f, "VICReg — The Three Vows over a Batch of Embeddings")
+    P.suptitle(f, "VICReg, The Three Vows over a Batch of Embeddings")
 
     # ---- (1) Invariance ----------------------------------------------------
     a_inv.set_title("Invariance", color=ACC, pad=12)
@@ -157,7 +157,7 @@ def fig_three_terms():
 
 
 # ===========================================================================
-# FIGURE 2 — the expander schematic
+# FIGURE 2, the expander schematic
 # ===========================================================================
 def fig_expander():
     f, ax = P.fig(13.5, 6.4, wing="emerald")
@@ -169,7 +169,7 @@ def fig_expander():
     ax.set_facecolor(P.BG)
     for s in ax.spines.values():
         s.set_visible(False)
-    ax.set_title("The Expander  hϕ  — a discardable buffer that takes the loss",
+    ax.set_title("The Expander  hϕ. A discardable buffer that takes the loss",
                  color=P.INK, fontsize=18, pad=14)
 
     def box(x, y, w, h, label, ec, sub=None, fc=P.PANEL, lw=2.0):
@@ -226,7 +226,7 @@ def fig_expander():
         "Why expand, then throw it away?\n\n"
         "1.  The expander absorbs the invariance\n"
         "     pressure, so the encoder's output $y$\n"
-        "     stays rich — it need not forget what\n"
+        "     stays rich. It need not forget what\n"
         "     differs between two views of an image.\n\n"
         "2.  Raising the dimension turns nonlinear\n"
         "     correlations into linear ones, which the\n"

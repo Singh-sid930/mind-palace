@@ -12,11 +12,19 @@
       "name": "The Rank Bottleneck",
       "room": "the-parallel-whisper",
       "exhibit": "the-bottleneck",
-      "summary": "Shape trace along the LoRA branch: x is (d,), A . x is (r,) — squeezed to the rank-r bottleneck — then B . (A . x) is (d,), expanded back. Passing through an r-wide waist makes the branch's d x d effect at most rank r, so the bottleneck structurally forces the update to be low-rank."
+      "summary": "Shape trace along the LoRA branch: x is (d,), A . x is (r,), squeezed to the rank-r bottleneck, then B. (A . x) is (d,), expanded back. Passing through an r-wide waist makes the branch's d x d effect at most rank r, so the bottleneck structurally forces the update to be low-rank."
     }
   ],
   "edges": [
-    { "from": "rank-bottleneck", "to": "parallel-branch", "relation": "part-of" },
-    { "from": "parallel-branch", "to": "lora-core", "relation": "relates-to" }
+    {
+      "from": "rank-bottleneck",
+      "to": "parallel-branch",
+      "relation": "part-of"
+    },
+    {
+      "from": "parallel-branch",
+      "to": "lora-core",
+      "relation": "relates-to"
+    }
   ]
 }

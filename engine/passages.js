@@ -57,14 +57,14 @@ function descendingStair(pal, opts = {}) {
   );
   veil.position.set(0, archY - 0.05, zWall + 0.15);
   g.add(veil);
-  // Glowing rim around the pit mouth at floor level — frames the opening.
+  // Glowing rim around the pit mouth at floor level, frames the opening.
   const rim = new THREE.Mesh(
     new THREE.BoxGeometry(stepW + 0.5, 0.06, 0.12),
     new THREE.MeshLambertMaterial({ color: EDGE, emissive: GLOW, emissiveIntensity: 0.55 })
   );
   rim.position.set(0, 0.04, zNear);
   g.add(rim);
-  // Down-pointing chevrons hovering above the mouth — a "descend" beacon.
+  // Down-pointing chevrons hovering above the mouth, a "descend" beacon.
   const chev = new THREE.Group();
   for (let i = 0; i < 2; i++) {
     for (const sgn of [-1, 1]) {
@@ -106,7 +106,7 @@ function stair(pal, opts = {}) {
     const s = new THREE.Mesh(new THREE.BoxGeometry(stepW, topH, stepD), lam(STONE));
     s.position.set(0, topH / 2, z);
     g.add(s);
-    // Glowing tread edge on the room-facing lip — the whole flight reads as lit.
+    // Glowing tread edge on the room-facing lip. The whole flight reads as lit.
     const lip = new THREE.Mesh(
       new THREE.BoxGeometry(stepW, 0.04, 0.06),
       new THREE.MeshLambertMaterial({ color: EDGE, emissive: GLOW, emissiveIntensity: 0.7 })
@@ -115,7 +115,7 @@ function stair(pal, opts = {}) {
     g.add(lip);
   }
   // A luminous archway at the top of the flight. It sits level with the top step
-  // (just in front of the wall) — pushing it back any further hides it behind the
+  // (just in front of the wall), pushing it back any further hides it behind the
   // wall, which occludes the whole portal.
   const archZ = zTop + 0.05;
   const arch = new THREE.Mesh(
@@ -139,7 +139,7 @@ function stair(pal, opts = {}) {
   );
   veil.position.set(0, (topY + 1.05) / 2 + 0.5, archZ);
   g.add(veil);
-  // Upward chevrons above the arch — a clear "go up" beacon.
+  // Upward chevrons above the arch. A clear "go up" beacon.
   const chev = new THREE.Group();
   for (let i = 0; i < 2; i++) {
     for (const sgn of [-1, 1]) {
@@ -153,7 +153,7 @@ function stair(pal, opts = {}) {
     }
   }
   g.add(chev);
-  // A faint pillar of light rising from the arch — visible across the hall.
+  // A faint pillar of light rising from the arch, visible across the hall.
   const shaft = new THREE.Mesh(
     new THREE.CylinderGeometry(0.4, 0.7, 3.0, 16, 1, true),
     new THREE.MeshBasicMaterial({ color: GLOW, transparent: true, opacity: 0.05,
@@ -288,7 +288,7 @@ function signboard(kind, destName, pal, anchor) {
 }
 
 // Build a passage MOUTH (stair up/down or lateral archway) at its placement.
-// Returns { group, update?, hit, record } — record is the interactable payload.
+// Returns { group, update?, hit, record }, record is the interactable payload.
 // Gatekeepers are voiced by the same backend as Gemma. On a static host there
 // is nothing behind /api, so they are hidden rather than left standing as mute
 // sentries over stairs that open anyway. Floors build lazily, so this keeps a

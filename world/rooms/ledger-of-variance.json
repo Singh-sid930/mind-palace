@@ -11,31 +11,39 @@
       "title": "The Ledger of Variance",
       "prop": "variance_balance",
       "scale": 1.2,
-      "text": "Two glowing columns tally spread — gold for signal, blue for noise — beneath a cap that never moves: however the knob wanders, the total is exactly one. VARIANCE is the currency of noise: how far a quantity typically strays from its mean. Two bookkeeping rules govern every entry. SCALING: Var(c·X) = c²·Var(X) — halve a signal and its variance quarters. ADDING independents: Var(A+B) = Var(A) + Var(B). Both are short algebra, and together they predict the spread of any recipe that scales random things and adds them. Most 'why does the noise stay under control?' questions are answered by reading this ledger."
+      "text": "Two glowing columns tally spread, gold for signal, blue for noise, beneath a cap that never moves: however the knob wanders, the total is exactly one. VARIANCE is the currency of noise: how far a quantity typically strays from its mean. Two bookkeeping rules govern every entry. SCALING: Var(c·X) = c²·Var(X), halve a signal and its variance quarters. ADDING independents: Var(A+B) = Var(A) + Var(B). Both are short algebra, and together they predict the spread of any recipe that scales random things and adds them. Most 'why does the noise stay under control?' questions are answered by reading this ledger."
     },
     {
       "id": "two-rules",
       "type": "plaque",
       "prop": "pedestal",
       "title": "The Two Rules of Variance",
-      "text": "Rule one — SCALING: Var(c·X) = c²·Var(X). Constants come out of a variance SQUARED, because variance is built from squared deviations. Rule two — ADDING (independent A and B): Var(A+B) = Var(A) + Var(B). Not independent? A cross term 2·Cov(A,B) appears; independence kills it. One consequence worth memorizing: scale a unit-variance quantity by √a and its variance becomes exactly a. So when a square root sits in front of a term, someone usually wanted its SQUARE — a clean variance — in the books.",
-      "float": { "widget": "bell_slide" }
+      "text": "Rule one. SCALING: Var(c·X) = c²·Var(X). Constants come out of a variance SQUARED, because variance is built from squared deviations. Rule two. ADDING (independent A and B): Var(A+B) = Var(A) + Var(B). Not independent? A cross term 2·Cov(A,B) appears; independence kills it. One consequence worth memorizing: scale a unit-variance quantity by √a and its variance becomes exactly a. So when a square root sits in front of a term, someone usually wanted its SQUARE, a clean variance, in the books.",
+      "float": {
+        "widget": "bell_slide"
+      }
     },
     {
       "id": "variance-preservation",
       "type": "plaque",
       "prop": "lectern",
       "title": "The Variance-Preserving Mixture",
-      "text": "A small lemma with a big career. Take X with variance 1 and independent noise E, also variance 1. Blend with square-root weights: Y = √a·X + √(1−a)·E. Rule one: the terms contribute a and (1−a). Rule two: independent, so they add. Var(Y) = a + (1−a) = 1 — the a cancels. Slide the blend anywhere from all-signal to all-noise and the spread never drifts. Example: a = 0.25 gives Y = 0.5·X + 0.866·E — quarter signal, three-quarters noise, total spread still exactly 1. The square roots exist so that their squares are mixing weights that sum to one.",
-      "float": { "widget": "balance_tilt" }
+      "text": "A small lemma with a big career. Take X with variance 1 and independent noise E, also variance 1. Blend with square-root weights: Y = √a·X + √(1−a)·E. Rule one: the terms contribute a and (1−a). Rule two: independent, so they add. Var(Y) = a + (1−a) = 1, the a cancels. Slide the blend anywhere from all-signal to all-noise and the spread never drifts. Example: a = 0.25 gives Y = 0.5·X + 0.866·E, quarter signal, three-quarters noise, total spread still exactly 1. The square roots exist so that their squares are mixing weights that sum to one.",
+      "float": {
+        "widget": "balance_tilt"
+      }
     },
     {
       "id": "covariance-collapse",
       "type": "plaque",
       "prop": "pedestal",
       "title": "Covariance",
-      "text": "COVARIANCE measures how two quantities move TOGETHER: positive when they rise and fall in step, negative when opposed, zero when knowing one tells you nothing about the other. Several quantities give a symmetric COVARIANCE MATRIX — variances down the diagonal, covariances off it. Two readings matter: zero off-diagonals are exactly why independent noises add their variances; and near-zero off-diagonals mean your quantities carry independent information rather than echoing one another. Above: a matrix whose diagonal stays lit while the off-diagonal entries are pressed toward dark.",
-      "float": { "widget": "heat_grid", "n": 4, "variant": "diagonal" }
+      "text": "COVARIANCE measures how two quantities move TOGETHER: positive when they rise and fall in step, negative when opposed, zero when knowing one tells you nothing about the other. Several quantities give a symmetric COVARIANCE MATRIX, variances down the diagonal, covariances off it. Two readings matter: zero off-diagonals are exactly why independent noises add their variances; and near-zero off-diagonals mean your quantities carry independent information rather than echoing one another. Above: a matrix whose diagonal stays lit while the off-diagonal entries are pressed toward dark.",
+      "float": {
+        "widget": "heat_grid",
+        "n": 4,
+        "variant": "diagonal"
+      }
     },
     {
       "id": "variance-diagram",
@@ -49,15 +57,18 @@
       "type": "image",
       "title": "The Variance Budget",
       "image": "world/assets/variance-preserving-mixture.png",
-      "caption": "Blend signal x and independent noise ε (each variance 1) as y = √(1−β)·x + √β·ε. Left: the two stacked shares are the SQUARED weights, (1−β) and β — they trade off but always sum to the dashed line at 1. Right: point clouds at five settings of β — the mixture morphs from all-signal to all-noise while the ring of measured spread stays the same size, std ≈ 1."
+      "caption": "Blend signal x and independent noise ε (each variance 1) as y = √(1−β)·x + √β·ε. Left: the two stacked shares are the SQUARED weights, (1−β) and β, they trade off but always sum to the dashed line at 1. Right: point clouds at five settings of β, the mixture morphs from all-signal to all-noise while the ring of measured spread stays the same size, std ≈ 1."
     },
     {
       "id": "where-this-leads",
       "type": "plaque",
       "prop": "lectern",
       "title": "Where This Leads ↑",
-      "text": "Upstairs in DIFFUSION, the forward noising step x_t = √(1−βₜ)·x_{t−1} + √βₜ·εₜ is the variance-preserving mixture with a = 1−βₜ — the reason noising ends at a clean standard-normal blur instead of blowing up. Upstairs in WORLD MODELS, VICReg fights representation collapse with this same ledger: hold each feature's VARIANCE above a floor, press the off-diagonal COVARIANCES toward zero. Same two rules, higher floors.",
-      "float": { "widget": "noise_morph", "shape": "ring" }
+      "text": "Upstairs in DIFFUSION, the forward noising step x_t = √(1−βₜ)·x_{t−1} + √βₜ·εₜ is the variance-preserving mixture with a = 1−βₜ. The reason noising ends at a clean standard-normal blur instead of blowing up. Upstairs in WORLD MODELS, VICReg fights representation collapse with this same ledger: hold each feature's VARIANCE above a floor, press the off-diagonal COVARIANCES toward zero. Same two rules, higher floors.",
+      "float": {
+        "widget": "noise_morph",
+        "shape": "ring"
+      }
     }
   ]
 }

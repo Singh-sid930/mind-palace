@@ -38,14 +38,14 @@ def fig_savings():
                         wspace=0.30, left=0.045, right=0.975,
                         top=0.80, bottom=0.13)
 
-    P.suptitle(f, "The Low-Rank Bet  —  freeze W, learn only the thin factors B and A")
+    P.suptitle(f, "The Low-Rank Bet, freeze W, learn only the thin factors B and A")
     f.text(0.5, 0.885,
-           "A weight update DeltaW (d x d) is approximated by B . A with inner rank r << d.   "
+           "A weight update DeltaW (d x d) is approximated by B. A with inner rank r << d.   "
            "d = 1000,  r = 8.",
            ha="center", color=P.MUTED, fontsize=13.5)
 
     # ------------------------------------------------------------------ (a)
-    # shape schematic — DeltaW square vs the thin B . A product
+    # shape schematic, DeltaW square vs the thin B. A product
     ax = f.add_subplot(gs[0, 0]); P.style_ax(ax, WING, grid=False)
     ax.set_xlim(0, 10); ax.set_ylim(0, 10)
     ax.set_aspect("equal")
@@ -72,7 +72,7 @@ def fig_savings():
     ax.text(5.15, y0 + side / 2, "~", ha="center", va="center",
             color=P.INK, fontsize=26, fontweight="bold")
 
-    # B  (d x r)  — tall, thin
+    # B  (d x r), tall, thin
     rw = side * R / 120.0            # exaggerated thin waist (true r/d = 0.008)
     rw = max(rw, 0.42)
     bx = 5.9
@@ -88,7 +88,7 @@ def fig_savings():
     ax.text(bx + rw + 0.5, y0 + side / 2, ".", ha="center", va="center",
             color=P.INK, fontsize=22, fontweight="bold")
 
-    # A  (r x d) — wide, thin
+    # A  (r x d), wide, thin
     ax.plot([], [])
     ax_y = y0 + side / 2 - rw / 2
     axx = bx + rw + 1.0
@@ -104,7 +104,7 @@ def fig_savings():
             color=P.MUTED, fontsize=13)
 
     ax.text(bx + rw / 2 + 1.6, y0 - 1.55,
-            "B . A = 16,000 numbers  (rank at most r)",
+            "B. A = 16,000 numbers  (rank at most r)",
             ha="center", va="top", color=WARM, fontsize=12.5, fontweight="bold")
 
     # ------------------------------------------------------------------ (b)

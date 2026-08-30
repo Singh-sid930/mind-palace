@@ -19,21 +19,41 @@
       "name": "Singular Values",
       "room": "the-singular-prism",
       "exhibit": "the-ranked-importances",
-      "summary": "The diagonal entries of Σ, sorted σ₁≥σ₂≥…≥0, measuring how far a matrix stretches space along each principal direction — the energy each direction carries. For many real matrices, and especially for differences of two nearby matrices, they decay fast: a few large, then a long tail near zero, with an elbow. (Upstairs: fast decay is why weight updates are effectively low-rank.)"
+      "summary": "The diagonal entries of Σ, sorted σ₁≥σ₂≥…≥0, measuring how far a matrix stretches space along each principal direction. The energy each direction carries. For many real matrices, and especially for differences of two nearby matrices, they decay fast: a few large, then a long tail near zero, with an elbow. (Upstairs: fast decay is why weight updates are effectively low-rank.)"
     },
     {
       "id": "low-rank-approximation",
       "name": "Low-Rank Approximation",
       "room": "the-singular-prism",
       "exhibit": "best-few",
-      "summary": "Keep the top r singular values (zero the rest): M ≈ U_rΣ_rV_rᵀ, with U_r (d×r), Σ_r (r×r), V_rᵀ (r×d). Eckart–Young: this truncation is the provably closest rank-r matrix to M, minimizing ‖M−M_r‖. When σ decay fast a small r captures almost everything, compressing d² numbers to 2dr. (Upstairs: this is the mathematics behind LoRA / low-rank adaptation.)"
+      "summary": "Keep the top r singular values (zero the rest): M ≈ U_rΣ_rV_rᵀ, with U_r (d×r), Σ_r (r×r), V_rᵀ (r×d). Eckart, Young: this truncation is the provably closest rank-r matrix to M, minimizing ‖M−M_r‖. When σ decay fast a small r captures almost everything, compressing d² numbers to 2dr. (Upstairs: this is the mathematics behind LoRA / low-rank adaptation.)"
     }
   ],
   "edges": [
-    { "from": "singular-values", "to": "singular-value-decomposition", "relation": "part-of" },
-    { "from": "matrix-as-map", "to": "singular-value-decomposition", "relation": "relates-to" },
-    { "from": "low-rank-approximation", "to": "singular-value-decomposition", "relation": "builds-on" },
-    { "from": "low-rank-approximation", "to": "singular-values", "relation": "builds-on" },
-    { "from": "singular-value-decomposition", "to": "dot-product-math", "relation": "relates-to" }
+    {
+      "from": "singular-values",
+      "to": "singular-value-decomposition",
+      "relation": "part-of"
+    },
+    {
+      "from": "matrix-as-map",
+      "to": "singular-value-decomposition",
+      "relation": "relates-to"
+    },
+    {
+      "from": "low-rank-approximation",
+      "to": "singular-value-decomposition",
+      "relation": "builds-on"
+    },
+    {
+      "from": "low-rank-approximation",
+      "to": "singular-values",
+      "relation": "builds-on"
+    },
+    {
+      "from": "singular-value-decomposition",
+      "to": "dot-product-math",
+      "relation": "relates-to"
+    }
   ]
 }

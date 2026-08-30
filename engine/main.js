@@ -49,7 +49,7 @@ async function loadWorldData() {
 function buildPalaceGist(world, roomsById, graph) {
   const byRoom = {};
   for (const c of graph.concepts) (byRoom[c.room] ||= []).push(c.name);
-  const lines = [`"${world.title}" — the chambers, by wing:`];
+  const lines = [`"${world.title}", the chambers, by wing:`];
   for (const wing of world.wings) {
     lines.push(`${wing.name}:`);
     Object.values(roomsById)
@@ -57,7 +57,7 @@ function buildPalaceGist(world, roomsById, graph) {
       .sort((a, b) => a.order - b.order)
       .forEach((r) => {
         const cs = (byRoom[r.id] || []).slice(0, 5).join(', ');
-        lines.push(`  ${r.order}. ${r.name}${cs ? ' — ' + cs : ''}`);
+        lines.push(`  ${r.order}. ${r.name}${cs ? ', ' + cs: ''}`);
       });
   }
   const hub = roomsById[world.hub];
@@ -85,7 +85,7 @@ async function boot() {
   const camera = new THREE.PerspectiveCamera(72, innerWidth / innerHeight, 0.1, 500);
 
   // Floors build lazily: only the spawn level exists now; stairs/floo/teleport
-  // build others on first visit. These three are LIVE references — the manager
+  // build others on first visit. These three are LIVE references, the manager
   // swaps their contents when the keeper changes floors.
   const levels = new LevelManager(scene, layout, roomsById, graph);
   levels.activateFor(world.hub);
@@ -169,7 +169,7 @@ async function boot() {
   // GitHub Pages) /api/* returns a 404 HTML page, not JSON. With no backend
   // Gemma cannot answer anything, so rather than leave a mute ghost drifting
   // about and a dead chat panel behind T, she is removed from the build
-  // entirely: no ghost, no panel, no hints. The Gatekeepers stay — they mark
+  // entirely: no ghost, no panel, no hints. The Gatekeepers stay, they mark
   // the gated stairs, and E still opens them. A local server with Ollama
   // merely down still counts as "present" (the chat's own health check shows
   // the helpful "start Ollama" line in that case).
@@ -231,7 +231,7 @@ async function boot() {
     startEl.style.display = 'none';
     player.enabled = true;
     hud.closeAll();
-    music.start();   // first lock is a user gesture — required to open audio
+    music.start();   // first lock is a user gesture, required to open audio
     music.resume();
   });
   player.controls.addEventListener('unlock', () => {

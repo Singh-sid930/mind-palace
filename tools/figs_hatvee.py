@@ -68,7 +68,7 @@ def fig_hat_vee():
     gs = f.add_gridspec(2, 2, height_ratios=[1.0, 0.86],
                         hspace=0.30, wspace=0.16,
                         left=0.04, right=0.97, top=0.87, bottom=0.055)
-    P.suptitle(f, "The Hat and the Vee  —  lift a list of numbers into a skew frame, and read it back")
+    P.suptitle(f, "The Hat and the Vee, lift a list of numbers into a skew frame, and read it back")
     f.text(0.5, 0.905,
            "hat (∧) lifts a coordinate vector up into its skew-symmetric matrix; "
            "vee (∨) reads the matrix back down to the vector.  Aᵀ = −A: zero "

@@ -81,7 +81,7 @@ def straight_vs_curved():
     c.set_ylabel("x")
     c.set_ylim(0.3, 6.3)
 
-    suptitle(f, "A straight path forgives large steps — and that is the whole saving")
+    suptitle(f, "A straight path forgives large steps, and that is the whole saving")
     f.tight_layout(rect=[0, 0, 1, 0.93])
     return save(f, "flow-straight-path.png")
 
@@ -173,13 +173,13 @@ def two_experts():
           "action expert 300M   ·   an INPUT, not an output")
 
     ax.text(0.4, y - 0.42, "frozen-ish VLM weights", color=VLM, fontsize=9.5)
-    ax.text(6.6, y - 0.42, "separate weight set — but inside the same stack",
+    ax.text(6.6, y - 0.42, "separate weight set, but inside the same stack",
             color=ACT, fontsize=9.5)
 
     # joint attention band
     ax.add_patch(Rectangle((0.4, 2.75), 11.1, 0.95, facecolor="#1b2735",
                            edgecolor=HOT, lw=1.8, zorder=3))
-    ax.text(5.95, 3.42, "JOINT SELF-ATTENTION  —  every token attends to every token",
+    ax.text(5.95, 3.42, "JOINT SELF-ATTENTION, every token attends to every token",
             ha="center", color=HOT, fontsize=11.5, fontweight="bold", zorder=4)
     ax.text(5.95, 3.02,
             "each token computes Q,K,V with ITS OWN expert's weights, then all attend together",

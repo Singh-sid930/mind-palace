@@ -1,4 +1,4 @@
-// Named palettes — the only colors the world is allowed to use.
+// Named palettes. The only colors the world is allowed to use.
 // Each palette: floor, wall, trim (baseboard/lintels), accent (props/frames),
 // glow (emissive details, portal light), fog, light (room point-light color).
 

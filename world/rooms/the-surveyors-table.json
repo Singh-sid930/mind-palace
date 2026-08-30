@@ -4,7 +4,9 @@
   "wing": "riverworks",
   "size": "medium",
   "order": 2,
-  "connections": ["the-latent-vault"],
+  "connections": [
+    "the-latent-vault"
+  ],
   "exhibits": [
     {
       "id": "the-mixing-cauldron",
@@ -12,7 +14,7 @@
       "title": "The Mixing Cauldron",
       "prop": "cauldron",
       "scale": 1.3,
-      "text": "Training is five lines, and four of them are arithmetic.\n\n  1. sample a data point x₁\n  2. sample noise x₀ ~ N(0,1)\n  3. sample a time t\n  4. x_t = (1−t)·x₀ + t·x₁\n  5. loss = ‖(x₁ − x₀) − net(x_t, t)‖²\n\nThe cauldron is line 4: pour in (1−t) parts noise and t parts data and what comes out is a point on the straight channel. Nothing is remembered between passes. Each pass draws a fresh x₀ and a fresh t, so across a night of training the network is shown points scattered over every line between every noise draw and every data point.\n\nWorked, with the channel's numbers. x₁ = 5.0, x₀ = 1.0, t = 0.25:\n\n  x_t    = 0.75·1.0 + 0.25·5.0 = 2.0\n  target = x₁ − x₀ = 4.0\n  the net, shown (2.0, 0.25), answers 3.7\n  loss   = (4.0 − 3.7)² = 0.09\n\nThat is the whole objective. No schedule lookup, no ᾱ, no per-timestep reweighting — the same plain squared error the Scales of Error weigh in the undercroft, applied to a direction instead of to a value.",
+      "text": "Training is five lines, and four of them are arithmetic.\n\n  1. sample a data point x₁\n  2. sample noise x₀ ~ N(0,1)\n  3. sample a time t\n  4. x_t = (1−t)·x₀ + t·x₁\n  5. loss = ‖(x₁ − x₀) − net(x_t, t)‖²\n\nThe cauldron is line 4: pour in (1−t) parts noise and t parts data and what comes out is a point on the straight channel. Nothing is remembered between passes. Each pass draws a fresh x₀ and a fresh t, so across a night of training the network is shown points scattered over every line between every noise draw and every data point.\n\nWorked, with the channel's numbers. x₁ = 5.0, x₀ = 1.0, t = 0.25:\n\n  x_t    = 0.75·1.0 + 0.25·5.0 = 2.0\n  target = x₁ − x₀ = 4.0\n  the net, shown (2.0, 0.25), answers 3.7\n  loss   = (4.0 − 3.7)² = 0.09\n\nThat is the whole objective. No schedule lookup, no ᾱ, no per-timestep reweighting, the same plain squared error the Scales of Error weigh in the undercroft, applied to a direction instead of to a value.",
       "float": {
         "widget": "balance_tilt"
       }
@@ -22,10 +24,14 @@
       "type": "plaque",
       "prop": "pedestal",
       "title": "Frozen, Arithmetic, Learned",
-      "text": "Sort every piece of the system into three bins and the method stops looking mysterious.\n\nFROZEN — the VAE encoder and decoder, and the text encoder. They were trained before this model existed and no gradient reaches them. The flow model never sees a pixel or a word; it sees latents and embeddings.\n\nARITHMETIC — the interpolation, the velocity target, and the Euler integration at sampling time. Zero parameters between them. Nothing here is fitted, learned, or scheduled; it is four multiplications and a subtraction.\n\nLEARNED — exactly ONE thing: the velocity field v_θ. Every gradient that has ever been computed in this wing lands on those weights.\n\nThat is a shorter list than diffusion's, because diffusion's β schedule, its ᾱ table and its variance choices at sampling time are design decisions that must be made and matched. Here they simply do not exist to be got wrong.",
+      "text": "Sort every piece of the system into three bins and the method stops looking mysterious.\n\nFROZEN, the VAE encoder and decoder, and the text encoder. They were trained before this model existed and no gradient reaches them. The flow model never sees a pixel or a word; it sees latents and embeddings.\n\nARITHMETIC, the interpolation, the velocity target, and the Euler integration at sampling time. Zero parameters between them. Nothing here is fitted, learned, or scheduled; it is four multiplications and a subtraction.\n\nLEARNED, exactly ONE thing: the velocity field v_θ. Every gradient that has ever been computed in this wing lands on those weights.\n\nThat is a shorter list than diffusion's, because diffusion's β schedule, its ᾱ table and its variance choices at sampling time are design decisions that must be made and matched. Here they simply do not exist to be got wrong.",
       "float": {
         "widget": "flow_nodes",
-        "layers": [3, 4, 3]
+        "layers": [
+          3,
+          4,
+          3
+        ]
       }
     },
     {
@@ -33,7 +39,7 @@
       "type": "plaque",
       "prop": "pedestal",
       "title": "Four Thousand Straight Lines at Once",
-      "text": "Move from a scalar to an image and the algebra does not change — only the shapes.\n\n  x₁ = image latent   (32, 32, 4) = 4,096 numbers\n  x₀ = Gaussian noise (32, 32, 4), one N(0,1) draw per element\n  t  = still a SINGLE SCALAR\n\nThe interpolation runs element-wise. Every one of the 4,096 elements travels its own straight line, all at the same rate, all sharing one t. Take the element at position (5,7,2), where x₀ = −0.83 and x₁ = 1.20:\n\n  t=0.25 → −0.322\n  t=0.50 →  0.185\n  t=0.75 →  0.692\n  velocity = 1.20 − (−0.83) = 2.03\n\nOne number in, one number out, exactly as in the scalar channel. The image case is 4,096 copies of the same straight-line problem, solved in parallel by a network that happens to look at all of them together — which is the only reason it can produce a coherent picture rather than 4,096 unrelated dots.",
+      "text": "Move from a scalar to an image and the algebra does not change, only the shapes.\n\n  x₁ = image latent   (32, 32, 4) = 4,096 numbers\n  x₀ = Gaussian noise (32, 32, 4), one N(0,1) draw per element\n  t  = still a SINGLE SCALAR\n\nThe interpolation runs element-wise. Every one of the 4,096 elements travels its own straight line, all at the same rate, all sharing one t. Take the element at position (5,7,2), where x₀ = −0.83 and x₁ = 1.20:\n\n  t=0.25 → −0.322\n  t=0.50 →  0.185\n  t=0.75 →  0.692\n  velocity = 1.20 − (−0.83) = 2.03\n\nOne number in, one number out, exactly as in the scalar channel. The image case is 4,096 copies of the same straight-line problem, solved in parallel by a network that happens to look at all of them together, which is the only reason it can produce a coherent picture rather than 4,096 unrelated dots.",
       "float": {
         "widget": "heat_grid",
         "variant": "drift",
@@ -45,7 +51,7 @@
       "type": "plaque",
       "prop": "lectern",
       "title": "The Cached Larder",
-      "text": "Because the encoders are frozen, they compute the same thing every epoch. So most pipelines run the VAE encoder and the text encoder ONCE over the dataset, store the latents and the embeddings on disk, and let training just load tensors. The speedup is large — the two heaviest forward passes leave the training loop entirely.\n\nTwo caveats bite in practice.\n\nAUGMENTATION BREAKS IT. A random crop or flip changes the image, so it changes the latent. Cache the latent and every epoch trains on the same fixed view; the augmentation you thought you had is gone. Text has no such problem — a caption is a caption.\n\nTHE ENCODER IS STOCHASTIC. A VAE encoder emits a distribution, not a point, and the training latent is a sample from it. Caching one sample throws that variation away. The usual fix is to cache the mean and standard deviation and re-sample per epoch, which keeps the stochasticity and still skips the encoder.",
+      "text": "Because the encoders are frozen, they compute the same thing every epoch. So most pipelines run the VAE encoder and the text encoder ONCE over the dataset, store the latents and the embeddings on disk, and let training just load tensors. The speedup is large, the two heaviest forward passes leave the training loop entirely.\n\nTwo caveats bite in practice.\n\nAUGMENTATION BREAKS IT. A random crop or flip changes the image, so it changes the latent. Cache the latent and every epoch trains on the same fixed view; the augmentation you thought you had is gone. Text has no such problem. A caption is a caption.\n\nTHE ENCODER IS STOCHASTIC. A VAE encoder emits a distribution, not a point, and the training latent is a sample from it. Caching one sample throws that variation away. The usual fix is to cache the mean and standard deviation and re-sample per epoch, which keeps the stochasticity and still skips the encoder.",
       "float": {
         "widget": "token_stream",
         "cache": true
@@ -56,7 +62,7 @@
       "type": "plaque",
       "prop": "pedestal",
       "title": "t Is Not Drawn Uniformly",
-      "text": "The textbook line is t ~ U(0,1), and that is what the five-line loop above implies. Real systems do not do it. π0 uses its own noise-level sampling strategy rather than a uniform draw, and the Lipman flow matching guide confirms the general finding: sampling t from a NON-UNIFORM distribution — though mathematically equivalent to reweighting the loss — performs better at scale.\n\nThe reason is that not all t are equally hard or equally important. Near t=0 the point is nearly pure noise and the velocity is dominated by the noise draw; near t=1 it is nearly data and the field is doing fine detail. Spending equal training effort everywhere is not the best allocation, so the sampler is shaped to spend more where the model needs it.\n\nA word of caution about implementations that use Beta(1.5, 1.0): that is a stand-in for the idea, not a reproduction of anyone's schedule. If you are porting a specific model, read its paper or its code rather than copying a plausible-looking density.",
+      "text": "The textbook line is t ~ U(0,1), and that is what the five-line loop above implies. Real systems do not do it. π0 uses its own noise-level sampling strategy rather than a uniform draw, and the Lipman flow matching guide confirms the general finding: sampling t from a NON-UNIFORM distribution, though mathematically equivalent to reweighting the loss, performs better at scale.\n\nThe reason is that not all t are equally hard or equally important. Near t=0 the point is nearly pure noise and the velocity is dominated by the noise draw; near t=1 it is nearly data and the field is doing fine detail. Spending equal training effort everywhere is not the best allocation, so the sampler is shaped to spend more where the model needs it.\n\nA word of caution about implementations that use Beta(1.5, 1.0): that is a stand-in for the idea, not a reproduction of anyone's schedule. If you are porting a specific model, read its paper or its code rather than copying a plausible-looking density.",
       "float": {
         "widget": "curve_trace",
         "fn": "exp_rise"
@@ -66,8 +72,8 @@
       "id": "training-loop-diagram",
       "type": "diagram",
       "title": "One Training Step, End to End",
-      "spec": "graph TD\n  IMG[\"image batch\"] --> VAE[\"frozen VAE encoder\"]\n  VAE --> X1[\"x₁ latent, shape 32x32x4\"]\n  RND[\"randn_like\"] --> X0[\"x₀ noise, same shape\"]\n  TS[\"sample t — non-uniform\"] --> MIX[\"x_t = (1−t)·x₀ + t·x₁\"]\n  X1 --> MIX\n  X0 --> MIX\n  CAP[\"captions, frozen text encoder, 10% dropped\"] --> NET\n  MIX --> NET[\"v_θ: the ONE learned thing\"]\n  X1 --> TGT[\"target = x₁ − x₀\"]\n  X0 --> TGT\n  NET --> L[\"MSE, then backward\"]\n  TGT --> L",
-      "caption": "Everything entering from the left is frozen or random; everything in the middle is arithmetic with no parameters. The single learned block is v_θ. Note that x₀ and x₁ feed two places each — into the mixture that makes the network's input, and into the subtraction that makes its target — and that t enters the mixture as a plain scalar."
+      "spec": "graph TD\n  IMG[\"image batch\"] --> VAE[\"frozen VAE encoder\"]\n  VAE --> X1[\"x₁ latent, shape 32x32x4\"]\n  RND[\"randn_like\"] --> X0[\"x₀ noise, same shape\"]\n  TS[\"sample t, non-uniform\"] --> MIX[\"x_t = (1−t)·x₀ + t·x₁\"]\n  X1 --> MIX\n  X0 --> MIX\n  CAP[\"captions, frozen text encoder, 10% dropped\"] --> NET\n  MIX --> NET[\"v_θ: the ONE learned thing\"]\n  X1 --> TGT[\"target = x₁ − x₀\"]\n  X0 --> TGT\n  NET --> L[\"MSE, then backward\"]\n  TGT --> L",
+      "caption": "Everything entering from the left is frozen or random; everything in the middle is arithmetic with no parameters. The single learned block is v_θ. Note that x₀ and x₁ feed two places each, into the mixture that makes the network's input, and into the subtraction that makes its target, and that t enters the mixture as a plain scalar."
     }
   ]
 }

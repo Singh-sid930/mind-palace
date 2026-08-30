@@ -53,7 +53,7 @@ def main():
              "Q, K, V from the SAME tokens",
              ha="center", va="top", color=P.INK, fontsize=13)
     axL.text(cx, by - 1.75,
-             "→  (n, n)  —  SQUARE",
+             "→  (n, n). SQUARE",
              ha="center", va="top", color=WARM, fontsize=14.5,
              fontweight="bold")
     # symmetric horizontal margins so the square sits centered in the panel
@@ -77,7 +77,7 @@ def main():
              "Q from text  •  K, V from image",
              ha="center", va="top", color=P.INK, fontsize=13)
     axR.text(cx2, by2 - 1.75,
-             "→  (n_text, n_patches)  —  NOT SQUARE",
+             "→  (n_text, n_patches). NOT SQUARE",
              ha="center", va="top", color=AC, fontsize=14.5,
              fontweight="bold")
     # SAME total x/y span (and aspect='equal') as left so cells are the same

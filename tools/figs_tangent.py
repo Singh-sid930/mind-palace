@@ -27,7 +27,7 @@ def fig_tangent():
                         hspace=0.42, wspace=0.20,
                         left=0.055, right=0.965, top=0.86, bottom=0.085)
 
-    P.suptitle(f, "The Flat Window  —  a straight tangent stands in for the "
+    P.suptitle(f, "The Flat Window, a straight tangent stands in for the "
                   "curve, and at the identity it is the Lie algebra")
 
     # =====================================================================

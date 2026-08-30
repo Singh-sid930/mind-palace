@@ -4,13 +4,13 @@
 // `widgets` list is the enum. Same discipline as kinetics.js: builders are
 // (params, pal) => { group, update(t) }, updates only mutate transforms,
 // material params and preallocated buffers (instance matrices/colors, Points
-// and vertex positions) — nothing allocates per frame, and widgets add no
+// and vertex positions), nothing allocates per frame, and widgets add no
 // lights. Grids and clouds use InstancedMesh / Points so a wall of widgets
 // stays a handful of draw calls.
 //
 // Extending the library: add a builder here, register it in WIDGET_BUILDERS,
 // add the name to world/catalog.json `widgets`. Prefer a new widget over
-// bending an ill-fitting one — the motion IS the explanation.
+// bending an ill-fitting one. The motion IS the explanation.
 
 import * as THREE from 'three';
 
@@ -84,14 +84,14 @@ function smooth(x) {
 // setInst with a spin about +Z; _Q is shared, so it is restored to identity.
 const _AXIS_Z = new THREE.Vector3(0, 0, 1);
 function setInstRot(mesh, i, x, y, sx, sy, angle) {
-  _P.set(x, y, 0); _S.set(sx, sy, sx);   // depth tracks width — never leave z at 1
+  _P.set(x, y, 0); _S.set(sx, sy, sx);   // depth tracks width, never leave z at 1
 
   _Q.setFromAxisAngle(_AXIS_Z, angle);
   _M.compose(_P, _Q, _S);
   mesh.setMatrixAt(i, _M);
   _Q.identity();
 }
-// Deterministic per-index pseudo-random in [0,1) — stable across frames.
+// Deterministic per-index pseudo-random in [0,1), stable across frames.
 function hash(i, k = 0) {
   const s = Math.sin(i * 127.1 + k * 311.7) * 43758.5453;
   return s - Math.floor(s);
@@ -126,7 +126,7 @@ function arrowsDot(p) {
   const speed = p.speed || 0.35;
   const update = (t) => {
     if (p.corotate) {
-      // both arrows swing together; only their mutual angle breathes — and the
+      // both arrows swing together; only their mutual angle breathes, and the
       // bar tracks the gap alone (alignment sees relative angle, cos(A−B))
       u.rotation.z = t * 0.3;
       v.rotation.z = u.rotation.z + 1.1 + 1.0 * Math.sin(t * 0.35);
@@ -184,7 +184,7 @@ function softmaxBars(p) {
 
 // --- heat_grid: an n×n score matrix, one draw call ---------------------------
 // variants: 'row_softmax' (a bright reader walks each row), 'causal' (only the
-// lower triangle ever lights — the future stays dark), 'drift' (loose blobs).
+// lower triangle ever lights. The future stays dark), 'drift' (loose blobs).
 function heatGrid(p) {
   const n = Math.min(8, p.n || 5);
   const R = Math.min(8, p.rows || n), C = Math.min(8, p.cols || n); // non-square OK (cross-attention)
@@ -365,7 +365,7 @@ function curveTrace(p) {
 const SHAPES = {
   ring: (i, n) => { const a = (i / n) * Math.PI * 2; return [Math.cos(a) * 0.38, Math.sin(a) * 0.38]; },
   spiral: (i, n) => { const a = (i / n) * Math.PI * 4, r = 0.08 + 0.32 * (i / n); return [Math.cos(a) * r, Math.sin(a) * r]; },
-  smile: (i, n) => { // a face: two eyes + arc mouth — unmistakably "an image"
+  smile: (i, n) => { // a face: two eyes + arc mouth, unmistakably "an image"
     if (i < n * 0.15) return [-0.15, 0.15];
     if (i < n * 0.3) return [0.15, 0.15];
     const k = (i - n * 0.3) / (n * 0.7), a = Math.PI * (0.2 + 0.6 * k);
@@ -503,7 +503,7 @@ function maskTiles(p) {
   return { group: g, update };
 }
 
-// --- orbit_phase: clock hands at geometric speeds — position as phases ------
+// --- orbit_phase: clock hands at geometric speeds, position as phases ------
 function orbitPhase(p) {
   const g = new THREE.Group();
   const dial = new THREE.Mesh(G.ring, bas(0x8a7f6a, { transparent: true, opacity: 0.5 }));
@@ -603,7 +603,7 @@ function fieldWarp(p) {
   return { group: g, update };
 }
 
-// --- descend_bowl: gradient descent, literally — hops down a loss bowl ------
+// --- descend_bowl: gradient descent, literally, hops down a loss bowl ------
 function descendBowl(p) {
   const N = 48, X = 0.55;
   const pts = [];
@@ -707,7 +707,7 @@ function bellSlide(p) {
   return { group: g, update };
 }
 
-// --- circle_ellipse: SVD in motion — the unit circle rotated, stretched, ----
+// --- circle_ellipse: SVD in motion, the unit circle rotated, stretched, ----
 // rotated. Only the stretch spoils the roundness. stages:true pauses between
 // the three motions so each reads separately.
 function circleEllipse(p) {
@@ -737,7 +737,7 @@ function circleEllipse(p) {
     for (let i = 0; i < N; i++) {
       let x = base[i][0], y = base[i][1];
       let x1 = x * ca - y * sa, y1 = x * sa + y * ca;   // Vᵀ
-      x1 *= sx; y1 *= sy;                               // Σ — the only stretch
+      x1 *= sx; y1 *= sy;                               // Σ, the only stretch
       arr[i * 3] = x1 * cb - y1 * sb;                   // U
       arr[i * 3 + 1] = x1 * sb + y1 * cb;
       arr[i * 3 + 2] = 0;
@@ -777,7 +777,7 @@ function decayBars(p) {
   return { group: g, update };
 }
 
-// --- slide_window: convolution itself — a kernel bracket walks the signal ---
+// --- slide_window: convolution itself, a kernel bracket walks the signal ---
 function slideWindow(p) {
   const n = Math.min(10, p.n || 8), k = 3;
   const input = instanced('box', n, CREAMY);
@@ -819,7 +819,7 @@ function slideWindow(p) {
 }
 const CREAMY = 0xcfc4a8;
 
-// --- lift_matrix: the hat and the vee — three beads rise and unfold into a --
+// --- lift_matrix: the hat and the vee, three beads rise and unfold into a --
 // 3×3 skew matrix (zero diagonal, gold upper mirrored by blue negatives
 // below), then read back down to the bare vector. Nothing lost either way.
 function liftMatrix(p) {
@@ -844,7 +844,7 @@ function liftMatrix(p) {
     for (let i = 0; i < 9; i++) {
       const x = rodPos[i][0] + (gridPos[i][0] - rodPos[i][0]) * k;
       const y = rodPos[i][1] + (gridPos[i][1] - rodPos[i][1]) * k;
-      // diagonal zeros exist only in the matrix costume — they grow in with k
+      // diagonal zeros exist only in the matrix costume. They grow in with k
       const s = kinds[i] === 'zero' ? cell * 0.85 * k + 0.001 : cell;
       setInst(inst, i, x, y, 0, s, s, 0.03);
       _C.set(kinds[i] === 'zero' ? DIM : kinds[i] === 'pos' ? GOLD : COLD);
@@ -894,7 +894,7 @@ function tangentTouch(p) {
 
 // --- field_flow: a velocity field, and beads that ride it ------------------
 // The emblem of flow matching: arrows ARE the learned field, and generation is
-// just following them. `stochastic: true` adds a random kick per step — the
+// just following them. `stochastic: true` adds a random kick per step, the
 // same field sampled as an SDE (pollen in water) rather than an ODE (a ball on
 // a ramp), so one start becomes a cloud of paths.
 function fieldFlow(p) {
@@ -990,7 +990,7 @@ function pathRace(p) {
     for (let k = 0; k < STEPS; k++) {
       const u = k / STEPS;
       const slope = (curveY(u + 0.004) - curveY(u - 0.004)) / (0.008 * (BX - AX));
-      x += dx; y += slope * dx;          // tangent step — cuts the corner
+      x += dx; y += slope * dx;          // tangent step, cuts the corner
       trail.push([x, y]);
     }
   }

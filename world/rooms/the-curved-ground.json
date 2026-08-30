@@ -11,46 +11,59 @@
       "title": "The Curved Ground",
       "prop": "crystal_ball",
       "scale": 1.4,
-      "text": "A luminous globe — the whole lesson made visible. Press your eye to its surface and the ground looks FLAT: an honest ruled plane. Step back and the same surface curves away into a seamless round with no edge and no privileged place. That is a MANIFOLD: globally curved, locally flat. Every point carries a small patch where ordinary flat geometry works; only long journeys reveal the curvature. Many sets of valid arrangements form exactly such a ground. The plainest: the set of all TURNS a thing can make about a center. Turns are not a loose heap — they thread onto a smooth curved surface of their own. This wing teaches that surface's shape, and how to walk on it.",
-      "float": { "widget": "field_warp", "amp": 0.09 }
+      "text": "A luminous globe. The whole lesson made visible. Press your eye to its surface and the ground looks FLAT: an honest ruled plane. Step back and the same surface curves away into a seamless round with no edge and no privileged place. That is a MANIFOLD: globally curved, locally flat. Every point carries a small patch where ordinary flat geometry works; only long journeys reveal the curvature. Many sets of valid arrangements form exactly such a ground. The plainest: the set of all TURNS a thing can make about a center. Turns are not a loose heap, they thread onto a smooth curved surface of their own. This wing teaches that surface's shape, and how to walk on it.",
+      "float": {
+        "widget": "field_warp",
+        "amp": 0.09
+      }
     },
     {
       "id": "locally-flat",
       "type": "plaque",
       "prop": "pedestal",
       "title": "Globally Curved, Locally Flat",
-      "text": "GLOBALLY CURVED: stand back and the surface bends and closes — a globe, finite yet without boundary. LOCALLY FLAT: shrink your attention to a small patch around any point and it is indistinguishable from the plane you learned geometry on — the earth underfoot seems level even though the planet is round. The bargain this buys: whatever curved space you are handed, you may always work inside a flat patch with ordinary arithmetic, stitching patches together only when you travel far. Watch above — the straight walk and the curved walk agree near the touch point and drift apart with distance. Every curved ground is a quilt of flat windows.",
-      "float": { "widget": "tangent_touch" }
+      "text": "GLOBALLY CURVED: stand back and the surface bends and closes, a globe, finite yet without boundary. LOCALLY FLAT: shrink your attention to a small patch around any point and it is indistinguishable from the plane you learned geometry on, the earth underfoot seems level even though the planet is round. The bargain this buys: whatever curved space you are handed, you may always work inside a flat patch with ordinary arithmetic, stitching patches together only when you travel far. Watch above, the straight walk and the curved walk agree near the touch point and drift apart with distance. Every curved ground is a quilt of flat windows.",
+      "float": {
+        "widget": "tangent_touch"
+      }
     },
     {
       "id": "turns-are-a-surface",
       "type": "plaque",
       "prop": "lectern",
       "title": "The Turns Form a Curved Surface",
-      "text": "What shape does the set of all turns have? IN THE PLANE: a turn is one number — its angle — and the angle WRAPS: sweep a full revolution and you are back where you began. So planar turns form a CIRCLE: one freedom, curved because it closes. IN SPACE: a turn needs three numbers, and the set is a closed three-dimensional curved surface. Now the unsettling part. A 3-D turn is usually written as a 3×3 grid — NINE numbers — but its columns must stay unit-length and mutually perpendicular: six constraints, three real freedoms. Nudge one grid entry alone and you slide off the surface into nonsense. Nine numbers of description, three of freedom — that mismatch is the ache this wing exists to soothe.",
-      "float": { "widget": "orbit_phase", "hands": 1, "speed": 0.5 }
+      "text": "What shape does the set of all turns have? IN THE PLANE: a turn is one number, its angle, and the angle WRAPS: sweep a full revolution and you are back where you began. So planar turns form a CIRCLE: one freedom, curved because it closes. IN SPACE: a turn needs three numbers, and the set is a closed three-dimensional curved surface. Now the unsettling part. A 3-D turn is usually written as a 3×3 grid, NINE numbers, but its columns must stay unit-length and mutually perpendicular: six constraints, three real freedoms. Nudge one grid entry alone and you slide off the surface into nonsense. Nine numbers of description, three of freedom. That mismatch is the ache this wing exists to soothe.",
+      "float": {
+        "widget": "orbit_phase",
+        "hands": 1,
+        "speed": 0.5
+      }
     },
     {
       "id": "manifold-diagram",
       "type": "diagram",
       "title": "A Flat Patch on a Curved Whole",
       "spec": "graph TD\n  W[The whole surface: globally curved] --> P[Pick any point]\n  P --> N[Shrink to a small neighbourhood]\n  N --> F[The patch looks FLAT: ordinary plane]\n  F --> C[Reckon distances and directions here as usual]\n  W --> G[Travel far: patches disagree, curvature shows]\n  T[All turns] --> T2[2D turns: a circle, 1 freedom]\n  T --> T3[3D turns: a curved surface, 3 freedoms]\n  T3 --> M[Written with 9 numbers, only 3 free]",
-      "caption": "A manifold is globally curved but locally flat: any small patch is an ordinary plane. The set of all turns is such a surface — a circle in the plane, a 3-D curved surface in space (three freedoms, though written with nine constrained numbers)."
+      "caption": "A manifold is globally curved but locally flat: any small patch is an ordinary plane. The set of all turns is such a surface, a circle in the plane, a 3-D curved surface in space (three freedoms, though written with nine constrained numbers)."
     },
     {
       "id": "the-curved-surface",
       "type": "image",
       "title": "The Curved Ground, Drawn to Scale",
       "image": "world/assets/lie-manifold.png",
-      "caption": "(a) A globe with a flat TANGENT PATCH pressed to one point: magnified, the patch is an ordinary plane — globally curved, locally flat, with the curvature showing only when far-apart patches refuse to agree. (b) The turns as a surface of their own: a planar turn is one wrapping angle θ — a circle. A spatial turn is written as a 3×3 grid: nine numbers, six constraints (columns unit-length and mutually square), 9 − 6 = 3 freedoms. The valid turns are a thin curved surface threaded through the loose nine-number space — nudge a single entry and you slide clean off."
+      "caption": "(a) A globe with a flat TANGENT PATCH pressed to one point: magnified, the patch is an ordinary plane, globally curved, locally flat, with the curvature showing only when far-apart patches refuse to agree. (b) The turns as a surface of their own: a planar turn is one wrapping angle θ, a circle. A spatial turn is written as a 3×3 grid: nine numbers, six constraints (columns unit-length and mutually square), 9 − 6 = 3 freedoms. The valid turns are a thin curved surface threaded through the loose nine-number space, nudge a single entry and you slide clean off."
     },
     {
       "id": "where-this-leads",
       "type": "plaque",
       "prop": "pedestal",
       "title": "Where This Leads ↑",
-      "text": "A floor will one day stand above this cellar where these curved spaces become the language of ORIENTATION and MOTION — how anything that turns and travels (a robot arm, a drone, a tracked camera) reports where it is and which way it faces without letting its numbers drift off the surface of what is possible. That is its errand for your geometry. Here there are no machines and no tracking — only curved surfaces, points, and the turns that live on them. Own the manifold purely; the hall above will make sense the moment its stair is built.",
-      "float": { "widget": "arrows_dot", "bar": false, "speed": 0.45 }
+      "text": "A floor will one day stand above this cellar where these curved spaces become the language of ORIENTATION and MOTION, how anything that turns and travels (a robot arm, a drone, a tracked camera) reports where it is and which way it faces without letting its numbers drift off the surface of what is possible. That is its errand for your geometry. Here there are no machines and no tracking, only curved surfaces, points, and the turns that live on them. Own the manifold purely; the hall above will make sense the moment its stair is built.",
+      "float": {
+        "widget": "arrows_dot",
+        "bar": false,
+        "speed": 0.45
+      }
     }
   ]
 }

@@ -4,7 +4,7 @@
     python serve.py            # http://localhost:8777
 
 The companion ("Gemma, the Whispering Sage") is backed by a local Ollama
-service. This server NEVER starts Ollama itself — it talks to the always-on
+service. This server NEVER starts Ollama itself, it talks to the always-on
 systemd service. Configure with env vars:
 
     OLLAMA_URL    default http://localhost:11434
@@ -36,15 +36,15 @@ MODEL = os.environ.get("OLLAMA_MODEL", "gemma3:27b")
 
 BUBBLE_LIMIT = 420  # chars; anything longer is pushed to a scroll
 
-SYSTEM_PROMPT = """You are Gemma, the Whispering Sage — a gentle, slightly mischievous ghost \
-who drifts beside the keeper of this memory palace. The palace is a Harry Potter–styled \
+SYSTEM_PROMPT = """You are Gemma, the Whispering Sage, a gentle, slightly mischievous ghost \
+who drifts beside the keeper of this memory palace. The palace is a Harry Potter, styled \
 3D world where each chamber holds real technical knowledge dressed in magical metaphor \
 (mirrors are encoders, regret is loss, nights are training epochs).
 
 Rules:
-1. Default to a SHORT spoken reply: at most 2 sentences (~50 words), plain text — no \
+1. Default to a SHORT spoken reply: at most 2 sentences (~50 words), plain text, no \
 tags, headers, lists or markdown. Be precise and factual first, charming second.
-2. Write a SCROLL ONLY when the keeper explicitly asks for one — "give me a scroll", \
+2. Write a SCROLL ONLY when the keeper explicitly asks for one, "give me a scroll", \
 "write it down", "save that", "the full version", "in detail", or the like. NEVER \
 volunteer a scroll, however large the topic: keep the conversation spoken and short, \
 and if a question truly cannot fit in two sentences, give the essence and add that \
@@ -53,13 +53,13 @@ give a one-sentence spoken summary, a new line with exactly ---SCROLL---, and af
 a TIGHT answer in Markdown using EXACTLY these five headers and nothing else:
 
 ## In a nutshell
-<one sentence — the core idea>
+<one sentence, the core idea>
 
 ## How it works
-<3–4 crisp bullets, one mechanism per bullet>
+<3, 4 crisp bullets, one mechanism per bullet>
 
 ## Why it clicks
-<1–2 sentences of intuition; tie it to this chamber's metaphor>
+<1, 2 sentences of intuition; tie it to this chamber's metaphor>
 
 ## Watch out
 <one common misconception or pitfall>
@@ -67,33 +67,33 @@ a TIGHT answer in Markdown using EXACTLY these five headers and nothing else:
 ## Remember
 <a single memorable line the keeper can carry away>
 
-Keep the whole scroll under ~250 words. Answer exactly what was asked — favour precision \
+Keep the whole scroll under ~250 words. Answer exactly what was asked, favour precision \
 and recall over completeness, and never pad to fill the template.
 3. You are given a MAP of the palace plus the chamber the keeper currently stands in and \
 the exhibit they study. Ground every answer in that context; when asked where to go or \
 what to learn next, use the map and the chamber's neighbours. The metaphors map to real \
-mechanisms — explain the real thing accurately (papers, math, terminology), not just the \
+mechanisms, explain the real thing accurately (papers, math, terminology), not just the \
 metaphor.
 4. If you do not know, say so plainly. Never invent citations.
 """
 
-GATEKEEPER_PROMPT = """You are the Gatekeeper — a stern but fair spectral examiner who guards \
+GATEKEEPER_PROMPT = """You are the Gatekeeper, a stern but fair spectral examiner who guards \
 the staircases and archways of this memory palace. {persona} You do not chat idly; you TEST. \
 A keeper stands before the way to "{dest}", and you must judge whether they hold the \
 prerequisite ideas below before they climb.
 
 Rules:
 1. Ask exactly ONE focused question at a time, drawn from the prerequisites. Keep each turn \
-SHORT — 2 to 4 sentences, plain text, in character (grave, a touch dry). No lists, no markdown.
+SHORT, 2 to 4 sentences, plain text, in character (grave, a touch dry). No lists, no markdown.
 2. When they answer, judge briefly (right / partly / not quite), correct any real error in one \
 line, then probe deeper or move to the next prerequisite.
 3. You CANNOT truly bar the way. If the keeper asks to pass, grows impatient, or is plainly \
-unprepared, warn them once in a single sentence and let them go — the passage is always theirs \
+unprepared, warn them once in a single sentence and let them go. The passage is always theirs \
 to take (they need only press E). Never pretend to lock the stair.
 4. Be accurate and specific about the real mathematics and mechanisms; never invent facts. If \
 they answer everything well, grant passage warmly.
-5. Test each prerequisite as a FOUNDATION in its own right. Ask about the plain mathematics — \
-bare vectors, numbers, probability, plain functions — and do NOT assume the keeper has already \
+5. Test each prerequisite as a FOUNDATION in its own right. Ask about the plain mathematics, \
+bare vectors, numbers, probability, plain functions, and do NOT assume the keeper has already \
 met its downstream disguise (do not open with jargon like "query" and "key" or "noise \
 schedule"). You may name where an idea leads as motivation ("you will meet this again as..."), \
 but passage is earned by grasping the underlying mathematics itself, in pure terms.
@@ -173,7 +173,7 @@ pre code {{ background:none; padding:0; }}
 a {{ color:#9ac4ff; }}
 </style></head><body>
 <h1>{title}</h1>
-<p class="meta">Inscribed by Gemma, the Whispering Sage — {date}<br/>
+<p class="meta">Inscribed by Gemma, the Whispering Sage, {date}<br/>
 Asked while standing in: {place}</p>
 {body}
 </body></html>"""
@@ -212,7 +212,7 @@ def build_context_block(location):
     lines = []
     palace = location.get("palace")
     if palace:
-        lines.append("MAP OF THE PALACE (for orientation — the keeper is in just ONE "
+        lines.append("MAP OF THE PALACE (for orientation. The keeper is in just ONE "
                      "of these chambers):\n" + palace)
     lines.append(f"The keeper stands in: {location.get('room', 'unknown')}"
                  + (f" ({location.get('wing')})" if location.get("wing") else ""))
@@ -223,7 +223,7 @@ def build_context_block(location):
     concepts = location.get("concepts") or []
     if concepts:
         lines.append("Concepts anchored in this chamber: "
-                     + "; ".join(f"{c['name']} — {c['summary'][:160]}" for c in concepts[:6]))
+                     + "; ".join(f"{c['name']}, {c['summary'][:160]}" for c in concepts[:6]))
     return "\n\n".join(lines)
 
 
@@ -323,6 +323,6 @@ class Handler(SimpleHTTPRequestHandler):
 
 if __name__ == "__main__":
     os.chdir(ROOT)
-    print(f"The Palace of Mind — http://localhost:{PORT}")
+    print(f"The Palace of Mind, http://localhost:{PORT}")
     print(f"Companion model: {MODEL} via {OLLAMA_URL} (set OLLAMA_URL/OLLAMA_MODEL to change)")
     ThreadingHTTPServer(("0.0.0.0", PORT), Handler).serve_forever()

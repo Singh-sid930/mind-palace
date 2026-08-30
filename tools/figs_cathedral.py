@@ -31,7 +31,7 @@ def fig_cathedral():
     ax.set_ylim(0, 10)
     ax.axis("off")
 
-    P.suptitle(f, "The U-Net Cathedral  —  Descend to Meaning, Climb Back to Detail")
+    P.suptitle(f, "The U-Net Cathedral, Descend to Meaning, Climb Back to Detail")
     f.text(0.5, 0.905,
            "Encoder halves space and doubles channels down the left arm  ·  the crypt holds widest context  ·  "
            "the decoder climbs back up the right arm  ·  flying-buttress skips carry crisp detail across",
@@ -138,7 +138,7 @@ def fig_cathedral():
                 fontsize=10.2, zorder=6)
 
     io_pill(x_enc, ys[0] + 1.30, "noisy image  x_t", "(H, W, C)  +  timestep t", COOL)
-    io_pill(x_dec, ys[0] + 1.30, "predicted noise", "(H, W, C)  — same shape", ACC)
+    io_pill(x_dec, ys[0] + 1.30, "predicted noise", "(H, W, C), same shape", ACC)
     # tiny connectors from IO to first blocks
     arm_arrow(x_enc, ys[0] + 1.30 - 0.42, x_enc, ys[0] + hh(256) + 0.05, COOL)
     arm_arrow(x_dec, ys[0] + hh(256) + 0.05, x_dec, ys[0] + 1.30 - 0.42, ACC)

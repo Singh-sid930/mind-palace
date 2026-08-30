@@ -5,18 +5,26 @@
       "name": "Relative judgment (softmax)",
       "room": "the-two-judgments",
       "exhibit": "relative-verdict",
-      "summary": "Softmax over N candidate scores: p_i = e^(s_i) / sum_j e^(s_j) — exponentiate, then normalise so the weights sum to 1. A single COUPLED distribution in which only the gaps between scores matter (a common shift cancels), nudging any one score shifts every weight, and one candidate wins; with no rivals it is meaningless, since a lone candidate always gets p = 1. Answers 'which of these is best?'. Its regret for true candidate k is -log(p_k). (Upstairs it is CLIP's contrastive softmax cross-entropy over a batch of image-caption pairs — coupled, so training must all-gather across GPUs and craves ~32K batches for enough negatives.)"
+      "summary": "Softmax over N candidate scores: p_i = e^(s_i) / sum_j e^(s_j), exponentiate, then normalise so the weights sum to 1. A single COUPLED distribution in which only the gaps between scores matter (a common shift cancels), nudging any one score shifts every weight, and one candidate wins; with no rivals it is meaningless, since a lone candidate always gets p = 1. Answers 'which of these is best?'. Its regret for true candidate k is -log(p_k). (Upstairs it is CLIP's contrastive softmax cross-entropy over a batch of image-caption pairs, coupled, so training must all-gather across GPUs and craves ~32K batches for enough negatives.)"
     },
     {
       "id": "binary-cross-entropy",
       "name": "Binary cross-entropy (sigmoid)",
       "room": "the-two-judgments",
       "exhibit": "absolute-verdict",
-      "summary": "The regret for an INDEPENDENT yes/no verdict: -[y*log(p) + (1-y)*log(1-p)], where p = sigmoid(s) = 1/(1+e^(-s)) squashes a single score alone into (0,1). It is -log(p) when the truth is yes (y=1) and -log(1-p) when no (y=0). Each score is judged on its own absolute level with no denominator over rivals; a rescale t and shift b set the threshold, a negative b lowering every default probability when a 'yes' is rare. Changing one score leaves the other verdicts untouched. Answers 'is THIS one a yes?'. (Upstairs it is SigLIP's per-pair sigmoid loss — decoupled, no all-gather, small batches.)"
+      "summary": "The regret for an INDEPENDENT yes/no verdict: -[y*log(p) + (1-y)*log(1-p)], where p = sigmoid(s) = 1/(1+e^(-s)) squashes a single score alone into (0,1). It is -log(p) when the truth is yes (y=1) and -log(1-p) when no (y=0). Each score is judged on its own absolute level with no denominator over rivals; a rescale t and shift b set the threshold, a negative b lowering every default probability when a 'yes' is rare. Changing one score leaves the other verdicts untouched. Answers 'is THIS one a yes?'. (Upstairs it is SigLIP's per-pair sigmoid loss, decoupled, no all-gather, small batches.)"
     }
   ],
   "edges": [
-    { "from": "relative-judgment", "to": "softmax-math", "relation": "builds-on" },
-    { "from": "relative-judgment", "to": "binary-cross-entropy", "relation": "contrasts-with" }
+    {
+      "from": "relative-judgment",
+      "to": "softmax-math",
+      "relation": "builds-on"
+    },
+    {
+      "from": "relative-judgment",
+      "to": "binary-cross-entropy",
+      "relation": "contrasts-with"
+    }
   ]
 }

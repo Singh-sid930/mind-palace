@@ -1,7 +1,7 @@
 """Concept figure for The Latent Vault (diffusion wing).
 
 The compression bargain: paint in a 48x-smaller latent, not in pixels.
-Three tellings — proportional volumes, the cost that collapses, and the
+Three tellings, proportional volumes, the cost that collapses, and the
 encode -> diffuse-in-latent -> decode pipeline.
 
 Run:  ~/anaconda3/envs/lrm/bin/python tools/figs_vault.py
@@ -29,14 +29,14 @@ def fig_vault():
                         hspace=0.34, wspace=0.20,
                         left=0.055, right=0.955, top=0.855, bottom=0.065)
 
-    P.suptitle(f, "The Latent Vault  —  Never Diffuse in the Great Hall of Pixels")
+    P.suptitle(f, "The Latent Vault, Never Diffuse in the Great Hall of Pixels")
     f.text(0.5, 0.905,
-           "A frozen VAE folds a 512×512×3 painting into a 64×64×4 emblem — 48× fewer numbers that still carry "
+           "A frozen VAE folds a 512×512×3 painting into a 64×64×4 emblem, 48× fewer numbers that still carry "
            "everything the picture MEANS. The U-Net labours entirely inside the Glass.",
            ha="center", color=P.MUTED, fontsize=13.2)
 
     # ======================================================================
-    # (a) proportional volumes — the shrinking glass, drawn to scale
+    # (a) proportional volumes, the shrinking glass, drawn to scale
     # ======================================================================
     ax = f.add_subplot(gs[0, 0]); P.style_ax(ax, WING, grid=False)
     ax.set_xlim(0, 10); ax.set_ylim(0, 10); ax.set_aspect("equal")
@@ -70,7 +70,7 @@ def fig_vault():
             ha="center", va="center", color=P.MUTED, fontsize=10.8, fontstyle="italic")
 
     # ======================================================================
-    # (b) the cost that collapses — log-scale horizontal bars
+    # (b) the cost that collapses, log-scale horizontal bars
     # ======================================================================
     ax = f.add_subplot(gs[0, 1]); P.style_ax(ax, WING, grid=True)
     ax.set_title("(b)  What shrinking buys (log scale)", color=P.INK, fontsize=15)
@@ -88,7 +88,7 @@ def fig_vault():
     ax.set_xlim(1e3, 1e11)
     ax.set_yticks(y); ax.set_yticklabels(rows, fontsize=12)
     ax.set_xlabel("count (log scale)  ·  n² shown per million", fontsize=11.5)
-    # colour key inline (blue = pixel, gold = latent) — no legend box to clash
+    # colour key inline (blue = pixel, gold = latent), no legend box to clash
     ax.text(0.985, 0.96, "pixel space", transform=ax.transAxes, color=PIX,
             fontsize=12.5, fontweight="bold", va="top", ha="right")
     ax.text(0.985, 0.90, "latent space", transform=ax.transAxes, color=LAT,
@@ -100,9 +100,9 @@ def fig_vault():
                 fontsize=13, fontweight="bold")
 
     # ======================================================================
-    # (c) the pipeline — encode -> diffuse in latent -> decode
+    # (c) the pipeline, encode -> diffuse in latent -> decode
     # ======================================================================
-    ax = f.add_subplot(gs[1, :]); P.style_ax(ax, WING, grid=False)
+    ax = f.add_subplot(gs[1,:]); P.style_ax(ax, WING, grid=False)
     ax.set_xlim(0, 16); ax.set_ylim(0, 5.0)
     ax.set_xticks([]); ax.set_yticks([])
     ax.set_title("(c)  The bargain: encode once, diffuse in the latent, decode once",
@@ -130,7 +130,7 @@ def fig_vault():
                                       color=ACC, lw=2.6, zorder=4))
     # under-notes
     ax.text(8.0, 0.72, "The frozen VAE masters PIXEL detail (grain, edges); the U-Net is freed to worry only about "
-            "SEMANTIC structure — which is why Stable Diffusion fit on a gaming GPU (~8–12 GB) while pixel-space "
+            "SEMANTIC structure, which is why Stable Diffusion fit on a gaming GPU (~8, 12 GB) while pixel-space "
             "diffusion needed datacenters.",
             ha="center", va="center", color=P.MUTED, fontsize=11.4, fontstyle="italic")
 

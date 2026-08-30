@@ -1,6 +1,6 @@
 // Turns the solved layout into meshes: floors, walls (with doorway gaps and
 // lintels), trim, lights, the star dome and floating room banners.
-// Everything is primitives + canvas textures — zero binary assets.
+// Everything is primitives + canvas textures, zero binary assets.
 
 import * as THREE from 'three';
 import { palette } from './palettes.js';

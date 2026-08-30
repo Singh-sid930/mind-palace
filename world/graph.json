@@ -61,7 +61,7 @@
       "name": "Vision-language-action model (VLA)",
       "room": "embodiment-atrium",
       "exhibit": "embodiment-welcome",
-      "summary": "A vision-language model extended so it can act. Two things must be added: a missing INPUT \u2014 proprioception, the robot's own joint state, which is not language and so cannot be tokenised directly \u2014 and a missing OUTPUT \u2014 continuous action commands rather than text tokens. The action output must be generative rather than a point estimate, because demonstrations are genuinely multimodal (a valid detour may go left or right, and their average goes through the obstacle), and it must be fast, because control loops want 30\u201350 Hz. Those two demands together are what select a flow-matching action head."
+      "summary": "A vision-language model extended so it can act. Two things must be added: a missing INPUT, proprioception, the robot's own joint state, which is not language and so cannot be tokenised directly, and a missing OUTPUT, continuous action commands rather than text tokens. The action output must be generative rather than a point estimate, because demonstrations are genuinely multimodal (a valid detour may go left or right, and their average goes through the obstacle), and it must be fast, because control loops want 30 to 50 Hz. Those two demands together are what select a flow-matching action head."
     },
     {
       "id": "scaled-dot-product-attention",
@@ -299,7 +299,7 @@
       "name": "Flow matching",
       "room": "riverworks-atrium",
       "exhibit": "riverworks-welcome",
-      "summary": "A generative method that learns a VELOCITY FIELD rather than a noise predictor, so that generation is an ODE solve: x \u2190 x + v_\u03b8(x,t)\u00b7\u0394t, integrated from t=0 (noise) to t=1 (data). The path is chosen to be a straight line, x_t = (1\u2212t)\u00b7x\u2080 + t\u00b7x\u2081, which makes the velocity target trivially x\u2081 \u2212 x\u2080 \u2014 constant, with no \u03b2 schedule, no \u1fb1 table and no square roots. Because a straight path has constant velocity, large integration steps stay accurate, so sampling needs roughly 5\u201320 steps rather than diffusion's hundreds. Note the convention flip against the diffusion wing: here t=0 is noise and t=1 is data."
+      "summary": "A generative method that learns a VELOCITY FIELD rather than a noise predictor, so that generation is an ODE solve: x \u2190 x + v_\u03b8(x,t)\u00b7\u0394t, integrated from t=0 (noise) to t=1 (data). The path is chosen to be a straight line, x_t = (1\u2212t)\u00b7x\u2080 + t\u00b7x\u2081, which makes the velocity target trivially x\u2081 \u2212 x\u2080, constant, with no \u03b2 schedule, no \u1fb1 table and no square roots. Because a straight path has constant velocity, large integration steps stay accurate, so sampling needs roughly 5 to 20 steps rather than diffusion's hundreds. Note the convention flip against the diffusion wing: here t=0 is noise and t=1 is data."
     },
     {
       "id": "mse-loss",
@@ -367,7 +367,7 @@
       "name": "The Causal 3D VAE",
       "room": "the-causal-cauldron",
       "exhibit": "what-causal-means",
-      "summary": "A 3D VAE whose temporal convolutions look ONLY at the current and past frames, never the future: the causal kernel spans [t-2, t-1, t] rather than the bilateral [t-2, t-1, t, t+1, t+2]. This is the decoder's causal mask from attention applied to temporal convolution; the first frame pads and conditions on itself. It fixes the bilateral 3D conv's fatal flaws \u2014 needing future frames (so the whole video must sit in memory, no streaming) and breaking on variable length \u2014 and thereby unlocks sliding-window decoding, autoregressive/streaming generation, variable length, and clean chunk handovers."
+      "summary": "A 3D VAE whose temporal convolutions look ONLY at the current and past frames, never the future: the causal kernel spans [t-2, t-1, t] rather than the bilateral [t-2, t-1, t, t+1, t+2]. This is the decoder's causal mask from attention applied to temporal convolution; the first frame pads and conditions on itself. It fixes the bilateral 3D conv's fatal flaws, needing future frames (so the whole video must sit in memory, no streaming) and breaking on variable length, and thereby unlocks sliding-window decoding, autoregressive/streaming generation, variable length, and clean chunk handovers."
     },
     {
       "id": "sliding-window-decode",
@@ -381,35 +381,35 @@
       "name": "Vector field",
       "room": "the-chamber-of-two-rivers",
       "exhibit": "what-a-field-is",
-      "summary": "An assignment of a velocity to every point in space (and possibly every time): at x, at t, the field f hands you an arrow. A field is a RULE, not a route \u2014 it turns any starting point into a path by the act of following the arrows. Written dx/dt = f(x,t), this is an ordinary differential equation: nothing random enters, so a starting point determines the entire future. Worked purely: with the constant field f = 4 and start x = 1, one unit of time carries you to 5."
+      "summary": "An assignment of a velocity to every point in space (and possibly every time): at x, at t, the field f hands you an arrow. A field is a RULE, not a route. It turns any starting point into a path by the act of following the arrows. Written dx/dt = f(x,t), this is an ordinary differential equation: nothing random enters, so a starting point determines the entire future. Worked purely: with the constant field f = 4 and start x = 1, one unit of time carries you to 5."
     },
     {
       "id": "euler-step",
       "name": "Euler integration",
       "room": "the-chamber-of-two-rivers",
       "exhibit": "the-euler-step",
-      "summary": "The plainest way to follow a field by hand: x \u2190 x + f(x,t)\u00b7\u0394t \u2014 read the arrow where you stand, move that far, read again. With f = 4 from x = 1, four steps of \u0394t = 0.25 give 1.0 \u2192 2.0 \u2192 3.0 \u2192 4.0 \u2192 5.0, exactly. The error depends entirely on how much the field turns along the path: when the field is constant the path is straight and a few coarse steps are exact, but when it turns, each straight step cuts the corner off the true curve and only smaller steps recover accuracy. This is why step count is a property of the PATH, not of the method."
+      "summary": "The plainest way to follow a field by hand: x \u2190 x + f(x,t)\u00b7\u0394t. Read the arrow where you stand, move that far, read again. With f = 4 from x = 1, four steps of \u0394t = 0.25 give 1.0 \u2192 2.0 \u2192 3.0 \u2192 4.0 \u2192 5.0, exactly. The error depends entirely on how much the field turns along the path: when the field is constant the path is straight and a few coarse steps are exact, but when it turns, each straight step cuts the corner off the true curve and only smaller steps recover accuracy. This is why step count is a property of the PATH, not of the method."
     },
     {
       "id": "ode-vs-sde",
       "name": "ODE versus SDE",
       "room": "the-chamber-of-two-rivers",
       "exhibit": "the-random-kick",
-      "summary": "Two ways to travel the same field. An ODE, dx/dt = f(x,t), is deterministic \u2014 a ball on a smooth ramp, one start giving one path. An SDE adds a random increment at every instant, dx = f(x,t)\u00b7dt + g(t)\u00b7dW with dW Brownian motion \u2014 a pollen grain in water, one start giving a whole cloud of paths. Neither is more correct; they answer different questions ('where does this point end up?' versus 'what is the spread of where it might?'). Many generative processes can be sampled either way, and the choice of channel is exactly that."
+      "summary": "Two ways to travel the same field. An ODE, dx/dt = f(x,t), is deterministic, a ball on a smooth ramp, one start giving one path. An SDE adds a random increment at every instant, dx = f(x,t)\u00b7dt + g(t)\u00b7dW with dW Brownian motion, a pollen grain in water, one start giving a whole cloud of paths. Neither is more correct; they answer different questions ('where does this point end up?' versus 'what is the spread of where it might?'). Many generative processes can be sampled either way, and the choice of channel is exactly that."
     },
     {
       "id": "action-chunk",
       "name": "Action chunk",
       "room": "the-chunk-of-motions",
       "exhibit": "the-chunk-of-motions",
-      "summary": "The data tensor a flow-matching robot policy generates: a block of shape (H, action_dim) holding H control steps of joint commands. For a 7-DOF arm with horizon 50 it is (50, 7) \u2014 350 numbers. It slots into x\u2081 exactly where an image latent sat in image generation, and everything else is unchanged: x_t = (1\u2212t)\u00b7x\u2080 + t\u00b7x\u2081 with x\u2080 Gaussian noise of the same shape, and the velocity target x\u2081 \u2212 x\u2080. Because the whole chunk is refined in a single forward pass, every element is conditioned on every other, which is what produces temporal consistency across the horizon rather than fifty independent decisions."
+      "summary": "The data tensor a flow-matching robot policy generates: a block of shape (H, action_dim) holding H control steps of joint commands. For a 7-DOF arm with horizon 50 it is (50, 7), 350 numbers. It slots into x\u2081 exactly where an image latent sat in image generation, and everything else is unchanged: x_t = (1\u2212t)\u00b7x\u2080 + t\u00b7x\u2081 with x\u2080 Gaussian noise of the same shape, and the velocity target x\u2081 \u2212 x\u2080. Because the whole chunk is refined in a single forward pass, every element is conditioned on every other, which is what produces temporal consistency across the horizon rather than fifty independent decisions."
     },
     {
       "id": "vlm-conditioning",
       "name": "VLM hidden state as conditioning",
       "room": "the-chunk-of-motions",
       "exhibit": "the-conditioning-slot",
-      "summary": "In image generation the velocity field is conditioned on a text embedding: v_\u03b8(x_t, t, text_embedding). In a VLA the same slot carries the hidden state of a vision-language model: v_\u03b8(x_t, t, VLM_hidden_state). That hidden state has already fused three streams \u2014 camera images, the language instruction, and the robot's proprioception. The plumbing is identical to text-conditioned image generation; only the contents of the conditioning vector are richer."
+      "summary": "In image generation the velocity field is conditioned on a text embedding: v_\u03b8(x_t, t, text_embedding). In a VLA the same slot carries the hidden state of a vision-language model: v_\u03b8(x_t, t, VLM_hidden_state). That hidden state has already fused three streams, camera images, the language instruction, and the robot's proprioception. The plumbing is identical to text-conditioned image generation; only the contents of the conditioning vector are richer."
     },
     {
       "id": "siglip",
@@ -437,7 +437,7 @@
       "name": "Turns Form a Curved Space",
       "room": "the-curved-ground",
       "exhibit": "turns-are-a-surface",
-      "summary": "The set of all turns (rotations about a fixed centre) is itself a smooth curved surface. Planar turns need one number, the angle, which wraps around: they form a circle, one degree of freedom. Turns in space need three numbers: they form a three-dimensional curved surface. A 3D turn is written as a 3\u00d73 grid of nine numbers, but rigid constraints leave only three free, so one cannot perturb a single entry and remain a valid turn \u2014 nine numbers, three freedoms. (Upstairs: this is the geometry of orientation.)"
+      "summary": "The set of all turns (rotations about a fixed centre) is itself a smooth curved surface. Planar turns need one number, the angle, which wraps around: they form a circle, one degree of freedom. Turns in space need three numbers: they form a three-dimensional curved surface. A 3D turn is written as a 3\u00d73 grid of nine numbers, but rigid constraints leave only three free, so one cannot perturb a single entry and remain a valid turn, nine numbers, three freedoms. (Upstairs: this is the geometry of orientation.)"
     },
     {
       "id": "dino",
@@ -472,21 +472,21 @@
       "name": "DINOv2",
       "room": "the-echoed-gaze",
       "exhibit": "dino-chapter",
-      "summary": "The scaled successor to DINO: a much larger curated dataset (LVD-142M), bigger models, and DINO's image-level objective combined with iBOT's patch-level masked objective. The result is a general-purpose visual backbone \u2014 the go-to self-supervised encoder for dense features and spatial precision, used in depth, segmentation, correspondence, and robotics perception. Spatially precise and semantically structured, but with no language alignment, so no zero-shot classification. DINOv3 scales it further."
+      "summary": "The scaled successor to DINO: a much larger curated dataset (LVD-142M), bigger models, and DINO's image-level objective combined with iBOT's patch-level masked objective. The result is a general-purpose visual backbone. The go-to self-supervised encoder for dense features and spatial precision, used in depth, segmentation, correspondence, and robotics perception. Spatially precise and semantically structured, but with no language alignment, so no zero-shot classification. DINOv3 scales it further."
     },
     {
       "id": "euler-sampling",
       "name": "Euler integration as sampling",
       "room": "the-ferrymans-count",
       "exhibit": "the-ferrymans-pole",
-      "summary": "Generating a sample means solving dx/dt = v_\u03b8(x,t) forward from t=0 to t=1, and the simplest solver is one line: x \u2190 x + v_\u03b8(x,t)\u00b7\u0394t. Ask the field for a direction, move that far, ask again. From x=1.0 with a field answering 4.0 and \u0394t=0.25, the four steps read 1.0 \u2192 2.0 \u2192 3.0 \u2192 4.0 \u2192 5.0, arriving exactly. Euler's only assumption is that the velocity measured at the start of a step holds across it \u2014 exactly true on a straight path at constant velocity, so step size costs no accuracy. There is no schedule, no variance term and no re-noising, unlike diffusion's reverse step."
+      "summary": "Generating a sample means solving dx/dt = v_\u03b8(x,t) forward from t=0 to t=1, and the simplest solver is one line: x \u2190 x + v_\u03b8(x,t)\u00b7\u0394t. Ask the field for a direction, move that far, ask again. From x=1.0 with a field answering 4.0 and \u0394t=0.25, the four steps read 1.0 \u2192 2.0 \u2192 3.0 \u2192 4.0 \u2192 5.0, arriving exactly. Euler's only assumption is that the velocity measured at the start of a step holds across it, exactly true on a straight path at constant velocity, so step size costs no accuracy. There is no schedule, no variance term and no re-noising, unlike diffusion's reverse step."
     },
     {
       "id": "few-step-sampling",
       "name": "Why few steps suffice",
       "room": "the-ferrymans-count",
       "exhibit": "why-big-steps-are-safe",
-      "summary": "A curved path makes the direction measured at the start of a step stale by the middle of it, so large steps cut the corner and the error compounds through subsequent steps; the only remedy is steps small enough that the curve is locally straight. Straightening the path removes that constraint, and the step budgets show it: DDPM needs ~1000 steps, DDIM 20\u201350, flow matching 5\u201320 (\u03c00 uses 10). Each step is a full forward pass, so this is a direct multiplier on sampling cost. The honest caveat: a trained field is not perfectly constant, because many (x\u2080,x\u2081) pairings cross the same x_t and the model can only answer with their average, which bends the effective field \u2014 hence 5\u201320 steps rather than one."
+      "summary": "A curved path makes the direction measured at the start of a step stale by the middle of it, so large steps cut the corner and the error compounds through subsequent steps; the only remedy is steps small enough that the curve is locally straight. Straightening the path removes that constraint, and the step budgets show it: DDPM needs ~1000 steps, DDIM 20, 50, flow matching 5, 20 (\u03c00 uses 10). Each step is a full forward pass, so this is a direct multiplier on sampling cost. The honest caveat: a trained field is not perfectly constant, because many (x\u2080,x\u2081) pairings cross the same x_t and the model can only answer with their average, which bends the effective field, hence 5 to 20 steps rather than one."
     },
     {
       "id": "control-frequency",
@@ -500,42 +500,42 @@
       "name": "KV caching across integration steps",
       "room": "the-fifty-hertz-clock",
       "exhibit": "the-cache-that-buys-the-hertz",
-      "summary": "What makes 50 Hz actually achievable. Image and text tokens do not depend on the integration time \u03c4 \u2014 the scene is unchanged at \u03c4=0 and \u03c4=0.9 \u2014 so their keys and values are computed once and cached across all 10 steps. Only the roughly 51 action-side tokens (the state token plus a 50-step chunk) re-run each pass. The cost is one 3B forward pass plus ten 300M forward passes, not ten 3.3B passes. It is the same KV cache as autoregressive decoding, hoisted along a different axis: cached across noise levels rather than across sequence positions. The general rule is to compute the conditioning once, outside the integration loop."
+      "summary": "What makes 50 Hz actually achievable. Image and text tokens do not depend on the integration time \u03c4, the scene is unchanged at \u03c4=0 and \u03c4=0.9, so their keys and values are computed once and cached across all 10 steps. Only the roughly 51 action-side tokens (the state token plus a 50-step chunk) re-run each pass. The cost is one 3B forward pass plus ten 300M forward passes, not ten 3.3B passes. It is the same KV cache as autoregressive decoding, hoisted along a different axis: cached across noise levels rather than across sequence positions. The general rule is to compute the conditioning once, outside the integration loop."
     },
     {
       "id": "mode-collapse",
       "name": "Mode collapse in regression policies",
       "room": "the-fifty-hertz-clock",
       "exhibit": "the-bimodal-experiment",
-      "summary": "On a deliberately bimodal task \u2014 identical observation, demonstrator sometimes reaching LEFT and sometimes RIGHT, target magnitude 1.0 \u2014 flow matching reached |x_end| 0.243 at 1 step, 0.833 at 2, 0.964 at 5, 0.988 at 10 and 0.998 at 50, splitting about 45/55 between the two modes: it samples a mode and commits. An MLP regression baseline reached 0.418, collapsed to the middle, driving straight into the obstacle both demonstrators avoided. That is not a bug but the correct minimiser of squared error against an ambiguous target \u2014 the conditional mean. Its action-MSE looked perfectly healthy throughout, so multimodal tasks must be judged by the distribution of rollouts, never by mean error."
+      "summary": "On a deliberately bimodal task, identical observation, demonstrator sometimes reaching LEFT and sometimes RIGHT, target magnitude 1.0, flow matching reached |x_end| 0.243 at 1 step, 0.833 at 2, 0.964 at 5, 0.988 at 10 and 0.998 at 50, splitting about 45/55 between the two modes: it samples a mode and commits. An MLP regression baseline reached 0.418, collapsed to the middle, driving straight into the obstacle both demonstrators avoided. That is not a bug but the correct minimiser of squared error against an ambiguous target. The conditional mean. Its action-MSE looked perfectly healthy throughout, so multimodal tasks must be judged by the distribution of rollouts, never by mean error."
     },
     {
       "id": "tangent-space",
       "name": "The Tangent Space",
       "room": "the-flat-window",
       "exhibit": "the-touching-plane",
-      "summary": "At any point of a curved surface one can lay a flat plane that touches it there \u2014 the tangent space. Near the touch point, short straight steps on this flat plane closely approximate moving along the curved surface, and the smaller the step the better the agreement. It is genuinely flat: an ordinary vector space where arrows add, scale, and measure, so ordinary arithmetic and calculus apply. Every point carries its own tangent plane. (Upstairs: where gradients and small uncertainties are computed.)"
+      "summary": "At any point of a curved surface one can lay a flat plane that touches it there, the tangent space. Near the touch point, short straight steps on this flat plane closely approximate moving along the curved surface, and the smaller the step the better the agreement. It is genuinely flat: an ordinary vector space where arrows add, scale, and measure, so ordinary arithmetic and calculus apply. Every point carries its own tangent plane. (Upstairs: where gradients and small uncertainties are computed.)"
     },
     {
       "id": "lie-algebra",
       "name": "The Lie Algebra",
       "room": "the-flat-window",
       "exhibit": "the-algebra-at-the-origin",
-      "summary": "The Lie algebra is the tangent space at the identity/origin point (the do-nothing turn) \u2014 the one privileged flat window. It is a true flat vector space where ordinary calculus lives, and it is isomorphic to \u211d\u207f, where n is the surface's number of degrees of freedom: \u211d\u00b9 (a line) for planar turns, \u211d\u00b3 for turns in space. To reckon on the curved surface, one steps onto this flat window and does plain linear arithmetic. (Upstairs: the flat space where change and error for curved-living things are computed.)"
+      "summary": "The Lie algebra is the tangent space at the identity/origin point (the do-nothing turn), the one privileged flat window. It is a true flat vector space where ordinary calculus lives, and it is isomorphic to \u211d\u207f, where n is the surface's number of degrees of freedom: \u211d\u00b9 (a line) for planar turns, \u211d\u00b3 for turns in space. To reckon on the curved surface, one steps onto this flat window and does plain linear arithmetic. (Upstairs: the flat space where change and error for curved-living things are computed.)"
     },
     {
       "id": "video-diffusion",
       "name": "Video Diffusion",
       "room": "the-flickering-frames",
       "exhibit": "the-flickering-frames",
-      "summary": "Scaling image diffusion to moving pictures. A video is a stack of T frames, a tensor (T, H, W, C) compressed to a latent (T, h, w, c); the one governing law is that all T frames must be denoised JOINTLY so they stay consistent over time. The entire diffusion framework is inherited unchanged \u2014 forward noising, reverse denoising, \u03b5-prediction MSE, latent diffusion (VAE), classifier-free guidance, and a U-Net or DiT denoiser. What changes is only the DATA SHAPE, which gains a new time axis T, plus one new attention axis (temporal). That extra T dimension is the whole story."
+      "summary": "Scaling image diffusion to moving pictures. A video is a stack of T frames, a tensor (T, H, W, C) compressed to a latent (T, h, w, c); the one governing law is that all T frames must be denoised JOINTLY so they stay consistent over time. The entire diffusion framework is inherited unchanged, forward noising, reverse denoising, \u03b5-prediction MSE, latent diffusion (VAE), classifier-free guidance, and a U-Net or DiT denoiser. What changes is only the DATA SHAPE, which gains a new time axis T, plus one new attention axis (temporal). That extra T dimension is the whole story."
     },
     {
       "id": "temporal-consistency",
       "name": "Temporal Consistency",
       "room": "the-flickering-frames",
       "exhibit": "the-flicker-problem",
-      "summary": "The property that a video's frames agree with one another over time \u2014 an object that is red and in place stays red and in place from frame to frame. Denoising each frame INDEPENDENTLY destroys it: frame 5 has no idea what frame 4 looked like, so although each frame is individually plausible, the sequence flickers (colours drift, objects jitter and morph, backgrounds shift). Restoring temporal consistency by denoising all frames jointly is the reason video diffusion exists."
+      "summary": "The property that a video's frames agree with one another over time. An object that is red and in place stays red and in place from frame to frame. Denoising each frame INDEPENDENTLY destroys it: frame 5 has no idea what frame 4 looked like, so although each frame is individually plausible, the sequence flickers (colours drift, objects jitter and morph, backgrounds shift). Restoring temporal consistency by denoising all frames jointly is the reason video diffusion exists."
     },
     {
       "id": "lora-core",
@@ -583,21 +583,21 @@
       "name": "\u03c00",
       "room": "the-hall-of-two-experts",
       "exhibit": "the-single-transformer",
-      "summary": "A flow-matching vision-language-action model: PaliGemma 3B (SigLIP vision tower plus Gemma) for image and text tokens, and a 300M action expert for the state token and a noisy 50-step action chunk \u2014 3.3B parameters in total. The two are independent weight sets inside a SINGLE transformer, and the token TYPE decides which set processes a token. It runs 10 Euler integration steps per chunk and reaches control frequencies up to 50 Hz. \u03c00.5 projects the integration time \u03c4 through its own MLP and injects it into every layer of the expert by adaptive RMSNorm, then executes 16 to 25 actions before re-inference."
+      "summary": "A flow-matching vision-language-action model: PaliGemma 3B (SigLIP vision tower plus Gemma) for image and text tokens, and a 300M action expert for the state token and a noisy 50-step action chunk, 3.3B parameters in total. The two are independent weight sets inside a SINGLE transformer, and the token TYPE decides which set processes a token. It runs 10 Euler integration steps per chunk and reaches control frequencies up to 50 Hz. \u03c00.5 projects the integration time \u03c4 through its own MLP and injects it into every layer of the expert by adaptive RMSNorm, then executes 16 to 25 actions before re-inference."
     },
     {
       "id": "action-expert",
       "name": "Action expert (joined by self-attention)",
       "room": "the-hall-of-two-experts",
       "exhibit": "they-meet-only-in-attention",
-      "summary": "The 300M weight set that processes state and action tokens inside \u03c00's transformer. It interacts with the vision-language weights through exactly one mechanism: each token computes its Q, K and V with its OWN expert's projections, then all tokens attend to each other in one joint self-attention over the full sequence. An action token's query can therefore reach image tokens' keys and values, so the expert sees the visual scene without owning any vision weights. The MLP sub-layers stay separate \u2014 attention mixes, MLPs specialise. This is why the expert can be small: the backbone already paid for representation, and querying it is cheap."
+      "summary": "The 300M weight set that processes state and action tokens inside \u03c00's transformer. It interacts with the vision-language weights through exactly one mechanism: each token computes its Q, K and V with its OWN expert's projections, then all tokens attend to each other in one joint self-attention over the full sequence. An action token's query can therefore reach image tokens' keys and values, so the expert sees the visual scene without owning any vision weights. The MLP sub-layers stay separate, attention mixes, MLPs specialise. This is why the expert can be small: the backbone already paid for representation, and querying it is cheap."
     },
     {
       "id": "actions-as-inputs",
       "name": "Action tokens are inputs, not outputs",
       "room": "the-hall-of-two-experts",
       "exhibit": "actions-are-inputs",
-      "summary": "The crux separating a flow-matching head from a discrete-token VLA. In RT-2 or OpenVLA actions are OUTPUTS, decoded autoregressively. \u03c00 works like image diffusion: the noisy action chunk is fed IN as 50 tokens and the network emits a velocity of shape (50, action_dim). The Euler update is applied outside the network and the refined chunk is fed back in, ten times. Only the first input is noise \u2014 pass 1 is pure noise at \u03c4=0, pass 5 is half-formed at \u03c4=0.4, pass 10 is nearly final at \u03c4=0.9. The chunk must be an input because it is the thing being refined, and refinement requires the network to see it. Training has no loop at all: one \u03c4 per example, one forward pass, one MSE."
+      "summary": "The crux separating a flow-matching head from a discrete-token VLA. In RT-2 or OpenVLA actions are OUTPUTS, decoded autoregressively. \u03c00 works like image diffusion: the noisy action chunk is fed IN as 50 tokens and the network emits a velocity of shape (50, action_dim). The Euler update is applied outside the network and the refined chunk is fed back in, ten times. Only the first input is noise, pass 1 is pure noise at \u03c4=0, pass 5 is half-formed at \u03c4=0.4, pass 10 is nearly final at \u03c4=0.9. The chunk must be an input because it is the thing being refined, and refinement requires the network to see it. Training has no loop at all: one \u03c4 per example, one forward pass, one MSE."
     },
     {
       "id": "hat-operator",
@@ -611,7 +611,7 @@
       "name": "The Vee Operator",
       "room": "the-hat-and-the-vee",
       "exhibit": "the-vee",
-      "summary": "The vee operator (\u2228, written A\u02c7) is the inverse of the hat: it reads a skew-symmetric matrix back down to the plain coordinate vector that defines it, discarding the forced zeros and negatives to report the free numbers \u2014 for [[0,\u2212a],[a,0]] it returns a. Applying hat then vee returns the original vector. It lets an algebra element be stored, added, and averaged as an ordinary vector, since constrained matrices resist arithmetic but their coordinate lists do not. Coordinates \u2194 matrix via hat/vee, matrix \u2194 surface via exp/log \u2014 three spaces, one round trip. (Upstairs: keeps parameters in a flat vector for optimisation and storage.)"
+      "summary": "The vee operator (\u2228, written A\u02c7) is the inverse of the hat: it reads a skew-symmetric matrix back down to the plain coordinate vector that defines it, discarding the forced zeros and negatives to report the free numbers, for [[0,\u2212a],[a,0]] it returns a. Applying hat then vee returns the original vector. It lets an algebra element be stored, added, and averaged as an ordinary vector, since constrained matrices resist arithmetic but their coordinate lists do not. Coordinates \u2194 matrix via hat/vee, matrix \u2194 surface via exp/log, three spaces, one round trip. (Upstairs: keeps parameters in a flat vector for optimisation and storage.)"
     },
     {
       "id": "diffusion-core",
@@ -649,7 +649,7 @@
       "name": "Factorized Spatial+Temporal Attention",
       "room": "the-loom-across-time",
       "exhibit": "factorized-not-3d",
-      "summary": "Replacing one full joint 3D attention over all T\u00b7h\u00b7w positions (cost O((T\u00b7h\u00b7w)^2), explosive) with two cheaper passes: SPATIAL attention fixes a frame and attends over its h\u00b7w tokens at cost O((h\u00b7w)^2), and TEMPORAL attention fixes a position and attends over its T frames at cost O(T^2). The factorized cost is (h\u00b7w)^2 + T^2 rather than (T\u00b7h\u00b7w)^2 \u2014 dramatically cheaper, in the same anti-quadratic spirit as the rest of the attention-cost work."
+      "summary": "Replacing one full joint 3D attention over all T\u00b7h\u00b7w positions (cost O((T\u00b7h\u00b7w)^2), explosive) with two cheaper passes: SPATIAL attention fixes a frame and attends over its h\u00b7w tokens at cost O((h\u00b7w)^2), and TEMPORAL attention fixes a position and attends over its T frames at cost O(T^2). The factorized cost is (h\u00b7w)^2 + T^2 rather than (T\u00b7h\u00b7w)^2, dramatically cheaper, in the same anti-quadratic spirit as the rest of the attention-cost work."
     },
     {
       "id": "noise-predictor",
@@ -702,7 +702,7 @@
       "name": "The Rank Bottleneck",
       "room": "the-parallel-whisper",
       "exhibit": "the-bottleneck",
-      "summary": "Shape trace along the LoRA branch: x is (d,), A . x is (r,) \u2014 squeezed to the rank-r bottleneck \u2014 then B . (A . x) is (d,), expanded back. Passing through an r-wide waist makes the branch's d x d effect at most rank r, so the bottleneck structurally forces the update to be low-rank."
+      "summary": "Shape trace along the LoRA branch: x is (d,), A . x is (r,), squeezed to the rank-r bottleneck, then B. (A . x) is (d,), expanded back. Passing through an r-wide waist makes the branch's d x d effect at most rank r, so the bottleneck structurally forces the update to be low-rank."
     },
     {
       "id": "patchify",
@@ -715,35 +715,35 @@
       "name": "The irreducible loss floor",
       "room": "the-plateau-that-lies",
       "exhibit": "the-scales-that-stop",
-      "summary": "Velocity MSE falls, flattens around 1.0, and stays there \u2014 and that is correct, not a training failure. Many different (noise, data) pairs produce lines through the same x_t, so the target v = x\u2081 \u2212 x\u2080 is genuinely ambiguous at that point and squared error is minimised by the conditional MEAN of the possible velocities. The residual is the variance of the targets averaged over, a property of the data rather than the model, so no capacity or training removes it. Judge flow matching by SAMPLE QUALITY, never by loss magnitude \u2014 and note the converse: in the bimodal experiment the regression baseline's action-MSE looked healthy while its samples drove into an obstacle."
+      "summary": "Velocity MSE falls, flattens around 1.0, and stays there, and that is correct, not a training failure. Many different (noise, data) pairs produce lines through the same x_t, so the target v = x\u2081 \u2212 x\u2080 is genuinely ambiguous at that point and squared error is minimised by the conditional MEAN of the possible velocities. The residual is the variance of the targets averaged over, a property of the data rather than the model, so no capacity or training removes it. Judge flow matching by SAMPLE QUALITY, never by loss magnitude, and note the converse: in the bimodal experiment the regression baseline's action-MSE looked healthy while its samples drove into an obstacle."
     },
     {
       "id": "broadcast-reshape-trap",
       "name": "Reshaping t before interpolation",
       "room": "the-plateau-that-lies",
       "exhibit": "the-silent-broadcast",
-      "summary": "t arrives with shape (B,) while the data has shape (B,H,A) or (B,C,H,W). Writing the interpolation without reshaping lets PyTorch broadcast t along the wrong axis \u2014 a legal operation that raises no error and trains on nonsense while the loss curve descends convincingly. The fix is t.view(B,1,1) for an action chunk and t.view(B,1,1,1) for an image latent; the rank of the data tensor determines the number of trailing ones. Correctly reshaped, t is constant across every element of a sample, which is what the mathematics requires: one scalar time per point on the path."
+      "summary": "t arrives with shape (B,) while the data has shape (B,H,A) or (B,C,H,W). Writing the interpolation without reshaping lets PyTorch broadcast t along the wrong axis, a legal operation that raises no error and trains on nonsense while the loss curve descends convincingly. The fix is t.view(B,1,1) for an action chunk and t.view(B,1,1,1) for an image latent; the rank of the data tensor determines the number of trailing ones. Correctly reshaped, t is constant across every element of a sample, which is what the mathematics requires: one scalar time per point on the path."
     },
     {
       "id": "zero-init-output",
       "name": "Zero-initialising the output layer",
       "room": "the-plateau-that-lies",
       "exhibit": "start-as-identity",
-      "summary": "Zero-initialise the final output layer so the predicted velocity is exactly 0 at step zero: the ODE holds still instead of flinging samples across the space, and training starts from a stable no-op the gradients can move away from deliberately. It is the same idea as adaLN-Zero in the DiT and zero-convolutions in ControlNet \u2014 start as an identity or a no-op and learn the delta, since adding a randomly-initialised component perturbs a working system while adding a zeroed one costs nothing until gradients decide otherwise. It composes with adaLN-style scale/shift conditioning, the mechanism \u03c00.5 uses to inject the integration time into every layer."
+      "summary": "Zero-initialise the final output layer so the predicted velocity is exactly 0 at step zero: the ODE holds still instead of flinging samples across the space, and training starts from a stable no-op the gradients can move away from deliberately. It is the same idea as adaLN-Zero in the DiT and zero-convolutions in ControlNet, start as an identity or a no-op and learn the delta, since adding a randomly-initialised component perturbs a working system while adding a zeroed one costs nothing until gradients decide otherwise. It composes with adaLN-style scale/shift conditioning, the mechanism \u03c00.5 uses to inject the integration time into every layer."
     },
     {
       "id": "state-encoder",
       "name": "State encoder (proprioception token)",
       "room": "the-proprioceptive-gate",
       "exhibit": "the-state-token",
-      "summary": "A vision-language model has no input path for proprioception \u2014 roughly eight continuous numbers giving joint angles and gripper state. They cannot be tokenised, because a tokeniser maps symbols to indices and a joint angle is not a symbol. A small MLP projects the state vector to the model's token width, state (8,) \u2192 (d_model,), after which it is structurally an ordinary token. Concatenated into the sequence, self-attention fuses it with vision and language at no extra design cost. Normalise the state per dimension before projecting."
+      "summary": "A vision-language model has no input path for proprioception: roughly eight continuous numbers giving joint angles and gripper state. They cannot be tokenised, because a tokeniser maps symbols to indices and a joint angle is not a symbol. A small MLP projects the state vector to the model's token width, state (8,) \u2192 (d_model,), after which it is structurally an ordinary token. Concatenated into the sequence, self-attention fuses it with vision and language at no extra design cost. Normalise the state per dimension before projecting."
     },
     {
       "id": "action-head",
       "name": "Action head families",
       "room": "the-proprioceptive-gate",
       "exhibit": "three-families-of-heads",
-      "summary": "The three ways to turn a VLM's hidden states into continuous robot commands. DISCRETE TOKENS bin each joint's range and predict bin indices with the existing language head (RT-2, OpenVLA) \u2014 multimodal, but binning loses precision and autoregressive decoding is slow. MLP REGRESSION projects the hidden state to a continuous action \u2014 fast and continuous, but it collapses multiple valid actions to their mean. A FLOW OR DIFFUSION HEAD is a small generative network conditioned on the hidden state (\u03c00) \u2014 multimodal and continuous at the cost of several forward passes. Assembly in all three cases: [image patches][text tokens][state token] \u2192 transformer \u2192 hidden states \u2192 head."
+      "summary": "The three ways to turn a VLM's hidden states into continuous robot commands. DISCRETE TOKENS bin each joint's range and predict bin indices with the existing language head (RT-2, OpenVLA), multimodal, but binning loses precision and autoregressive decoding is slow. MLP REGRESSION projects the hidden state to a continuous action, fast and continuous, but it collapses multiple valid actions to their mean. A FLOW OR DIFFUSION HEAD is a small generative network conditioned on the hidden state (\u03c00), multimodal and continuous at the cost of several forward passes. Assembly in all three cases: [image patches][text tokens][state token] \u2192 transformer \u2192 hidden states \u2192 head."
     },
     {
       "id": "rank-hyperparameter",
@@ -757,21 +757,21 @@
       "name": "The Alpha Scaling",
       "room": "the-rank-dial",
       "exhibit": "the-strength-rune",
-      "summary": "The adapter is applied as W_new = W + (alpha/r)*B*A. Alpha controls the update's MAGNITUDE decoupled from the rank r: dividing by r keeps overall strength stable as r changes, so alpha tunes loudness on its own axis. Conventions: alpha = r (scale 1) or alpha = 2r (double). This is the SAME alpha as ComfyUI's LoRA strength slider \u2014 it scales the B*A branch's contribution to the frozen model."
+      "summary": "The adapter is applied as W_new = W + (alpha/r)*B*A. Alpha controls the update's MAGNITUDE decoupled from the rank r: dividing by r keeps overall strength stable as r changes, so alpha tunes loudness on its own axis. Conventions: alpha = r (scale 1) or alpha = 2r (double). This is the SAME alpha as ComfyUI's LoRA strength slider, it scales the B*A branch's contribution to the frozen model."
     },
     {
       "id": "variable-length-generation",
       "name": "Variable-Length Generation",
       "room": "the-reel-of-lengths",
       "exhibit": "t-is-a-sequence-length",
-      "summary": "The frame count T is a SEQUENCE LENGTH, not a value hard-coded into the weights \u2014 temporal attention runs over however many frame-tokens it is handed, exactly as a text transformer reads variable-length sentences. Hand the model a longer temporal axis and attention simply attends over more tokens, so one trained model generates video of many lengths. What makes this real is training on VARIED clip lengths below the maximum (sometimes mixed with static images at T=1); that varied-length training is the cause and variable-length inference the effect."
+      "summary": "The frame count T is a SEQUENCE LENGTH, not a value hard-coded into the weights, temporal attention runs over however many frame-tokens it is handed, exactly as a text transformer reads variable-length sentences. Hand the model a longer temporal axis and attention simply attends over more tokens, so one trained model generates video of many lengths. What makes this real is training on VARIED clip lengths below the maximum (sometimes mixed with static images at T=1); that varied-length training is the cause and variable-length inference the effect."
     },
     {
       "id": "temporal-length-ceiling",
       "name": "The Trained-Length Ceiling",
       "room": "the-reel-of-lengths",
       "exhibit": "the-trained-horizon",
-      "summary": "T_max is the longest clip a video model was trained on (Wan: ~5 s, ~81 frames at 16 FPS) \u2014 its effective CONTEXT LENGTH. Running past T_max is the same failure as running an LLM past its trained context window: temporal attention never learned patterns that long, the temporal positional encoding was never trained at those positions, and error accumulates frame over frame, so temporal consistency breaks into drift. The degradation is a GRADUAL slide, not a cliff, because generation is chunked/autoregressive and errors compound smoothly."
+      "summary": "T_max is the longest clip a video model was trained on (Wan: ~5 s, ~81 frames at 16 FPS), its effective CONTEXT LENGTH. Running past T_max is the same failure as running an LLM past its trained context window: temporal attention never learned patterns that long, the temporal positional encoding was never trained at those positions, and error accumulates frame over frame, so temporal consistency breaks into drift. The degradation is a GRADUAL slide, not a cliff, because generation is chunked/autoregressive and errors compound smoothly."
     },
     {
       "id": "dit",
@@ -810,14 +810,14 @@
       "name": "Singular Values",
       "room": "the-singular-prism",
       "exhibit": "the-ranked-importances",
-      "summary": "The diagonal entries of \u03a3, sorted \u03c3\u2081\u2265\u03c3\u2082\u2265\u2026\u22650, measuring how far a matrix stretches space along each principal direction \u2014 the energy each direction carries. For many real matrices, and especially for differences of two nearby matrices, they decay fast: a few large, then a long tail near zero, with an elbow. (Upstairs: fast decay is why weight updates are effectively low-rank.)"
+      "summary": "The diagonal entries of \u03a3, sorted \u03c3\u2081\u2265\u03c3\u2082\u2265\u2026\u22650, measuring how far a matrix stretches space along each principal direction. The energy each direction carries. For many real matrices, and especially for differences of two nearby matrices, they decay fast: a few large, then a long tail near zero, with an elbow. (Upstairs: fast decay is why weight updates are effectively low-rank.)"
     },
     {
       "id": "low-rank-approximation",
       "name": "Low-Rank Approximation",
       "room": "the-singular-prism",
       "exhibit": "best-few",
-      "summary": "Keep the top r singular values (zero the rest): M \u2248 U_r\u03a3_rV_r\u1d40, with U_r (d\u00d7r), \u03a3_r (r\u00d7r), V_r\u1d40 (r\u00d7d). Eckart\u2013Young: this truncation is the provably closest rank-r matrix to M, minimizing \u2016M\u2212M_r\u2016. When \u03c3 decay fast a small r captures almost everything, compressing d\u00b2 numbers to 2dr. (Upstairs: this is the mathematics behind LoRA / low-rank adaptation.)"
+      "summary": "Keep the top r singular values (zero the rest): M \u2248 U_r\u03a3_rV_r\u1d40, with U_r (d\u00d7r), \u03a3_r (r\u00d7r), V_r\u1d40 (r\u00d7d). Eckart, Young: this truncation is the provably closest rank-r matrix to M, minimizing \u2016M\u2212M_r\u2016. When \u03c3 decay fast a small r captures almost everything, compressing d\u00b2 numbers to 2dr. (Upstairs: this is the mathematics behind LoRA / low-rank adaptation.)"
     },
     {
       "id": "convolution",
@@ -831,7 +831,7 @@
       "name": "The Receptive Field",
       "room": "the-sliding-kernel",
       "exhibit": "the-local-window",
-      "summary": "Each convolution output depends only on the small local neighbourhood of the input beneath the kernel at that stop \u2014 its receptive field \u2014 not on the whole signal. Sliding the identical kernel across every position means one small set of weights is reused everywhere: weight sharing. A width-k kernel uses only k weights no matter how long the signal is."
+      "summary": "Each convolution output depends only on the small local neighbourhood of the input beneath the kernel at that stop, its receptive field, not on the whole signal. Sliding the identical kernel across every position means one small set of weights is reused everywhere: weight sharing. A width-k kernel uses only k weights no matter how long the signal is."
     },
     {
       "id": "conv-dimensions",
@@ -845,35 +845,35 @@
       "name": "SO(2): The Circle of Turns",
       "room": "the-sphere-of-turns",
       "exhibit": "the-circle-so2",
-      "summary": "SO(2) is the group of planar turns R(\u03b8)=[[cos \u03b8,\u2212sin \u03b8],[sin \u03b8,cos \u03b8]]; the whole family is a CIRCLE (one angle, wrapping). Its Lie algebra so(2) is the 2\u00d72 skew-symmetric matrices [[0,\u2212a],[a,0]], and exp([[0,\u2212\u03b8],[\u03b8,0]])=R(\u03b8). Composing two turns ADDS their angles, R(\u03b1)R(\u03b2)=R(\u03b1+\u03b2) \u2014 the angle-addition identity as the group law on the circle. (Upstairs: the geometry of orientation and motion.)"
+      "summary": "SO(2) is the group of planar turns R(\u03b8)=[[cos \u03b8,\u2212sin \u03b8],[sin \u03b8,cos \u03b8]]; the whole family is a CIRCLE (one angle, wrapping). Its Lie algebra so(2) is the 2\u00d72 skew-symmetric matrices [[0,\u2212a],[a,0]], and exp([[0,\u2212\u03b8],[\u03b8,0]])=R(\u03b8). Composing two turns ADDS their angles, R(\u03b1)R(\u03b2)=R(\u03b1+\u03b2), the angle-addition identity as the group law on the circle. (Upstairs: the geometry of orientation and motion.)"
     },
     {
       "id": "so3-rotation",
       "name": "SO(3): The Surface of 3D Turns",
       "room": "the-sphere-of-turns",
       "exhibit": "the-manifold-so3",
-      "summary": "SO(3) is the group of 3\u00d73 orthogonal matrices with determinant +1 \u2014 the turns of space, a smooth THREE-dimensional curved surface (nine written numbers, three free). Its Lie algebra so(3) is the 3\u00d73 skew-symmetric matrices. A turn is an AXIS-ANGLE vector \u03c9 in \u211d\u00b3; exp(hat(\u03c9)) is the rotation matrix, with closed form the RODRIGUES formula R=I+sin \u03b8\u00b7K+(1\u2212cos \u03b8)\u00b7K\u00b2. SO(3) cannot be drawn \u2014 a sphere is only a proxy, and its true shape is not a 2-sphere. (Upstairs: the geometry of orientation and motion.)"
+      "summary": "SO(3) is the group of 3\u00d73 orthogonal matrices with determinant +1. The turns of space, a smooth THREE-dimensional curved surface (nine written numbers, three free). Its Lie algebra so(3) is the 3\u00d73 skew-symmetric matrices. A turn is an AXIS-ANGLE vector \u03c9 in \u211d\u00b3; exp(hat(\u03c9)) is the rotation matrix, with closed form the RODRIGUES formula R=I+sin \u03b8\u00b7K+(1\u2212cos \u03b8)\u00b7K\u00b2. SO(3) cannot be drawn. A sphere is only a proxy, and its true shape is not a 2-sphere. (Upstairs: the geometry of orientation and motion.)"
     },
     {
       "id": "autoregressive-chunking",
       "name": "Autoregressive Chunking with Overlap",
       "room": "the-stitchers-table",
       "exhibit": "chunk-and-overlap",
-      "summary": "The dominant way to push Wan (pretrained ~5 s / 81 frames = T_max) past its ceiling in ComfyUI: generate a chunk within the trained span, take its last few frames, condition the next chunk on that tail, and repeat \u2014 each chunk conditions on the TAIL of the previous, exactly like a language model continuing its own text. An overlap node such as ImageBatchExtendWithOverlap stitches the seams so motion and lighting carry across. It is enabled by a causal 3D VAE (sliding-window decode), local temporal attention over recent frames, and RoPE's relative-position dot product. It still drifts because each chunk sees only a short tail with no global memory, so error accumulates across segments."
+      "summary": "The dominant way to push Wan (pretrained ~5 s / 81 frames = T_max) past its ceiling in ComfyUI: generate a chunk within the trained span, take its last few frames, condition the next chunk on that tail, and repeat, each chunk conditions on the TAIL of the previous, exactly like a language model continuing its own text. An overlap node such as ImageBatchExtendWithOverlap stitches the seams so motion and lighting carry across. It is enabled by a causal 3D VAE (sliding-window decode), local temporal attention over recent frames, and RoPE's relative-position dot product. It still drifts because each chunk sees only a short tail with no global memory, so error accumulates across segments."
     },
     {
       "id": "sliding-window-extension",
       "name": "Sliding-Window Extension",
       "room": "the-stitchers-table",
       "exhibit": "other-extensions",
-      "summary": "The classic, weaker length-extension method: slide a window of overlapping clips and average where they overlap. Documented failure mode \u2014 fine over static backgrounds, but where the background itself moves, latent-space averaging in the overlap regions smears motion into BLUR and inconsistency, a likely reason motion-heavy long Wan videos degrade worst. Contrast with autoregressive chunking, which conditions each chunk on the previous tail instead of averaging overlaps. A related approach is fine-tuned continuation models trained to extend from a few initial frames."
+      "summary": "The classic, weaker length-extension method: slide a window of overlapping clips and average where they overlap. Documented failure mode, fine over static backgrounds, but where the background itself moves, latent-space averaging in the overlap regions smears motion into BLUR and inconsistency, a likely reason motion-heavy long Wan videos degrade worst. Contrast with autoregressive chunking, which conditions each chunk on the previous tail instead of averaging overlaps. A related approach is fine-tuned continuation models trained to extend from a few initial frames."
     },
     {
       "id": "straight-path",
       "name": "The straight probability path",
       "room": "the-straight-channel",
       "exhibit": "the-channel-table",
-      "summary": "Flow matching connects noise to data along a straight line: x_t = (1\u2212t)\u00b7x\u2080 + t\u00b7x\u2081, with x\u2080 the noise sample at t=0 and x\u2081 the data point at t=1. With x\u2080=1.0 and x\u2081=5.0 the path reads 1.0, 2.0, 3.0, 4.0, 5.0 at t = 0, 0.25, 0.5, 0.75, 1 \u2014 equal steps of 1.0, because a straight line is travelled at constant speed. It replaces diffusion's curved, schedule-dependent path x_t = \u221a\u1fb1\u209c\u00b7x\u2080 + \u221a(1\u2212\u1fb1\u209c)\u00b7\u03b5, and it needs no \u03b2 schedule, no \u1fb1 table and no square roots: the interpolation alone specifies the path."
+      "summary": "Flow matching connects noise to data along a straight line: x_t = (1\u2212t)\u00b7x\u2080 + t\u00b7x\u2081, with x\u2080 the noise sample at t=0 and x\u2081 the data point at t=1. With x\u2080=1.0 and x\u2081=5.0 the path reads 1.0, 2.0, 3.0, 4.0, 5.0 at t = 0, 0.25, 0.5, 0.75, 1, equal steps of 1.0, because a straight line is travelled at constant speed. It replaces diffusion's curved, schedule-dependent path x_t = \u221a\u1fb1\u209c\u00b7x\u2080 + \u221a(1\u2212\u1fb1\u209c)\u00b7\u03b5, and it needs no \u03b2 schedule, no \u1fb1 table and no square roots: the interpolation alone specifies the path."
     },
     {
       "id": "velocity-field",
@@ -887,70 +887,70 @@
       "name": "The t=0 convention flip",
       "room": "the-straight-channel",
       "exhibit": "the-convention-flip",
-      "summary": "In flow matching t=0 is NOISE and t=1 is DATA \u2014 the opposite of diffusion's indexing, where t=0 is the clean image. Neither is canonical; some flow-matching VLA papers invert it and write x_t = (1\u2212t)\u00b7A + t\u00b7\u03b5 with t=0 clean. The mathematics is identical under relabelling, which makes the mismatch silent: porting a velocity target across conventions without also flipping the integration direction produces a plausible loss curve and garbage samples. Fix the convention first, then make the training target and the integration direction agree with it."
+      "summary": "In flow matching t=0 is NOISE and t=1 is DATA, the opposite of diffusion's indexing, where t=0 is the clean image. Neither is canonical; some flow-matching VLA papers invert it and write x_t = (1\u2212t)\u00b7A + t\u00b7\u03b5 with t=0 clean. The mathematics is identical under relabelling, which makes the mismatch silent: porting a velocity target across conventions without also flipping the integration direction produces a plausible loss curve and garbage samples. Fix the convention first, then make the training target and the integration direction agree with it."
     },
     {
       "id": "velocity-training-loop",
       "name": "The flow matching training loop",
       "room": "the-surveyors-table",
       "exhibit": "the-mixing-cauldron",
-      "summary": "Five lines: sample data x\u2081, sample noise x\u2080 ~ N(0,1), sample a time t, build x_t = (1\u2212t)\u00b7x\u2080 + t\u00b7x\u2081, and take \u2016(x\u2081 \u2212 x\u2080) \u2212 net(x_t, t)\u2016\u00b2. Worked: x\u2081=5.0, x\u2080=1.0, t=0.25 gives x_t=2.0 and target 4.0; a network answering 3.7 pays a loss of 0.09. Sorted into three bins, the VAE and text encoder are FROZEN, the interpolation and velocity target are ARITHMETIC with zero parameters, and exactly ONE thing is LEARNED \u2014 the velocity field. At image scale nothing changes but the shapes: x\u2081 is a (32,32,4) latent, the interpolation runs element-wise over all 4,096 elements, and t stays a single scalar shared by all of them."
+      "summary": "Five lines: sample data x\u2081, sample noise x\u2080 ~ N(0,1), sample a time t, build x_t = (1\u2212t)\u00b7x\u2080 + t\u00b7x\u2081, and take \u2016(x\u2081 \u2212 x\u2080) \u2212 net(x_t, t)\u2016\u00b2. Worked: x\u2081=5.0, x\u2080=1.0, t=0.25 gives x_t=2.0 and target 4.0; a network answering 3.7 pays a loss of 0.09. Sorted into three bins, the VAE and text encoder are FROZEN, the interpolation and velocity target are ARITHMETIC with zero parameters, and exactly ONE thing is LEARNED, the velocity field. At image scale nothing changes but the shapes: x\u2081 is a (32,32,4) latent, the interpolation runs element-wise over all 4,096 elements, and t stays a single scalar shared by all of them."
     },
     {
       "id": "non-uniform-timestep-sampling",
       "name": "Non-uniform sampling of t",
       "room": "the-surveyors-table",
       "exhibit": "t-is-not-uniform",
-      "summary": "The textbook loop draws t ~ U(0,1); production systems do not. \u03c00 uses its own noise-level sampling strategy, and the Lipman flow matching guide confirms that drawing t from a non-uniform distribution \u2014 mathematically equivalent to reweighting the loss \u2014 performs better at scale. The reason is that different times pose different problems: near t=0 the point is dominated by the noise draw, near t=1 the field is resolving fine detail, so equal effort everywhere is not the best allocation. Implementations that use Beta(1.5, 1.0) are demonstrating the idea, not reproducing any published schedule."
+      "summary": "The textbook loop draws t ~ U(0,1); production systems do not. \u03c00 uses its own noise-level sampling strategy, and the Lipman flow matching guide confirms that drawing t from a non-uniform distribution, mathematically equivalent to reweighting the loss, performs better at scale. The reason is that different times pose different problems: near t=0 the point is dominated by the noise draw, near t=1 the field is resolving fine detail, so equal effort everywhere is not the best allocation. Implementations that use Beta(1.5, 1.0) are demonstrating the idea, not reproducing any published schedule."
     },
     {
       "id": "latent-caching",
       "name": "Caching frozen latents",
       "room": "the-surveyors-table",
       "exhibit": "the-cached-larder",
-      "summary": "Because the VAE encoder and text encoder are frozen, they recompute identical outputs every epoch, so pipelines precompute all latents and embeddings once and let training load tensors \u2014 removing the two heaviest forward passes from the loop. Two caveats: augmentation breaks it, because a random crop or flip changes the image and therefore the latent, so a cached latent silently disables the augmentation; and the VAE encoder is stochastic, emitting a distribution rather than a point, so caching one sample discards that variation. The usual fix for the second is to cache mean and standard deviation and re-sample each epoch. Text embeddings have neither problem."
+      "summary": "Because the VAE encoder and text encoder are frozen, they recompute identical outputs every epoch, so pipelines precompute all latents and embeddings once and let training load tensors, removing the two heaviest forward passes from the loop. Two caveats: augmentation breaks it, because a random crop or flip changes the image and therefore the latent, so a cached latent silently disables the augmentation; and the VAE encoder is stochastic, emitting a distribution rather than a point, so caching one sample discards that variation. The usual fix for the second is to cache mean and standard deviation and re-sample each epoch. Text embeddings have neither problem."
     },
     {
       "id": "velocity-network",
-      "name": "v_\u03b8 \u2014 the velocity network",
+      "name": "v_\u03b8, the velocity network",
       "room": "the-swappable-engine",
       "exhibit": "the-engine-mount",
-      "summary": "v_\u03b8 takes a noisy input, a scalar t and conditioning, and returns a velocity of the SAME shape \u2014 (32,32,4) in, (32,32,4) out. It is a U-Net or a DiT, architecturally identical to the diffusion noise-predictor; SD3 uses a DiT. Only two things changed from diffusion: the target (velocity x\u2081 \u2212 x\u2080 instead of noise \u03b5) and the path (linear instead of the \u1fb1 schedule). The architecture must satisfy three requirements \u2014 shape-preserving, accepts a scalar t through a scaled sinusoidal timestep embedding, and accepts conditioning via cross-attention or adaLN \u2014 which is exactly the interface a noise-predictor already exposes, so the two are interchangeable."
+      "summary": "v_\u03b8 takes a noisy input, a scalar t and conditioning, and returns a velocity of the SAME shape: (32,32,4) in, (32,32,4) out. It is a U-Net or a DiT, architecturally identical to the diffusion noise-predictor; SD3 uses a DiT. Only two things changed from diffusion: the target (velocity x\u2081 \u2212 x\u2080 instead of noise \u03b5) and the path (linear instead of the \u1fb1 schedule). The architecture must satisfy three requirements, shape-preserving, accepts a scalar t through a scaled sinusoidal timestep embedding, and accepts conditioning via cross-attention or adaLN, which is exactly the interface a noise-predictor already exposes, so the two are interchangeable."
     },
     {
       "id": "velocity-guidance",
       "name": "Classifier-free guidance on velocities",
       "room": "the-swappable-engine",
       "exhibit": "guidance-in-velocity-form",
-      "summary": "The same extrapolation as classifier-free guidance in diffusion, performed on velocities: \u1e7d = v_\u03b8(x,t,\u2205) + w\u00b7[v_\u03b8(x,t,c) \u2212 v_\u03b8(x,t,\u2205)]. Start at the unconditional velocity, measure the difference the condition makes, and travel w times further along it; w=1 recovers the conditional velocity exactly and larger w pushes harder toward the prompt at the cost of saturation and diversity. Training still requires dropping the conditioning on about 10% of examples so one network learns both fields, and sampling still costs two forward passes per step \u2014 affordable here because flow matching takes about 10 steps rather than 1000."
+      "summary": "The same extrapolation as classifier-free guidance in diffusion, performed on velocities: \u1e7d = v_\u03b8(x,t,\u2205) + w\u00b7[v_\u03b8(x,t,c) \u2212 v_\u03b8(x,t,\u2205)]. Start at the unconditional velocity, measure the difference the condition makes, and travel w times further along it; w=1 recovers the conditional velocity exactly and larger w pushes harder toward the prompt at the cost of saturation and diversity. Training still requires dropping the conditioning on about 10% of examples so one network learns both fields, and sampling still costs two forward passes per step, affordable here because flow matching takes about 10 steps rather than 1000."
     },
     {
       "id": "encoder-fusion",
       "name": "Encoder Fusion (SigLIP + DINOv2)",
       "room": "the-twin-sighted-helm",
       "exhibit": "the-fusion-pattern",
-      "summary": "Running two complementary vision encoders on one image and concatenating their features: SigLIP for semantic, language-aligned 'what is it' and DINOv2 for spatial, dense, precise 'where exactly is it'. The concatenated features pass through a projector into an LLM. OpenVLA does exactly this for robot manipulation, which needs both what and where at once. The semantic-vs-spatial split is a strength gradient, not a hard boundary \u2014 SigLIP still carries (less precise) spatial info, and DINOv2 features are semantically structured but not language-aligned."
+      "summary": "Running two complementary vision encoders on one image and concatenating their features: SigLIP for semantic, language-aligned 'what is it' and DINOv2 for spatial, dense, precise 'where exactly is it'. The concatenated features pass through a projector into an LLM. OpenVLA does exactly this for robot manipulation, which needs both what and where at once. The semantic-vs-spatial split is a strength gradient, not a hard boundary, SigLIP still carries (less precise) spatial info, and DINOv2 features are semantically structured but not language-aligned."
     },
     {
       "id": "mae",
       "name": "MAE (Masked Autoencoder)",
       "room": "the-twin-sighted-helm",
       "exhibit": "landscape-chapter",
-      "summary": "A self-supervised vision encoder trained by reconstructing masked-out image patches \u2014 the reconstruction-based road away from collapse, distinct from DINO's distillation and VICReg's regularization. A good pretraining initialization, but its features are weaker off-the-shelf than DINO's and usually need fine-tuning to shine. Like the other encoders it is a ViT, so swapping it in is mostly a projector/dimension change."
+      "summary": "A self-supervised vision encoder trained by reconstructing masked-out image patches, the reconstruction-based road away from collapse, distinct from DINO's distillation and VICReg's regularization. A good pretraining initialization, but its features are weaker off-the-shelf than DINO's and usually need fine-tuning to shine. Like the other encoders it is a ViT, so swapping it in is mostly a projector/dimension change."
     },
     {
       "id": "smolvla",
       "name": "SmolVLA",
       "room": "the-two-couriers",
       "exhibit": "the-two-standards",
-      "summary": "A flow-matching VLA with the same objective as \u03c00 and a different conditioning design: 0.45B parameters in total against \u03c00's 3.3B, with an action expert of about 100M against 300M. Its backbone is SmolVLM-2 (SigLIP plus SmolLM2) run with LAYER SKIPPING \u2014 features are taken at layer N = L/2 and the upper half of the stack never runs. The expert is a SEPARATE transformer stack that reads VLM features from outside, alternating cross-attention layers (actions attend to VLM features) with causal self-attention layers (actions attend to each other). The paper ablates the interleaving as load-bearing."
+      "summary": "A flow-matching VLA with the same objective as \u03c00 and a different conditioning design: 0.45B parameters in total against \u03c00's 3.3B, with an action expert of about 100M against 300M. Its backbone is SmolVLM-2 (SigLIP plus SmolLM2) run with LAYER SKIPPING, features are taken at layer N = L/2 and the upper half of the stack never runs. The expert is a SEPARATE transformer stack that reads VLM features from outside, alternating cross-attention layers (actions attend to VLM features) with causal self-attention layers (actions attend to each other). The paper ablates the interleaving as load-bearing."
     },
     {
       "id": "state-placement",
       "name": "Which side of the bridge the state sits on",
       "room": "the-two-couriers",
       "exhibit": "opposite-sides-of-the-bridge",
-      "summary": "\u03c00 and SmolVLA place proprioception on opposite sides of the VLM/action boundary. SmolVLA projects the state to one token with a linear layer and concatenates it into the VLM PREFIX alongside image and text, so every feature the expert later reads is already state-aware \u2014 perception itself is posture-conditioned. \u03c00 keeps the state on the ACTION EXPERT side, concatenated with the noisy chunk, where it meets vision only through the joint self-attention. The design question underneath is whether posture should inform how the scene is perceived or only how it is acted on; moving the state token when porting code changes the model's information flow, not just its plumbing."
+      "summary": "\u03c00 and SmolVLA place proprioception on opposite sides of the VLM/action boundary. SmolVLA projects the state to one token with a linear layer and concatenates it into the VLM PREFIX alongside image and text, so every feature the expert later reads is already state-aware, perception itself is posture-conditioned. \u03c00 keeps the state on the ACTION EXPERT side, concatenated with the noisy chunk, where it meets vision only through the joint self-attention. The design question underneath is whether posture should inform how the scene is perceived or only how it is acted on; moving the state token when porting code changes the model's information flow, not just its plumbing."
     },
     {
       "id": "cross-attention",
@@ -992,28 +992,28 @@
       "name": "Relative judgment (softmax)",
       "room": "the-two-judgments",
       "exhibit": "relative-verdict",
-      "summary": "Softmax over N candidate scores: p_i = e^(s_i) / sum_j e^(s_j) \u2014 exponentiate, then normalise so the weights sum to 1. A single COUPLED distribution in which only the gaps between scores matter (a common shift cancels), nudging any one score shifts every weight, and one candidate wins; with no rivals it is meaningless, since a lone candidate always gets p = 1. Answers 'which of these is best?'. Its regret for true candidate k is -log(p_k). (Upstairs it is CLIP's contrastive softmax cross-entropy over a batch of image-caption pairs \u2014 coupled, so training must all-gather across GPUs and craves ~32K batches for enough negatives.)"
+      "summary": "Softmax over N candidate scores: p_i = e^(s_i) / sum_j e^(s_j), exponentiate, then normalise so the weights sum to 1. A single COUPLED distribution in which only the gaps between scores matter (a common shift cancels), nudging any one score shifts every weight, and one candidate wins; with no rivals it is meaningless, since a lone candidate always gets p = 1. Answers 'which of these is best?'. Its regret for true candidate k is -log(p_k). (Upstairs it is CLIP's contrastive softmax cross-entropy over a batch of image-caption pairs, coupled, so training must all-gather across GPUs and craves ~32K batches for enough negatives.)"
     },
     {
       "id": "binary-cross-entropy",
       "name": "Binary cross-entropy (sigmoid)",
       "room": "the-two-judgments",
       "exhibit": "absolute-verdict",
-      "summary": "The regret for an INDEPENDENT yes/no verdict: -[y*log(p) + (1-y)*log(1-p)], where p = sigmoid(s) = 1/(1+e^(-s)) squashes a single score alone into (0,1). It is -log(p) when the truth is yes (y=1) and -log(1-p) when no (y=0). Each score is judged on its own absolute level with no denominator over rivals; a rescale t and shift b set the threshold, a negative b lowering every default probability when a 'yes' is rare. Changing one score leaves the other verdicts untouched. Answers 'is THIS one a yes?'. (Upstairs it is SigLIP's per-pair sigmoid loss \u2014 decoupled, no all-gather, small batches.)"
+      "summary": "The regret for an INDEPENDENT yes/no verdict: -[y*log(p) + (1-y)*log(1-p)], where p = sigmoid(s) = 1/(1+e^(-s)) squashes a single score alone into (0,1). It is -log(p) when the truth is yes (y=1) and -log(1-p) when no (y=0). Each score is judged on its own absolute level with no denominator over rivals; a rescale t and shift b set the threshold, a negative b lowering every default probability when a 'yes' is rare. Changing one score leaves the other verdicts untouched. Answers 'is THIS one a yes?'. (Upstairs it is SigLIP's per-pair sigmoid loss, decoupled, no all-gather, small batches.)"
     },
     {
       "id": "exponential-map",
       "name": "The Exponential Map",
       "room": "the-two-maps",
       "exhibit": "the-two-maps",
-      "summary": "Given a point p on a curved surface and a straight tangent vector v in the flat tangent plane at p, the exponential map exp_p(v) walks along the surface's straightest path \u2014 a geodesic \u2014 in v's direction, a distance equal to v's length, and returns the point where it lands. It carries a flat straight step onto the curved surface, preserving direction and length (as distance along the surface) while trading away straightness, and it always lands ON the surface. It generalises the ordinary exponential of numbers to curved spaces of motion. (Upstairs: this is how a straight optimisation step or a breath of added uncertainty is carried onto a curved configuration space without leaving it.)"
+      "summary": "Given a point p on a curved surface and a straight tangent vector v in the flat tangent plane at p, the exponential map exp_p(v) walks along the surface's straightest path, a geodesic, in v's direction, a distance equal to v's length, and returns the point where it lands. It carries a flat straight step onto the curved surface, preserving direction and length (as distance along the surface) while trading away straightness, and it always lands ON the surface. It generalises the ordinary exponential of numbers to curved spaces of motion. (Upstairs: this is how a straight optimisation step or a breath of added uncertainty is carried onto a curved configuration space without leaving it.)"
     },
     {
       "id": "logarithm-map",
       "name": "The Logarithm Map",
       "room": "the-two-maps",
       "exhibit": "the-logarithm",
-      "summary": "The inverse of the exponential map: given a point q on the surface near p, the logarithm map log_p(q) returns the single straight tangent vector v at p for which exp_p(v)=q \u2014 unwrapping a curved point back to the flat tangent window, its direction giving the way to q and its length the geodesic distance. Together, log (curved\u2192flat), ordinary straight-line arithmetic on the flat tangent plane, then exp (flat\u2192curved) let you compute and always return to a valid surface point; the bridge is faithful for small local moves. (Upstairs: log-compute-exp is how averaging, stepping, or filtering is done on curved spaces.)"
+      "summary": "The inverse of the exponential map: given a point q on the surface near p, the logarithm map log_p(q) returns the single straight tangent vector v at p for which exp_p(v)=q, unwrapping a curved point back to the flat tangent window, its direction giving the way to q and its length the geodesic distance. Together, log (curved\u2192flat), ordinary straight-line arithmetic on the flat tangent plane, then exp (flat\u2192curved) let you compute and always return to a valid surface point; the bridge is faithful for small local moves. (Upstairs: log-compute-exp is how averaging, stepping, or filtering is done on curved spaces.)"
     },
     {
       "id": "unet",
@@ -1044,7 +1044,7 @@
       "name": "Emergent Abstraction",
       "room": "the-unnamed-gallery",
       "exhibit": "the-unnamed-form",
-      "summary": "How a concept like 'wing' arises in a self-supervised encoder with no labels. Because a local crop must predict the global context the teacher sees, a wing-patch must encode what predicts its whole (elongated, attached to a body, aerodynamic, sky/flight context). Bird wings and plane wings must predict similar wholes, so under limited capacity the most efficient encoding gives them the SAME code and they converge. Abstraction emerges from compression pressure, not supervision. Honest caveat: emergent concepts align with human categories only where visual statistics happen to match human semantics, and nothing names them \u2014 you find them only by probing the features."
+      "summary": "How a concept like 'wing' arises in a self-supervised encoder with no labels. Because a local crop must predict the global context the teacher sees, a wing-patch must encode what predicts its whole (elongated, attached to a body, aerodynamic, sky/flight context). Bird wings and plane wings must predict similar wholes, so under limited capacity the most efficient encoding gives them the SAME code and they converge. Abstraction emerges from compression pressure, not supervision. Honest caveat: emergent concepts align with human categories only where visual statistics happen to match human semantics, and nothing names them, you find them only by probing the features."
     },
     {
       "id": "causal-masking",

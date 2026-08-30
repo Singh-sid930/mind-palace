@@ -11,32 +11,48 @@
       "title": "The Hat and the Vee",
       "prop": "orrery",
       "scale": 1.2,
-      "text": "Twin mechanisms that undo each other, passing a short rod of beads between them — a plain list of numbers, the humblest way to write a direction of motion. The HAT lifts the rod: the beads rise and unfold into a square frame, a MATRIX — same information, richer costume. The frame it builds is always SKEW: zeros down the diagonal, every entry mirrored by its own negative. That is the shape of pure turning. The VEE reads the matrix back DOWN, plucking out the free numbers and letting them fall back onto the rod. Watch above: beads to matrix, matrix to beads, nothing ever lost. One element of motion, dressed two ways — a list you can store and add, and a matrix the palace's deeper machinery knows how to set turning.",
-      "float": { "widget": "lift_matrix" }
+      "text": "Twin mechanisms that undo each other, passing a short rod of beads between them, a plain list of numbers, the humblest way to write a direction of motion. The HAT lifts the rod: the beads rise and unfold into a square frame, a MATRIX, same information, richer costume. The frame it builds is always SKEW: zeros down the diagonal, every entry mirrored by its own negative. That is the shape of pure turning. The VEE reads the matrix back DOWN, plucking out the free numbers and letting them fall back onto the rod. Watch above: beads to matrix, matrix to beads, nothing ever lost. One element of motion, dressed two ways. A list you can store and add, and a matrix the palace's deeper machinery knows how to set turning.",
+      "float": {
+        "widget": "lift_matrix"
+      }
     },
     {
       "id": "the-hat",
       "type": "plaque",
       "prop": "pedestal",
       "title": "The Hat Operator",
-      "text": "A tangent-space element can be written as a plain vector in ℝⁿ — good for storing and adding, but not the form the machinery wants. The HAT (v ↦ v̂) lifts it into MATRIX form. For turning motions, the matrix is always SKEW-SYMMETRIC: Aᵀ = −A — zeros on the diagonal, mirror entries that are exact negatives. Worked in 2D: one number a lifts to [[0, −a], [a, 0]]. Check: zero diagonal, off-diagonal pair a and −a. One number has become the 2×2 frame that the exponential map knows how to turn into an actual rotation. Above: the diagonal stays dark (forced zeros) while gold and its blue negative breathe in anti-phase.",
-      "float": { "widget": "heat_grid", "n": 3, "variant": "skew" }
+      "text": "A tangent-space element can be written as a plain vector in ℝⁿ, good for storing and adding, but not the form the machinery wants. The HAT (v ↦ v̂) lifts it into MATRIX form. For turning motions, the matrix is always SKEW-SYMMETRIC: Aᵀ = −A, zeros on the diagonal, mirror entries that are exact negatives. Worked in 2D: one number a lifts to [[0, −a], [a, 0]]. Check: zero diagonal, off-diagonal pair a and −a. One number has become the 2×2 frame that the exponential map knows how to turn into an actual rotation. Above: the diagonal stays dark (forced zeros) while gold and its blue negative breathe in anti-phase.",
+      "float": {
+        "widget": "heat_grid",
+        "n": 3,
+        "variant": "skew"
+      }
     },
     {
       "id": "the-vee",
       "type": "plaque",
       "prop": "lectern",
       "title": "The Vee Operator",
-      "text": "The VEE (A ↦ Aˇ) runs the hat backwards: hand it a skew matrix and it reads back the plain coordinate vector, discarding the scaffolding of forced zeros and mirrored negatives. Exact inverse: (v̂)ˇ = v, always. In 2D: [[0, −a], [a, 0]] ↦ a. Why keep both directions? The two forms serve two masters. The MATRIX form is what the exponential map eats to reach the curved surface. The VECTOR form is what arithmetic prefers — you cannot easily average matrices constrained to be skew, but you can average their lists of numbers with abandon. Vee lets an algebra element be stored and reckoned as an ordinary vector, then handed back to hat when the machinery calls.",
-      "float": { "widget": "lift_matrix", "speed": 0.6 }
+      "text": "The VEE (A ↦ Aˇ) runs the hat backwards: hand it a skew matrix and it reads back the plain coordinate vector, discarding the scaffolding of forced zeros and mirrored negatives. Exact inverse: (v̂)ˇ = v, always. In 2D: [[0, −a], [a, 0]] ↦ a. Why keep both directions? The two forms serve two masters. The MATRIX form is what the exponential map eats to reach the curved surface. The VECTOR form is what arithmetic prefers, you cannot easily average matrices constrained to be skew, but you can average their lists of numbers with abandon. Vee lets an algebra element be stored and reckoned as an ordinary vector, then handed back to hat when the machinery calls.",
+      "float": {
+        "widget": "lift_matrix",
+        "speed": 0.6
+      }
     },
     {
       "id": "the-three-spaces",
       "type": "plaque",
       "prop": "pedestal",
       "title": "The Three Spaces",
-      "text": "Count the worlds this wing shuttles between — three, with four ferries. (1) PLAIN COORDINATES, ℝⁿ: where arithmetic lives. (2) The MATRIX ALGEBRA: the same element in its skew costume, the form exp can act on. (3) The CURVED SURFACE: valid configurations. The ferries: hat and vee cross between coordinates and matrix; exp and log cross between matrix and surface. The grand strategy falls out of the picture: keep configurations VALID on the curved surface, do ALL arithmetic in flat ℝⁿ. To take a step, run the relay — log and vee down to a plain vector, reckon, then hat and exp back up to a valid point. Three spaces, four ferries, one round trip — watch the pulses run the chain above.",
-      "float": { "widget": "flow_nodes", "layers": [1, 1, 1] }
+      "text": "Count the worlds this wing shuttles between, three, with four ferries. (1) PLAIN COORDINATES, ℝⁿ: where arithmetic lives. (2) The MATRIX ALGEBRA: the same element in its skew costume, the form exp can act on. (3) The CURVED SURFACE: valid configurations. The ferries: hat and vee cross between coordinates and matrix; exp and log cross between matrix and surface. The grand strategy falls out of the picture: keep configurations VALID on the curved surface, do ALL arithmetic in flat ℝⁿ. To take a step, run the relay, log and vee down to a plain vector, reckon, then hat and exp back up to a valid point. Three spaces, four ferries, one round trip. Watch the pulses run the chain above.",
+      "float": {
+        "widget": "flow_nodes",
+        "layers": [
+          1,
+          1,
+          1
+        ]
+      }
     },
     {
       "id": "three-spaces-diagram",
@@ -50,7 +66,7 @@
       "type": "image",
       "title": "Lift and Lower, the Antisymmetry Made Plain",
       "image": "world/assets/lie-hat-vee.png",
-      "caption": "(a) The smallest case: one number a lifted by the hat into the 2×2 frame — greyed zeros on the diagonal, the mirror pair a and −a across it. (b) The 3D case: (x, y, z) raised into the 3×3 frame, every entry above the diagonal answered by its negative below, Aᵀ = −A exactly — the fingerprint of a pure turn. The vee runs every arrow backwards. (c) The wing in one triangle: three spaces at the corners, four ferries on the edges — reckon in flat ℝⁿ, hat-then-exp to climb to a valid point, log-then-vee to return."
+      "caption": "(a) The smallest case: one number a lifted by the hat into the 2×2 frame, greyed zeros on the diagonal, the mirror pair a and −a across it. (b) The 3D case: (x, y, z) raised into the 3×3 frame, every entry above the diagonal answered by its negative below, Aᵀ = −A exactly. The fingerprint of a pure turn. The vee runs every arrow backwards. (c) The wing in one triangle: three spaces at the corners, four ferries on the edges, reckon in flat ℝⁿ, hat-then-exp to climb to a valid point, log-then-vee to return."
     }
   ]
 }

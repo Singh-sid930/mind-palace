@@ -1,9 +1,9 @@
 """Concept figure for The Loom Across Time (video wing, silver).
 
-Panel (a): the (T frames) x (h.w positions) grid — SPATIAL attention is one
+Panel (a): the (T frames) x (h.w positions) grid. SPATIAL attention is one
            highlighted ROW (all positions within one frame attend), TEMPORAL
            attention is one highlighted COLUMN (one position across all frames).
-Panel (b): cost bars — full joint 3D O((T.h.w)^2) towering over factorized
+Panel (b): cost bars, full joint 3D O((T.h.w)^2) towering over factorized
            O((h.w)^2)+O(T^2), representative T=21, h.w=1024, log scale.
 
 Run:  ~/anaconda3/envs/lrm/bin/python tools/figs_temporal.py
@@ -29,7 +29,7 @@ def main():
     gs = f.add_gridspec(1, 2, width_ratios=[1.32, 1.0], wspace=0.22,
                         left=0.045, right=0.975, top=0.80, bottom=0.145)
 
-    P.suptitle(f, "Factorized Attention  —  space along a row, time down a column",
+    P.suptitle(f, "Factorized Attention, space along a row, time down a column",
                WING)
     f.text(0.5, 0.865,
            "Two cheap axes of attention replace one impossible joint 3D "
@@ -151,7 +151,7 @@ def main():
              color=WARM, fontsize=14, fontweight="bold", linespacing=1.2)
 
     f.text(0.5, 0.032,
-           "Full 3D attends over all T·h·w tokens at once — quadratic in their "
+           "Full 3D attends over all T·h·w tokens at once, quadratic in their "
            "product;  factorizing pays only (h·w)² + T² instead, the same "
            "anti-quadratic escape seen across the palace.",
            ha="center", va="bottom", color=P.MUTED, fontsize=11.5)

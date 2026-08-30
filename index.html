@@ -6,7 +6,7 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏰</text></svg>">
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <!-- Analytics (Google GA4). Inert until GA_ID is set, and never fires on
-     localhost — so local serve.py dev sessions don't pollute the stats. -->
+     localhost, so local serve.py dev sessions don't pollute the stats. -->
 <script>
   (function () {
     var GA_ID = 'G-8CR9RPEQ4J';                       // palace GA4 Measurement ID (mind_palace stream)
@@ -104,7 +104,7 @@
     from { transform: translateY(-5px) rotate(-0.2deg); }
     to   { transform: translateY(5px)  rotate(0.2deg); }
   }
-  /* Settle while it is being read or reached for — a drifting button is a
+  /* Settle while it is being read or reached for. A drifting button is a
      fiddly target, and the drift has done its job by then. */
   .scroll:hover, .scroll:focus-within { animation-play-state: paused; }
   .scroll .rod {
@@ -120,8 +120,8 @@
   .scroll .rod::before { left: -9px; }
   .scroll .rod::after  { right: -9px; }
   .sheet {
-    padding: 30px 42px 34px; text-align: center; color: #33291a;
-    overflow-y: auto;   /* short laptop screens must not clip the button */
+    padding: 26px 42px 34px; text-align: center; color: #33291a;
+    display: flex; flex-direction: column; min-height: 0;
     background:
       radial-gradient(120% 80% at 50% 0%, rgba(255,255,255,0.5), transparent 60%),
       linear-gradient(180deg, #f0e5c8, #e6d8b4 45%, #dcccA4);
@@ -129,14 +129,15 @@
                 inset 0 -14px 18px -14px rgba(70,52,22,0.75),
                 0 26px 50px rgba(0,0,0,0.5);
   }
+  .sheet-body { overflow-y: auto; min-height: 0; }
   .sheet h1 {
     margin: 0 0 2px; font-size: 31px; letter-spacing: 0.045em; color: #2a2213;
   }
   .sheet .lede { margin: 0 0 16px; font-size: 13.5px; font-style: italic;
                  color: #6d5c3c; letter-spacing: 0.03em; }
-  .sheet p { margin: 0 0 12px; font-size: 15px; line-height: 1.72; }
+  .sheet p { margin: 0 0 11px; font-size: 14.5px; line-height: 1.65; }
   .sheet .rule {
-    width: 96px; height: 1px; margin: 16px auto;
+    width: 96px; height: 1px; margin: 14px auto;
     background: linear-gradient(90deg, transparent, #a98f5c, transparent);
   }
   .sheet kbd {
@@ -145,7 +146,7 @@
     font-family: inherit; font-size: 12.5px;
   }
   .sheet button {
-    margin-top: 20px; font: inherit; font-size: 17px; padding: 10px 34px;
+    margin: 18px auto 0; flex: none; font: inherit; font-size: 17px; padding: 10px 34px;
     background: linear-gradient(180deg, #4a3a1e, #2f2512); color: #f0e2bd;
     border: 1px solid #8a6c2c; border-radius: 8px;
     cursor: pointer; letter-spacing: 0.06em;
@@ -311,35 +312,40 @@
       <div class="rod"></div>
       <div class="sheet">
         <h1>The Palace of Mind</h1>
-        <p class="lede">a walkable chronicle of everything you have learned</p>
+        <p class="lede">a walkable chronicle of ideas and information</p>
+        <div class="sheet-body">
 
-        <p>Welcome in. This is a memory palace: a castle where every idea you
-        have studied is given a room of its own to stand in. We remember
-        <em>places</em> far better than we remember lists — so here the ideas
-        have floors, doorways and neighbours. The mathematics that everything
-        rests upon is down in the cellar, and each floor above is built from
-        the one beneath it.</p>
+        <p>Welcome in. This is a memory palace. A castle where every idea and
+        piece of information is for yours to find and explore. We remember
+        places far better than we remember lists. Here, every idea and
+        information is in a place for you to find. You go through floors,
+        doorways and rooms.</p>
 
-        <p>Nothing in these rooms is ornament. Every artifact is a working
-        model of the idea it explains, and it moves the way the mathematics
-        moves.</p>
+        <p>Everywhere you go, you will find ornaments and artifacts. These will
+        provide you with information on your journey from the bottom to the
+        top. The foundations are laid in mathematical fundamentals. The floors
+        above build over the foundations.</p>
 
         <div class="rule"></div>
 
         <p>Walk with <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd>, look with
         the mouse, hold <kbd>Shift</kbd> to run. When something catches your
-        eye, press <kbd>E</kbd> to study it — plaques, figures and diagrams all
+        eye, press <kbd>E</kbd> to study it. Plaques, figures and diagrams all
         open where you stand.</p>
 
         <p>If you lose your bearings, <kbd>M</kbd> draws the floor you are on,
         <kbd>G</kbd> lifts the whole palace into a constellation of its ideas,
         and <kbd>F</kbd> carries you to any chamber you can name. Glowing
-        footprints lead to whatever you have not read yet — <kbd>P</kbd> sends
+        footprints lead to whatever you have not read yet. <kbd>P</kbd> sends
         them away when you would rather wander.
         <span class="needs-gemma"><kbd>T</kbd> calls Gemma, the ghost who
         knows which room you are standing in.</span>
         <kbd>N</kbd> begins the music; wear headphones if you have them, as one
         layer of it exists only between the two ears.</p>
+
+        <p>Press <kbd>Esc</kbd> to go back.</p>
+
+        <p>And oh, beware the dementors and the ghosts :)</p>
 
         <button id="begin">Enter the Palace</button>
       </div>
@@ -352,23 +358,23 @@
     <div id="focus-subtitle"></div>
     <div id="focus-body"></div>
     <div id="focus-diagram"></div>
-    <div class="hint">E or Esc — step back</div>
+    <div class="hint">E or Esc, step back</div>
   </div>
 
   <div id="map-panel" class="panel">
     <h2>The Palace</h2>
     <canvas id="map-canvas" width="760" height="560"></canvas>
-    <div class="hint">M or Esc — close</div>
+    <div class="hint">M or Esc, close</div>
   </div>
 
   <div id="constellation-hint">
-    drag — orbit &nbsp;·&nbsp; scroll — zoom &nbsp;·&nbsp; click a star — travel
-    &nbsp;·&nbsp; <kbd>G</kbd> / <kbd>Esc</kbd> — return to the palace
+    drag, orbit &nbsp;·&nbsp; scroll, zoom &nbsp;·&nbsp; click a star, travel
+    &nbsp;·&nbsp; <kbd>G</kbd> / <kbd>Esc</kbd>, return to the palace
     <div class="legend">
-      <span class="rel-builds">— builds on</span>
-      <span class="rel-part">— part of</span>
-      <span class="rel-relates">— relates to</span>
-      <span class="rel-contrasts">— contrasts with</span>
+      <span class="rel-builds">, builds on</span>
+      <span class="rel-part">, part of</span>
+      <span class="rel-relates">, relates to</span>
+      <span class="rel-contrasts">, contrasts with</span>
     </div>
   </div>
 
@@ -376,20 +382,20 @@
     <h2>Floo Network</h2>
     <input id="floo-input" placeholder="name a chamber…" />
     <ul id="floo-list"></ul>
-    <div class="hint">Enter — travel to first match · Esc — close</div>
+    <div class="hint">Enter, travel to first match · Esc, close</div>
   </div>
 
   <div id="chat-panel" class="panel">
     <div id="chat-log"></div>
     <input id="chat-input" placeholder="ask Gemma…" autocomplete="off" />
-    <div class="hint">Enter — send · T or Esc — close · say “give me a scroll” to save the full version</div>
+    <div class="hint">Enter, send · T or Esc, close · say “give me a scroll” to save the full version</div>
   </div>
 
   <div id="study-card">
     <h2 id="study-title"></h2>
     <div id="study-subtitle"></div>
     <div id="study-body"></div>
-    <div class="hint">E or Esc — step back · scroll to read</div>
+    <div class="hint">E or Esc, step back · scroll to read</div>
   </div>
 
   <div id="dia-max"><div id="dia-max-holder"></div></div>

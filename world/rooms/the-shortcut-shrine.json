@@ -11,7 +11,7 @@
       "title": "The Hourglass of Any Hour",
       "prop": "hourglass",
       "scale": 1.4,
-      "text": "An hourglass that refuses to be watched grain by grain. The slow way is a chain — x₀ → x₁ → x₂, hundreds of nudges. The hourglass skips the fall: turn it to any hour t and the sand is already settled. Define each step's signal survival αₜ = 1 − βₜ, and the running product ᾱₜ = α₁·α₂·…·αₜ — every factor below 1, so it only shrinks (the fading curve above). Then for ANY t, one line:\n\n  x_t = √ᾱₜ·x₀ + √(1−ᾱₜ)·ε,   ε ~ N(0,1)\n\nScale-and-shift a standard draw — the Well of Chance skeleton — with ᾱₜ + (1−ᾱₜ) = 1 keeping the spread honest. A concrete turn: β = 0.1 everywhere gives ᾱ₃ = 0.729; leap straight to x₃ from x₀ = 5.0 with a single ε = 0.4: x₃ = 0.854×5.0 + 0.521×0.4 = 4.478. No x₁, no x₂ — never computed. That is why training is fast. And as t grows, ᾱₜ → 0: the signal term vanishes, the noise term takes over, x_t ≈ ε — every picture dissolves into the same standard-normal pool generation later dips from.",
+      "text": "An hourglass that refuses to be watched grain by grain. The slow way is a chain, x₀ → x₁ → x₂, hundreds of nudges. The hourglass skips the fall: turn it to any hour t and the sand is already settled. Define each step's signal survival αₜ = 1 − βₜ, and the running product ᾱₜ = α₁·α₂·…·αₜ, every factor below 1, so it only shrinks (the fading curve above). Then for ANY t, one line:\n\n  x_t = √ᾱₜ·x₀ + √(1−ᾱₜ)·ε,   ε ~ N(0,1)\n\nScale-and-shift a standard draw, the Well of Chance skeleton, with ᾱₜ + (1−ᾱₜ) = 1 keeping the spread honest. A concrete turn: β = 0.1 everywhere gives ᾱ₃ = 0.729; leap straight to x₃ from x₀ = 5.0 with a single ε = 0.4: x₃ = 0.854×5.0 + 0.521×0.4 = 4.478. No x₁, no x₂, never computed. That is why training is fast. And as t grows, ᾱₜ → 0: the signal term vanishes, the noise term takes over, x_t ≈ ε, every picture dissolves into the same standard-normal pool generation later dips from.",
       "float": {
         "widget": "curve_trace",
         "fn": "decay"
@@ -22,7 +22,7 @@
       "type": "plaque",
       "prop": "lectern",
       "title": "Why Two Steps Collapse Into One",
-      "text": "The shortcut is not a trick of notation; it rests on one law from the Well of Chance below — the SUM OF TWO INDEPENDENT GAUSSIANS IS ANOTHER GAUSSIAN, with variances added. Chain two real steps and substitute x₁ into x₂:\n\n  x₂ = √(α₁α₂)·x₀ + √α₂·√(1−α₁)·ε₁ + √(1−α₂)·ε₂\n\nThe first piece is signal; the last two are independent noise draws, ε₁ from step one and ε₂ from step two. Because they are independent Gaussians, they MERGE into a single Gaussian whose variance is the sum of theirs:\n\n  Var(first)  = α₂(1−α₁)\n  Var(second) = (1−α₂)\n  Sum = α₂ − α₁α₂ + 1 − α₂ = 1 − α₁α₂ = 1 − ᾱ₂\n\nSo the two kicks become one kick of size √(1−ᾱ₂), and the whole line folds into x₂ = √ᾱ₂·x₀ + √(1−ᾱ₂)·ε. Repeat the merge down the chain and t noise draws collapse into a single ε — the shortcut for any step.",
+      "text": "The shortcut is not a trick of notation; it rests on one law from the Well of Chance below, the SUM OF TWO INDEPENDENT GAUSSIANS IS ANOTHER GAUSSIAN, with variances added. Chain two real steps and substitute x₁ into x₂:\n\n  x₂ = √(α₁α₂)·x₀ + √α₂·√(1−α₁)·ε₁ + √(1−α₂)·ε₂\n\nThe first piece is signal; the last two are independent noise draws, ε₁ from step one and ε₂ from step two. Because they are independent Gaussians, they MERGE into a single Gaussian whose variance is the sum of theirs:\n\n  Var(first)  = α₂(1−α₁)\n  Var(second) = (1−α₂)\n  Sum = α₂ − α₁α₂ + 1 − α₂ = 1 − α₁α₂ = 1 − ᾱ₂\n\nSo the two kicks become one kick of size √(1−ᾱ₂), and the whole line folds into x₂ = √ᾱ₂·x₀ + √(1−ᾱ₂)·ε. Repeat the merge down the chain and t noise draws collapse into a single ε, the shortcut for any step.",
       "float": {
         "widget": "rain_bell"
       }
@@ -32,7 +32,7 @@
       "type": "plaque",
       "prop": "pedestal",
       "title": "β Is a Schedule, Not a Number",
-      "text": "The worked example held β = 0.1 fixed to keep the arithmetic clean, but real models never do. β is a SCHEDULE: it grows across timesteps, typically from about 0.0001 early to about 0.02 late, so the process nudges gently at first and harder as the picture dissolves. Each step therefore has its own αₜ = 1 − βₜ, and ᾱₜ is the running product of those ACTUAL per-step survivals — not a single power. None of this costs time during training: the whole β schedule, every αₜ, and the full table of ᾱₜ are PRECOMPUTED ONCE before training begins. From then on, jumping to step t is just two lookups, √ᾱₜ and √(1−ᾱₜ), and one draw of ε.",
+      "text": "The worked example held β = 0.1 fixed to keep the arithmetic clean, but real models never do. β is a SCHEDULE: it grows across timesteps, typically from about 0.0001 early to about 0.02 late, so the process nudges gently at first and harder as the picture dissolves. Each step therefore has its own αₜ = 1 − βₜ, and ᾱₜ is the running product of those ACTUAL per-step survivals, not a single power. None of this costs time during training: the whole β schedule, every αₜ, and the full table of ᾱₜ are PRECOMPUTED ONCE before training begins. From then on, jumping to step t is just two lookups, √ᾱₜ and √(1−ᾱₜ), and one draw of ε.",
       "float": {
         "widget": "curve_trace",
         "fn": "exp_rise"
@@ -43,7 +43,7 @@
       "type": "plaque",
       "prop": "pedestal",
       "title": "The Fading of the Signal",
-      "text": "Picture the two coefficients as a seesaw that always balances. √ᾱₜ carries the ORIGINAL, √(1−ᾱₜ) carries the NOISE, and their squares sum to 1. At t = 0 the seesaw is all signal (ᾱ₀ = 1). Each step tips it a little toward noise. In the β = 0.1 example the signal weight slides 1 → 0.949 (√0.9) → 0.9 (√0.81) → 0.854 (√0.729), while the noise weight climbs 0 → 0.316 → 0.436 → 0.521. Push t far enough and ᾱₜ → 0: the signal weight reaches 0, the noise weight reaches 1, and x_t is indistinguishable from a fresh scoop of N(0,1). This is the endpoint diffusion is built around — pure, structureless noise that sampling can later run backward into an image.",
+      "text": "Picture the two coefficients as a seesaw that always balances. √ᾱₜ carries the ORIGINAL, √(1−ᾱₜ) carries the NOISE, and their squares sum to 1. At t = 0 the seesaw is all signal (ᾱ₀ = 1). Each step tips it a little toward noise. In the β = 0.1 example the signal weight slides 1 → 0.949 (√0.9) → 0.9 (√0.81) → 0.854 (√0.729), while the noise weight climbs 0 → 0.316 → 0.436 → 0.521. Push t far enough and ᾱₜ → 0: the signal weight reaches 0, the noise weight reaches 1, and x_t is indistinguishable from a fresh scoop of N(0,1). This is the endpoint diffusion is built around, pure, structureless noise that sampling can later run backward into an image.",
       "float": {
         "widget": "balance_tilt"
       }
@@ -53,14 +53,14 @@
       "type": "diagram",
       "title": "The Chain vs. The Shortcut",
       "spec": "graph LR\n  X0[x₀ clean] -->|chain: t nudges| C1[x₁] --> C2[x₂] --> Ct[x_t]\n  X0 -->|shortcut: one draw| J[x_t]\n  E[ε ~ N,0,1] --> J\n  AB[ᾱₜ = α₁·α₂·…·αₜ] --> J\n  J --> F[x_t = √ᾱₜ·x₀ + √,1−ᾱₜ·ε]\n  F -->|t grows, ᾱₜ→0| G[x_t ≈ ε: pure N,0,1]",
-      "caption": "Top path is the slow forward chain, x₀ to x₁ to x₂ … one tiny nudge at a time. Bottom path is the shortcut: with the precomputed ᾱₜ and a single ε, leap straight to x_t. As t grows ᾱₜ → 0 and the leap lands on pure noise. Same destination, no loop — which is exactly why training is fast."
+      "caption": "Top path is the slow forward chain, x₀ to x₁ to x₂ … one tiny nudge at a time. Bottom path is the shortcut: with the precomputed ᾱₜ and a single ε, leap straight to x_t. As t grows ᾱₜ → 0 and the leap lands on pure noise. Same destination, no loop, which is exactly why training is fast."
     },
     {
       "id": "shortcut-schedule-figure",
       "type": "image",
-      "title": "The Whole Hourglass at a Glance — β, α, ᾱ, and the Seesaw",
+      "title": "The Whole Hourglass at a Glance, β, α, ᾱ, and the Seesaw",
       "image": "world/assets/shortcut-alpha-bar.png",
-      "caption": "The three numbers the shortcut rests on. βₜ (a) is a schedule, not a constant — it climbs from 0.0001 to 0.02, gentle nudges first and harder later, so each step keeps αₜ = 1−βₜ of the signal. Multiply those survivals together and you get ᾱₜ (b), the running product that collapses from 1 toward ≈4×10⁻⁵ by t=1000: the clean start is all but forgotten. Panel c is the seesaw — the signal fraction √ᾱₜ and the noise fraction √(1−ᾱₜ) trade places, their squares always summing to 1, crossing 50/50 near t≈259. Precompute this table once and any hour t is two lookups (√ᾱₜ, √(1−ᾱₜ)) and a single draw of ε — one leap, never the thousand-step fall."
+      "caption": "The three numbers the shortcut rests on. βₜ (a) is a schedule, not a constant, it climbs from 0.0001 to 0.02, gentle nudges first and harder later, so each step keeps αₜ = 1−βₜ of the signal. Multiply those survivals together and you get ᾱₜ (b), the running product that collapses from 1 toward ≈4×10⁻⁵ by t=1000: the clean start is all but forgotten. Panel c is the seesaw, the signal fraction √ᾱₜ and the noise fraction √(1−ᾱₜ) trade places, their squares always summing to 1, crossing 50/50 near t≈259. Precompute this table once and any hour t is two lookups (√ᾱₜ, √(1−ᾱₜ)) and a single draw of ε, one leap, never the thousand-step fall."
     }
   ]
 }

@@ -30,7 +30,7 @@ def bar_labels(ax, bars, fmt="{:.2f}", dy=0.0, color=P.INK, size=12):
 
 
 # ===========================================================================
-# FIGURE 1 — the atomic attention unit, worked end to end
+# FIGURE 1. The atomic attention unit, worked end to end
 # ===========================================================================
 def fig_worked_example():
     raw = [1.0, 3.0]
@@ -44,7 +44,7 @@ def fig_worked_example():
                         hspace=0.46, wspace=0.32,
                         left=0.06, right=0.975, top=0.86, bottom=0.085)
 
-    P.suptitle(f, "The Atomic Act of Attention  —  q · k  →  scale  →  softmax  →  blend")
+    P.suptitle(f, "The Atomic Act of Attention, q · k  →  scale  →  softmax  →  blend")
     f.text(0.5, 0.905,
            "q = [1, 0, 2, 1]      k₁ = [1,1,0,0]   k₂ = [0,0,1,1]      "
            "v₁ = [10,0,0,0]   v₂ = [0,0,0,10]",
@@ -91,12 +91,12 @@ def fig_worked_example():
     ax.set_ylim(0, 8.6)
     ax.set_title("(c)  output = 0.27·v₁ + 0.73·v₂", color=P.INK)
     ax.set_ylabel("value", fontsize=12)
-    ax.text(0.5, 8.0, "[2.7, 0, 0, 7.3]  —  mostly v₂", color=ACC,
+    ax.text(0.5, 8.0, "[2.7, 0, 0, 7.3], mostly v₂", color=ACC,
             fontsize=12.5, ha="left", fontweight="bold")
 
     # (d) the 3-query matrix form --------------------------------------------
     # one wide row of three heatmaps with arrows between
-    gd = gs[1, :].subgridspec(1, 3, wspace=0.55)
+    gd = gs[1,:].subgridspec(1, 3, wspace=0.55)
 
     scores = np.array([[1, 3], [1, 1], [2, 1]], float)
     Wt = np.array([[0.27, 0.73], [0.50, 0.50], [0.62, 0.38]])
@@ -160,14 +160,14 @@ def fig_worked_example():
 
 
 # ===========================================================================
-# FIGURE 2 — softmax as normalise + sharpen, and √d_k scaling
+# FIGURE 2, softmax as normalise + sharpen, and √d_k scaling
 # ===========================================================================
 def fig_softmax_sharpening():
     base = np.array([0.5, 1.5])           # the scaled scores from the room
     factors = [1, 2, 4]                   # ×1, ×2, ×4  →  [.5,1.5] [1,3] [2,6]
     scoresets = [base * k for k in factors]
     labels = ["[0.5, 1.5]\n(scaled, √d_k=2)", "[1, 3]\n(raw, unscaled)",
-              "[2, 6]\n(×4 — over-sharp)"]
+              "[2, 6]\n(×4: over-sharp)"]
     Ws = [softmax(s) for s in scoresets]
 
     def entropy(w):
@@ -177,7 +177,7 @@ def fig_softmax_sharpening():
 
     f, axes = P.fig(15.5, 7.4, wing=WING, ncols=2)
     f.subplots_adjust(left=0.065, right=0.975, top=0.80, bottom=0.16, wspace=0.24)
-    P.suptitle(f, "Softmax = normalise + sharpen   —   why we divide by √d_k")
+    P.suptitle(f, "Softmax = normalise + sharpen, why we divide by √d_k")
     f.text(0.5, 0.885,
            "Same score gap, scaled up: attention slides from near-uniform "
            "toward near one-hot.",

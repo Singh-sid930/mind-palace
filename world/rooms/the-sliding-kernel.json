@@ -11,54 +11,68 @@
       "title": "The Sliding Kernel",
       "prop": "orrery",
       "scale": 1.3,
-      "text": "A signal: [1, 2, 3, 4, 5]. A KERNEL: three weights, [1, 0, −1]. It does one thing — it SLIDES. Over the first three readings: 1·1 + 0·2 + (−1)·3 = −2. Step right: 1·2 + 0·3 + (−1)·4 = −2. Once more: −2. Output: [−2, −2, −2]. That is the whole of CONVOLUTION: a window of weights slid along a signal, a multiply-and-sum at every stop. This particular kernel subtracts the reading ahead from the reading behind, so it measures CHANGE — an edge detector (a rising ramp reads a steady negative; a flat stretch [7, 7, 7] reads zero). Change the weights and you change what sliding measures. And each output is simply a DOT PRODUCT — the kernel dotted with the patch it happens to cover, marching down the line. Watch it walk above.",
-      "float": { "widget": "slide_window" }
+      "text": "A signal: [1, 2, 3, 4, 5]. A KERNEL: three weights, [1, 0, −1]. It does one thing, it SLIDES. Over the first three readings: 1·1 + 0·2 + (−1)·3 = −2. Step right: 1·2 + 0·3 + (−1)·4 = −2. Once more: −2. Output: [−2, −2, −2]. That is the whole of CONVOLUTION: a window of weights slid along a signal, a multiply-and-sum at every stop. This particular kernel subtracts the reading ahead from the reading behind, so it measures CHANGE, an edge detector (a rising ramp reads a steady negative; a flat stretch [7, 7, 7] reads zero). Change the weights and you change what sliding measures. And each output is simply a DOT PRODUCT, the kernel dotted with the patch it happens to cover, marching down the line. Watch it walk above.",
+      "float": {
+        "widget": "slide_window"
+      }
     },
     {
       "id": "the-local-window",
       "type": "plaque",
       "prop": "pedestal",
       "title": "The Local Window",
-      "text": "Which inputs did any single output actually touch? Only the handful beneath the window at that stop — its RECEPTIVE FIELD, kernel-wide and no wider. The output at stop three came from readings 3, 4, 5 and from nothing else; values a hundred steps away never reached it. The twin idea: as the window slides, the weights inside do NOT change — the same [1, 0, −1] is laid down at every stop, clear to the end. That is WEIGHT SHARING: one small rule learned once and carried everywhere, not a fresh rule per position. Local windows and shared weights are the two hands of convolution.",
-      "float": { "widget": "slide_window", "speed": 0.55 }
+      "text": "Which inputs did any single output actually touch? Only the handful beneath the window at that stop, its RECEPTIVE FIELD, kernel-wide and no wider. The output at stop three came from readings 3, 4, 5 and from nothing else; values a hundred steps away never reached it. The twin idea: as the window slides, the weights inside do NOT change. The same [1, 0, −1] is laid down at every stop, clear to the end. That is WEIGHT SHARING: one small rule learned once and carried everywhere, not a fresh rule per position. Local windows and shared weights are the two hands of convolution.",
+      "float": {
+        "widget": "slide_window",
+        "speed": 0.55
+      }
     },
     {
       "id": "why-it-helps",
       "type": "plaque",
       "prop": "lectern",
       "title": "Why the Kernel Is Thrifty",
-      "text": "Real signals are locally redundant: a reading and its neighbours move together, and the interesting events — an edge, a bump, a change — are legible from a small patch alone. A small kernel catches a local pattern, and because the same pattern can appear ANYWHERE, sliding one kernel finds it everywhere at once. Count the thrift: connecting every one of N outputs to every one of N inputs takes N² weights; a shared kernel of width k takes k TOTAL, however long the signal grows. Length-1000 signal, width-3 kernel: three numbers standing where a million once stood.",
-      "float": { "widget": "funnel_flow" }
+      "text": "Real signals are locally redundant: a reading and its neighbours move together, and the interesting events, an edge, a bump, a change, are legible from a small patch alone. A small kernel catches a local pattern, and because the same pattern can appear ANYWHERE, sliding one kernel finds it everywhere at once. Count the thrift: connecting every one of N outputs to every one of N inputs takes N² weights; a shared kernel of width k takes k TOTAL, however long the signal grows. Length-1000 signal, width-3 kernel: three numbers standing where a million once stood.",
+      "float": {
+        "widget": "funnel_flow"
+      }
     },
     {
       "id": "one-two-three-d",
       "type": "plaque",
       "prop": "pedestal",
       "title": "One, Two, and Three Axes",
-      "text": "The operation does not care how many axes it slides along. 1-D: a strip of k weights walks a line, left to right. 2-D: a 3×3 patch sweeps a grid — across the columns, down the rows — nine multiply-and-sums per stop. 3-D: a 3×3×3 box marches through a volume along all three axes. Strip, square, box; line, grid, volume. Always the same move: cover a local patch, multiply by the weights, sum to one number, step over.",
-      "float": { "widget": "field_warp", "amp": 0.06 }
+      "text": "The operation does not care how many axes it slides along. 1-D: a strip of k weights walks a line, left to right. 2-D: a 3×3 patch sweeps a grid, across the columns, down the rows, nine multiply-and-sums per stop. 3-D: a 3×3×3 box marches through a volume along all three axes. Strip, square, box; line, grid, volume. Always the same move: cover a local patch, multiply by the weights, sum to one number, step over.",
+      "float": {
+        "widget": "field_warp",
+        "amp": 0.06
+      }
     },
     {
       "id": "conv-diagram",
       "type": "diagram",
       "title": "Slide, Multiply, Sum",
       "spec": "graph LR\n  S[\"signal [1,2,3,4,5]\"] --> W[\"slide kernel [1,0,-1]\"]\n  K[\"kernel weights\"] --> W\n  W --> P0[\"pos 1: 1·1+0·2−1·3\"]\n  W --> P1[\"pos 2: 1·2+0·3−1·4\"]\n  W --> P2[\"pos 3: 1·3+0·4−1·5\"]\n  P0 --> O[\"output [−2,−2,−2]\"]\n  P1 --> O\n  P2 --> O\n  O --> D[\"each output = kernel · local window (a dot product)\"]",
-      "caption": "The same small kernel laid over each local window; at every stop its weights multiply the values beneath and sum to one output — a dot product repeated down the line."
+      "caption": "The same small kernel laid over each local window; at every stop its weights multiply the values beneath and sum to one output, a dot product repeated down the line."
     },
     {
       "id": "the-window-slid",
       "type": "image",
       "title": "The Window, Slid",
       "image": "world/assets/convolution-kernel.png",
-      "caption": "(a) The kernel [1, 0, −1] walks the signal, laying down a dot product at each stop — zero where flat, −2 where steadily climbing. (b) Any one output touched only the readings beneath the window (its receptive field), and the same three weights were set down at every stop (weight sharing: k numbers for a signal of any length). (c) More axes, same move — a strip on a line, a square patch on a grid, a small box through a volume."
+      "caption": "(a) The kernel [1, 0, −1] walks the signal, laying down a dot product at each stop, zero where flat, −2 where steadily climbing. (b) Any one output touched only the readings beneath the window (its receptive field), and the same three weights were set down at every stop (weight sharing: k numbers for a signal of any length). (c) More axes, same move, a strip on a line, a square patch on a grid, a small box through a volume."
     },
     {
       "id": "where-this-leads",
       "type": "plaque",
       "prop": "lectern",
       "title": "Where This Leads ↑",
-      "text": "The picture-arts upstairs are this operation at scale. The U-Net that denoises images is built of 2-D kernels swept over grids — every stroke of that work is a window multiplying-and-summing over a local patch, exactly as you did by hand here. In the Gallery of Moving Portraits, the kernel grows a third axis: a small box sliding over two space axes AND time, compressing stacked frames of video into a compact essence. Here there are no images and no engines — only a window of numbers sliding down a row of numbers. Own the move; the galleries above are the same move with more axes.",
-      "float": { "widget": "stack_rise", "n": 5, "skip": true }
+      "text": "The picture-arts upstairs are this operation at scale. The U-Net that denoises images is built of 2-D kernels swept over grids. Every stroke of that work is a window multiplying-and-summing over a local patch, exactly as you did by hand here. In the Gallery of Moving Portraits, the kernel grows a third axis: a small box sliding over two space axes AND time, compressing stacked frames of video into a compact essence. Here there are no images and no engines, only a window of numbers sliding down a row of numbers. Own the move; the galleries above are the same move with more axes.",
+      "float": {
+        "widget": "stack_rise",
+        "n": 5,
+        "skip": true
+      }
     }
   ]
 }

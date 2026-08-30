@@ -11,7 +11,7 @@
       "title": "The Veiled Seer's Glass",
       "prop": "mirror",
       "scale": 1.2,
-      "text": "A seer's glass, but veiled — it shows the past and the present, never the future. This is the causal mask of a decoder. When a model generates text left to right, token 3 must not attend to tokens 4, 5, 6, for they do not yet exist. So before the softmax, the upper triangle of the score matrix is set to minus infinity. Since e^(-inf) = 0, those positions receive exactly zero weight. Token 1 may look only at itself; token 4 may look at everything before it. The veil enforces the arrow of time, and it is the single change that turns bidirectional attention into autoregressive generation.",
+      "text": "A seer's glass, but veiled, it shows the past and the present, never the future. This is the causal mask of a decoder. When a model generates text left to right, token 3 must not attend to tokens 4, 5, 6, for they do not yet exist. So before the softmax, the upper triangle of the score matrix is set to minus infinity. Since e^(-inf) = 0, those positions receive exactly zero weight. Token 1 may look only at itself; token 4 may look at everything before it. The veil enforces the arrow of time, and it is the single change that turns bidirectional attention into autoregressive generation.",
       "float": {
         "widget": "heat_grid",
         "n": 5,
@@ -36,7 +36,7 @@
       "type": "plaque",
       "prop": "lectern",
       "title": "Two Halves of 2017",
-      "text": "'Encoder-only' and 'decoder-only' name which half of the original 2017 Transformer a model keeps. An ENCODER block is self-attention with NO mask — every token sees every other, fully bidirectional (BERT). A DECODER block is self-attention with the CAUSAL mask — tokens see only the past (GPT, LLaMA, Claude). The original Transformer used both, plus cross-attention bridging them. 'Decoder-only is the norm' means causal masking with next-token prediction won the scaling race. But encoder-decoder never died: it powers summarisation (T5, BART), speech-to-text (Whisper), and many multimodal models — it was never merely for translation.",
+      "text": "'Encoder-only' and 'decoder-only' name which half of the original 2017 Transformer a model keeps. An ENCODER block is self-attention with NO mask. Every token sees every other, fully bidirectional (BERT). A DECODER block is self-attention with the CAUSAL mask, tokens see only the past (GPT, LLaMA, Claude). The original Transformer used both, plus cross-attention bridging them. 'Decoder-only is the norm' means causal masking with next-token prediction won the scaling race. But encoder-decoder never died: it powers summarisation (T5, BART), speech-to-text (Whisper), and many multimodal models. It was never merely for translation.",
       "float": {
         "widget": "heat_grid",
         "n": 5,
@@ -48,7 +48,7 @@
       "type": "plaque",
       "prop": "pedestal",
       "title": "Self-Attention Reads the Sentence",
-      "text": "In self-attention, Q, K and V all come from the same tokens — the sentence attends to itself. For 'The cat sat on the mat' (6 tokens), the score matrix is (6, 6): every word weighing every word. When the model processes 'sat', it should attend heavily to 'cat', its subject. And because of the council of heads, different heads read the same sentence differently on the same pass: a syntactic head links 'sat' to 'cat' (subject-verb), a positional head leans on 'on' (what comes next), a determiner head ties 'The' into the noun phrase. One sentence, many simultaneous readings.",
+      "text": "In self-attention, Q, K and V all come from the same tokens, the sentence attends to itself. For 'The cat sat on the mat' (6 tokens), the score matrix is (6, 6): every word weighing every word. When the model processes 'sat', it should attend heavily to 'cat', its subject. And because of the council of heads, different heads read the same sentence differently on the same pass: a syntactic head links 'sat' to 'cat' (subject-verb), a positional head leans on 'on' (what comes next), a determiner head ties 'The' into the noun phrase. One sentence, many simultaneous readings.",
       "float": {
         "widget": "token_stream",
         "n": 6,
@@ -67,14 +67,14 @@
       "type": "image",
       "title": "The causal mask in three stages",
       "image": "world/assets/causal-mask.png",
-      "caption": "The single change that turns bidirectional attention into autoregressive generation, read left to right. (a) A 4x4 raw score matrix Q.K^T, every query scoring every key. (b) The strict upper triangle is set to minus infinity before the softmax, forbidding each token from looking at the future. (c) Softmax then turns those entries to exactly zero, since e^(-inf)=0, leaving a lower-triangular weight matrix whose rows each sum to one over only the positions they are allowed to see — the room's exact values: q1=[1.000, 0, 0, 0]; q2=[0.047, 0.953, 0, 0]; q3=[0.665, 0.090, 0.245, 0]; q4=[0.083, 0.224, 0.083, 0.610]. Token 1 may look only at itself; token 4 may look at everything before it. The veil enforces the arrow of time. (In code the mask is a large negative number like -1e9, not literal infinity — and if NaNs bloom in your weights, suspect a masked value leaking through, or a whole row masked to -inf so softmax divides by zero.)"
+      "caption": "The single change that turns bidirectional attention into autoregressive generation, read left to right. (a) A 4x4 raw score matrix Q.K^T, every query scoring every key. (b) The strict upper triangle is set to minus infinity before the softmax, forbidding each token from looking at the future. (c) Softmax then turns those entries to exactly zero, since e^(-inf)=0, leaving a lower-triangular weight matrix whose rows each sum to one over only the positions they are allowed to see, the room's exact values: q1=[1.000, 0, 0, 0]; q2=[0.047, 0.953, 0, 0]; q3=[0.665, 0.090, 0.245, 0]; q4=[0.083, 0.224, 0.083, 0.610]. Token 1 may look only at itself; token 4 may look at everything before it. The veil enforces the arrow of time. (In code the mask is a large negative number like -1e9, not literal infinity, and if NaNs bloom in your weights, suspect a masked value leaking through, or a whole row masked to -inf so softmax divides by zero.)"
     },
     {
       "id": "fig-encoder-vs-decoder",
       "type": "image",
       "title": "One mask apart: encoder vs decoder attention",
       "image": "world/assets/encoder-vs-decoder.png",
-      "caption": "Two self-attention patterns for the same 6-token sentence, 'The cat sat on the mat'. The ENCODER (left) is fully bidirectional: every token attends to every token, the whole 6x6 grid filled — this is BERT, encoder-only. The DECODER (right) wears the causal mask: only the lower triangle survives, so each token sees only itself and the past — this is GPT, LLaMA, Claude. 'Encoder-only' and 'decoder-only' simply name which half of the original 2017 Transformer a model keeps; the only structural difference between these two pictures is that one masked triangle. Decoder-only won the scaling race, but the encoder-decoder pairing never died — it still powers summarisation (T5, BART), speech-to-text (Whisper), and many multimodal models."
+      "caption": "Two self-attention patterns for the same 6-token sentence, 'The cat sat on the mat'. The ENCODER (left) is fully bidirectional: every token attends to every token, the whole 6x6 grid filled. This is BERT, encoder-only. The DECODER (right) wears the causal mask: only the lower triangle survives, so each token sees only itself and the past. This is GPT, LLaMA, Claude. 'Encoder-only' and 'decoder-only' simply name which half of the original 2017 Transformer a model keeps; the only structural difference between these two pictures is that one masked triangle. Decoder-only won the scaling race, but the encoder-decoder pairing never died, it still powers summarisation (T5, BART), speech-to-text (Whisper), and many multimodal models."
     }
   ]
 }

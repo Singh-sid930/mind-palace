@@ -17,7 +17,7 @@ ACC = P.WING[WING]["accent"]   # cool silver #c4ceda
 WARM = P.WING[WING]["warm"]    # gold #d9c07a
 COOL = P.WING[WING]["cool"]    # moonlit blue #8fb0d0
 HOT = P.HOT                    # warm highlight #ffd98a
-FORBID = "#c98f8f"             # muted rose — the forbidden future
+FORBID = "#c98f8f"             # muted rose, the forbidden future
 
 
 def frame_box(ax, cx, cy, w, h, face, edge=P.GRID, lw=1.4, label=None,
@@ -50,7 +50,7 @@ def build():
                         hspace=0.32, wspace=0.20,
                         left=0.055, right=0.965, top=0.858, bottom=0.065)
 
-    P.suptitle(f, "The Causal 3D VAE  —  stir only the past, compress space and time")
+    P.suptitle(f, "The Causal 3D VAE, stir only the past, compress space and time")
     f.text(0.5, 0.928,
            "Wan's workhorse: a 3D convolution that never reaches into the "
            "future, so long reels can stream in bounded memory.",
@@ -116,7 +116,7 @@ def build():
             "[t-2 … t]   past + present only", ACC, up=False, fs=12.5)
 
     # annotations placed in the clear band between the two tracks
-    axa.annotate("reaches into the FUTURE\n— must hold the whole video",
+    axa.annotate("reaches into the FUTURE\n- must hold the whole video",
                  xy=(2, y_norm - bh / 2 - 0.02), xytext=(3.15, 2.05),
                  ha="left", va="center", color=FORBID, fontsize=12,
                  fontweight="bold",
@@ -131,7 +131,7 @@ def build():
                   color=P.INK, fontsize=14.5, loc="left", pad=8)
 
     # -------------------------------------------------------------------
-    # (b) compress SPACE and TIME  — proportional blocks
+    # (b) compress SPACE and TIME, proportional blocks
     # -------------------------------------------------------------------
     axb = f.add_subplot(gs[1, 0])
     axb.set_facecolor(P.PANEL)
@@ -264,7 +264,7 @@ def build():
     axm.set_ylabel("peak decode memory", fontsize=12)
     axm.set_yticks([])
     axm.set_xticks([0, 15, 30, 45, 60])
-    axm.text(58, 1.55, "bounded — flat", color=ACC, fontsize=11.5,
+    axm.text(58, 1.55, "bounded, flat", color=ACC, fontsize=11.5,
              ha="right", va="bottom", fontweight="bold")
     axm.legend(facecolor=P.PANEL, edgecolor=P.GRID, labelcolor=P.INK,
                fontsize=10.5, loc="upper left")

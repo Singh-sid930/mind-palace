@@ -51,11 +51,11 @@ def fig_svd_connection():
                         left=0.065, right=0.975, top=0.83, bottom=0.11,
                         wspace=0.22)
 
-    P.suptitle(f, "The Spectrum Read  —  a fine-tuning update spends its energy "
+    P.suptitle(f, "The Spectrum Read, a fine-tuning update spends its energy "
                   "on a few directions")
     f.text(0.5, 0.895,
            "singular values of an update ΔW, sorted large → small "
-           "(representative values — the SHAPE is the lesson)",
+           "(representative values, the SHAPE is the lesson)",
            ha="center", color=P.MUTED, fontsize=13)
 
     # -- (a) spectrum bars + cumulative energy -------------------------------
@@ -72,7 +72,7 @@ def fig_svd_connection():
                         fontsize=11.5, fontweight="bold")
     # elbow marker
     ax.axvline(r_star + 0.5, color=WARM, ls="--", lw=1.8, zorder=2)
-    ax.annotate("the elbow —\nσ drops to ≈ 0 here",
+    ax.annotate("the elbow, \nσ drops to ≈ 0 here",
                 xy=(r_star + 0.5, 6.4), xytext=(r_star + 1.6, 7.6),
                 color=WARM, fontsize=12.5, fontweight="bold", ha="left",
                 arrowprops=dict(arrowstyle="-|>", color=WARM, lw=1.8))
@@ -81,7 +81,7 @@ def fig_svd_connection():
     ax.set_ylim(0, 9.1)
     ax.set_xlabel("singular-value index  i", fontsize=13)
     ax.set_ylabel("singular value  σᵢ  (bars)", fontsize=13, color=ACC)
-    ax.set_title("(a)  Fast decay — a few bright directions, a long dim tail",
+    ax.set_title("(a)  Fast decay, a few bright directions, a long dim tail",
                  color=P.INK, fontsize=14.5, pad=10)
 
     # cumulative energy on twin axis
@@ -117,11 +117,11 @@ def fig_svd_connection():
     # column headers
     ax.text(2.5, 9.45, "SVD truncation", ha="center", color=WARM,
             fontsize=13.5, fontweight="bold")
-    ax.text(2.5, 9.0, "THEORY — not a pipeline step", ha="center",
+    ax.text(2.5, 9.0, "THEORY, not a pipeline step", ha="center",
             color=P.MUTED, fontsize=10.5, style="italic")
     ax.text(7.5, 9.45, "LoRA", ha="center", color=ACC,
             fontsize=13.5, fontweight="bold")
-    ax.text(7.5, 9.0, "PRACTICE — what actually runs", ha="center",
+    ax.text(7.5, 9.0, "PRACTICE, what actually runs", ha="center",
             color=P.MUTED, fontsize=10.5, style="italic")
 
     # left road (SVD)
@@ -130,7 +130,7 @@ def fig_svd_connection():
     t2 = box(ax, (0.7, 5.4), 3.6, 1.1,
              "factor exactly:\nΔW = U Σ Vᵀ")
     t3 = box(ax, (0.7, 3.4), 3.6, 1.1,
-             "keep top r  (Eckart–Young):\nUᵣ Σᵣ Vᵣᵀ  — best rank-r")
+             "keep top r  (Eckart, Young):\nUᵣ Σᵣ Vᵣᵀ, best rank-r")
     arrow(ax, (t1[0], t1[1]), (t2[0], t2[3]), color=WARM)
     arrow(ax, (t2[0], t2[1]), (t3[0], t3[3]), color=WARM)
     ax.text(2.5, 2.72, "minimizes RECONSTRUCTION\n(closest matrix to a given ΔW)",

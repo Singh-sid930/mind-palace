@@ -212,7 +212,7 @@ export function diagramTexture({ title, pal, w = 1024, h = 768 }) {
   ctx.fillText(title, w / 2, h - 55, w - 160);
   ctx.fillStyle = 'rgba(219,231,245,0.6)';
   ctx.font = `italic 30px ${SERIF}`;
-  ctx.fillText('— study closely to unfold the diagram —', w / 2, h - 18, w - 160);
+  ctx.fillText(', study closely to unfold the diagram, ', w / 2, h - 18, w - 160);
 
   const tex = new THREE.CanvasTexture(c);
   tex.colorSpace = THREE.SRGBColorSpace;
@@ -359,7 +359,7 @@ export function tipTexture({ text, pal, w = 560, h = 196 }) {
 
   drawArrow(ctx, 'fwd', 60, h / 2, 40, hexCss(pal.accent));
 
-  // Destination name, shrunk to fit at most two lines — no ellipsis.
+  // Destination name, shrunk to fit at most two lines, no ellipsis.
   ctx.fillStyle = '#efe6cf';
   ctx.textAlign = 'left';
   const textX = 104, maxW = w - textX - 28;

@@ -29,12 +29,12 @@ def arrow(ax, p0, p1, color=P.MUTED, lw=2.0, ls="-", rad=0.0):
 
 
 # ===========================================================================
-# FIGURE 1 — KV cache growth
+# FIGURE 1, KV cache growth
 # ===========================================================================
 def fig_kv_cache():
     f, (axL, axR) = P.fig(15.5, 7.4, wing="sapphire", ncols=2,
                           gridspec_kw={"width_ratios": [1.0, 1.32], "wspace": 0.22})
-    P.suptitle(f, "The KV Cache at Inference — the library only grows")
+    P.suptitle(f, "The KV Cache at Inference. The library only grows")
 
     # ---- (a) staircase plot --------------------------------------------
     tokens = ["The", "cat", "sat", "on", "the", "mat"]
@@ -158,7 +158,7 @@ def fig_kv_cache():
 
     # Q-not-cached note (between pipeline and bar, clear band)
     axR.text(bx + bw / 2, by + 1.68,
-             "Q is discarded — the asker asks once;  K and V stay and only grow.",
+             "Q is discarded, the asker asks once;  K and V stay and only grow.",
              color=WARM, fontsize=10.5, ha="center", va="center",
              fontweight="bold", style="italic")
 
@@ -166,12 +166,12 @@ def fig_kv_cache():
 
 
 # ===========================================================================
-# FIGURE 2 — Flash attention
+# FIGURE 2, Flash attention
 # ===========================================================================
 def fig_flash():
     f, (axL, axR) = P.fig(15.5, 7.2, wing="sapphire", ncols=2,
                           gridspec_kw={"width_ratios": [1.05, 1.15], "wspace": 0.24})
-    P.suptitle(f, "Flash Attention — same answer, O(n) memory")
+    P.suptitle(f, "Flash Attention, same answer, O(n) memory")
 
     # ---- (a) memory vs sequence length (log y) -------------------------
     n = np.array([1e3, 2e3, 4e3, 8e3, 16e3, 32e3, 64e3, 128e3])
@@ -258,7 +258,7 @@ def fig_flash():
              color=P.INK, fontsize=11, va="center")
 
     axR.text(6.0, 1.4,
-             "Output is IDENTICAL to eager attention — exact, not approximate.",
+             "Output is IDENTICAL to eager attention, exact, not approximate.",
              color="#9fe8b9", fontsize=12, ha="center", va="center",
              fontweight="bold")
     axR.text(6.0, 0.7,

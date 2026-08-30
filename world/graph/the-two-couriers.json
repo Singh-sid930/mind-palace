@@ -5,25 +5,61 @@
       "name": "SmolVLA",
       "room": "the-two-couriers",
       "exhibit": "the-two-standards",
-      "summary": "A flow-matching VLA with the same objective as π0 and a different conditioning design: 0.45B parameters in total against π0's 3.3B, with an action expert of about 100M against 300M. Its backbone is SmolVLM-2 (SigLIP plus SmolLM2) run with LAYER SKIPPING — features are taken at layer N = L/2 and the upper half of the stack never runs. The expert is a SEPARATE transformer stack that reads VLM features from outside, alternating cross-attention layers (actions attend to VLM features) with causal self-attention layers (actions attend to each other). The paper ablates the interleaving as load-bearing."
+      "summary": "A flow-matching VLA with the same objective as π0 and a different conditioning design: 0.45B parameters in total against π0's 3.3B, with an action expert of about 100M against 300M. Its backbone is SmolVLM-2 (SigLIP plus SmolLM2) run with LAYER SKIPPING, features are taken at layer N = L/2 and the upper half of the stack never runs. The expert is a SEPARATE transformer stack that reads VLM features from outside, alternating cross-attention layers (actions attend to VLM features) with causal self-attention layers (actions attend to each other). The paper ablates the interleaving as load-bearing."
     },
     {
       "id": "state-placement",
       "name": "Which side of the bridge the state sits on",
       "room": "the-two-couriers",
       "exhibit": "opposite-sides-of-the-bridge",
-      "summary": "π0 and SmolVLA place proprioception on opposite sides of the VLM/action boundary. SmolVLA projects the state to one token with a linear layer and concatenates it into the VLM PREFIX alongside image and text, so every feature the expert later reads is already state-aware — perception itself is posture-conditioned. π0 keeps the state on the ACTION EXPERT side, concatenated with the noisy chunk, where it meets vision only through the joint self-attention. The design question underneath is whether posture should inform how the scene is perceived or only how it is acted on; moving the state token when porting code changes the model's information flow, not just its plumbing."
+      "summary": "π0 and SmolVLA place proprioception on opposite sides of the VLM/action boundary. SmolVLA projects the state to one token with a linear layer and concatenates it into the VLM PREFIX alongside image and text, so every feature the expert later reads is already state-aware, perception itself is posture-conditioned. π0 keeps the state on the ACTION EXPERT side, concatenated with the noisy chunk, where it meets vision only through the joint self-attention. The design question underneath is whether posture should inform how the scene is perceived or only how it is acted on; moving the state token when porting code changes the model's information flow, not just its plumbing."
     }
   ],
   "edges": [
-    { "from": "smolvla", "to": "pi-zero", "relation": "contrasts-with" },
-    { "from": "smolvla", "to": "action-chunk", "relation": "builds-on" },
-    { "from": "smolvla", "to": "cross-attention", "relation": "builds-on" },
-    { "from": "smolvla", "to": "siglip", "relation": "builds-on" },
-    { "from": "smolvla", "to": "vision-encoder", "relation": "builds-on" },
-    { "from": "state-placement", "to": "state-encoder", "relation": "builds-on" },
-    { "from": "state-placement", "to": "action-expert", "relation": "contrasts-with" },
-    { "from": "state-placement", "to": "encoder-fusion", "relation": "relates-to" },
-    { "from": "state-placement", "to": "smolvla", "relation": "part-of" }
+    {
+      "from": "smolvla",
+      "to": "pi-zero",
+      "relation": "contrasts-with"
+    },
+    {
+      "from": "smolvla",
+      "to": "action-chunk",
+      "relation": "builds-on"
+    },
+    {
+      "from": "smolvla",
+      "to": "cross-attention",
+      "relation": "builds-on"
+    },
+    {
+      "from": "smolvla",
+      "to": "siglip",
+      "relation": "builds-on"
+    },
+    {
+      "from": "smolvla",
+      "to": "vision-encoder",
+      "relation": "builds-on"
+    },
+    {
+      "from": "state-placement",
+      "to": "state-encoder",
+      "relation": "builds-on"
+    },
+    {
+      "from": "state-placement",
+      "to": "action-expert",
+      "relation": "contrasts-with"
+    },
+    {
+      "from": "state-placement",
+      "to": "encoder-fusion",
+      "relation": "relates-to"
+    },
+    {
+      "from": "state-placement",
+      "to": "smolvla",
+      "relation": "part-of"
+    }
   ]
 }

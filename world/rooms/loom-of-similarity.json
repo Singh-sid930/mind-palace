@@ -11,23 +11,28 @@
       "title": "The Loom of Similarity",
       "prop": "similarity_dial",
       "scale": 1.3,
-      "text": "A loom that measures how nearly two threads run in the same direction. Its shuttle is the DOT PRODUCT: u·v = Σ uᵢvᵢ — multiply matching components, then sum. Geometry gives the number its meaning: u·v = |u|·|v|·cos(θ), the two lengths times the cosine of the angle between the arrows. Large and positive when they point together, zero at a right angle, negative when they oppose — one scalar answering 'how similar are these two?'. The dial enacts it without pause: gold holds still, blue sweeps, and the bar beneath IS u·v, alive — long and warm together, gone at 90°, cold when opposed."
+      "text": "A loom that measures how nearly two threads run in the same direction. Its shuttle is the DOT PRODUCT: u·v = Σ uᵢvᵢ, multiply matching components, then sum. Geometry gives the number its meaning: u·v = |u|·|v|·cos(θ), the two lengths times the cosine of the angle between the arrows. Large and positive when they point together, zero at a right angle, negative when they oppose. One scalar answering 'how similar are these two?'. The dial enacts it without pause: gold holds still, blue sweeps, and the bar beneath IS u·v, alive, long and warm together, gone at 90°, cold when opposed."
     },
     {
       "id": "the-dot-product",
       "type": "plaque",
       "prop": "pedestal",
       "title": "The Dot Product",
-      "text": "u·v = u₁v₁ + u₂v₂ + … + u_dv_d. Worked: u = [1, 2], v = [3, 1] gives 1·3 + 2·1 = 5. Two readings of that one number: how much of one arrow lies along the other, and |u|·|v|·cos(θ). Cost: d multiplies and adds — nothing more. One habit to file away: raw dot products grow with dimension d (more terms in the sum), so wherever they are compared across sizes you will see them divided by √d to hold a steady scale. Plain bookkeeping — and it explains a coefficient waiting for you upstairs.",
-      "float": { "widget": "arrows_dot" }
+      "text": "u·v = u₁v₁ + u₂v₂ + … + u_dv_d. Worked: u = [1, 2], v = [3, 1] gives 1·3 + 2·1 = 5. Two readings of that one number: how much of one arrow lies along the other, and |u|·|v|·cos(θ). Cost: d multiplies and adds, nothing more. One habit to file away: raw dot products grow with dimension d (more terms in the sum), so wherever they are compared across sizes you will see them divided by √d to hold a steady scale. Plain bookkeeping, and it explains a coefficient waiting for you upstairs.",
+      "float": {
+        "widget": "arrows_dot"
+      }
     },
     {
       "id": "softmax",
       "type": "plaque",
       "prop": "lectern",
-      "title": "Softmax — Scores into Weights",
-      "text": "Turn raw scores — any real numbers, some negative — into WEIGHTS: all positive, summing to 1. Softmax: weight_i = e^(s_i) / Σ_j e^(s_j). Example: scores [2, 1, 0] → e² , e¹ , e⁰ = 7.39, 2.72, 1.00; divide by their sum 11.11 → [0.66, 0.24, 0.09]. The largest score claims the most weight, but none is silenced. TEMPERATURE divides every score first: large and the weights flatten toward equal, small and they spike toward a single winner. The bars above race forever — their heights are a live softmax.",
-      "float": { "widget": "softmax_bars", "n": 4 }
+      "title": "Softmax, Scores into Weights",
+      "text": "Turn raw scores, any real numbers, some negative, into WEIGHTS: all positive, summing to 1. Softmax: weight_i = e^(s_i) / Σ_j e^(s_j). Example: scores [2, 1, 0] → e² , e¹ , e⁰ = 7.39, 2.72, 1.00; divide by their sum 11.11 → [0.66, 0.24, 0.09]. The largest score claims the most weight, but none is silenced. TEMPERATURE divides every score first: large and the weights flatten toward equal, small and they spike toward a single winner. The bars above race forever. Their heights are a live softmax.",
+      "float": {
+        "widget": "softmax_bars",
+        "n": 4
+      }
     },
     {
       "id": "similarity-diagram",
@@ -41,15 +46,19 @@
       "type": "image",
       "title": "From Alignment to Weights",
       "image": "world/assets/dot-product-softmax.png",
-      "caption": "Left: the dot product as geometry — a fixed arrow u and partners v at different angles. Nearly aligned → large positive; near a right angle → toward zero; past 90° → negative. Right: a row of raw scores softmaxed into positive weights that sum to 1 — the largest claims the most, none is silenced. Bottom: the same scores with the temperature knob turned — small sharpens toward one winner, large flattens toward equal shares."
+      "caption": "Left: the dot product as geometry, a fixed arrow u and partners v at different angles. Nearly aligned → large positive; near a right angle → toward zero; past 90° → negative. Right: a row of raw scores softmaxed into positive weights that sum to 1, the largest claims the most, none is silenced. Bottom: the same scores with the temperature knob turned, small sharpens toward one winner, large flattens toward equal shares."
     },
     {
       "id": "where-this-leads",
       "type": "plaque",
       "prop": "lectern",
       "title": "Where This Leads ↑",
-      "text": "Dot product + softmax together are the engine of ATTENTION, one floor up. There the two vectors are renamed QUERY and KEY, and their dot product is one token's relevance to another; every query against every key forms the (n, n) matrix QKᵀ. The √d division you met here is exactly attention's 'scaled' step. And softmax is attention's second half: each row of scores becomes weights that blend the values. The matrix above sweeps row by row — that is attention reading a sentence.",
-      "float": { "widget": "heat_grid", "n": 5, "variant": "row_softmax" }
+      "text": "Dot product + softmax together are the engine of ATTENTION, one floor up. There the two vectors are renamed QUERY and KEY, and their dot product is one token's relevance to another; every query against every key forms the (n, n) matrix QKᵀ. The √d division you met here is exactly attention's 'scaled' step. And softmax is attention's second half: each row of scores becomes weights that blend the values. The matrix above sweeps row by row. That is attention reading a sentence.",
+      "float": {
+        "widget": "heat_grid",
+        "n": 5,
+        "variant": "row_softmax"
+      }
     }
   ]
 }

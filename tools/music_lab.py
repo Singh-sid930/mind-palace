@@ -1,4 +1,4 @@
-"""Mathematical music lab — audition clips for the palace's procedural score.
+"""Mathematical music lab, audition clips for the palace's procedural score.
 
 Every sound is synthesized from an explicit formula (no samples, no assets),
 exactly as the WebAudio engine version would compute it. Run with:
@@ -83,8 +83,8 @@ def binaural_over_pink(dur=54, carrier=120.0, hold=12.0, glide=6.0):
     t = t_axis(dur)
     beat = beat_schedule(dur, hold, glide)
     # Left ear = carrier; right ear = carrier + beat(t). Phase via cumulative sum.
-    # The binaural tones and the broadband bed sit LOW — they work on phase and
-    # masking, not loudness — so the theatrical bells can ride prominently on top.
+    # The binaural tones and the broadband bed sit LOW, they work on phase and
+    # masking, not loudness, so the theatrical bells can ride prominently on top.
     phase_l = 2 * np.pi * carrier * t
     phase_r = 2 * np.pi * np.cumsum(carrier + beat) / SR
     tone_l = 0.17 * np.sin(phase_l)           # subliminal binaural (was 0.32)
@@ -179,7 +179,7 @@ def pink(dur=20):
     sweep = 0.55 + 0.45 * np.sin(2 * np.pi * 0.07 * t)   # slow LFO on brightness
     return x * sweep
 
-# --- 4. Shepard–Risset glissando: the endless staircase ---------------------
+# --- 4. Shepard, Risset glissando: the endless staircase ---------------------
 def shepard(dur=14, octaves=7, f_base=32.7, rate=1 / 10, descend=False):
     t = t_axis(dur)
     x = np.zeros_like(t)
@@ -192,7 +192,7 @@ def shepard(dur=14, octaves=7, f_base=32.7, rate=1 / 10, descend=False):
         x += w * np.sin(phase)
     return x
 
-# --- 5. Sting: dementor — descending cluster + subharmonic + cold noise -----
+# --- 5. Sting: dementor, descending cluster + subharmonic + cold noise -----
 def dementor(dur=7):
     t = t_axis(dur)
     swell = np.exp(-0.5 * ((t - 2.6) / 1.5) ** 2)
@@ -208,7 +208,7 @@ def dementor(dur=7):
     x += 0.8 * np.fft.irfft(spec / fr, n) * swell     # brown-ish cold wind
     return x * (0.35 + 0.65 * swell)
 
-# --- 6. Sting: patronus — just-intonation arpeggio, shimmering ---------------
+# --- 6. Sting: patronus, just-intonation arpeggio, shimmering ---------------
 def patronus(dur=5):
     ratios = [1, 5 / 4, 3 / 2, 2, 5 / 2, 3]           # 4:5:6 stacked (just major)
     x = np.zeros(int(dur * SR))
@@ -223,11 +223,11 @@ def patronus(dur=5):
 
 # --- headphone check: does your rig deliver true L/R separation? ------------
 def headphone_check():
-    """Three segments. 1) tone LEFT only, 2) tone RIGHT only — confirms each ear
+    """Three segments. 1) tone LEFT only, 2) tone RIGHT only, confirms each ear
     is fed independently. 3) the binaural pair (200 L / 210 R): on real stereo
     headphones each ear hears a STEADY tone and the beat is subtle/central; on a
     mono-summed output you'll instead hear an obvious out-loud throbbing (a
-    physical 10 Hz tremolo) — which means binaural entrainment won't work."""
+    physical 10 Hz tremolo), which means binaural entrainment won't work."""
     seg, gap = 3.0, 0.6
     L = np.concatenate([
         0.5 * np.sin(2 * np.pi * 440 * t_axis(seg)), np.zeros(int(gap * SR)),
@@ -243,7 +243,7 @@ def headphone_check():
 
 # --- Event stings: one formula per actor, all sent through distant() ---------
 def st_rat(dur=1.3):
-    """Tiny high skittering — rapid decaying noise grains, high-passed."""
+    """Tiny high skittering, rapid decaying noise grains, high-passed."""
     x = np.zeros(int(dur * SR)); rng = np.random.default_rng(21)
     for k in range(13):
         gt = t_axis(0.045)
@@ -252,7 +252,7 @@ def st_rat(dur=1.3):
     return distant(highpass(x, 2600) * 0.7, cut=4000, decay=1.2, wet=0.35)
 
 def st_ghost(dur=4.5):
-    """A dark ethereal whoosh — low band-passed noise + a low shimmer, slow swell."""
+    """A dark ethereal whoosh, low band-passed noise + a low shimmer, slow swell."""
     t = t_axis(dur); swell = np.exp(-0.5 * ((t - 2.25) / 1.5) ** 2)   # wider = slower
     air = bandpass(np.random.default_rng(5).standard_normal(len(t)), 300, 1600)  # darker
     fsh = 460 + 30 * np.sin(2 * np.pi * 0.35 * t)                     # lower, slower bend
@@ -260,14 +260,14 @@ def st_ghost(dur=4.5):
     return distant((air + shimmer) * swell, cut=1400, decay=2.6, wet=0.6)
 
 def st_cat(dur=1.8):
-    """Mrs Norris — a low wary purr: 25 Hz amplitude modulation on a low tone."""
+    """Mrs Norris, a low wary purr: 25 Hz amplitude modulation on a low tone."""
     t = t_axis(dur); am = 0.5 + 0.5 * np.sin(2 * np.pi * 25 * t)
     env = np.exp(-0.5 * ((t - 0.9) / 0.6) ** 2)
     x = (np.sin(2 * np.pi * 55 * t) + 0.4 * np.sin(2 * np.pi * 110 * t)) * am * env
     return distant(x, cut=1400, decay=1.6, wet=0.4)
 
 def st_owl(dur=2.4):
-    """A distant dark 'hoo — hoo': two SHORT low hoots with a clear gap between."""
+    """A distant dark 'hoo, hoo': two SHORT low hoots with a clear gap between."""
     x = np.zeros(int(dur * SR))
     for start in (0.25, 1.05):
         ht = t_axis(0.4)                                 # short pulse, not a drone
@@ -281,7 +281,7 @@ def st_owl(dur=2.4):
     return distant(x, cut=850, decay=1.5, wet=0.32)
 
 def st_snitch(dur=1.6):
-    """Golden snitch — a bright metallic flutter darting on a lissajous path."""
+    """Golden snitch, a bright metallic flutter darting on a lissajous path."""
     t = t_axis(dur)
     flutter = 0.5 + 0.5 * np.sin(2 * np.pi * 45 * t)        # wingbeat
     fc = 2600 + 600 * np.sin(2 * np.pi * 1.3 * t) + 300 * np.sin(2 * np.pi * 2.1 * t)
@@ -303,20 +303,20 @@ def st_boggart(dur=2.3):
     return distant(x, cut=1800, decay=1.8, wet=0.45)
 
 def st_draft(dur=3.0):
-    """A low corridor wind — low-passed noise swelling and fading."""
+    """A low corridor wind, low-passed noise swelling and fading."""
     t = t_axis(dur); swell = np.exp(-0.5 * ((t - 1.5) / 1.0) ** 2)
     wind = lowpass(np.random.default_rng(9).standard_normal(len(t)), 600)
     return distant(wind * swell, cut=900, decay=2.0, wet=0.5)
 
 def st_rumble(dur=4.0):
-    """The staircases moving — deep sub tones under grinding stone, swelling."""
+    """The staircases moving, deep sub tones under grinding stone, swelling."""
     t = t_axis(dur); swell = np.exp(-0.5 * ((t - 2.0) / 1.3) ** 2)
     low = 0.6 * np.sin(2 * np.pi * 32 * t) + 0.4 * np.sin(2 * np.pi * 45 * t)
     grind = lowpass(np.random.default_rng(4).standard_normal(len(t)), 200)
     return distant((low + 0.8 * grind) * swell, cut=1200, decay=2.6, wet=0.55)
 
 def st_noise_veil(dur=3.5):
-    """Diffusion made audible — broadband hiss GATHERS into a pure tone, then
+    """Diffusion made audible, broadband hiss GATHERS into a pure tone, then
     disperses back to noise (the forward/reverse process, as sound)."""
     t = t_axis(dur)
     center = np.exp(-0.5 * ((t - dur / 2) / (dur / 5)) ** 2)   # 1 at the middle
@@ -325,7 +325,7 @@ def st_noise_veil(dur=3.5):
     return distant(nz * (1 - center) * 0.6 + tone * center * 0.5, cut=2600, decay=2.2, wet=0.55)
 
 def st_time_glint(dur=2.6):
-    """Time-turner — a bell run BACKWARD (swelling into its strike) + a sparkle."""
+    """Time-turner. A bell run BACKWARD (swelling into its strike) + a sparkle."""
     b = fm_bell(523.25, dur=1.5, I0=2.0)[::-1]             # reversed envelope
     x = np.zeros(int(dur * SR)); x[: len(b)] += b
     st = t_axis(1.0)
@@ -333,7 +333,7 @@ def st_time_glint(dur=2.6):
     return distant(x, cut=2200, decay=2.3, wet=0.55)
 
 def st_peeves(dur=2.0):
-    """Peeves — pages riffling, then two comedic descending 'book-drop' blips."""
+    """Peeves, pages riffling, then two comedic descending 'book-drop' blips."""
     x = np.zeros(int(dur * SR)); rng = np.random.default_rng(41)
     for k in range(20):                                    # riffle
         rt = t_axis(0.02)
@@ -349,29 +349,29 @@ def st_dementor(dur=7): return distant(dementor(dur), cut=1400, decay=2.6, wet=0
 def st_patronus(dur=5): return distant(patronus(dur), cut=1700, decay=2.4, wet=0.55)  # muddier
 
 STINGS = {
-    "fx_rat.wav":        (st_rat,        "rat — high decaying noise grains, {irregular} skitter"),
-    "fx_ghost.wav":      (st_ghost,      "ghost — band-passed noise swell + bending shimmer"),
-    "fx_cat.wav":        (st_cat,        "cat — 25 Hz AM purr on a 55 Hz tone"),
-    "fx_owl.wav":        (st_owl,        "owl — two low 320→275 Hz gliding hoots, dark + far"),
-    "fx_snitch.wav":     (st_snitch,     "snitch — 45 Hz flutter on a lissajous-darting tone"),
-    "fx_boggart.wav":    (st_boggart,    "boggart — wooden rattle · crack · low thump"),
-    "fx_draft.wav":      (st_draft,      "draft — low-passed wind, swelling"),
-    "fx_rumble.wav":     (st_rumble,     "rumble — 32+45 Hz subs under grinding stone"),
-    "fx_noise_veil.wav": (st_noise_veil, "noise-veil — hiss gathers to a tone, then disperses"),
-    "fx_time_glint.wav": (st_time_glint, "time-glint — a bell reversed into its strike + sparkle"),
-    "fx_peeves.wav":     (st_peeves,     "peeves — page riffle + two descending book-drops"),
-    "fx_dementor.wav":   (st_dementor,   "dementor — descending cluster + sub + cold swell"),
-    "fx_patronus.wav":   (st_patronus,   "patronus — just-intonation 1:5/4:3/2:2:5/2:3 arpeggio"),
+    "fx_rat.wav":        (st_rat,        "rat, high decaying noise grains, {irregular} skitter"),
+    "fx_ghost.wav":      (st_ghost,      "ghost, band-passed noise swell + bending shimmer"),
+    "fx_cat.wav":        (st_cat,        "cat, 25 Hz AM purr on a 55 Hz tone"),
+    "fx_owl.wav":        (st_owl,        "owl, two low 320→275 Hz gliding hoots, dark + far"),
+    "fx_snitch.wav":     (st_snitch,     "snitch, 45 Hz flutter on a lissajous-darting tone"),
+    "fx_boggart.wav":    (st_boggart,    "boggart, wooden rattle · crack · low thump"),
+    "fx_draft.wav":      (st_draft,      "draft, low-passed wind, swelling"),
+    "fx_rumble.wav":     (st_rumble,     "rumble, 32+45 Hz subs under grinding stone"),
+    "fx_noise_veil.wav": (st_noise_veil, "noise-veil, hiss gathers to a tone, then disperses"),
+    "fx_time_glint.wav": (st_time_glint, "time-glint, a bell reversed into its strike + sparkle"),
+    "fx_peeves.wav":     (st_peeves,     "peeves, page riffle + two descending book-drops"),
+    "fx_dementor.wav":   (st_dementor,   "dementor, descending cluster + sub + cold swell"),
+    "fx_patronus.wav":   (st_patronus,   "patronus, just-intonation 1:5/4:3/2:2:5/2:3 arpeggio"),
 }
 
 # --- render all -------------------------------------------------------------
 CLIPS = {
-    "drone_harmonics.wav":  (drone,    "drone — Σ (1/n)·sin(2πnf₀t), AM at φ, √2, π rates"),
-    "bells_phi.wav":        (bells,    "bells — FM sin(2πf_ct + I·sin(2πφf_ct)), struck at {kφ mod 1}"),
-    "air_pink.wav":         (pink,     "air — 1/f pink noise, brightness on a 0.07 Hz LFO"),
-    "stairs_shepard.wav":   (shepard,  "stairs — Shepard–Risset: octave partials under a log-f window"),
-    "sting_dementor.wav":   (dementor, "dementor — descending cluster ·2^(−t/8) + subharmonic + 1/f² swell"),
-    "sting_patronus.wav":   (patronus, "patronus — just intonation 1 : 5/4 : 3/2 : 2 : 5/2 : 3"),
+    "drone_harmonics.wav":  (drone,    "drone, Σ (1/n)·sin(2πnf₀t), AM at φ, √2, π rates"),
+    "bells_phi.wav":        (bells,    "bells, FM sin(2πf_ct + I·sin(2πφf_ct)), struck at {kφ mod 1}"),
+    "air_pink.wav":         (pink,     "air, 1/f pink noise, brightness on a 0.07 Hz LFO"),
+    "stairs_shepard.wav":   (shepard,  "stairs, Shepard, Risset: octave partials under a log-f window"),
+    "sting_dementor.wav":   (dementor, "dementor, descending cluster ·2^(−t/8) + subharmonic + 1/f² swell"),
+    "sting_patronus.wav":   (patronus, "patronus, just intonation 1: 5/4 : 3/2 : 2 : 5/2 : 3"),
 }
 
 def mix_preview():
@@ -424,13 +424,13 @@ if __name__ == "__main__":
     # Stereo binaural rotation over the pink+drone bed (HEADPHONES ONLY).
     bl, br, beat = binaural_over_pink()
     save_stereo("binaural_rotation.wav", bl, br)
-    print("wav:", OUT / "binaural_rotation.wav", "(STEREO — use headphones)")
+    print("wav:", OUT / "binaural_rotation.wav", "(STEREO, use headphones)")
 
     hl, hr = headphone_check()
     save_stereo("headphone_check.wav", hl, hr, peak=0.6)
-    print("wav:", OUT / "headphone_check.wav", "(STEREO — L-only, R-only, then binaural)")
+    print("wav:", OUT / "headphone_check.wav", "(STEREO, L-only, R-only, then binaural)")
 
-    # Event stings — one per actor, all through the shared castle reverb.
+    # Event stings, one per actor, all through the shared castle reverb.
     # Per-sting peak target = relative loudness in the mix (also the engine's
     # per-event gains). 0.7 is the default "fine" level; lower = quieter.
     STING_PEAK = {"fx_ghost.wav": 0.42, "fx_noise_veil.wav": 0.38, "fx_patronus.wav": 0.5}
@@ -443,9 +443,9 @@ if __name__ == "__main__":
     order2 = ["fx_draft.wav", "fx_rumble.wav", "fx_noise_veil.wav",
               "fx_time_glint.wav", "fx_dementor.wav", "fx_patronus.wav"]
     print(sheet([(n[3:-4], *strows[n]) for n in order1],
-                "sheet-fx-creatures.png", "Event stings — the creatures"))
+                "sheet-fx-creatures.png", "Event stings, the creatures"))
     print(sheet([(n[3:-4], *strows[n]) for n in order2],
-                "sheet-fx-forces.png", "Event stings — the forces & set-pieces"))
+                "sheet-fx-forces.png", "Event stings, the forces & set-pieces"))
 
     # Graph the beat-rate schedule so the rotation is visible, not just audible.
     tt = t_axis(len(beat) / SR)
@@ -457,7 +457,7 @@ if __name__ == "__main__":
     for name, hz in STATES:
         axb.axhline(hz, color=MUTED, lw=0.6, ls=":")
         axb.text(0.2, hz + 0.3, f"{name}  ({hz:.0f} Hz)", color=INK, fontsize=9)
-    axb.set_xlabel("time (s) — time-compressed; real hold ≈ 10 min/state", color=INK)
+    axb.set_xlabel("time (s), time-compressed; real hold ≈ 10 min/state", color=INK)
     axb.set_ylabel("binaural beat (Hz)", color=INK)
     axb.set_title("The rotation: calm → relaxed focus → alertness → (wrap)",
                   color=INK, fontsize=13, fontweight="bold")
@@ -468,7 +468,7 @@ if __name__ == "__main__":
 
     print(sheet([(n.replace('.wav',''), *rendered[n]) for n in
                  ["drone_harmonics.wav", "bells_phi.wav", "air_pink.wav"]],
-                "sheet-ambient.png", "The ambient layer — formulas, envelopes, spectra"))
+                "sheet-ambient.png", "The ambient layer, formulas, envelopes, spectra"))
     print(sheet([(n.replace('.wav',''), *rendered[n]) for n in
                  ["stairs_shepard.wav", "sting_dementor.wav", "sting_patronus.wav"]],
-                "sheet-setpieces.png", "Set pieces — the endless stair and the stingers"))
+                "sheet-setpieces.png", "Set pieces, the endless stair and the stingers"))

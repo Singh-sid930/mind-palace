@@ -1,15 +1,14 @@
-"""Concept figures for The Observatory of Sight (wing `sight`, verdigris) —
-the objective-by-objective walk through the contrastive & self-supervised
+"""Concept figures for The Observatory of Sight (wing `sight`, verdigris), the objective-by-objective walk through the contrastive & self-supervised
 losses. Companion to tools/figs_vision.py (which draws the emergent-wing,
 fusion, and two-judgments panels).
 
 Three figures, all verdigris:
-  1. vision-clip-matrix.png  — CLIP's N×N similarity matrix, bright diagonal,
+  1. vision-clip-matrix.png, CLIP's N×N similarity matrix, bright diagonal,
      one row highlighted showing softmax competition + the batch-coupling
      consequence (all-gather, ~32K).
-  2. vision-siglip-loss.png  — the report's worked example as a 3-panel walk:
+  2. vision-siglip-loss.png, the report's worked example as a 3-panel walk:
      sims → ×t+b logits → sigmoid+BCE per cell (exact numbers, t=10 b=−5).
-  3. vision-dino-distill.png — DINO self-distillation: local-crop student vs
+  3. vision-dino-distill.png. DINO self-distillation: local-crop student vs
      EMA global-crop teacher, centering+sharpening balance, and a
      collapsed-vs-healthy feature-spread inset.
 
@@ -69,7 +68,7 @@ def annot_heat(ax, M, cmap, vmin, vmax, fmt="{:+.2f}", diag_box=True,
 
 
 # ===========================================================================
-# 1) CLIP  — N×N similarity matrix, softmax competition, batch coupling
+# 1) CLIP, N×N similarity matrix, softmax competition, batch coupling
 # ===========================================================================
 def fig_clip_matrix():
     N = 6
@@ -88,10 +87,10 @@ def fig_clip_matrix():
                         left=0.06, right=0.975, top=0.79, bottom=0.16,
                         wspace=0.24)
 
-    P.suptitle(f, "CLIP  —  one shared space, and every caption in the batch "
+    P.suptitle(f, "CLIP, one shared space, and every caption in the batch "
                   "is a rival", wing=WING)
     f.text(0.5, 0.885,
-           "Both encoders project into one space; a batch of N image–caption "
+           "Both encoders project into one space; a batch of N image, caption "
            "pairs makes an N×N cosine-similarity matrix. The objective: the "
            "diagonal high, everything else low.",
            ha="center", color=P.MUTED, fontsize=13.5)
@@ -102,7 +101,7 @@ def fig_clip_matrix():
     annot_heat(ax, S, TEAL, -0.25, 0.9, fmt="{:+.2f}", txtsize=14.5)
     ax.set_xticklabels(["cap%d" % (k + 1) for k in range(N)])
     ax.set_yticklabels(["img%d" % (k + 1) for k in range(N)])
-    ax.set_title("(a)  cosine similarities — the bright diagonal is the "
+    ax.set_title("(a)  cosine similarities. The bright diagonal is the "
                  "correct pairs", color=P.INK, fontsize=15, pad=12)
     ax.add_patch(Rectangle((-0.5, hi - 0.5), N, 1, fill=False,
                            edgecolor=WARM, lw=3.4, zorder=7))
@@ -134,7 +133,7 @@ def fig_clip_matrix():
     ax.set_title("(b)  that one row → a single competition", color=P.INK,
                  fontsize=15, pad=12)
     ax.text(0.5, 0.96,
-            "softmax(similarity × temperature) — cross-entropy pushes "
+            "softmax(similarity × temperature), cross-entropy pushes "
             "cap3 → 1",
             transform=ax.transAxes, ha="center", va="top", color=ACC,
             fontsize=12.5, fontweight="bold")
@@ -156,7 +155,7 @@ def fig_clip_matrix():
 
 
 # ===========================================================================
-# 2) SigLIP — worked 3-panel walk with the report's exact numbers
+# 2) SigLIP, worked 3-panel walk with the report's exact numbers
 # ===========================================================================
 def fig_siglip_loss():
     sims = np.array([[0.82, 0.15, -0.20],
@@ -174,11 +173,11 @@ def fig_siglip_loss():
     gs = f.add_gridspec(1, 3, left=0.045, right=0.985, top=0.78, bottom=0.19,
                         wspace=0.22)
 
-    P.suptitle(f, "SigLIP  —  one change: every cell is judged on its own",
+    P.suptitle(f, "SigLIP. One change: every cell is judged on its own",
                wing=WING)
     f.text(0.5, 0.885,
            "The same N×N matrix, but no row-wise competition. Each cell asks "
-           "“do these two match?” and answers alone — sigmoid + binary "
+           "“do these two match?” and answers alone, sigmoid + binary "
            "cross-entropy, per cell.",
            ha="center", color=P.MUTED, fontsize=13.5)
 
@@ -214,7 +213,7 @@ def fig_siglip_loss():
     ax.set_title("(c)  sigmoid(logit) → p,  then BCE", color=P.INK,
                  fontsize=15.5, pad=10)
     ax.text(0.5, -0.13,
-            "label 1 on the diagonal, 0 elsewhere — then average all N² cells",
+            "label 1 on the diagonal, 0 elsewhere, then average all N² cells",
             transform=ax.transAxes, ha="center", va="top", color=P.MUTED,
             fontsize=12)
 
@@ -231,7 +230,7 @@ def fig_siglip_loss():
 
 
 # ===========================================================================
-# 3) DINO — self-distillation schematic + collapse-vs-healthy inset
+# 3) DINO, self-distillation schematic + collapse-vs-healthy inset
 # ===========================================================================
 def _box(ax, xy, w, h, text, fc, ec, fs=13, tc=None, lw=2.0):
     x, y = xy
@@ -255,10 +254,10 @@ def fig_dino_distill():
                         left=0.025, right=0.978, top=0.79, bottom=0.10,
                         wspace=0.11)
 
-    P.suptitle(f, "DINO  —  two views must agree, without collapsing to a "
+    P.suptitle(f, "DINO. Two views must agree, without collapsing to a "
                   "constant", wing=WING)
     f.text(0.5, 0.885,
-           "No labels, no captions. One image, two crops — the local-crop "
+           "No labels, no captions. One image, two crops. The local-crop "
            "student must predict what the global-crop teacher sees.",
            ha="center", color=P.MUTED, fontsize=13.5)
 
@@ -280,7 +279,7 @@ def fig_dino_distill():
     _arrow(ax, (1.75, 5.35), (2.25, 7.0), COOL, rad=-0.25)
     _arrow(ax, (1.75, 4.55), (2.25, 2.9), WARM, rad=0.25)
 
-    # student (top) / teacher (bottom) — a clear vertical channel between them
+    # student (top) / teacher (bottom), a clear vertical channel between them
     _box(ax, (4.6, 6.55), 2.5, 1.5, "STUDENT\n(gradient-trained)",
          "#173a34", ACC, fs=12.5, tc=ACC)
     _box(ax, (4.6, 1.95), 2.5, 1.5, "TEACHER\n(EMA of student,\nno gradients)",
@@ -288,7 +287,7 @@ def fig_dino_distill():
     _arrow(ax, (4.1, 7.4), (4.6, 7.35), COOL)
     _arrow(ax, (4.1, 2.6), (4.6, 2.65), WARM)
 
-    # EMA weight copy (teacher <- student), dashed — runs down the clear channel
+    # EMA weight copy (teacher <- student), dashed, runs down the clear channel
     _arrow(ax, (5.85, 6.55), (5.85, 3.45), P.MUTED, lw=1.8, ls="--")
     ax.text(6.05, 5.0, "EMA weight-copy\n(teacher ← student)", color=P.MUTED,
             fontsize=10.5, va="center", ha="left", style="italic")
@@ -312,7 +311,7 @@ def fig_dino_distill():
     ax.text(0.02, -0.015,
             "Centering subtracts a running mean (spreads the output); "
             "sharpening uses a low teacher temperature (concentrates it).\n"
-            "Neither alone works — the pair is what keeps every view from "
+            "Neither alone works. The pair is what keeps every view from "
             "mapping to the same constant vector.",
             transform=ax.transAxes, ha="left", va="top", color=P.MUTED,
             fontsize=11.5)

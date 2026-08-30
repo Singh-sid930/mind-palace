@@ -1,4 +1,4 @@
-"""Concept figure for The Reforged Transformer (DiT wing) — DiT scaling.
+"""Concept figure for The Reforged Transformer (DiT wing), DiT scaling.
 
 Stylized / representative numbers: the SHAPE is the lesson, not the exact FID.
 
@@ -23,13 +23,13 @@ def fig_scaling():
                         wspace=0.19, left=0.06, right=0.975,
                         top=0.82, bottom=0.145)
 
-    P.suptitle(f, "The Reforged Transformer  —  quality follows compute")
+    P.suptitle(f, "The Reforged Transformer, quality follows compute")
     f.text(0.5, 0.885,
            "Reforge the U-Net into a transformer and the language-model scaling "
            "law carries over: pour in compute, FID falls on a smooth frontier.",
            ha="center", color=P.MUTED, fontsize=13.5)
 
-    # === (a) FID vs model compute — the descending frontier ================
+    # === (a) FID vs model compute, the descending frontier ================
     ax = f.add_subplot(gs[0, 0]); P.style_ax(ax, WING)
     # stylized DiT model sizes: (name, Gflops/forward, FID)
     names = ["DiT-S/2", "DiT-B/2", "DiT-L/2", "DiT-XL/2"]
@@ -72,7 +72,7 @@ def fig_scaling():
     ax.set_xscale("log")
     ax.set_xlim(4.5, 1400); ax.set_ylim(8, 75)
     ax.invert_yaxis()
-    ax.set_xlabel("model compute  —  transformer Gflops / forward  (log)",
+    ax.set_xlabel("model compute, transformer Gflops / forward  (log)",
                   fontsize=12.5)
     ax.set_ylabel("FID   (lower = better samples)", fontsize=12.5)
     ax.set_title("(a)  bigger DiT → lower FID, on a clean frontier",
@@ -80,7 +80,7 @@ def fig_scaling():
     ax.text(5.2, 12.5, "quality\nfollows\ncompute →", color=ACC, fontsize=12,
             fontweight="bold", va="center")
 
-    # === (b) FID vs training compute — scaling law carries over ============
+    # === (b) FID vs training compute, scaling law carries over ============
     ax = f.add_subplot(gs[0, 1]); P.style_ax(ax, WING)
     steps = np.logspace(np.log10(50e3), np.log10(7e6), 200)  # 50k → 7M
     r = steps / 50e3
@@ -93,7 +93,7 @@ def fig_scaling():
             label="U-Net baseline")
 
     ax.scatter([7e6], [dit[-1]], s=160, color=ACC, edgecolor=P.BG, lw=1.5, zorder=5)
-    ax.annotate("keeps falling —\nforecastable", (7e6, dit[-1]),
+    ax.annotate("keeps falling, \nforecastable", (7e6, dit[-1]),
                 xytext=(2.2e6, 13.8), color=ACC, fontsize=12, fontweight="bold",
                 arrowprops=dict(arrowstyle="-|>", color=ACC, lw=1.7), ha="center")
     ax.annotate("U-Net plateaus", (3.2e6, 16.6), xytext=(2.4e5, 22.5),
@@ -103,7 +103,7 @@ def fig_scaling():
     ax.set_xscale("log")
     ax.set_xlim(50e3, 7e6); ax.set_ylim(6, 46)
     ax.invert_yaxis()
-    ax.set_xlabel("training compute  —  steps  (log)", fontsize=12.5)
+    ax.set_xlabel("training compute, steps  (log)", fontsize=12.5)
     ax.set_ylabel("FID   (lower = better)", fontsize=12.5)
     ax.set_title("(b)  the scaling law carries over from language",
                  color=P.INK, fontsize=13.5)
@@ -111,7 +111,7 @@ def fig_scaling():
               fontsize=11.5, loc="lower right")
 
     f.text(0.5, 0.038,
-           "Stylized, representative values — the SHAPE is the lesson. A hand-tuned "
+           "Stylized, representative values, the SHAPE is the lesson. A hand-tuned "
            "U-Net sputters; a DiT keeps improving along a smooth curve, which is why "
            "SORA, Stable Diffusion 3 and PixArt build on it.",
            ha="center", color=P.INK, fontsize=12.5)

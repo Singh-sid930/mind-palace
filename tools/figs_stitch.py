@@ -27,10 +27,10 @@ def fig_chunk_extension():
                         wspace=0.20, left=0.06, right=0.975,
                         top=0.80, bottom=0.135)
 
-    P.suptitle(f, "The Stitcher's Table  —  chunk-and-overlap extension, and the drift it inherits", wing=WING)
+    P.suptitle(f, "The Stitcher's Table, chunk-and-overlap extension, and the drift it inherits", wing=WING)
     f.text(0.5, 0.885,
            "Wan is trained for ~81 frames (~5s).  Longer video = short chunks stitched, each conditioned on the "
-           "OVERLAP TAIL of the one before — and drift compounds down the chain.",
+           "OVERLAP TAIL of the one before, and drift compounds down the chain.",
            ha="center", color=P.MUTED, fontsize=12.5)
 
     # (a) autoregressive chunk timeline with overlap and growing drift -----------
@@ -49,7 +49,7 @@ def fig_chunk_extension():
         # the chunk body
         ax.add_patch(Rectangle((s0, y - h / 2), L, h, linewidth=1.4,
                      edgecolor=P.GRID, facecolor=COOL, alpha=0.85))
-        ax.text(s0 + L / 2 - ov / 2, y, f"chunk {k+1}\n{s0}–{s0+L-1}",
+        ax.text(s0 + L / 2 - ov / 2, y, f"chunk {k+1}\n{s0}, {s0+L-1}",
                 ha="center", va="center", color=P.BG, fontsize=11.5,
                 fontweight="bold")
 
@@ -65,7 +65,7 @@ def fig_chunk_extension():
                                   connectionstyle="arc3,rad=-0.15")
             ax.add_patch(arr)
 
-        # drift whisker at the trailing edge — grows chunk over chunk
+        # drift whisker at the trailing edge, grows chunk over chunk
         drift = 0.06 + 0.14 * k
         ax.errorbar(s0 + L, y, yerr=drift, color=BAD, elinewidth=3.2,
                     capsize=5, capthick=2.2, zorder=5)
@@ -109,7 +109,7 @@ def fig_chunk_extension():
     ax.plot(chunks, drift_ov, "-o", color=ACC, lw=2.6, markersize=6,
             label="overlap-conditioning (chunk-and-overlap)")
     ax.plot(chunks, drift_cut, "-s", color=BAD, lw=2.6, markersize=6,
-            label="naive cut (no overlap) — visible seams")
+            label="naive cut (no overlap), visible seams")
     ax.fill_between(chunks, drift_ov, drift_cut, color=BAD, alpha=0.08)
 
     ax.axhline(1.0, color=P.MUTED, ls=":", lw=1.2)

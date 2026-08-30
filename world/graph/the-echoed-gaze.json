@@ -33,21 +33,69 @@
       "name": "DINOv2",
       "room": "the-echoed-gaze",
       "exhibit": "dino-chapter",
-      "summary": "The scaled successor to DINO: a much larger curated dataset (LVD-142M), bigger models, and DINO's image-level objective combined with iBOT's patch-level masked objective. The result is a general-purpose visual backbone — the go-to self-supervised encoder for dense features and spatial precision, used in depth, segmentation, correspondence, and robotics perception. Spatially precise and semantically structured, but with no language alignment, so no zero-shot classification. DINOv3 scales it further."
+      "summary": "The scaled successor to DINO: a much larger curated dataset (LVD-142M), bigger models, and DINO's image-level objective combined with iBOT's patch-level masked objective. The result is a general-purpose visual backbone. The go-to self-supervised encoder for dense features and spatial precision, used in depth, segmentation, correspondence, and robotics perception. Spatially precise and semantically structured, but with no language alignment, so no zero-shot classification. DINOv3 scales it further."
     }
   ],
   "edges": [
-    { "from": "dino", "to": "vision-encoder", "relation": "builds-on" },
-    { "from": "dino", "to": "vicreg", "relation": "relates-to" },
-    { "from": "dino", "to": "v-jepa-2", "relation": "relates-to" },
-    { "from": "dino", "to": "siglip", "relation": "contrasts-with" },
-    { "from": "self-distillation", "to": "dino", "relation": "part-of" },
-    { "from": "self-distillation", "to": "v-jepa-2", "relation": "relates-to" },
-    { "from": "self-distillation", "to": "vicreg", "relation": "contrasts-with" },
-    { "from": "collapse-problem", "to": "self-distillation", "relation": "relates-to" },
-    { "from": "centering-sharpening", "to": "self-distillation", "relation": "part-of" },
-    { "from": "centering-sharpening", "to": "collapse-problem", "relation": "relates-to" },
-    { "from": "centering-sharpening", "to": "softmax-math", "relation": "builds-on" },
-    { "from": "dinov2", "to": "dino", "relation": "builds-on" }
+    {
+      "from": "dino",
+      "to": "vision-encoder",
+      "relation": "builds-on"
+    },
+    {
+      "from": "dino",
+      "to": "vicreg",
+      "relation": "relates-to"
+    },
+    {
+      "from": "dino",
+      "to": "v-jepa-2",
+      "relation": "relates-to"
+    },
+    {
+      "from": "dino",
+      "to": "siglip",
+      "relation": "contrasts-with"
+    },
+    {
+      "from": "self-distillation",
+      "to": "dino",
+      "relation": "part-of"
+    },
+    {
+      "from": "self-distillation",
+      "to": "v-jepa-2",
+      "relation": "relates-to"
+    },
+    {
+      "from": "self-distillation",
+      "to": "vicreg",
+      "relation": "contrasts-with"
+    },
+    {
+      "from": "collapse-problem",
+      "to": "self-distillation",
+      "relation": "relates-to"
+    },
+    {
+      "from": "centering-sharpening",
+      "to": "self-distillation",
+      "relation": "part-of"
+    },
+    {
+      "from": "centering-sharpening",
+      "to": "collapse-problem",
+      "relation": "relates-to"
+    },
+    {
+      "from": "centering-sharpening",
+      "to": "softmax-math",
+      "relation": "builds-on"
+    },
+    {
+      "from": "dinov2",
+      "to": "dino",
+      "relation": "builds-on"
+    }
   ]
 }

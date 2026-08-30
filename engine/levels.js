@@ -2,7 +2,7 @@
 // other floors are built on first visit (stair, floo, teleport) and the
 // least-recently-visited are disposed beyond a small cache. GPU cost is
 // therefore bounded by a couple of floors no matter how large the palace
-// grows. The layout itself (pure data) always covers the whole palace — maps,
+// grows. The layout itself (pure data) always covers the whole palace, maps,
 // the constellation and the companion's gist need no geometry.
 //
 // The manager owns three LIVE collections that always reflect the ACTIVE

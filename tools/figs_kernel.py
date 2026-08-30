@@ -1,6 +1,6 @@
 """Concept figure for the basement room `the-sliding-kernel` (Arithmancy, violet).
 
-PURE MATH — convolution as a window of weights slid across a signal.
+PURE MATH, convolution as a window of weights slid across a signal.
 No downstream jargon: only signals, kernels, windows, grids, volumes, dot products.
 
 Run:  ~/anaconda3/envs/lrm/bin/python tools/figs_kernel.py
@@ -42,7 +42,7 @@ def fig_kernel():
                         hspace=0.16, left=0.045, right=0.975,
                         top=0.935, bottom=0.035)
 
-    P.suptitle(f, "The Sliding Kernel  —  a window of weights, "
+    P.suptitle(f, "The Sliding Kernel, a window of weights, "
                   "slid across a signal, multiply-and-sum at every stop")
     f.text(0.5, 0.955,
            "signal = [1, 1, 1, 2, 3, 4]        kernel = [1, 0, "
@@ -50,11 +50,11 @@ def fig_kernel():
            ha="center", color=P.MUTED, fontsize=14)
 
     # =====================================================================
-    # (a)  1-D convolution WORKED  —  the window slid across the signal
+    # (a)  1-D convolution WORKED, the window slid across the signal
     # =====================================================================
     ax = f.add_subplot(gs[0]); ax.axis("off")
     ax.set_xlim(-0.6, 13.6); ax.set_ylim(0.0, 10.4)
-    ax.text(-0.4, 9.95, "(a)  Slide, multiply, sum  —  every stop is a "
+    ax.text(-0.4, 9.95, "(a)  Slide, multiply, sum. Every stop is a "
             "dot product", color=P.INK, fontsize=16, fontweight="bold",
             ha="left", va="center")
 
@@ -152,16 +152,16 @@ def fig_kernel():
                  tc=WARM, fs=16, lw=1.8)
         ax.text(xk + 3.3, yb + 0.48, f"stop {row+1}", ha="left", va="center",
                 color=P.MUTED, fontsize=11.5)
-    ax.text(xk + 1.5, 0.6, f"the SAME [1, 0, {MINUS}1] at every stop  —  "
+    ax.text(xk + 1.5, 0.6, f"the SAME [1, 0, {MINUS}1] at every stop, "
             "k weights\nfor any signal length, not one rule per position",
             ha="center", va="center", color=P.MUTED, fontsize=11.5)
 
     # =====================================================================
-    # (c)  1-D → 2-D → 3-D  —  same operation, more axes
+    # (c)  1-D → 2-D → 3-D, same operation, more axes
     # =====================================================================
     gc = gs[2].subgridspec(2, 3, height_ratios=[0.16, 1.0], wspace=0.14,
                            hspace=0.02)
-    axh = f.add_subplot(gc[0, :]); axh.axis("off")
+    axh = f.add_subplot(gc[0,:]); axh.axis("off")
     axh.text(0.0, 0.85, "(c)  One axis or three, it is the same enchantment: "
              "a local window of shared weights, slid everywhere",
              color=P.INK, fontsize=16, fontweight="bold", ha="left",

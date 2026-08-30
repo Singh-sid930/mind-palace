@@ -11,24 +11,37 @@
       "type": "portrait",
       "title": "Engineer Sable Voss",
       "subtitle": "Of the Hall Long Promised",
-      "text": "This hall was promised for a long time before it was built. Down in the Wing of Continuous Motion, the plaques said a floor would one day stand where rotations become the language of orientation and motion. Up in the Observatory, the Twin-Sighted Helm ended on a hall not yet raised. You are standing in it.\n\nWhat it teaches is the last step of a long lineage. A vision-language model can look and can read. It cannot act, because it is missing an input — where are my own joints? — and an output: a continuous command, not a word. Give it both and you have a VLA, a vision-language-action model.\n\nThe interesting part is the output. Actions are not text, and they are not single points either: asked to go around an obstacle, a good demonstrator sometimes goes left and sometimes right, and a model that answers with the AVERAGE of those drives straight into it. So the action head must be generative. And it must be fast, because a robot wants a fresh command thirty to fifty times a second. That pair of demands is why the floor below this one exists.",
-      "float": { "widget": "fork_paths" }
+      "text": "This hall was promised for a long time before it was built. Down in the Wing of Continuous Motion, the plaques said a floor would one day stand where rotations become the language of orientation and motion. Up in the Observatory, the Twin-Sighted Helm ended on a hall not yet raised. You are standing in it.\n\nWhat it teaches is the last step of a long lineage. A vision-language model can look and can read. It cannot act, because it is missing an input, where are my own joints? and an output: a continuous command, not a word. Give it both and you have a VLA, a vision-language-action model.\n\nThe interesting part is the output. Actions are not text, and they are not single points either: asked to go around an obstacle, a good demonstrator sometimes goes left and sometimes right, and a model that answers with the AVERAGE of those drives straight into it. So the action head must be generative. And it must be fast, because a robot wants a fresh command thirty to fifty times a second. That pair of demands is why the floor below this one exists.",
+      "float": {
+        "widget": "fork_paths"
+      }
     },
     {
       "id": "embodiment-welcome",
       "type": "plaque",
       "prop": "pedestal",
-      "title": "This Floor — Vision-Language-Action",
-      "text": "The highest floor in the palace, and the one that borrows most. From the Riverworks below it takes flow matching whole — same straight path, same velocity target x₁ − x₀, same Euler integration — and changes only what the data IS: an ACTION CHUNK of shape (H, action_dim) rather than an image latent. From the Observatory it takes the encoders that give a body its eyes. From the Attention wing it takes the transformer, the KV cache, and self-attention as the thing that lets two sets of weights speak.\n\nFive chambers open here: the action chunk itself; how a head attaches to a vision-language model at all; π0's two experts sharing one transformer; π0 and SmolVLA side by side; and the clock — why ten steps rather than a hundred is the whole argument, and what happens to a model that answers with an average.",
-      "float": { "widget": "token_stream", "n": 7, "cache": true }
+      "title": "This Floor, Vision-Language-Action",
+      "text": "The highest floor in the palace, and the one that borrows most. From the Riverworks below it takes flow matching whole, same straight path, same velocity target x₁ − x₀, same Euler integration, and changes only what the data IS: an ACTION CHUNK of shape (H, action_dim) rather than an image latent. From the Observatory it takes the encoders that give a body its eyes. From the Attention wing it takes the transformer, the KV cache, and self-attention as the thing that lets two sets of weights speak.\n\nFive chambers open here: the action chunk itself; how a head attaches to a vision-language model at all; π0's two experts sharing one transformer; π0 and SmolVLA side by side; and the clock, why ten steps rather than a hundred is the whole argument, and what happens to a model that answers with an average.",
+      "float": {
+        "widget": "token_stream",
+        "n": 7,
+        "cache": true
+      }
     },
     {
       "id": "how-to-walk-embodiment",
       "type": "plaque",
       "prop": "lectern",
       "title": "How to Walk This Floor",
-      "text": "Move with W A S D; look with the mouse. Press E to study any display — diagrams unfold large in the room. E or Esc steps back. M: this floor's map. G: the constellation of every idea in the palace. F: travel to any room by name. N: music. P: footstep trails.\n\nTwo staircases descend from this atrium, and both are worth taking in the other direction at least once. One drops to the Riverworks, where the action head's mathematics is derived on a single number before it is ever asked to move an arm. The other drops to the Observatory of Sight, where the encoders that feed this floor are taught. Neither Gatekeeper is decoration: the arts here genuinely assume both.",
-      "float": { "widget": "flow_nodes", "layers": [2, 3, 2] }
+      "text": "Move with W A S D; look with the mouse. Press E to study any display, diagrams unfold large in the room. E or Esc steps back. M: this floor's map. G: the constellation of every idea in the palace. F: travel to any room by name. N: music. P: footstep trails.\n\nTwo staircases descend from this atrium, and both are worth taking in the other direction at least once. One drops to the Riverworks, where the action head's mathematics is derived on a single number before it is ever asked to move an arm. The other drops to the Observatory of Sight, where the encoders that feed this floor are taught. Neither Gatekeeper is decoration: the arts here genuinely assume both.",
+      "float": {
+        "widget": "flow_nodes",
+        "layers": [
+          2,
+          3,
+          2
+        ]
+      }
     }
   ]
 }

@@ -4,7 +4,9 @@
   "wing": "lie",
   "size": "medium",
   "order": 2,
-  "connections": ["the-curved-ground"],
+  "connections": [
+    "the-curved-ground"
+  ],
   "exhibits": [
     {
       "id": "the-flat-window",
@@ -12,46 +14,55 @@
       "title": "The Flat Window",
       "prop": "table",
       "scale": 1.3,
-      "text": "A pane of clear crystal laid so it just KISSES the curved ground at one point — glass resting on an orange, touching at a single spot. This is the TANGENT SPACE at that point. Take a short straight step across the glass, then look down at the curve beneath your foot: for small steps the two walks nearly agree. The pane is the curve's best flat likeness near the touch point — and unlike the curve, it is an ordinary VECTOR SPACE: arrows add tip-to-tail, lengths behave, calculus simply works. The wing's great trick, whispered here and proved later: when reckoning on a curved surface grows awkward, step onto its flat window, do plain arithmetic there, and carry the answer back.",
-      "float": { "widget": "tangent_touch" }
+      "text": "A pane of clear crystal laid so it just KISSES the curved ground at one point, glass resting on an orange, touching at a single spot. This is the TANGENT SPACE at that point. Take a short straight step across the glass, then look down at the curve beneath your foot: for small steps the two walks nearly agree. The pane is the curve's best flat likeness near the touch point, and unlike the curve, it is an ordinary VECTOR SPACE: arrows add tip-to-tail, lengths behave, calculus simply works. The wing's great trick, whispered here and proved later: when reckoning on a curved surface grows awkward, step onto its flat window, do plain arithmetic there, and carry the answer back.",
+      "float": {
+        "widget": "tangent_touch"
+      }
     },
     {
       "id": "the-touching-plane",
       "type": "plaque",
       "prop": "pedestal",
       "title": "The Touching Plane",
-      "text": "At any point of a curved surface you may rest a flat plane that grazes it at just that spot — the TANGENT SPACE there. Its promise is closeness: near the touch point, a short STRAIGHT step on the plane closely matches the corresponding move ALONG the curve, and the smaller the step, the better the match. Watch the two beads above — together at the touch, apart with distance; the gap IS the curvature. Every point of the surface owns its own tangent plane: each honestly flat, with an origin at the touch, addable arrows, and straight lines that stay straight.",
-      "float": { "widget": "tangent_touch", "speed": 0.6 }
+      "text": "At any point of a curved surface you may rest a flat plane that grazes it at just that spot, the TANGENT SPACE there. Its promise is closeness: near the touch point, a short STRAIGHT step on the plane closely matches the corresponding move ALONG the curve, and the smaller the step, the better the match. Watch the two beads above, together at the touch, apart with distance; the gap IS the curvature. Every point of the surface owns its own tangent plane: each honestly flat, with an origin at the touch, addable arrows, and straight lines that stay straight.",
+      "float": {
+        "widget": "tangent_touch",
+        "speed": 0.6
+      }
     },
     {
       "id": "the-algebra-at-the-origin",
       "type": "plaque",
       "prop": "lectern",
       "title": "The Algebra at the Origin",
-      "text": "One tangent plane outranks all others: the one at the IDENTITY — the do-nothing turn. It has a name of its own: the LIE ALGEBRA. Like every tangent space it is an ordinary vector space, and its size is no accident — it is isomorphic to ℝⁿ, where n is the surface's degrees of freedom. Planar turns: a circle, one freedom → ℝ¹, a line. Turns in space: three freedoms → ℝ³. The destination of the whole idea: to reckon on an awkward, closed, constrained curved space, step onto this one privileged flat window, do honest linear arithmetic in plain ℝⁿ, and carry the result back. The Lie algebra is the flat room where the curved world agrees to be simple.",
-      "float": { "widget": "arrows_dot" }
+      "text": "One tangent plane outranks all others: the one at the IDENTITY. The do-nothing turn. It has a name of its own: the LIE ALGEBRA. Like every tangent space it is an ordinary vector space, and its size is no accident. It is isomorphic to ℝⁿ, where n is the surface's degrees of freedom. Planar turns: a circle, one freedom → ℝ¹, a line. Turns in space: three freedoms → ℝ³. The destination of the whole idea: to reckon on an awkward, closed, constrained curved space, step onto this one privileged flat window, do honest linear arithmetic in plain ℝⁿ, and carry the result back. The Lie algebra is the flat room where the curved world agrees to be simple.",
+      "float": {
+        "widget": "arrows_dot"
+      }
     },
     {
       "id": "tangent-diagram",
       "type": "diagram",
       "title": "The Flat Plane That Touches the Curve",
       "spec": "graph TD\n  S[Curved surface] --> Pt[Choose a point]\n  Pt --> Tan[Lay a flat plane tangent there]\n  Tan --> App[Short straight steps approximate moving on the curve]\n  Tan --> Vec[It is a true flat vector space: ordinary calculus works]\n  S --> Id[The identity / origin point]\n  Id --> Alg[Its tangent space = the Lie algebra]\n  Alg --> Rn[Isomorphic to ℝⁿ, n = degrees of freedom]",
-      "caption": "A flat plane touches the curve at one point; near it, straight moves approximate curved ones. The tangent space at the identity is the Lie algebra — a flat ℝⁿ, n = degrees of freedom."
+      "caption": "A flat plane touches the curve at one point; near it, straight moves approximate curved ones. The tangent space at the identity is the Lie algebra, a flat ℝⁿ, n = degrees of freedom."
     },
     {
       "id": "the-touching-window",
       "type": "image",
       "title": "The Flat Window, Drawn to Scale",
       "image": "world/assets/lie-tangent.png",
-      "caption": "(a) A curve and the straight TANGENT at one touch point. Equal straight steps along the tangent, matching points on the curve: near the touch they are all but the same; far out they drift. The lower panel plots that gap — exactly zero at the touch, swelling with distance: flatness is a promise kept only nearby. (b) The tangent at the IDENTITY (the do-nothing turn) is the LIE ALGEBRA — a true flat ℝⁿ whose dimension equals the freedoms: ℝ¹ for the circle of planar turns, ℝ³ for turns in space."
+      "caption": "(a) A curve and the straight TANGENT at one touch point. Equal straight steps along the tangent, matching points on the curve: near the touch they are all but the same; far out they drift. The lower panel plots that gap, exactly zero at the touch, swelling with distance: flatness is a promise kept only nearby. (b) The tangent at the IDENTITY (the do-nothing turn) is the LIE ALGEBRA, a true flat ℝⁿ whose dimension equals the freedoms: ℝ¹ for the circle of planar turns, ℝ³ for turns in space."
     },
     {
       "id": "where-this-leads",
       "type": "plaque",
       "prop": "pedestal",
       "title": "Where This Leads ↑",
-      "text": "When the upper hall stands, this pane is where its hard work will quietly happen. Anything that lives on a curved surface of arrangements but still needs GRADIENTS to follow, AVERAGES to take, and small UNCERTAINTIES to carry cannot do that arithmetic on the curve itself, where addition and averaging misbehave. So it steps onto the flat window, computes its slopes and means in honest ℝⁿ, and carries them back. Here there is no measuring and no machinery — only a flat plane laid tangent to a curved surface, and the plain arithmetic it makes possible.",
-      "float": { "widget": "descend_bowl" }
+      "text": "When the upper hall stands, this pane is where its hard work will quietly happen. Anything that lives on a curved surface of arrangements but still needs GRADIENTS to follow, AVERAGES to take, and small UNCERTAINTIES to carry cannot do that arithmetic on the curve itself, where addition and averaging misbehave. So it steps onto the flat window, computes its slopes and means in honest ℝⁿ, and carries them back. Here there is no measuring and no machinery, only a flat plane laid tangent to a curved surface, and the plain arithmetic it makes possible.",
+      "float": {
+        "widget": "descend_bowl"
+      }
     }
   ]
 }

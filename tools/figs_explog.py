@@ -2,7 +2,7 @@
 
 The exponential and logarithm maps as pure geometry: a straight step in the
 flat tangent line becomes a geodesic arc of equal length on the circle, and
-the logarithm unwraps it back. Worked concretely on SO(2) — the unit circle.
+the logarithm unwraps it back. Worked concretely on SO(2), the unit circle.
 
 Run:  ~/anaconda3/envs/lrm/bin/python tools/figs_explog.py
 """
@@ -31,7 +31,7 @@ def fig_exp_log():
 
     f, axes = P.fig(13.6, 7.2, wing=WING, ncols=2)
     f.subplots_adjust(left=0.045, right=0.975, top=0.80, bottom=0.16, wspace=0.16)
-    P.suptitle(f, "The Two Maps  —  a straight step, wrapped onto the curve and unwrapped back")
+    P.suptitle(f, "The Two Maps, a straight step, wrapped onto the curve and unwrapped back")
     f.text(0.5, 0.885,
            "On the unit circle (SO(2)): the tangent value θ maps to the point "
            "at angle θ.  A flat step of length θ travels an arc of length θ.",
@@ -137,7 +137,7 @@ def fig_exp_log():
     ax.set_title("(b)  the round trip: v → q → v", color=P.INK, fontsize=14)
 
     f.text(0.5, 0.045,
-           "v = 1.0 rad  —exp→  q on the circle  —log→  v = 1.0 rad.   "
+           "v = 1.0 rad, exp→  q on the circle, log→  v = 1.0 rad.   "
            "log is exp run backwards: out to the flat, and exactly back again.",
            ha="center", color=P.INK, fontsize=12.5)
 

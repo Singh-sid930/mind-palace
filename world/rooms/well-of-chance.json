@@ -11,24 +11,31 @@
       "title": "The Well of Chance",
       "prop": "crystal_ball",
       "scale": 1.3,
-      "text": "A well whose surface never settles the same way twice — but whose ripples always follow one shape: the bell. This is the GAUSSIAN distribution. A draw from it is a center plus a random nudge of typical size: most draws land near the middle, few land far out. The standard normal N(0,1) has center 0 and spread 1 — draws usually land near 0, sometimes near ±1, almost never past ±3. Two facts to keep: (1) every Gaussian is a stretched, shifted copy of the standard one; (2) the sum of independent Gaussians is itself a Gaussian. The rest of this room unpacks those two.",
-      "float": { "widget": "field_warp", "amp": 0.07 }
+      "text": "A well whose surface never settles the same way twice, but whose ripples always follow one shape: the bell. This is the GAUSSIAN distribution. A draw from it is a center plus a random nudge of typical size: most draws land near the middle, few land far out. The standard normal N(0,1) has center 0 and spread 1, draws usually land near 0, sometimes near ±1, almost never past ±3. Two facts to keep: (1) every Gaussian is a stretched, shifted copy of the standard one; (2) the sum of independent Gaussians is itself a Gaussian. The rest of this room unpacks those two.",
+      "float": {
+        "widget": "field_warp",
+        "amp": 0.07
+      }
     },
     {
       "id": "mean-and-variance",
       "type": "plaque",
       "prop": "pedestal",
       "title": "Mean and Variance",
-      "text": "Two numbers describe a Gaussian completely. The MEAN μ is where the bell balances. The VARIANCE σ² is how far it spreads; its square root σ is in the data's own units. Both directions of travel are one-liners: standardize with z = (x − μ)/σ to turn any Gaussian into N(0,1); sample with x = μ + σ·ε where ε ~ N(0,1). Example: adult heights with μ = 170 cm, σ = 8 cm. A 186 cm person is z = (186 − 170)/8 = +2 — two spreads above center, roughly the tallest 2%. Above, watch μ slide the bell and σ widen it — taller when narrow, because the total probability never changes.",
-      "float": { "widget": "bell_slide" }
+      "text": "Two numbers describe a Gaussian completely. The MEAN μ is where the bell balances. The VARIANCE σ² is how far it spreads; its square root σ is in the data's own units. Both directions of travel are one-liners: standardize with z = (x − μ)/σ to turn any Gaussian into N(0,1); sample with x = μ + σ·ε where ε ~ N(0,1). Example: adult heights with μ = 170 cm, σ = 8 cm. A 186 cm person is z = (186 − 170)/8 = +2, two spreads above center, roughly the tallest 2%. Above, watch μ slide the bell and σ widen it, taller when narrow, because the total probability never changes.",
+      "float": {
+        "widget": "bell_slide"
+      }
     },
     {
       "id": "bell-is-endpoint",
       "type": "plaque",
       "prop": "lectern",
       "title": "Why the Bell Is Everywhere",
-      "text": "Add up many small independent shocks — each of any shape — and the total comes out bell-shaped. That is the Central Limit Theorem. Try it with dice: one roll is flat, 1–6 equally likely; the sum of ten dice already makes a clean bell around 35. It is why measurement error and crowd jitter look Gaussian in the wild. Gaussians are also closed under addition: two independent Gaussians sum to one Gaussian whose VARIANCES add. Several small nudges are indistinguishable from one nudge of the pooled size — the quiet trick behind formulas that look like they should need a loop.",
-      "float": { "widget": "rain_bell" }
+      "text": "Add up many small independent shocks, each of any shape, and the total comes out bell-shaped. That is the Central Limit Theorem. Try it with dice: one roll is flat, 1 to 6 equally likely; the sum of ten dice already makes a clean bell around 35. It is why measurement error and crowd jitter look Gaussian in the wild. Gaussians are also closed under addition: two independent Gaussians sum to one Gaussian whose VARIANCES add. Several small nudges are indistinguishable from one nudge of the pooled size, the quiet trick behind formulas that look like they should need a loop.",
+      "float": {
+        "widget": "rain_bell"
+      }
     },
     {
       "id": "gaussian-diagram",
@@ -42,7 +49,7 @@
       "type": "image",
       "title": "Anatomy of the Bell",
       "image": "world/assets/gaussian-anatomy.png",
-      "caption": "Left: the standard bell N(0,1) — balance point μ = 0, width one σ. The nested bands are where draws land: about 68% within one σ, 95% within two, 99.7% within three. Right: two independent bells added, spreads 0.6 and 0.8. The sum is again a bell with variance 0.6² + 0.8² = 1 — spread exactly 1.0. Spreads don't add; their SQUARES do."
+      "caption": "Left: the standard bell N(0,1), balance point μ = 0, width one σ. The nested bands are where draws land: about 68% within one σ, 95% within two, 99.7% within three. Right: two independent bells added, spreads 0.6 and 0.8. The sum is again a bell with variance 0.6² + 0.8² = 1, spread exactly 1.0. Spreads don't add; their SQUARES do."
     },
     {
       "id": "where-this-leads",
@@ -50,7 +57,10 @@
       "prop": "lectern",
       "title": "Where This Leads ↑",
       "text": "Nothing in this room needed machine learning. But upstairs in Diffusion, this well IS the noise. Corrupting an image means adding scoops of N(0,1); 'scale-and-shift a standard draw' is literally the forward step x_t = √ᾱ·x₀ + √(1−ᾱ)·ε; and 'independent Gaussians sum to one Gaussian' is why a whole chain of noising steps collapses into a single jump. Climb toward the Atrium of Diffusion and you will recognize this well under a new name.",
-      "float": { "widget": "noise_morph", "shape": "smile" }
+      "float": {
+        "widget": "noise_morph",
+        "shape": "smile"
+      }
     }
   ]
 }

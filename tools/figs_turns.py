@@ -1,7 +1,7 @@
 """Concept figure for The Sphere of Turns (Lie / bronze cellar).
 
 Two groups of turns, worked: SO(2) the circle, and SO(3) the surface of
-spatial turns — hat a few bare numbers into a skew matrix, exponentiate,
+spatial turns, hat a few bare numbers into a skew matrix, exponentiate,
 and land on the turn.
 
 Run:  ~/anaconda3/envs/lrm/bin/python tools/figs_turns.py
@@ -45,7 +45,7 @@ def fig_turns():
                         left=0.045, right=0.975, top=0.83, bottom=0.10,
                         wspace=0.26)
 
-    P.suptitle(f, "Two Groups of Turns, Worked  —  hat the numbers, "
+    P.suptitle(f, "Two Groups of Turns, Worked, hat the numbers, "
                   "exponentiate, get the turn")
     f.text(0.5, 0.895,
            "vector of freedoms  →(hat)→  skew matrix  "
@@ -135,7 +135,7 @@ def fig_turns():
                  fontsize=14)
     ax.text(0.3, -2.02,
             "Walk arc-length θ up the flat algebra; exp lays it round the\n"
-            "curved group. The tangent line is straight and additive —\n"
+            "curved group. The tangent line is straight and additive, \n"
             "the circle is where the turns actually live.",
             color=P.MUTED, fontsize=11.5, ha="center", va="top")
 
@@ -211,7 +211,7 @@ def fig_turns():
            color=P.INK, fontsize=12.5, ha="center")
     f.text(0.815, 0.093,
            "SO(3) is a genuine 3-dimensional surface; so(3) is the 3×3\n"
-           "skew matrices. The drawn sphere is only a PROXY — the true\n"
+           "skew matrices. The drawn sphere is only a PROXY, the true\n"
            "shape of SO(3) cannot be drawn.",
            color=P.MUTED, fontsize=11, ha="center", va="top")
 

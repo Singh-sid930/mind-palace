@@ -12,7 +12,7 @@
       "name": "The Receptive Field",
       "room": "the-sliding-kernel",
       "exhibit": "the-local-window",
-      "summary": "Each convolution output depends only on the small local neighbourhood of the input beneath the kernel at that stop — its receptive field — not on the whole signal. Sliding the identical kernel across every position means one small set of weights is reused everywhere: weight sharing. A width-k kernel uses only k weights no matter how long the signal is."
+      "summary": "Each convolution output depends only on the small local neighbourhood of the input beneath the kernel at that stop, its receptive field, not on the whole signal. Sliding the identical kernel across every position means one small set of weights is reused everywhere: weight sharing. A width-k kernel uses only k weights no matter how long the signal is."
     },
     {
       "id": "conv-dimensions",
@@ -23,8 +23,20 @@
     }
   ],
   "edges": [
-    { "from": "receptive-field", "to": "convolution", "relation": "part-of" },
-    { "from": "conv-dimensions", "to": "convolution", "relation": "part-of" },
-    { "from": "convolution", "to": "dot-product-math", "relation": "relates-to" }
+    {
+      "from": "receptive-field",
+      "to": "convolution",
+      "relation": "part-of"
+    },
+    {
+      "from": "conv-dimensions",
+      "to": "convolution",
+      "relation": "part-of"
+    },
+    {
+      "from": "convolution",
+      "to": "dot-product-math",
+      "relation": "relates-to"
+    }
   ]
 }

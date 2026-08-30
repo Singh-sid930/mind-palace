@@ -15,7 +15,7 @@ Data layout (what a content model edits):
                             to concepts in any other fragment.
     world/catalog.json      single source of truth for every enum (palettes, props,
                             exhibit types, sizes, relations). Injected into the schema
-                            at validate time — extend the catalog, never the schema.
+                            at validate time, extend the catalog, never the schema.
 
 Generated on a clean validate (never edit by hand):
     world/rooms/index.json  manifest the engine loads rooms through
@@ -48,7 +48,7 @@ def _load(path):
         with open(path, encoding="utf-8") as fh:
             return json.load(fh), None
     except json.JSONDecodeError as e:
-        return None, f"{path.relative_to(ROOT)}: invalid JSON — {e}"
+        return None, f"{path.relative_to(ROOT)}: invalid JSON, {e}"
     except FileNotFoundError:
         return None, f"{path.relative_to(ROOT)}: file not found"
 
@@ -97,7 +97,7 @@ def load_world():
         if err:
             errors.append(err)
 
-    # Ambient events are optional — a world with no events.json is valid.
+    # Ambient events are optional, a world with no events.json is valid.
     events = None
     events_path = WORLD_DIR / "events.json"
     if events_path.exists():
@@ -196,7 +196,7 @@ def validate(data):
             errors.append(
                 f"world.json: level '{lvl_id}' has {len(members)} wings "
                 f"({', '.join(members)}); the layout supports at most "
-                f"{MAX_WINGS_PER_LEVEL} per level — add a new level (floor) instead"
+                f"{MAX_WINGS_PER_LEVEL} per level, add a new level (floor) instead"
             )
 
     seen_orders = {}
@@ -260,7 +260,7 @@ def validate(data):
             if c.get("room") != stem:
                 errors.append(
                     f"{label}: concept '{c.get('id')}' declares room "
-                    f"'{c.get('room')}' — it must equal the fragment name '{stem}'"
+                    f"'{c.get('room')}'. It must equal the fragment name '{stem}'"
                 )
 
     concept_ids = set()
@@ -351,7 +351,7 @@ def regenerate(data):
 
 def summary(data):
     world, graph, rooms = data["world"], data["graph"], data["rooms"]
-    print(f"{world['title']} — {world.get('subtitle', '')}")
+    print(f"{world['title']}, {world.get('subtitle', '')}")
     levels = world.get("levels") or [{"id": None, "name": "(single level)", "hub": world["hub"]}]
     levels = sorted(levels, key=lambda l: l.get("tier", 0), reverse=True)
     for lvl in levels:
@@ -362,10 +362,10 @@ def summary(data):
             members = sorted(
                 ((r["order"], r["id"], r["name"]) for r, _ in rooms.values() if r["wing"] == w["id"])
             )
-            print(f"  {w['name']} [{w['id']}] palette={w['palette']} — {len(members)} room(s)")
+            print(f"  {w['name']} [{w['id']}] palette={w['palette']}, {len(members)} room(s)")
             for order, rid, name in members:
                 n_ex = len(rooms[rid][0]["exhibits"])
-                print(f"    {order}. {name} ({rid}) — {n_ex} exhibits")
+                print(f"    {order}. {name} ({rid}), {n_ex} exhibits")
     print(f"\n  concepts: {len(graph['concepts'])}, edges: {len(graph['edges'])}")
 
 
@@ -390,7 +390,7 @@ def main():
 
     regenerate(data)
     n_rooms = len(data["rooms"])
-    print(f"WORLD OK — {n_rooms} rooms, {len(data['graph']['concepts'])} concepts, "
+    print(f"WORLD OK, {n_rooms} rooms, {len(data['graph']['concepts'])} concepts, "
           f"{len(data['graph']['edges'])} edges (index + merged graph regenerated)")
 
 

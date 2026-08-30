@@ -5,14 +5,14 @@
       "name": "Autoregressive Chunking with Overlap",
       "room": "the-stitchers-table",
       "exhibit": "chunk-and-overlap",
-      "summary": "The dominant way to push Wan (pretrained ~5 s / 81 frames = T_max) past its ceiling in ComfyUI: generate a chunk within the trained span, take its last few frames, condition the next chunk on that tail, and repeat — each chunk conditions on the TAIL of the previous, exactly like a language model continuing its own text. An overlap node such as ImageBatchExtendWithOverlap stitches the seams so motion and lighting carry across. It is enabled by a causal 3D VAE (sliding-window decode), local temporal attention over recent frames, and RoPE's relative-position dot product. It still drifts because each chunk sees only a short tail with no global memory, so error accumulates across segments."
+      "summary": "The dominant way to push Wan (pretrained ~5 s / 81 frames = T_max) past its ceiling in ComfyUI: generate a chunk within the trained span, take its last few frames, condition the next chunk on that tail, and repeat, each chunk conditions on the TAIL of the previous, exactly like a language model continuing its own text. An overlap node such as ImageBatchExtendWithOverlap stitches the seams so motion and lighting carry across. It is enabled by a causal 3D VAE (sliding-window decode), local temporal attention over recent frames, and RoPE's relative-position dot product. It still drifts because each chunk sees only a short tail with no global memory, so error accumulates across segments."
     },
     {
       "id": "sliding-window-extension",
       "name": "Sliding-Window Extension",
       "room": "the-stitchers-table",
       "exhibit": "other-extensions",
-      "summary": "The classic, weaker length-extension method: slide a window of overlapping clips and average where they overlap. Documented failure mode — fine over static backgrounds, but where the background itself moves, latent-space averaging in the overlap regions smears motion into BLUR and inconsistency, a likely reason motion-heavy long Wan videos degrade worst. Contrast with autoregressive chunking, which conditions each chunk on the previous tail instead of averaging overlaps. A related approach is fine-tuned continuation models trained to extend from a few initial frames."
+      "summary": "The classic, weaker length-extension method: slide a window of overlapping clips and average where they overlap. Documented failure mode, fine over static backgrounds, but where the background itself moves, latent-space averaging in the overlap regions smears motion into BLUR and inconsistency, a likely reason motion-heavy long Wan videos degrade worst. Contrast with autoregressive chunking, which conditions each chunk on the previous tail instead of averaging overlaps. A related approach is fine-tuned continuation models trained to extend from a few initial frames."
     }
   ],
   "edges": [

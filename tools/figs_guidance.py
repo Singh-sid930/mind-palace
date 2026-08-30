@@ -19,9 +19,9 @@ ACC = P.WING[WING]["accent"]   # warm gold
 WARM = P.WING[WING]["warm"]
 COOL = P.WING[WING]["cool"]
 
-UNC = "#8fb0d8"    # unconditioned flame — cool
-CON = "#ffc46b"    # conditioned flame — warm gold
-GUI = "#ff9a5a"    # guided / extrapolated — hot ember
+UNC = "#8fb0d8"    # unconditioned flame, cool
+CON = "#ffc46b"    # conditioned flame, warm gold
+GUI = "#ff9a5a"    # guided / extrapolated, hot ember
 
 
 def fig_guidance():
@@ -31,7 +31,7 @@ def fig_guidance():
                         hspace=0.40, wspace=0.20,
                         left=0.06, right=0.96, top=0.85, bottom=0.075)
 
-    P.suptitle(f, "The Guidance Forge  —  Two Flames, Then Extrapolate Past the Prompt")
+    P.suptitle(f, "The Guidance Forge, Two Flames, Then Extrapolate Past the Prompt")
     f.text(0.5, 0.905,
            "ε_guided = ε_uncond + w · (ε_cond − ε_uncond).   The subtraction isolates the prompt direction; "
            "w sets how far past ε_cond we sprint.  w > 1 is EXTRAPOLATION, not a blend.",
@@ -60,7 +60,7 @@ def fig_guidance():
     C = U + d                          # eps_cond  (w = 1)
     pts = {w: U + w * d for w in ws}
 
-    # the two flames as arrows from a common tail (x_t) — both point "toward
+    # the two flames as arrows from a common tail (x_t), both point "toward
     # less noise", so they are nearly collinear; their DIFFERENCE is the prompt.
     ax.add_artist(FancyArrowPatch(O, U, arrowstyle="-|>", mutation_scale=20,
                                   color=UNC, lw=2.6, zorder=4))
@@ -150,9 +150,9 @@ def fig_guidance():
                 arrowprops=dict(arrowstyle="-|>", color=GUI, lw=1.5))
 
     # ======================================================================
-    # (c) the price of pushing too hard — schematic tradeoff
+    # (c) the price of pushing too hard, schematic tradeoff
     # ======================================================================
-    ax = f.add_subplot(gs[1, :]); P.style_ax(ax, WING, grid=True)
+    ax = f.add_subplot(gs[1,:]); P.style_ax(ax, WING, grid=True)
     ax.set_title("(c)  The price of burning twice: adherence rises, but too much w overcooks",
                  color=P.INK, fontsize=15)
     w = np.linspace(0, 20, 300)
@@ -183,7 +183,7 @@ def fig_guidance():
               loc="center left", bbox_to_anchor=(0.02, 0.42))
 
     f.text(0.5, 0.018,
-           "cost: 2× inference — two forward passes every step, one conditioned and one unconditioned (null) — "
+           "cost: 2× inference, two forward passes every step, one conditioned and one unconditioned (null), "
            "the target of much distillation work",
            ha="center", color=P.MUTED, fontsize=11.2, fontstyle="italic")
 

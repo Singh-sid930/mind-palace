@@ -1,4 +1,4 @@
-"""Concept figure for The Shortcut Shrine (diffusion wing) — the ᾱ shortcut.
+"""Concept figure for The Shortcut Shrine (diffusion wing), the ᾱ shortcut.
 
 β_t (small, rising), α_t = 1−β_t, and the cumulative product ᾱ_t collapsing
 toward 0; plus the signal fraction √ᾱ vs noise fraction √(1−ᾱ) seesaw.
@@ -33,7 +33,7 @@ def main():
     gs = f.add_gridspec(1, 3, wspace=0.52,
                         left=0.05, right=0.965, top=0.79, bottom=0.155)
 
-    P.suptitle(f, "The Shortcut Shrine  —  One Leap Instead of a Thousand Steps")
+    P.suptitle(f, "The Shortcut Shrine, One Leap Instead of a Thousand Steps")
     f.text(0.5, 0.895,
            "x_t = √ᾱ_t · x₀  +  √(1−ᾱ_t) · ε        with   αₜ = 1−βₜ   and   "
            "ᾱₜ = α₁·α₂·…·αₜ",
@@ -116,7 +116,7 @@ def main():
 
     f.text(0.5, 0.045,
            "Precompute the whole schedule once; then jumping to ANY step t is two "
-           "lookups (√ᾱₜ, √(1−ᾱₜ)) and a single draw of ε — no thousand-step chain.",
+           "lookups (√ᾱₜ, √(1−ᾱₜ)) and a single draw of ε, no thousand-step chain.",
            ha="center", color=P.INK, fontsize=12.5)
 
     return P.save(f, "shortcut-alpha-bar.png")

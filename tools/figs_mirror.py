@@ -32,8 +32,8 @@ f.patch.set_facecolor(P.BG)
 gs = f.add_gridspec(1, 3, left=0.035, right=0.985, top=0.84, bottom=0.07,
                     wspace=0.20, width_ratios=[1.18, 1.0, 1.06])
 
-P.suptitle(f, "I-JEPA — Predicting in Latent Space (Assran et al., CVPR 2023)")
-f.suptitle("I-JEPA — Predicting in Latent Space (Assran et al., CVPR 2023)",
+P.suptitle(f, "I-JEPA, Predicting in Latent Space (Assran et al., CVPR 2023)")
+f.suptitle("I-JEPA, Predicting in Latent Space (Assran et al., CVPR 2023)",
            color=P.INK, fontsize=23, fontweight="bold", y=0.965)
 
 
@@ -201,7 +201,7 @@ axb.text(0.035, 0.965,
          color=P.INK, fontsize=12, fontweight="bold",
          bbox=dict(boxstyle="round,pad=0.4", facecolor=P.PANEL,
                    edgecolor=COOL, linewidth=1.6))
-axb.annotate("target only follows—never learns",
+axb.annotate("target only follows, never learns",
              xy=(430, target[430]), xytext=(300, 0.30),
              color=WARM, fontsize=10.5,
              arrowprops=dict(arrowstyle="-|>", color=WARM, lw=1.6))

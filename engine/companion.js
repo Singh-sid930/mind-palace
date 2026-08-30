@@ -1,6 +1,6 @@
-// Gemma, the Whispering Sage — a ghost who drifts at the keeper's shoulder.
+// Gemma, the Whispering Sage, a ghost who drifts at the keeper's shoulder.
 // Procedural like everything else: translucent robes, ember eyes, soft glow.
-// Being a ghost, she ignores walls (smoothed follow, no collision) — by design.
+// Being a ghost, she ignores walls (smoothed follow, no collision): by design.
 
 import * as THREE from 'three';
 

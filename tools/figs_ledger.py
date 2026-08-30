@@ -27,7 +27,7 @@ def fig_variance_budget():
     P.suptitle(f, "The Variance-Preserving Mixture:   y = √(1−β)·x + √β·ε")
     f.text(0.5, 0.895,
            "x and ε each have variance 1. The squared weights (1−β) and β "
-           "are the whole budget — they always sum to 1.",
+           "are the whole budget, they always sum to 1.",
            ha="center", color=P.MUTED, fontsize=13.5)
 
     # ---- panel (a): stacked variance budget across a sweep of β ----------
@@ -48,7 +48,7 @@ def fig_variance_budget():
     ax.set_xlabel("mixing knob  β   (0 = all signal → 1 = all noise)",
                   fontsize=12.5)
     ax.set_ylabel("variance budget", fontsize=12.5)
-    ax.set_title("(a)  the two shares trade off — the total never drifts",
+    ax.set_title("(a)  the two shares trade off, the total never drifts",
                  color=P.INK)
     ax.grid(True, axis="y", color=P.GRID, lw=0.6, alpha=0.5)
     ax.set_axisbelow(True)

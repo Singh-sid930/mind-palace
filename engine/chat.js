@@ -39,14 +39,14 @@ export class CompanionChat {
       if (!this.healthChecked) {
         this.healthChecked = true;
         this._bubble('gemma',
-          'The Whispering Sage keeps to the home palace — her voice does not ' +
+          'The Whispering Sage keeps to the home palace. Her voice does not ' +
           'carry to this realm. Wander freely; every chamber is still yours to read.');
       }
       if (this.gateCtx && this._primedFor !== this.gateCtx.dest) {
         this._primedFor = this.gateCtx.dest;
         this._bubble('gate',
           `✦ A Gatekeeper bars the way to “${this.gateCtx.dest}.” It is wordless ` +
-          'in this realm — press E to pass.');
+          'in this realm. Press E to pass.');
       }
       return;
     }
@@ -72,7 +72,7 @@ export class CompanionChat {
   }
 
   _startGate() {
-    this._bubble('gate', `✦ A Gatekeeper bars the way to “${this.gateCtx.dest}.” It will test you — answer, or press E to pass regardless.`);
+    this._bubble('gate', `✦ A Gatekeeper bars the way to “${this.gateCtx.dest}.” It will test you, answer, or press E to pass regardless.`);
     // Prime the model to greet and ask its first question (not shown as "you").
     this.send('(I approach your gate, seeking passage. Test my readiness.)', { silent: true });
   }
@@ -92,15 +92,15 @@ export class CompanionChat {
       const res = await fetch('/api/companion/health').then((r) => r.json());
       if (!res.ok) {
         this._bubble('gemma',
-          '(Gemma seems to be asleep — the Ollama service is not answering. ' +
+          '(Gemma seems to be asleep. The Ollama service is not answering. ' +
           'Is it running on this machine?)');
       } else if (!res.model_present) {
         this._bubble('gemma',
-          `(Gemma stirs, but her voice is missing — model “${res.model}” ` +
+          `(Gemma stirs, but her voice is missing, model “${res.model}” ` +
           'is not available in Ollama.)');
       } else if (this.history.length === 0 && !this.gateCtx) {
         this._bubble('gemma',
-          'Hello, keeper. Ask me anything about what you see — press T anytime.');
+          'Hello, keeper. Ask me anything about what you see. Press T anytime.');
       }
     } catch {
       this._bubble('gemma', '(The palace server is not answering.)');
@@ -131,7 +131,7 @@ export class CompanionChat {
     if (overrideText == null) this.input.value = '';
     if (this.offline) {
       if (!opts.silent) this._bubble('you', message);
-      this._bubble('gemma', '(no answer comes — the sage is silent in this realm)');
+      this._bubble('gemma', '(no answer comes. The sage is silent in this realm)');
       return;
     }
     const who = this.gateCtx ? 'gate' : 'gemma';

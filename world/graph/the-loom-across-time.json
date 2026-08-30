@@ -12,7 +12,7 @@
       "name": "Factorized Spatial+Temporal Attention",
       "room": "the-loom-across-time",
       "exhibit": "factorized-not-3d",
-      "summary": "Replacing one full joint 3D attention over all T·h·w positions (cost O((T·h·w)^2), explosive) with two cheaper passes: SPATIAL attention fixes a frame and attends over its h·w tokens at cost O((h·w)^2), and TEMPORAL attention fixes a position and attends over its T frames at cost O(T^2). The factorized cost is (h·w)^2 + T^2 rather than (T·h·w)^2 — dramatically cheaper, in the same anti-quadratic spirit as the rest of the attention-cost work."
+      "summary": "Replacing one full joint 3D attention over all T·h·w positions (cost O((T·h·w)^2), explosive) with two cheaper passes: SPATIAL attention fixes a frame and attends over its h·w tokens at cost O((h·w)^2), and TEMPORAL attention fixes a position and attends over its T frames at cost O(T^2). The factorized cost is (h·w)^2 + T^2 rather than (T·h·w)^2, dramatically cheaper, in the same anti-quadratic spirit as the rest of the attention-cost work."
     }
   ],
   "edges": [
