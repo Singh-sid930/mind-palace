@@ -92,6 +92,67 @@
     cursor: pointer; letter-spacing: 0.06em;
   }
   .card button:hover { filter: brightness(1.1); }
+  /* The entry scroll: a parchment sheet on two rods, drifting very slightly.
+     Kept separate from .card, which the boot-failure fallback still uses. */
+  .scroll {
+    position: relative; width: min(620px, 88vw);
+    max-height: 94vh; display: flex; flex-direction: column;
+    animation: scroll-float 9s ease-in-out infinite alternate;
+    will-change: transform;
+  }
+  @keyframes scroll-float {
+    from { transform: translateY(-5px) rotate(-0.2deg); }
+    to   { transform: translateY(5px)  rotate(0.2deg); }
+  }
+  /* Settle while it is being read or reached for — a drifting button is a
+     fiddly target, and the drift has done its job by then. */
+  .scroll:hover, .scroll:focus-within { animation-play-state: paused; }
+  .scroll .rod {
+    position: relative; height: 17px; margin: 0 -16px; border-radius: 9px;
+    background: linear-gradient(180deg, #6b5836, #3a2f1c 55%, #241c10);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.55);
+  }
+  .scroll .rod::before, .scroll .rod::after {
+    content: ''; position: absolute; top: -3px; width: 15px; height: 23px;
+    border-radius: 5px;
+    background: linear-gradient(180deg, #d8b25a, #8a6c2c);
+  }
+  .scroll .rod::before { left: -9px; }
+  .scroll .rod::after  { right: -9px; }
+  .sheet {
+    padding: 30px 42px 34px; text-align: center; color: #33291a;
+    overflow-y: auto;   /* short laptop screens must not clip the button */
+    background:
+      radial-gradient(120% 80% at 50% 0%, rgba(255,255,255,0.5), transparent 60%),
+      linear-gradient(180deg, #f0e5c8, #e6d8b4 45%, #dcccA4);
+    box-shadow: inset 0 14px 18px -14px rgba(70,52,22,0.75),
+                inset 0 -14px 18px -14px rgba(70,52,22,0.75),
+                0 26px 50px rgba(0,0,0,0.5);
+  }
+  .sheet h1 {
+    margin: 0 0 2px; font-size: 31px; letter-spacing: 0.045em; color: #2a2213;
+  }
+  .sheet .lede { margin: 0 0 16px; font-size: 13.5px; font-style: italic;
+                 color: #6d5c3c; letter-spacing: 0.03em; }
+  .sheet p { margin: 0 0 12px; font-size: 15px; line-height: 1.72; }
+  .sheet .rule {
+    width: 96px; height: 1px; margin: 16px auto;
+    background: linear-gradient(90deg, transparent, #a98f5c, transparent);
+  }
+  .sheet kbd {
+    background: rgba(58,44,20,0.10); border: 1px solid rgba(58,44,20,0.32);
+    color: #3a2f1c; border-radius: 4px; padding: 1px 6px;
+    font-family: inherit; font-size: 12.5px;
+  }
+  .sheet button {
+    margin-top: 20px; font: inherit; font-size: 17px; padding: 10px 34px;
+    background: linear-gradient(180deg, #4a3a1e, #2f2512); color: #f0e2bd;
+    border: 1px solid #8a6c2c; border-radius: 8px;
+    cursor: pointer; letter-spacing: 0.06em;
+  }
+  .sheet button:hover { filter: brightness(1.18); }
+  @media (prefers-reduced-motion: reduce) { .scroll { animation: none; } }
+
   kbd {
     background: rgba(233,223,198,0.12); border: 1px solid rgba(233,223,198,0.3);
     border-radius: 4px; padding: 1px 7px; font-family: inherit; font-size: 13px;
@@ -246,17 +307,43 @@
   </div>
 
   <div id="start">
-    <div class="card">
-      <h1>The Palace of Mind</h1>
-      <p class="muted">A walkable chronicle of everything you have learned.</p>
-      <p style="font-size:15px; line-height:1.7">
-        Walk with <kbd>W A S D</kbd>, look with the mouse.<br/>
-        Press <kbd>E</kbd> to study exhibits and step through portals.<br/>
-        <span class="needs-gemma"><kbd>T</kbd> talk to Gemma, your ghostly guide.<br/></span>
-        <kbd>M</kbd> map · <kbd>G</kbd> constellation of ideas · <kbd>F</kbd> floo travel<br/>
-        <kbd>P</kbd> footsteps · <kbd>N</kbd> toggle the music (headphones reveal the binaural layer)
-      </p>
-      <button id="begin">Enter the Palace</button>
+    <div class="scroll">
+      <div class="rod"></div>
+      <div class="sheet">
+        <h1>The Palace of Mind</h1>
+        <p class="lede">a walkable chronicle of everything you have learned</p>
+
+        <p>Welcome in. This is a memory palace: a castle where every idea you
+        have studied is given a room of its own to stand in. We remember
+        <em>places</em> far better than we remember lists — so here the ideas
+        have floors, doorways and neighbours. The mathematics that everything
+        rests upon is down in the cellar, and each floor above is built from
+        the one beneath it.</p>
+
+        <p>Nothing in these rooms is ornament. Every artifact is a working
+        model of the idea it explains, and it moves the way the mathematics
+        moves.</p>
+
+        <div class="rule"></div>
+
+        <p>Walk with <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd>, look with
+        the mouse, hold <kbd>Shift</kbd> to run. When something catches your
+        eye, press <kbd>E</kbd> to study it — plaques, figures and diagrams all
+        open where you stand.</p>
+
+        <p>If you lose your bearings, <kbd>M</kbd> draws the floor you are on,
+        <kbd>G</kbd> lifts the whole palace into a constellation of its ideas,
+        and <kbd>F</kbd> carries you to any chamber you can name. Glowing
+        footprints lead to whatever you have not read yet — <kbd>P</kbd> sends
+        them away when you would rather wander.
+        <span class="needs-gemma"><kbd>T</kbd> calls Gemma, the ghost who
+        knows which room you are standing in.</span>
+        <kbd>N</kbd> begins the music; wear headphones if you have them, as one
+        layer of it exists only between the two ears.</p>
+
+        <button id="begin">Enter the Palace</button>
+      </div>
+      <div class="rod"></div>
     </div>
   </div>
 
