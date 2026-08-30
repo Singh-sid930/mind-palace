@@ -165,10 +165,14 @@ async function boot() {
   });
 
   // Detect whether a companion backend exists at all. On a static host (e.g.
-  // GitHub Pages) /api/* returns a 404 HTML page, not JSON — so Gemma and the
-  // Gatekeeper quizzes go quiet and their hints are hidden. A local server with
-  // Ollama merely down still counts as "present" (the chat's own health check
-  // shows the helpful "start Ollama" line in that case).
+  // GitHub Pages) /api/* returns a 404 HTML page, not JSON. With no backend
+  // Gemma cannot answer anything, so rather than leave a mute ghost drifting
+  // about and a dead chat panel behind T, she is removed from the build
+  // entirely: no ghost, no panel, no hints. The Gatekeepers stay — they mark
+  // the gated stairs, and E still opens them. A local server with Ollama
+  // merely down still counts as "present" (the chat's own health check shows
+  // the helpful "start Ollama" line in that case).
+  let gemmaAbsent = false;
   (async () => {
     let present = false;
     try {
@@ -177,7 +181,10 @@ async function boot() {
       if (present) await r.json();
     } catch { present = false; }
     if (!present) {
+      gemmaAbsent = true;
       chat.setOffline(true);
+      chat.close();
+      companion.group.visible = false;
       document.body.classList.add('no-gemma');
     }
   })();
@@ -287,6 +294,7 @@ async function boot() {
         }
       }
     } else if (e.code === 'KeyT') {
+      if (gemmaAbsent) return;          // no backend: there is nothing to talk to
       if (stageOpen()) closeDiagramStage();
       if (chat.toggle()) player.controls.unlock(); else player.controls.lock();
     } else if (e.code === 'KeyM') {
@@ -373,7 +381,7 @@ async function boot() {
     // After player.update so a rumble's camera tremor lands this frame.
     ambientEvents.update(t, dt);
     dome.position.set(camera.position.x, 0, camera.position.z);
-    companion.update(dt, camera, t);
+    if (!gemmaAbsent) companion.update(dt, camera, t);
     wisp.update(dt, camera, t);
     footsteps.update(dt, camera, t);
     diagramPanel.update(dt, t);

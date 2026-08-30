@@ -133,8 +133,10 @@ doesn't this collapse?"* needs no setup. She keeps her answers short; ask her to
 *"write it down"* or *"give me a scroll"* and the full version is saved as a
 parchment-styled **scroll** in `scrolls/` with a 📜 link. The same service voices the
 Gatekeepers at the stairs. `serve.py` never starts Ollama itself — it only talks to
-the existing service. On the hosted site (no backend) the palace degrades gracefully:
-the sage falls silent, the gates open wordlessly, and everything else works.
+the existing service. On the hosted site there is no backend, so Gemma is left out of
+the build entirely — no ghost, no chat, no T key — rather than left in as a mute
+fixture. The Gatekeepers still mark the gated stairs and E still opens them, and
+everything else works exactly as it does at home.
 
 <p align="center">
   <img src="docs/media/gemma.gif" width="760"
