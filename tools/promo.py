@@ -245,8 +245,8 @@ CLIPS = [
     ("hook",          0.9, 4.0, 1.0),
     ("walk",          2.4, 5.0, 1.0),
     ("artifacts",     0.6, 9.5, 1.55),
-    ("widgets",       1.0, 5.0, 1.0),
     ("study",         0.8, 5.0, 1.0),
+    ("widgets",       1.0, 5.0, 1.0),
     ("dementor",      1.2, 7.0, 1.0),
     ("footsteps",     0.6, 4.5, 1.0),
     ("constellation", 0.6, 5.0, 1.0),
@@ -256,20 +256,16 @@ END_CARD = 3.6
 # (start, end, text) in seconds of the finished film. LinkedIn autoplays
 # muted, so these carry the whole story.
 CAPTIONS = [
-    (0.5,  3.8,  "I turned my ML notes into a castle I can walk through"),
-    (4.3,  8.7,  "68 rooms  ·  9 floors  ·  every idea in its own place"),
-    (9.4,  13.4, "every centrepiece animates the real mathematics"),
-    (14.0, 18.3, "attention  ·  diffusion  ·  contrastive learning  ·  LoRA"),
-    (19.0, 23.2, "every plaque carries a live diagram over it"),
-    (24.0, 28.3, "press E and the figure unfolds in the room"),
-    (29.2, 34.8, "and yes, there are dementors"),
-    (36.0, 39.8, "footprints lead to whatever you have not read"),
-    (40.6, 44.8, "and the whole knowledge graph, in 3D"),
+    (0.4,  3.9,  "What do you do when you got unused Claude tokens\nand a mid(ish)-life crisis?"),
+    (4.3,  8.6,  "You put Harry Potter and late-night learnings\ntogether into a themed castle."),
+    (9.1,  12.4, "To walk around and rot up everything\nyou need to catch up on."),
+    (12.9, 15.6, "From the humble dot product, to attention."),
+    (15.9, 18.3, "And from singular values, to LoRA."),
+    (19.0, 23.2, "We got some cool looking graphs too."),
+    (24.0, 28.2, "And the plaques and ornaments move! :O"),
+    (29.0, 34.6, "Oh also dementors and ghosts are around\n(low poly mesh, this is just on github.io :/)"),
+    (35.6, 40.0, "Speaking of which, feel free to open a pull request\ngithub.com/Singh-sid930/mind-palace"),
 ]
-
-
-def esc(t):
-    return t.replace(":", r"\:").replace("'", "")
 
 
 def make_end_card(path, secs):
@@ -319,11 +315,18 @@ def cut():
 
     body = sum(c[2] for c in CLIPS)
     total = body + END_CARD
-    caps = ",".join(
-        f"drawtext=fontfile={FONT}:text='{esc(t)}':fontcolor=0xF2EAD6:"
-        f"fontsize=46:box=1:boxcolor=0x0A0710@0.55:boxborderw=26:"
-        f"x=(w-tw)/2:y=h-190:enable='between(t,{a},{b})'"
-        for a, b, t in CAPTIONS)
+    # drawtext's text= is parsed twice (filtergraph, then drawtext), which
+    # mangles newlines and colons. textfile= is read literally: no escaping.
+    caps = []
+    for i, (a, b, t) in enumerate(CAPTIONS):
+        f = work / f"cap{i}.txt"
+        f.write_text(t)
+        caps.append(
+            f"drawtext=fontfile={FONT}:textfile={f}:fontcolor=0xF2EAD6:"
+            f"fontsize=44:line_spacing=12:box=1:boxcolor=0x0A0710@0.58:"
+            f"boxborderw=26:x=(w-tw)/2:y=h-{250 if chr(10) in t else 190}:"
+            f"enable='between(t,{a},{b})'")
+    caps = ",".join(caps)
     fades = f"fade=t=in:st=0:d=0.6,fade=t=out:st={total-0.6:.2f}:d=0.6"
 
     music = ROOT / "docs" / "media" / "raw" / "promo_music.wav"
